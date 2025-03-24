@@ -1,4 +1,4 @@
-class Parameters:
+class parameters:
     def __init__(self):
         # General Economic Parameters
         self.discount_rate = 0.04
@@ -84,91 +84,21 @@ class Parameters:
 
 
 #Parameter that needs further Calculations 
-    @property
-    def value_of_time_automobile(self):
-        """
-        Calculate the value of time for automobile based on the formula:
-        = ROUND(WageStatewide * 0.5 / 5, 2) * 5
-        """
-        ValTimeAuto = round(self.WageStatewide * 0.5 / 5, 2) * 5
-        return ValTimeAuto
-
-    @property
-    def value_of_time_truck(self):
-        """
-        Calculate the value of time for truck based on the formula:
-        = ROUND((WageTruck + FringeTruck) / 5, 2) * 5
-        """
-        ValTimeTruck = round((self.WageTruck + self.FringeTruck) / 5, 2) * 5
-        return ValTimeTruck
-
-    @property
-    def value_of_time_auto_and_truck_composite(self):
-        """
-        Calculate the Auto & Truck Composite Value of Time based on the formula:
-        = ROUND((1.3 * ValTimeAuto * 0.91 + ValTimeTruck * 0.09) / 5, 2) * 5
-        """
-        ValTimeComposite = round(
+        # Calculate all the values once during initialization
+        self.value_of_time_automobile = round(self.WageStatewide * 0.5 / 5, 2) * 5
+        self.value_of_time_truck = round((self.WageTruck + self.FringeTruck) / 5, 2) * 5
+        self.value_of_time_auto_and_truck_composite = round(
             (1.3 * self.value_of_time_automobile * 0.91 + self.value_of_time_truck * 0.09) / 5, 2
         ) * 5
-        return ValTimeComposite
+        self.value_of_time_transit = round(self.WageStatewide * 0.5 / 5, 2) * 5
+        self.fatality_crash_rate = round(self.FatCount / self.CATravTrend, 3)
+        self.injury_crash_rate = round(self.InjCount / self.CATravTrend, 3)
+        self.pdo_crash_rate = round(self.NoInjCount / self.CATravTrend, 3)
+        self.fuel_auto = round((self.FuelPriceAuto / (1 + self.SalesTaxGasState + self.SalesTaxLocal) - 
+                               self.ExciseTaxGasFed - self.ExciseTaxGasState) / 5, 2) * 5
+        self.fuel_truck = round((self.FuelPriceTruck / (1 + self.SalesTaxDieselState) - 
+                                 self.ExciseTaxDieselFed - self.ExciseTaxDieselState) / 5, 2) * 5
+        self.per_peak_avg_hr = 0.081 
+        self.per_peak_adt = 0.403 
 
-    @property
-    def value_of_time_transit(self):
-        """
-        Calculate the value of time for transit based on the formula:
-        = ROUND(WageStatewide * 0.5 / 5, 2) * 5
-        """
-        ValTimeTransit = round(self.WageStatewide * 0.5 / 5, 2) * 5
-        return ValTimeTransit
-
-    @property
-    def fatality_crash_rate(self):
-        """
-        Calculate the Fatality Crash Rate based on the formula:
-        = ROUND(fatal_crash_count / freeway_travel_trend, 3)
-        """
-        StateFatRate = round(self.FatCount / self.CATravTrend, 3)
-        return StateFatRate
-
-    @property
-    def injury_crash_rate(self):
-        """
-        Calculate the Injury Crash Rate based on the formula:
-        = ROUND(injury_crash_count / freeway_travel_trend, 3)
-        """
-        StateInjRate = round(self.InjCount / self.CATravTrend, 3)
-        return StateInjRate
-
-    @property
-    def pdo_crash_rate(self):
-        """
-        Calculate the PDO Crash Rate based on the formula:
-        = ROUND(pdo_crash_count / freeway_travel_trend, 3)
-        """
-        StatePDORate = round(self.NoInjCount / self.CATravTrend, 3)
-        return StatePDORate
-    
-    @property
-    def fuel_auto(self):
-        """
-        Calculate the Automobile Fuel Cost excluding taxes based on the formula:
-        = ROUND((FuelPriceAuto / (1 + SalesTaxGasState + SalesTaxLocal) - 
-                ExciseTaxGasFed - ExciseTaxGasState) / 5, 2) * 5
-        """
-        FuelAuto = round((self.FuelPriceAuto / (1 + self.SalesTaxGasState + self.SalesTaxLocal) - 
-                          self.ExciseTaxGasFed - self.ExciseTaxGasState) / 5, 2) * 5
-        return FuelAuto
-    
-    @property
-    def fuel_truck(self):
-        """
-        Calculate the Truck Fuel Cost excluding taxes based on the formula:
-        = ROUND((FuelPriceTruck / (1 + SalesTaxDieselState) - 
-                ExciseTaxDieselFed - ExciseTaxDieselState) / 5, 2) * 5
-        """
-        FuelTruck = round((self.FuelPriceTruck / (1 + self.SalesTaxDieselState) - 
-                          self.ExciseTaxDieselFed - self.ExciseTaxDieselState) / 5, 2) * 5
-        return FuelTruck
-    
     
