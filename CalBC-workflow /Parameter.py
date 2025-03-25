@@ -42,10 +42,10 @@ class parameters:
         self.MaxVC = 1.56  # Maximum Volume/Capacity Ratio (unitless)
         self.AnnualFactor = 365  # Days per year (unitless)
         self.roadway_capacity = {
-            "Freeway": {"alpha": 0.20, "beta": 10, "capacity_vphpl": 2000, "departure_rate_vphpl": 1800},
-            "Expressway": {"alpha": 0.20, "beta": 10, "capacity_vphpl": 2000, "departure_rate_vphpl": 1800},
-            "Conventional Highway": {"alpha": 0.05, "beta": 10, "capacity_vphpl": 800, "departure_rate_vphpl": 1400},
-            "HOV Lanes": {"alpha": 0.55, "beta": 8, "capacity_vphpl": 1600, "departure_rate_vphpl": None}  # HOV has no departure rate
+            "Freeway": {"alpha": 0.20, "beta": 10, "capacity_vphpl": 2000, "DepRateFwy": 1800},
+            "Expressway": {"alpha": 0.20, "beta": 10, "capacity_vphpl": 2000, "DepRateExp": 1800},
+            "Conventional Highway": {"alpha": 0.05, "beta": 10, "capacity_vphpl": 800, "DepRateConv": 1400},
+            "HOV Lanes": {"HOVAlpha": 0.55, "HOVBeta": 8, "HOVLaneCap": 1600, "departure_rate_vphpl": None}  # HOV has no departure rate
         }
         
 
@@ -81,6 +81,30 @@ class parameters:
         self.PerPedRiskRed = 0.09  # 9.0% reduction per 365 annual walking miles  # Percentage reduction in mortality due to walking
         self.MortRateCyc = 252  # #/100,000 people  # Mortality rate for cycling (aged 20-64)
         self.MortRatePed = 392  # #/100,000 people  # Mortality rate for walking (aged 20-74)
+        
+        #Pavement Parameters
+        # Pavement Condition Lookup Table (PaveDet) 
+        self.pave_det = {
+            0: {"Year20Light": 125, "Year20Medium": 150, "Year20Heavy": 350},
+            25: {"Year20Light": 150, "Year20Medium": 200, "Year20Heavy": 500},
+            50: {"Year20Light": 175, "Year20Medium": 250, "Year20Heavy": 675},
+            75: {"Year20Light": 200, "Year20Medium": 300, "Year20Heavy": 750},
+            100: {"Year20Light": 275, "Year20Medium": 400, "Year20Heavy": 750},
+            125: {"Year20Light": 325, "Year20Medium": 475, "Year20Heavy": 750},
+            150: {"Year20Light": 400, "Year20Medium": 575, "Year20Heavy": 750},
+            175: {"Year20Light": 500, "Year20Medium": 700, "Year20Heavy": 750},
+            200: {"Year20Light": 575, "Year20Medium": 750, "Year20Heavy": 750},
+            225: {"Year20Light": 650, "Year20Medium": 750, "Year20Heavy": 750},
+            250: {"Year20Light": 750, "Year20Medium": 750, "Year20Heavy": 750},
+            275: {"Year20Light": 750, "Year20Medium": 750, "Year20Heavy": 750},
+            300: {"Year20Light": 750, "Year20Medium": 750, "Year20Heavy": 750},
+            325: {"Year20Light": 750, "Year20Medium": 750, "Year20Heavy": 750},
+            350: {"Year20Light": 750, "Year20Medium": 750, "Year20Heavy": 750},
+            375: {"Year20Light": 750, "Year20Medium": 750, "Year20Heavy": 750},
+            400: {"Year20Light": 750, "Year20Medium": 750, "Year20Heavy": 750},
+            425: {"Year20Light": 750, "Year20Medium": 750, "Year20Heavy": 750},
+            450: {"Year20Light": 750, "Year20Medium": 750, "Year20Heavy": 750}
+        }
 
 
 #Parameter that needs further Calculations 

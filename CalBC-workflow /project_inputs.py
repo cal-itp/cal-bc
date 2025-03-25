@@ -132,6 +132,13 @@ def create_widgets():
     # Attach the observer to the widget to validate input
     peak_period_widget.observe(validate_peak_period, names='value')
     
+    # Roadway Type Mapping (Mapping abbreviations to full names in params)
+    roadway_type_mapping = {
+        'F': 'Freeway',
+        'E': 'Expressway',
+        'C': 'Conventional Highway'
+    }
+    
     # Function to update Roadway Type based on selected subcategory
     def update_roadway_type(change):
         subcategory = change['new']  # Get the new subcategory value
@@ -493,6 +500,26 @@ def create_widgets():
     adt_base_widgets = widgets.HBox([adt_base_year_no_build_widget, adt_base_year_build_widget])
     adt_20_widget = widgets.HBox([ADT_20NB_widget, adt_20_year_build_widget])
     
+    # Define AVOHov widgets
+    AVOHovNB_widget = widgets.FloatText(
+        description="High Occupancy Vehicle (if HOV/HOT lanes) (No Build):",
+        value=2.15,  # Initially empty
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )    
+    
+
+    AVOHovB_widget = widgets.FloatText(
+        description="High Occupancy Vehicle (if HOV/HOT lanes) (Build):",
+        value=AVOHovNB_widget.value,  # Default value set to 2.15
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+    
+    AVO_HOV_widget = widgets.HBox([AVOHovNB_widget, AVOHovB_widget])
+    
     # Define other widgets
     HOV_lane_nobuild_widget = widgets.IntText(
         description="Average Hourly HOV/HOT Lane Traffic (No Build):",
@@ -507,24 +534,7 @@ def create_widgets():
         layout=common_layout,
         style={'description_width': 'initial'}
     )
-    
-    # Define AVOHov widgets
-    AVOHovNB_widget = widgets.FloatText(
-        description="High Occupancy Vehicle (if HOV/HOT lanes) (No Build):",
-        value=2.15,  # Default value set to 2.15
-        disabled=False,
-        layout=common_layout,
-        style={'description_width': 'initial'}
-    )
-
-    AVOHovB_widget = widgets.FloatText(
-        description="High Occupancy Vehicle (if HOV/HOT lanes) (Build):",
-        value=3.15,  # Default value set to 3.15
-        disabled=False,
-        layout=common_layout,
-        style={'description_width': 'initial'}
-    )
-    
+        
     def calculate_hov_hot_traffic(change=None):
         # Get the current values from the widgets
         HOV2to3_selected = (subcategory_dropdown.value == "HOV-2 to HOV-3 Conv")  # Check if "HOV-2 to HOV-3 Conv" is selected
@@ -532,6 +542,7 @@ def create_widgets():
         HOVvolNB = HOV_lane_nobuild_widget.value  # Average Hourly HOV/HOT Lane Traffic (No Build)
         HOVvolB = HOV_lane_build_widget.value  # Average Hourly HOV/HOT Lane Traffic (Build)
         AVOHovB = AVOHovB_widget.value  # Average Vehicle Occupancy HOV (Build)
+
 
         # Calculate Average Hourly HOV/HOT Lane Traffic based on the formula
         if HOV2to3_selected:  # If "HOV-2 to HOV-3 Conv" is selected, use the adjusted formula
@@ -541,13 +552,7 @@ def create_widgets():
 
         # Update the HOV_lane_build_widget with the calculated value
         HOV_lane_build_widget.value = hov_hot_traffic
-
-        # Allow user to override calculated value if they input manually
-        if HOV_lane_build_widget.value != hov_hot_traffic:
-            HOV_lane_build_widget.disabled = False
-
-
-            
+        
             
     # Link the widgets to trigger the calculation
     project_type_dropdown.observe(update_subcategory, names='value')  # Observe changes in project type
@@ -556,11 +561,9 @@ def create_widgets():
     AVOHovNB_widget.observe(calculate_hov_hot_traffic, names='value')  # Observe changes in AVOHovNB
     AVOHovB_widget.observe(calculate_hov_hot_traffic, names='value')  # Observe changes in AVOHovB
     subcategory_dropdown.observe(calculate_hov_hot_traffic, names='value')  # Observe changes in subcategory
-
-
-    
+   
     hourly_hov_lane_traffic_widget = widgets.HBox([HOV_lane_nobuild_widget, HOV_lane_build_widget])    
-    AVO_HOV_widget = widgets.HBox([AVOHovNB_widget, AVOHovB_widget])
+
     
     percent_induced_trip_widget = widgets.IntText(
         description='Percent of Induced Trips in HOV (if HOT or 2-to-3 conv.):',
@@ -767,7 +770,7 @@ def create_widgets():
     # Arrival Rate Base Year No Build widget (Year 1)
     arrival_rate_base_year_no_build_widget = widgets.FloatText(
         description="Arrival Rate Base Year (No Build, Year 1):",
-        value=None,  # Initially empty
+        value=0,  # Initially empty
         disabled=False,  # Allow user to enter values
         style={'description_width': 'initial'},
         layout=common_layout
@@ -776,7 +779,7 @@ def create_widgets():
     # Arrival Rate Base Year Build widget (calculated)
     arrival_rate_base_year_build_widget = widgets.FloatText(
         description="Arrival Rate Base Year (Build):",
-        value=None,  # Initially empty
+        value=0,  # Initially empty
         disabled=False,  # Allow user to enter values
         style={'description_width': 'initial'},
         layout=common_layout
@@ -789,11 +792,14 @@ def create_widgets():
         ADT20NB = ADT_20NB_widget.value  # ADT Year 20 (No Build)
         ArrRate1 = arrival_rate_base_year_no_build_widget.value  # Arrival Rate Base Year No Build (user input)
 
+        # Save the original value of Arrival Rate Base Year No Build to retain if needed
+        original_arrival_rate_no_build = arrival_rate_base_year_no_build_widget.value
+
         # Calculate Arrival Rate Base Year No Build
         if subcategory == "Hwy-Rail Grade Crossing":  # Check if subcategory is Hwy-Rail Grade Crossing
             arrival_rate_base_year_no_build = ADT1NB / 12  # Formula: ADT1NB / 12
         else:
-            arrival_rate_base_year_no_build = 0  # Otherwise set to 0 (No Build scenario)
+            arrival_rate_base_year_no_build = original_arrival_rate_no_build  # Keep the original value (No Build scenario)
 
         # Set the Arrival Rate Base Year Build value (no extra logic)
         if subcategory == "Queuing":  # Check if subcategory is Queuing
@@ -833,7 +839,171 @@ def create_widgets():
         disabled=False,  # Allow user to enter values
         style={'description_width': 'initial'},
         layout=common_layout
-    )    
+    ) 
+    
+    # Function to update the Departure Rate Forecast (No Build and Build are the same)
+    def update_departure_rate_forecast(change):
+        # Get the current values from the widgets
+        subcategory = subcategory_dropdown.value  # Subcategory selected
+        roadway_type_abbr = roadway_type_no_build_widget.value  # Roadway type (No Build)
+
+        # Map the abbreviation to the full name for the dictionary lookup
+        roadway_type_full = roadway_type_mapping.get(roadway_type_abbr, None)
+
+        # If the subcategory is "Queuing" or "Hwy-Rail Grade Crossing", calculate departure rates
+        if subcategory in ["Queuing", "Hwy-Rail Grade Crossing"] and roadway_type_full:
+            # Fetch the departure rate from the params.roadway_capacity dictionary
+            if roadway_type_full in params.roadway_capacity:
+                # Get the appropriate departure rate from the dictionary
+                if roadway_type_full == "Freeway":
+                    departure_rate = params.roadway_capacity["Freeway"]["DepRateFwy"]
+                elif roadway_type_full == "Expressway":
+                    departure_rate = params.roadway_capacity["Expressway"]["DepRateExp"]
+                elif roadway_type_full == "Conventional Highway":
+                    departure_rate = params.roadway_capacity["Conventional Highway"]["DepRateConv"]
+                else:
+                    departure_rate = 0  # Default to 0 if not found
+            else:
+                departure_rate = 0  # Default to 0 if not found
+
+            # Get the general lanes and HOV lanes values
+            GenLanesNB = general_traffic_lanes_no_build_widget.value
+            HOVLanesNB = hov_hot_lanes_no_build_widget.value
+
+            # Calculate the departure rate forecast for No Build
+            departure_rate_no_build = departure_rate * (GenLanesNB + HOVLanesNB)
+            departure_rate_forecast_year_no_build_widget.value = departure_rate_no_build
+
+            # Build = No Build, so we set the Build widget to the same value
+            departure_rate_forecast_year_build_widget.value = departure_rate_no_build
+        else:
+            # If subcategory is not "Queuing" or "Hwy-Rail Grade Crossing", set both to 0
+            departure_rate_forecast_year_no_build_widget.value = 0
+            departure_rate_forecast_year_build_widget.value = 0
+
+    # Link the widgets to the update function
+    subcategory_dropdown.observe(update_departure_rate_forecast, names='value')
+    roadway_type_no_build_widget.observe(update_departure_rate_forecast, names='value')
+    general_traffic_lanes_no_build_widget.observe(update_departure_rate_forecast, names='value')
+    hov_hot_lanes_no_build_widget.observe(update_departure_rate_forecast, names='value')
+    
+    
+    # Combine both "No Build" and "Build" input fields into a horizontal layout
+    departure_rate_widgets = widgets.HBox([departure_rate_forecast_year_no_build_widget, departure_rate_forecast_year_build_widget])        
+    
+    # Pavement Condition IRI Base Year No Build widget (Year 1)
+    iri_base_year_no_build_widget = widgets.FloatText(
+        description="International Roughness Index (inches/mile) (No Build, Year 1):",
+        value=None,  # Initially empty
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+
+    # Pavement Condition IRI Base Year Build widget (Year 1)
+    iri_base_year_build_widget = widgets.FloatText(
+        description="International Roughness Index (inches/mile) (Build, Year 1):",
+        value=None,  # Initially empty
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    # Pavement Condition IRI Forecast Year No Build widget (Year 20)
+    iri_forecast_year_no_build_widget = widgets.FloatText(
+        description="International Roughness Index (inches/mile) (No Build, Year 20):",
+        value=None,  # Initially empty
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+
+    # Pavement Condition IRI Forecast Year Build widget (Year 20)
+    iri_forecast_year_build_widget = widgets.FloatText(
+        description="International Roughness Index (inches/mile) (Build, Year 20):",
+        value=None,  # Initially empty
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+
+    
+    # Function to update Pavement Condition IRI Forecast
+    def update_iri_forecast(change):
+        # Check if "Pavement" is selected from the subcategory dropdown
+        subcategory = subcategory_dropdown.value
+        if subcategory == "Pavement":
+            # Get the necessary values for No Build and Build
+            GenLanesNB = general_traffic_lanes_no_build_widget.value
+            HOVLanesNB = hov_hot_lanes_no_build_widget.value
+            IRINB = iri_base_year_no_build_widget.value  # IRI1NB is iri_base_year_no_build_widget
+            ADT1NB = adt_base_year_no_build_widget.value
+
+            GenLanesB = general_traffic_lanes_build_widget.value
+            HOVLanesB = hov_hot_lanes_build_widget.value
+            IRIB = iri_base_year_build_widget.value  # IRI1B is iri_base_year_build_widget
+            ADT1B = adt_base_year_build_widget.value
+
+            # Function to lookup the closest IRI value and return the corresponding forecast
+            def get_iri_forecast(iri_value, adt_value, gen_lanes, hov_lanes):
+                # Check for valid input values
+                if iri_value is None or adt_value is None or gen_lanes + hov_lanes == 0:
+                    return 0  # Return 0 if the inputs are invalid (IRI is None, or no lanes)
+
+                # Find the closest IRI key in the dictionary (assumes the keys are sorted)
+                iri_key = min(params.pave_det.keys(), key=lambda k: abs(k - iri_value))  # Find closest key
+
+                # Calculate the forecast based on ADT and the number of lanes
+                if adt_value / (gen_lanes + hov_lanes) < 2182:
+                    return params.pave_det[iri_key]["Year20Light"]
+                elif adt_value / (gen_lanes + hov_lanes) < 10909:
+                    return params.pave_det[iri_key]["Year20Medium"]
+                else:
+                    return params.pave_det[iri_key]["Year20Heavy"]
+
+            # Calculate the IRI forecast for No Build and Build
+            if GenLanesNB + HOVLanesNB > 0:  # Ensure there are lanes for No Build
+                iri_forecast_no_build = get_iri_forecast(IRINB, ADT1NB, GenLanesNB, HOVLanesNB)
+                iri_forecast_year_no_build_widget.value = iri_forecast_no_build
+            else:
+                iri_forecast_year_no_build_widget.value = 0  # Set to 0 if no lanes are provided
+
+            if GenLanesB + HOVLanesB > 0:  # Ensure there are lanes for Build
+                iri_forecast_build = get_iri_forecast(IRIB, ADT1B, GenLanesB, HOVLanesB)
+                iri_forecast_year_build_widget.value = iri_forecast_build
+            else:
+                iri_forecast_year_build_widget.value = 0  # Set to 0 if no lanes are provided
+        else:
+            # If Pavement is not selected, set both forecasts to 0 or leave them as is
+            iri_forecast_year_no_build_widget.value = 0
+            iri_forecast_year_build_widget.value = 0
+
+    # Link the subcategory dropdown to the update function (assuming it's a widget)
+    subcategory_dropdown.observe(update_iri_forecast, names='value')
+
+    # If you need to link other widgets (like ADT, IRI, or Lanes) to this function:
+    general_traffic_lanes_no_build_widget.observe(update_iri_forecast, names='value')
+    hov_hot_lanes_no_build_widget.observe(update_iri_forecast, names='value')
+    iri_base_year_no_build_widget.observe(update_iri_forecast, names='value')
+    adt_base_year_no_build_widget.observe(update_iri_forecast, names='value')
+
+    general_traffic_lanes_build_widget.observe(update_iri_forecast, names='value')
+    hov_hot_lanes_build_widget.observe(update_iri_forecast, names='value')
+    iri_base_year_build_widget.observe(update_iri_forecast, names='value')
+    adt_base_year_build_widget.observe(update_iri_forecast, names='value')
+
+    general_traffic_lanes_build_widget.observe(update_iri_forecast, names='value')
+    hov_hot_lanes_build_widget.observe(update_iri_forecast, names='value')
+    adt_base_year_build_widget.observe(update_iri_forecast, names='value')
+
+    
+    # Combine both "No Build" and "Build" input fields into a horizontal layout
+    iri_base_year_widgets = widgets.HBox([iri_base_year_no_build_widget, iri_base_year_build_widget])       
+    iri_forecast_year_widgets = widgets.HBox([iri_forecast_year_no_build_widget, iri_forecast_year_build_widget]) 
+    
+
+    
+    
     
 
     def create_section(title, widget_list):
@@ -862,10 +1032,36 @@ def create_widgets():
         hourly_ramp_volume_widget, metering_strategy_widget 
     ])
     
-    queue_formation_section = create_section("Queue Formation (if queuing or grade crossing project)",[arrival_rate_widgets])
+    queue_formation_section = create_section("Queue Formation (if queuing or grade crossing project)",[arrival_rate_widgets, departure_rate_widgets])
+    
+    pavement_condition_section = create_section("Pavement Condition (if pavement project)",[iri_base_year_widgets, iri_forecast_year_widgets])    
 
     # Stack all sections vertically
-    all_sections = widgets.VBox([project_info_section, highway_design_and_traffic_data_section, on_ramp_volume_section, queue_formation_section])
+    all_sections = widgets.VBox([project_info_section, highway_design_and_traffic_data_section, on_ramp_volume_section, queue_formation_section, pavement_condition_section])
 
+    # Function to update the visibility of sections based on subcategory selection
+    def update_visible_section(change):
+        subcategory = subcategory_dropdown.value
+
+        # Hide all sections that depend on subcategory value
+        pavement_condition_section.layout.display = 'none'
+        on_ramp_volume_section.layout.display = 'none'  # Hide on_ramp_volume_section initially
+        queue_formation_section.layout.display = 'none'
+
+        # Show sections based on the selected subcategory
+        if subcategory == "Pavement":
+            pavement_condition_section.layout.display = 'flex'  # Show Pavement Condition section
+        elif subcategory ==  "Hwy-Rail Grade Crossing" or subcategory == "Queuing":
+            queue_formation_section.layout.display = 'flex'
+        elif subcategory == "Auxiliary Lane" or subcategory == "On-Ramp Widening":
+            on_ramp_volume_section.layout.display = 'flex'  # Show On-Ramp Volume section
+
+    # Link the subcategory dropdown to the visibility update function
+    subcategory_dropdown.observe(update_visible_section, names='value')
+
+    # Initially, update the visible section based on the initial subcategory value
+    update_visible_section(None)  
+    
+    
     # Display the stacked sections
     display(all_sections)
