@@ -1,8 +1,20 @@
 import ipywidgets as widgets
 from ipywidgets import interactive
-from IPython.display import display
-from Parameter import parameters
+from IPython.display import display, Markdown
+from parameter import parameters
 params = parameters()
+
+from widgets_helper import (
+    project_info_title, project_info_subtitle, project_info_info,
+    highway_design_and_traffic_data_title, highway_design_and_traffic_data_subtitle, highway_design_and_traffic_data_info,
+    pavement_condition_title, pavement_condition_subtitle, pavement_condition_info,
+    avo_section_title, avo_section_subtitle, avo_section_info,
+    on_ramp_volume_title, on_ramp_volume_subtitle, on_ramp_volume_info,
+    queue_formation_title, queue_formation_subtitle, queue_formation_info,
+    statewide_avg_crash_title, statewide_avg_crash_subtitle, statewide_avg_crash_info 
+)
+
+from widgets_helper import info_button_popup, create_section
 
 # Define project types and subtypes
 ProjType = [
@@ -94,7 +106,7 @@ def create_widgets():
     
     # Create Length of Construction Period widget
     construct_widget = widgets.IntText(
-        value=1,  # Default value for the number of years is 1
+        value=None,  # Default value for the number of years is 1
         description="Construct (Years):",
         min=1,  # Minimum value of 1 year
         step=1,  # Step by 1 year
@@ -105,7 +117,7 @@ def create_widgets():
     
     one_two_way_widget = widgets.Dropdown(
         options=[('One-Way', 1), ('Two-Way', 2)],  # Dropdown options with values 1 and 2
-        value=1,  # Default value is One-Way (1)
+        value=2,  # Default value is One-Way (1)
         description='One- or Two-Way Data: ',  # Full descriptive label
         disabled=False,  # Allow the dropdown to be used
         layout=common_layout,  # Set width to allow the description to be more visible
@@ -260,11 +272,7 @@ def create_widgets():
     # Combine both "No Build" and "Build" input fields into a horizontal layout
     free_flow_speed_widgets = widgets.HBox([free_flow_speed_no_build_widget, free_flow_speed_build_widget])
     
-    def show_ramp_design_speed(subcategory):
-        if subcategory in ["Auxiliary Lane", "Off-Ramp Widening"]:
-            ramp_design_speed_widgets.layout.display = 'flex'  # Show the widgets
-        else:
-            ramp_design_speed_widgets.layout.display = 'none'  # Hide the widgets
+
 
     # Ramp Design Speed for No Build (initially 35 mph, can be changed)
     ramp_design_speed_no_build_widget = widgets.IntText(
@@ -296,11 +304,6 @@ def create_widgets():
     # Combine both "No Build" and "Build" input fields into a horizontal layout
     ramp_design_speed_widgets = widgets.HBox([ramp_design_speed_no_build_widget, ramp_design_speed_build_widget])
 
-    # Initially hide the Ramp Design Speed widgets
-    ramp_design_speed_widgets.layout.display = 'none'
-
-    # Display the Ramp Design Speed widgets only when appropriate
-    widgets.interactive(show_ramp_design_speed, subcategory=subcategory_dropdown)
     
     # Highway Segment No Build widget (initially empty)
     highway_segment_no_build_widget = widgets.FloatText(
@@ -501,6 +504,70 @@ def create_widgets():
     adt_20_widget = widgets.HBox([ADT_20NB_widget, adt_20_year_build_widget])
     
     # Define AVOHov widgets
+    AVO_traffic_NP_no_build_widget = widgets.FloatText(
+        description="General Traffic Non-Peak (No Build):",
+        value=1.30,
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )  
+    
+    AVO_traffic_NP_build_widget = widgets.FloatText(
+        description="General Traffic Non-Peak (Build):",
+        value=AVO_traffic_NP_no_build_widget.value,
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    ) 
+    
+    AVO_traffic_P_no_build_widget = widgets.FloatText(
+        description="General Traffic Peak (No Build):",
+        value=1.15,
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    AVO_traffic_P_build_widget = widgets.FloatText(
+        description="General Traffic Peak (Build):",
+        value=AVO_traffic_P_no_build_widget.value,
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )     
+    
+    def calculate_avo_traffic_peak_build(change=None):
+        # Get the current values from the widgets
+        HOV2to3_selected = (subcategory_dropdown.value == "HOV-2 to HOV-3 Conv")
+        AVOPeakNB = AVO_traffic_P_no_build_widget.value  # Average Traffic Peak (No Build)
+        ADT1NB = adt_base_year_no_build_widget.value  # Base Year ADT (No Build)
+        ADT20NB = ADT_20NB_widget.value  # 20 Year ADT (No Build)
+        PerPeakADT = params.per_peak_adt  # Per Peak ADT
+        PerTruckNB = percent_trucks_nobuild_widget.value  # Percent Trucks (No Build)
+        HOVvolNB = HOV_lane_nobuild_widget.value  # HOV Volume (No Build)
+        PeakLngthNB = peak_period_widget.value  # Peak Length (No Build)
+        ADT1B = adt_base_year_build_widget.value  # Base Year ADT (Build)
+        ADT20B = adt_20_year_build_widget.value  # 20 Year ADT (Build)
+        PerTruckB = percent_trucks_build_widget.value  # Percent Trucks (Build)
+        HOVvolB = HOV_lane_build_widget.value  # HOV Volume (Build)
+        
+        # Calculate Average Traffic Peak (Build) based on the formula
+        if HOV2to3_selected:  # If "HOV-2 to HOV-3 Conv" is selected
+            avo_traffic_peak_build = (
+                AVOPeakNB * (( (ADT1NB + ADT20NB) / 2 ) * (PerPeakADT * (1 - PerTruckNB)) - HOVvolNB * PeakLngthNB)
+                + 2 * (HOVvolNB - HOVvolB) * PeakLngthNB
+            ) / (( (ADT1B + ADT20B) / 2 ) * (PerPeakADT * (1 - PerTruckB)) - HOVvolB * PeakLngthNB)
+        else:  # If not "HOV-2 to HOV-3 Conv", use AVOPeakNB
+            avo_traffic_peak_build = AVOPeakNB
+
+        # Update AVO_traffic_P_build_widget with the calculated value
+        AVO_traffic_P_build_widget.value = avo_traffic_peak_build
+
+    # Link the function to the subcategory dropdown change
+    subcategory_dropdown.observe(calculate_avo_traffic_peak_build, names='value')
+    adt_base_year_no_build_widget.observe(calculate_avo_traffic_peak_build, names='value')  
+    ADT_20NB_widget.observe(calculate_avo_traffic_peak_build, names='value')  
+    
     AVOHovNB_widget = widgets.FloatText(
         description="High Occupancy Vehicle (if HOV/HOT lanes) (No Build):",
         value=2.15,  # Initially empty
@@ -518,7 +585,28 @@ def create_widgets():
         style={'description_width': 'initial'}
     )
     
-    AVO_HOV_widget = widgets.HBox([AVOHovNB_widget, AVOHovB_widget])
+    def calculate_avo_hov_build(change=None):
+        HOV2to3_selected = (subcategory_dropdown.value == "HOV-2 to HOV-3 Conv")
+        HOT_selected = (subcategory_dropdown.value == "HOT Lane Addition")
+        HOTConv_selected = (subcategory_dropdown.value == "HOT Lane Conversion")
+        AVOHovNB = AVOHovNB_widget.value  # Average Vehicle Occupancy HOV (No Build)
+        
+        #Calculate Average Vehicle Occupancy for High Occupancy Vehicle (Build) based on the formula 
+        if HOV2to3_selected: 
+            avo_hov_build = 3.15
+        elif HOT_selected or HOTConv_selected:
+            avo_hov_build = "0"  # Set to empty string if either HOT Lane Addition or HOT Lane Conversion is selected
+        else:
+            avo_hov_build = AVOHovNB  # Otherwise, use the value from AVOHovNB_widget
+            
+        AVOHovB_widget.value = avo_hov_build
+    
+    subcategory_dropdown.observe(calculate_avo_hov_build, names='value')  # Observe changes in subcategory
+        
+    AVO_GenTraffic_NonPeak_widgets = widgets.HBox([AVO_traffic_NP_no_build_widget, AVO_traffic_NP_build_widget])
+    AVO_GenTraffic_Peak_widgets = widgets.HBox([AVO_traffic_P_no_build_widget, AVO_traffic_P_build_widget])
+    AVO_HOV_widgets = widgets.HBox([AVOHovNB_widget, AVOHovB_widget])
+    
     
     # Define other widgets
     HOV_lane_nobuild_widget = widgets.IntText(
@@ -799,7 +887,7 @@ def create_widgets():
         if subcategory == "Hwy-Rail Grade Crossing":  # Check if subcategory is Hwy-Rail Grade Crossing
             arrival_rate_base_year_no_build = ADT1NB / 12  # Formula: ADT1NB / 12
         else:
-            arrival_rate_base_year_no_build = original_arrival_rate_no_build  # Keep the original value (No Build scenario)
+            arrival_rate_base_year_no_build = 0  # Keep the original value (No Build scenario)
 
         # Set the Arrival Rate Base Year Build value (no extra logic)
         if subcategory == "Queuing":  # Check if subcategory is Queuing
@@ -814,10 +902,11 @@ def create_widgets():
         arrival_rate_base_year_build_widget.value = arrival_rate_base_year_build
 
     # Link the widgets to the calculate function
+    subcategory_dropdown.observe(calculate_arrival_rate, names='value')
     arrival_rate_base_year_no_build_widget.observe(calculate_arrival_rate, names='value')
     ADT_20NB_widget.observe(calculate_arrival_rate, names='value')
     adt_base_year_no_build_widget.observe(calculate_arrival_rate, names='value')
-    subcategory_dropdown.observe(calculate_arrival_rate, names='value')
+
 
     # Combine both "No Build" and "Build" input fields into a horizontal layout
     arrival_rate_widgets = widgets.HBox([arrival_rate_base_year_no_build_widget, arrival_rate_base_year_build_widget])
@@ -1000,68 +1089,171 @@ def create_widgets():
     # Combine both "No Build" and "Build" input fields into a horizontal layout
     iri_base_year_widgets = widgets.HBox([iri_base_year_no_build_widget, iri_base_year_build_widget])       
     iri_forecast_year_widgets = widgets.HBox([iri_forecast_year_no_build_widget, iri_forecast_year_build_widget]) 
+
+    # Highway Crash Data 
+    # Statewide Average Crash Rate Build and No Build 
+    state_crash_rate_group_nobuild_widget = widgets.FloatText(
+        description="Rate Group (No Build):",
+        value=None,  # Initially empty
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    state_crash_rate_group_build_widget = widgets.FloatText(
+        description="Rate Group (Build):",
+        value=None,  # Initially empty
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    crash_rate_permvm_nobuild_widget = widgets.FloatText(
+        description="Crash Rate (per million vehicle-miles) (No Build):",
+        value=None,  # Initially empty
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    crash_rate_permvm_build_widget = widgets.FloatText(
+        description="Crash Rate (per million vehicle-miles) (Build):",
+        value=None,  # Initially empty
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+     
+    percent_fatal_crash_nobuild_widget = widgets.FloatText(
+        description="Percent Fatal Crashes (Pct Fat) (No Build):",
+        value=None,  # Initially empty
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )    
+    
+    percent_fatal_crash_build_widget = widgets.FloatText(
+        description="Percent Fatal Crashes (Pct Fat) (Build):",
+        value=None,  # Initially empty
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )   
+    
+    percent_injury_crash_nobuild_widget = widgets.FloatText(
+        description="Percent Injury Crashes (Pct Inj) (No Build):",
+        value=None,  # Initially empty
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )    
+    
+    percent_injury_crash_build_widget = widgets.FloatText(
+        description="Percent Injury Crashes (Pct Inj) (Build):",
+        value=None,  # Initially empty
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    ) 
+    
+    state_crash_rategroup_widgets = widgets.HBox([state_crash_rate_group_nobuild_widget, state_crash_rate_group_build_widget])
+    crash_rate_permvm_widgets =  widgets.HBox([crash_rate_permvm_nobuild_widget, crash_rate_permvm_build_widget])
+    fatal_crash_rate_widgets = widgets.HBox([percent_fatal_crash_nobuild_widget, percent_fatal_crash_build_widget])
+    injury_crash_rate_widgets = widgets.HBox([percent_injury_crash_nobuild_widget, percent_injury_crash_build_widget])
+
+    #Create Project Info Section
+    # Project Info Section
+    project_info_section = create_section(
+        project_info_title, 
+        project_info_subtitle, 
+        [projloc_widget, project_type_dropdown, subcategory_dropdown, construct_widget, one_two_way_widget, peak_period_widget],
+        project_info_info
+    )
+
+    # Highway Design and Traffic Data Section
+    highway_design_and_traffic_data_section = create_section(
+        highway_design_and_traffic_data_title,
+        highway_design_and_traffic_data_subtitle,
+        [
+            roadway_type_widgets, general_traffic_lanes_widgets, hov_hot_lanes_widgets, HOVRest_widget, 
+            Exclusive_widget, free_flow_speed_widgets, ramp_design_speed_widgets, highway_segment_widgets, 
+            impacted_length_widgets, ADT_current_widget, adt_base_widgets, adt_20_widget, hourly_hov_lane_traffic_widget, 
+            percent_induced_trip_widget, percent_traffic_weave_widgets, percent_trucks_widget, truck_speed_widget
+        ],
+        highway_design_and_traffic_data_info
+    )
+
+    # On-Ramp Volume Section
+    on_ramp_volume_section = create_section(
+        on_ramp_volume_title, 
+        on_ramp_volume_subtitle,
+        [hourly_ramp_volume_widget, metering_strategy_widget],
+        on_ramp_volume_info
+    )
+
+
+    # Queue Formation Section
+    queue_formation_section = create_section(
+        queue_formation_title, 
+        queue_formation_subtitle,
+        [arrival_rate_widgets, departure_rate_widgets],
+        queue_formation_info
+    )
+
+    # Pavement Condition Section
+    pavement_condition_section = create_section(
+        pavement_condition_title, 
+        pavement_condition_subtitle, 
+        [iri_base_year_widgets, iri_forecast_year_widgets],
+        pavement_condition_info
+    )
+    
+    # AVO Section
+    avo_section = create_section(
+        avo_section_title, 
+        avo_section_subtitle, 
+        [AVO_GenTraffic_NonPeak_widgets, AVO_GenTraffic_Peak_widgets, AVO_HOV_widgets ],
+        avo_section_info
+    )
     
 
-    
-    
-    
+    # Statewide Crash Rate Section
+    statewide_avg_crashrate_info_section = create_section(
+        statewide_avg_crash_title, 
+        statewide_avg_crash_subtitle, 
+        [state_crash_rategroup_widgets, crash_rate_permvm_widgets, fatal_crash_rate_widgets, injury_crash_rate_widgets],
+        statewide_avg_crash_info
+    )
 
-    def create_section(title, widget_list):
-        title_widget = widgets.HTML(value=f"<b style='color: darkblue;'>{title}</b>")
-
-        divider = widgets.HTML(value="<hr>")  # Divider between sections
-
-        # Combine title, divider, and widgets into a vertical box
-        section = widgets.VBox([title_widget, divider] + widget_list)
-        return section
-
-    # Corrected assignments
-    project_info_section = create_section("Project Data", [
-        projloc_widget, project_type_dropdown, subcategory_dropdown, construct_widget, 
-        one_two_way_widget, peak_period_widget
-    ])
-
-    highway_design_and_traffic_data_section = create_section("Highway Design and Traffic Data", [
-        roadway_type_widgets, general_traffic_lanes_widgets, hov_hot_lanes_widgets, HOVRest_widget, 
-        Exclusive_widget, free_flow_speed_widgets, ramp_design_speed_widgets, highway_segment_widgets, 
-        impacted_length_widgets, ADT_current_widget, adt_base_widgets, adt_20_widget, hourly_hov_lane_traffic_widget, 
-        percent_induced_trip_widget, percent_traffic_weave_widgets, percent_trucks_widget, truck_speed_widget, AVO_HOV_widget
-    ])
-
-    on_ramp_volume_section = create_section("On-Ramp Volume", [
-        hourly_ramp_volume_widget, metering_strategy_widget 
-    ])
-    
-    queue_formation_section = create_section("Queue Formation (if queuing or grade crossing project)",[arrival_rate_widgets, departure_rate_widgets])
-    
-    pavement_condition_section = create_section("Pavement Condition (if pavement project)",[iri_base_year_widgets, iri_forecast_year_widgets])    
 
     # Stack all sections vertically
-    all_sections = widgets.VBox([project_info_section, highway_design_and_traffic_data_section, on_ramp_volume_section, queue_formation_section, pavement_condition_section])
+    all_sections = widgets.VBox([project_info_section, highway_design_and_traffic_data_section, avo_section, on_ramp_volume_section, queue_formation_section, pavement_condition_section, statewide_avg_crashrate_info_section])
 
-    # Function to update the visibility of sections based on subcategory selection
-    def update_visible_section(change):
-        subcategory = subcategory_dropdown.value
 
-        # Hide all sections that depend on subcategory value
-        pavement_condition_section.layout.display = 'none'
-        on_ramp_volume_section.layout.display = 'none'  # Hide on_ramp_volume_section initially
-        queue_formation_section.layout.display = 'none'
+#     # Update the visibility of sections based on subcategory selection
+#     def update_visible_section(change):
+#         subcategory = subcategory_dropdown.value
 
-        # Show sections based on the selected subcategory
-        if subcategory == "Pavement":
-            pavement_condition_section.layout.display = 'flex'  # Show Pavement Condition section
-        elif subcategory ==  "Hwy-Rail Grade Crossing" or subcategory == "Queuing":
-            queue_formation_section.layout.display = 'flex'
-        elif subcategory == "Auxiliary Lane" or subcategory == "On-Ramp Widening":
-            on_ramp_volume_section.layout.display = 'flex'  # Show On-Ramp Volume section
+#         # Hide all sections that depend on subcategory value
+#         pavement_condition_section.layout.display = 'none'
+#         on_ramp_volume_section.layout.display = 'none'  # Hide on_ramp_volume_section initially
 
-    # Link the subcategory dropdown to the visibility update function
-    subcategory_dropdown.observe(update_visible_section, names='value')
 
-    # Initially, update the visible section based on the initial subcategory value
-    update_visible_section(None)  
+#         # Show sections based on the selected subcategory
+#         if subcategory == "Pavement":
+#             pavement_condition_section.layout.display = 'flex'  # Show Pavement Condition section
+#         elif subcategory == "Auxiliary Lane" or subcategory == "On-Ramp Widening":
+#             on_ramp_volume_section.layout.display = 'flex'  # Show On-Ramp Volume section
+
+
+#     # Link the subcategory dropdown to the visibility update function
+#     subcategory_dropdown.observe(update_visible_section, names='value')
+
+#     # Initially, update the visible section based on the initial subcategory value
+#     update_visible_section(None)  
     
     
     # Display the stacked sections
     display(all_sections)
+
+    
