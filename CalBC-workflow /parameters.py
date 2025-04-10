@@ -48,6 +48,13 @@ class parameters:
             "HOV Lanes": {"HOVAlpha": 0.55, "HOVBeta": 8, "HOVLaneCap": 1600, "departure_rate_vphpl": None}  # HOV has no departure rate
         }
         
+        self.roadway_capacity_non_HOV = {
+            "Non-HOV Lanes": {
+                "No Build": {"GenAlphaNB": 0.20, "GenBetaNB": 10, "GenLaneCapNB": 2000},
+                "Build": {"GenAlphaB": 0.20, "GenBetaB": 10, "GenLaneCapB": 2000}
+            }
+        }
+        
 
         # Active Transportation Parameters
         self.CycleDays = 365  # days  # Number of days cycling is done in a year
@@ -128,6 +135,51 @@ class parameters:
         self.TMSLookup = "NoAdj"
         self.UserAdjInputs = "False"
         
+        self.SpeedWeaveAdj = {
+            0.000: {"Freeway": 1.000, "HOV": 1.000},
+            0.002: {"Freeway": 0.982, "HOV": 0.988},
+            0.004: {"Freeway": 0.964, "HOV": 0.976},
+            0.006: {"Freeway": 0.945, "HOV": 0.964},
+            0.008: {"Freeway": 0.927, "HOV": 0.952},
+            0.010: {"Freeway": 0.909, "HOV": 0.939},
+            0.012: {"Freeway": 0.891, "HOV": 0.927},
+            0.014: {"Freeway": 0.873, "HOV": 0.915},
+            0.016: {"Freeway": 0.855, "HOV": 0.903},
+            0.018: {"Freeway": 0.836, "HOV": 0.891},
+            0.020: {"Freeway": 0.789, "HOV": 0.879},
+            0.022: {"Freeway": 0.747, "HOV": 0.867},
+            0.024: {"Freeway": 0.706, "HOV": 0.855},
+            0.026: {"Freeway": 0.664, "HOV": 0.842},
+            0.028: {"Freeway": 0.623, "HOV": 0.817},
+            0.030: {"Freeway": 0.581, "HOV": 0.789},
+            0.032: {"Freeway": 0.540, "HOV": 0.761},
+            0.034: {"Freeway": 0.498, "HOV": 0.734},
+            0.036: {"Freeway": 0.476, "HOV": 0.706},
+            0.038: {"Freeway": 0.473, "HOV": 0.678},
+            0.040: {"Freeway": 0.471, "HOV": 0.650},
+            0.042: {"Freeway": 0.468, "HOV": 0.623},
+            0.044: {"Freeway": 0.466, "HOV": 0.595},
+            0.046: {"Freeway": 0.463, "HOV": 0.567},
+            0.048: {"Freeway": 0.460, "HOV": 0.540},
+            0.050: {"Freeway": 0.458, "HOV": 0.512},
+            0.052: {"Freeway": 0.455, "HOV": 0.484},
+            0.054: {"Freeway": 0.453, "HOV": 0.476},
+            0.056: {"Freeway": 0.453, "HOV": 0.474},
+            0.058: {"Freeway": 0.453, "HOV": 0.473},
+            0.060: {"Freeway": 0.453, "HOV": 0.471},
+            0.062: {"Freeway": 0.453, "HOV": 0.469},
+            0.064: {"Freeway": 0.453, "HOV": 0.467},
+            0.066: {"Freeway": 0.453, "HOV": 0.466},
+            0.068: {"Freeway": 0.453, "HOV": 0.464},
+            0.070: {"Freeway": 0.453, "HOV": 0.462},
+            0.072: {"Freeway": 0.453, "HOV": 0.460},
+            0.074: {"Freeway": 0.453, "HOV": 0.459},
+            0.076: {"Freeway": 0.453, "HOV": 0.457},
+            0.078: {"Freeway": 0.453, "HOV": 0.455},
+            0.080: {"Freeway": 0.453, "HOV": 0.453}
+        }
+
+        
         #TMS Parameters
         self.tms_adj = {
             "AMoth": {"SpeedWithout": 1.02, "VolumeWithout": 0.95, "SpeedWith": 1.02, "VolumeWith": 0.95, "TT": -5.05, "VOC": 12.81, "Em": 1.37, "Benefit": 0.74},
@@ -141,4 +193,27 @@ class parameters:
             "RMsev": {"SpeedWithout": 1.00, "VolumeWithout": 1.00, "SpeedWith": 1.05, "VolumeWith": 0.97, "TT": 0.00, "VOC": 0.00, "Em": 5.67, "Benefit": 1.00},
             "TIoth": {"SpeedWithout": 1.00, "VolumeWithout": 1.00, "SpeedWith": 1.02, "VolumeWith": 0.97, "TT": -0.11, "VOC": -0.12, "Em": -0.35, "Benefit": 1.00},
             "TIsev": {"SpeedWithout": 1.00, "VolumeWithout": 1.00, "SpeedWith": 1.01, "VolumeWith": 0.97, "TT": -0.39, "VOC": -0.39, "Em": -0.35, "Benefit": 1.00},
+        }
+
+
+        self.SpeedPavAdj = {
+            0: {"Auto": 1.000, "Truck": 1.025},
+            25: {"Auto": 1.000, "Truck": 1.025},
+            50: {"Auto": 1.000, "Truck": 1.025},
+            75: {"Auto": 1.000, "Truck": 1.025},
+            100: {"Auto": 1.000, "Truck": 1.025},
+            125: {"Auto": 1.000, "Truck": 1.025},
+            150: {"Auto": 1.000, "Truck": 1.013},
+            175: {"Auto": 1.000, "Truck": 1.000},
+            200: {"Auto": 1.000, "Truck": 0.980},
+            225: {"Auto": 1.000, "Truck": 0.949},
+            250: {"Auto": 1.000, "Truck": 0.919},
+            275: {"Auto": 0.991, "Truck": 0.890},
+            300: {"Auto": 0.981, "Truck": 0.862},
+            325: {"Auto": 0.971, "Truck": 0.834},
+            350: {"Auto": 0.961, "Truck": 0.808},
+            375: {"Auto": 0.952, "Truck": 0.782},
+            400: {"Auto": 0.942, "Truck": 0.758},
+            425: {"Auto": 0.932, "Truck": 0.734},
+            450: {"Auto": 0.923, "Truck": 0.709}
         }

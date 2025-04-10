@@ -77,15 +77,20 @@ common_layout = widgets.Layout(
 
 # Function to create the widgets and display them in the notebook
 def create_project_info_widgets():
-    global projloc_widget, project_type_dropdown, subcategory_dropdown, construct_widget, one_two_way_widget, peak_period_widget, \
-           roadway_type_widgets, general_traffic_lanes_widgets, hov_hot_lanes_widgets, HOVRest_widget, Exclusive_widget, \
-           free_flow_speed_widgets, ramp_design_speed_widgets, highway_segment_widgets, impacted_length_widgets, ADT_current_widget, \
-           adt_base_widgets, adt_20_widget, hourly_hov_lane_traffic_widget, percent_induced_trip_widget, percent_traffic_weave_widgets, \
-           percent_trucks_widget, truck_speed_widget, hourly_ramp_volume_widget, metering_strategy_widget, arrival_rate_widgets, \
-           departure_rate_widgets, iri_base_year_widgets, iri_forecast_year_widgets, AVO_GenTraffic_NonPeak_widgets, \
-           AVO_GenTraffic_Peak_widgets, AVO_HOV_widgets, actual_3_year_totalcrash_widgets, actual_3_year_fatalcrash_widgets, \
-           actual_3_year_injurycrash_widgets, actual_3_year_pdocrash_widgets, state_crash_rategroup_widgets, \
-           crash_rate_permvm_widgets, fatal_crash_rate_widgets, injury_crash_rate_widgets, HOV_lane_nobuild_widget, percent_traffic_weave_no_build_widget
+    global projloc_widget, project_type_dropdown, subcategory_dropdown, construct_widget, one_two_way_widget, peak_period_widget, roadway_type_no_build_widget, roadway_type_build_widget, \
+        general_traffic_lanes_no_build_widget, general_traffic_lanes_build_widget, hov_hot_lanes_no_build_widget, hov_hot_lanes_build_widget, HOVRest_widget, Exclusive, free_flow_speed_no_build_widget, \
+        free_flow_speed_build_widget, ramp_design_speed_no_build_widget, ramp_design_speed_build_widget, highway_segment_no_build_widget, highway_segment_build_widget, \
+        impacted_length_no_build_widget, impacted_length_build_widget, ADT_current_widget, adt_base_year_no_build_widget, adt_base_year_build_widget, ADT_20NB_widget, adt_20_year_build_widget, \
+        AVO_traffic_NP_no_build_widget, AVO_traffic_NP_build_widget, AVO_traffic_P_no_build_widget, AVO_traffic_P_build_widget, AVOHovNB_widget, AVOHovB_widget, \
+        HOV_lane_nobuild_widget, HOV_lane_build_widget, percent_traffic_weave_no_build_widget, percent_traffic_weave_build_widget, percent_induced_trip_widget, percent_trucks_nobuild_widget, \
+        percent_trucks_build_widget, truck_speed_widget, hourly_ramp_volume_peak_widget, hourly_ramp_volume_nonpeak_widget, metering_strategy_widget, arrival_rate_base_year_no_build_widget, \
+        arrival_rate_base_year_build_widget, departure_rate_forecast_year_no_build_widget, departure_rate_forecast_year_build_widget, iri_base_year_no_build_widget, \
+        iri_base_year_build_widget, iri_forecast_year_no_build_widget, iri_forecast_year_build_widget, actual_3_year_totalcrash_count_widget, \
+        actual_3_year_totalcrash_rate_widget, actual_3_year_fatalcrash_count_widget, actual_3_year_fatalcrash_rate_widget, actual_3_year_injurycrash_count_widget, \
+        actual_3_year_injurycrash_rate_widget, actual_3_year_pdocrash_count_widget, actual_3_year_pdocrash_rate_widget, state_crash_rate_group_nobuild_widget, \
+        state_crash_rate_group_build_widget, crash_rate_permvm_nobuild_widget, crash_rate_permvm_build_widget, percent_fatal_crash_nobuild_widget, \
+        percent_fatal_crash_build_widget, percent_injury_crash_nobuild_widget, percent_injury_crash_build_widget
+
 
     
     # Create Project Location widget
@@ -804,16 +809,16 @@ def create_project_info_widgets():
         style={'description_width': 'initial'}
     )
 
-    hourly_ramp_volume_nobuild_widget = widgets.IntText(
-        description="Hourly Ramp Volume (No Build):",
+    hourly_ramp_volume_peak_widget = widgets.IntText(
+        description="Hourly Ramp Volume (Peak):",
         value=0,  # Default value set to 0
         disabled=False,
         layout=common_layout,
         style={'description_width': 'initial'}
     )
 
-    hourly_ramp_volume_build_widget = widgets.FloatText(
-        description="Hourly Ramp Volume (Build):",
+    hourly_ramp_volume_nonpeak_widget = widgets.FloatText(
+        description="Hourly Ramp Volume (Non Peak):",
         disabled=False,
         layout=common_layout,
         style={'description_width': 'initial'}
@@ -826,14 +831,14 @@ def create_project_info_widgets():
 
         # Calculate Hourly Ramp Volume (No Build) based on the selected subcategory
         if AuxLaneSelected:
-            hourly_ramp_volume_nobuild_widget.value = 1350
+            hourly_ramp_volume_peak_widget.value = 1350
         elif OnRampSelected:
-            hourly_ramp_volume_nobuild_widget.value = 800
+            hourly_ramp_volume_peak_widget.value = 800
         else:
-            hourly_ramp_volume_nobuild_widget.value = 0  # Default value when no matching subcategory is selected
+            hourly_ramp_volume_peak_widget.value = 0  # Default value when no matching subcategory is selected
 
         # Get the required values from the class instance (params)
-        RampVolP = hourly_ramp_volume_nobuild_widget.value  # Ramp Volume from the No Build widget
+        RampVolP = hourly_ramp_volume_peak_widget.value  # Ramp Volume from the No Build widget
         PerPeakAvgHr = params.per_peak_avg_hr  # Per Peak Average Hourly Traffic (from the params instance)
         PerPeakADT = params.per_peak_adt  # Per Peak ADT (from the params instance)
         PeakLngthNB = peak_period_widget.value  # Peak Length (No Build scenario) from the peak_period_widget
@@ -842,16 +847,16 @@ def create_project_info_widgets():
         # Always calculate the Build volume regardless of RampVolP
         build_value = (RampVolP / PerPeakAvgHr) * (1 - PerPeakADT) / (24 - PeakLngthNB)
         
-        hourly_ramp_volume_build_widget.value = round(build_value, 0)
+        hourly_ramp_volume_nonpeak_widget.value = round(build_value, 0)
 
     # Link the widgets to trigger the calculation
     subcategory_dropdown.observe(calculate_ramp_volume, names='value')  # Observe changes in subcategory dropdown
     peak_period_widget.observe(calculate_ramp_volume, names='value')  # Observe changes in Peak Length (No Build)
-    hourly_ramp_volume_nobuild_widget.observe(calculate_ramp_volume, names='value')
+    hourly_ramp_volume_peak_widget.observe(calculate_ramp_volume, names='value')
     
 
     # Define the layout for the widgets (assuming common_layout is defined elsewhere)
-    hourly_ramp_volume_widget = widgets.HBox([hourly_ramp_volume_nobuild_widget, hourly_ramp_volume_build_widget])
+    hourly_ramp_volume_widget = widgets.HBox([hourly_ramp_volume_peak_widget, hourly_ramp_volume_nonpeak_widget])
     
 
     # Define the Metering Strategy widget
@@ -870,7 +875,7 @@ def create_project_info_widgets():
 
     # Arrival Rate Base Year No Build widget (Year 1)
     arrival_rate_base_year_no_build_widget = widgets.FloatText(
-        description="Arrival Rate Base Year (No Build, Year 1):",
+        description="Arrival Rate Base Year (Year 1):",
         value=0,  # Initially empty
         disabled=False,  # Allow user to enter values
         style={'description_width': 'initial'},
@@ -879,7 +884,7 @@ def create_project_info_widgets():
 
     # Arrival Rate Base Year Build widget (calculated)
     arrival_rate_base_year_build_widget = widgets.FloatText(
-        description="Arrival Rate Base Year (Build):",
+        description="Arrival Rate Base Year (Year 20):",
         value=0,  # Initially empty
         disabled=False,  # Allow user to enter values
         style={'description_width': 'initial'},
@@ -927,7 +932,7 @@ def create_project_info_widgets():
     
     # Departure Rate Forecast No Build widget (Year 20)
     departure_rate_forecast_year_no_build_widget = widgets.FloatText(
-        description="Departure Rate Forecast Year (No Build, Year 20):",
+        description="Departure Rate Forecast Year ( Year 1):",
         value=None,  # Initially empty
         disabled=False,  # Allow user to enter values
         style={'description_width': 'initial'},
@@ -936,7 +941,7 @@ def create_project_info_widgets():
 
     # Departure Rate Year 20 Build widget (calculated)
     departure_rate_forecast_year_build_widget = widgets.FloatText(
-        description="Departure Rate Forecast Year (Build, Year 20):",
+        description="Departure Rate Forecast Year (Year 20):",
         value=None,  # Initially empty
         disabled=False,  # Allow user to enter values
         style={'description_width': 'initial'},
