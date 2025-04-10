@@ -125,4 +125,20 @@ class parameters:
         self.per_peak_avg_hr = 0.081 
         self.per_peak_adt = 0.403 
 
-    
+        self.TMSLookup = "NoAdj"
+        self.UserAdjInputs = "False"
+        
+        #TMS Parameters
+        self.tms_adj = {
+            "AMoth": {"SpeedWithout": 1.02, "VolumeWithout": 0.95, "SpeedWith": 1.02, "VolumeWith": 0.95, "TT": -5.05, "VOC": 12.81, "Em": 1.37, "Benefit": 0.74},
+            "AMsev": {"SpeedWithout": 1.53, "VolumeWithout": 0.94, "SpeedWith": 1.53, "VolumeWith": 0.94, "TT": 1.21, "VOC": 1.38, "Em": -0.37, "Benefit": 1.00},
+            "IMoth": {"SpeedWithout": 0.88, "VolumeWithout": 1.18, "SpeedWith": 0.98, "VolumeWith": 0.96, "TT": 0.51, "VOC": 0.15, "Em": 0.06, "Benefit": 0.74},
+            "IMsev": {"SpeedWithout": 1.01, "VolumeWithout": 0.97, "SpeedWith": 1.01, "VolumeWith": 0.95, "TT": 0.30, "VOC": 0.31, "Em": 0.30, "Benefit": 1.00},
+            "NoAdj": {"SpeedWithout": 1.00, "VolumeWithout": 1.00, "SpeedWith": 1.00, "VolumeWith": 1.00, "TT": 0.00, "VOC": 0.00, "Em": 0.00, "Benefit": 1.00},
+            "ORoth": {"SpeedWithout": 0.98, "VolumeWithout": 1.03, "SpeedWith": 1.00, "VolumeWith": 1.00, "TT": -0.07, "VOC": -0.03, "Em": -0.07, "Benefit": 0.00},
+            "ORsev": {"SpeedWithout": 0.95, "VolumeWithout": 1.03, "SpeedWith": 1.00, "VolumeWith": 1.00, "TT": 0.00, "VOC": 0.00, "Em": 5.67, "Benefit": 0.00},
+            "RMoth": {"SpeedWithout": 1.00, "VolumeWithout": 1.00, "SpeedWith": 1.03, "VolumeWith": 0.97, "TT": -0.07, "VOC": -0.03, "Em": -0.07, "Benefit": 1.00},
+            "RMsev": {"SpeedWithout": 1.00, "VolumeWithout": 1.00, "SpeedWith": 1.05, "VolumeWith": 0.97, "TT": 0.00, "VOC": 0.00, "Em": 5.67, "Benefit": 1.00},
+            "TIoth": {"SpeedWithout": 1.00, "VolumeWithout": 1.00, "SpeedWith": 1.02, "VolumeWith": 0.97, "TT": -0.11, "VOC": -0.12, "Em": -0.35, "Benefit": 1.00},
+            "TIsev": {"SpeedWithout": 1.00, "VolumeWithout": 1.00, "SpeedWith": 1.01, "VolumeWith": 0.97, "TT": -0.39, "VOC": -0.39, "Em": -0.35, "Benefit": 1.00},
+        }
