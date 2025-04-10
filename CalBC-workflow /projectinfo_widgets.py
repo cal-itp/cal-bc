@@ -1,7 +1,8 @@
 import ipywidgets as widgets
+from ipywidgets import Widget
 from ipywidgets import interactive
 from IPython.display import display, Markdown
-from parameter import parameters
+from parameters import parameters
 params = parameters()
 
 from widgets_helper import (
@@ -11,7 +12,8 @@ from widgets_helper import (
     avo_section_title, avo_section_subtitle, avo_section_info,
     on_ramp_volume_title, on_ramp_volume_subtitle, on_ramp_volume_info,
     queue_formation_title, queue_formation_subtitle, queue_formation_info,
-    statewide_avg_crash_title, statewide_avg_crash_subtitle, statewide_avg_crash_info 
+    actual_3years_crash_title, actual_3years_crash_subtitle, actual_3years_crash_info,
+    statewide_avg_crash_title, statewide_avg_crash_subtitle, statewide_avg_crash_info
 )
 
 from widgets_helper import info_button_popup, create_section
@@ -58,10 +60,13 @@ def update_subcategory(ProjType):
 
 # Function to get user inputs and prepare them for export
 def get_inputs():
-    ProjLoc_value = projloc_widget.value
-    ProjType_value = project_type_dropdown.value
-    subcategory_value = subcategory_dropdown.value
-    return ProjLoc_value, ProjType_value, subcategory_value
+    widget_values = {}
+    for widget_name, widget in globals().items():
+        if isinstance(widget, Widget):  # Check if it's a widget
+            if hasattr(widget, 'value'):  # Check if the widget has the 'value' attribute
+                widget_values[widget_name] = widget.value
+    return widget_values
+
 
 common_layout = widgets.Layout(
     width='500px', 
@@ -71,8 +76,17 @@ common_layout = widgets.Layout(
 )
 
 # Function to create the widgets and display them in the notebook
-def create_widgets():
-    global project_type_dropdown, subcategory_dropdown, projloc_widget
+def create_project_info_widgets():
+    global projloc_widget, project_type_dropdown, subcategory_dropdown, construct_widget, one_two_way_widget, peak_period_widget, \
+           roadway_type_widgets, general_traffic_lanes_widgets, hov_hot_lanes_widgets, HOVRest_widget, Exclusive_widget, \
+           free_flow_speed_widgets, ramp_design_speed_widgets, highway_segment_widgets, impacted_length_widgets, ADT_current_widget, \
+           adt_base_widgets, adt_20_widget, hourly_hov_lane_traffic_widget, percent_induced_trip_widget, percent_traffic_weave_widgets, \
+           percent_trucks_widget, truck_speed_widget, hourly_ramp_volume_widget, metering_strategy_widget, arrival_rate_widgets, \
+           departure_rate_widgets, iri_base_year_widgets, iri_forecast_year_widgets, AVO_GenTraffic_NonPeak_widgets, \
+           AVO_GenTraffic_Peak_widgets, AVO_HOV_widgets, actual_3_year_totalcrash_widgets, actual_3_year_fatalcrash_widgets, \
+           actual_3_year_injurycrash_widgets, actual_3_year_pdocrash_widgets, state_crash_rategroup_widgets, \
+           crash_rate_permvm_widgets, fatal_crash_rate_widgets, injury_crash_rate_widgets, HOV_lane_nobuild_widget, percent_traffic_weave_no_build_widget
+
     
     # Create Project Location widget
     projloc_widget = widgets.Dropdown(
@@ -99,17 +113,16 @@ def create_widgets():
         style={'description_width': 'initial'}  # Ensures description text doesn't get cut off
     )
     
-    
 
     # Link project type dropdown to update subcategory dropdown
     widgets.interactive(update_subcategory, ProjType=project_type_dropdown)
     
     # Create Length of Construction Period widget
     construct_widget = widgets.IntText(
-        value=None,  # Default value for the number of years is 1
+        value=None,  
         description="Construct (Years):",
-        min=1,  # Minimum value of 1 year
-        step=1,  # Step by 1 year
+        min=1,  
+        step=1,  
         disabled=False,
         layout=common_layout,  # Set width to allow the description to be more visible
         style={'description_width': 'initial'}  # Ensures description text doesn't get cut off
@@ -1090,7 +1103,80 @@ def create_widgets():
     iri_base_year_widgets = widgets.HBox([iri_base_year_no_build_widget, iri_base_year_build_widget])       
     iri_forecast_year_widgets = widgets.HBox([iri_forecast_year_no_build_widget, iri_forecast_year_build_widget]) 
 
+    
     # Highway Crash Data 
+    # Actual 3-year Crash Data
+    actual_3_year_totalcrash_count_widget = widgets.FloatText(
+        description="Total Accidents/Crashes Count (No):",
+        value=None,  # Initially empty
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )    
+    
+    actual_3_year_totalcrash_rate_widget = widgets.FloatText(
+        description="Total Accidents/Crashes Rate:",
+        value=None,  # Initially empty
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+
+    actual_3_year_fatalcrash_count_widget = widgets.FloatText(
+        description="Fatal Accidents/Crashes Count (No):",
+        value=None,  # Initially empty
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )    
+    
+    actual_3_year_fatalcrash_rate_widget = widgets.FloatText(
+        description="Fatal Accidents/Crashes Rate:",
+        value=None,  # Initially empty
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )    
+    
+    actual_3_year_injurycrash_count_widget = widgets.FloatText(
+        description="Injury Accidents/Crashes Count (No):",
+        value=None,  # Initially empty
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )    
+    
+    actual_3_year_injurycrash_rate_widget = widgets.FloatText(
+        description="Injury Accidents/Crashes Rate:",
+        value=None,  # Initially empty
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+
+    actual_3_year_pdocrash_count_widget = widgets.FloatText(
+        description="PDO Accidents/Crashes Count (No):",
+        value=None,  # Initially empty
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )    
+    
+    actual_3_year_pdocrash_rate_widget = widgets.FloatText(
+        description="PDO Accidents/Crashes Rate:",
+        value=None,  # Initially empty
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )    
+    
+    actual_3_year_totalcrash_widgets = widgets.HBox([actual_3_year_totalcrash_count_widget, actual_3_year_totalcrash_rate_widget])
+    actual_3_year_fatalcrash_widgets =  widgets.HBox([actual_3_year_fatalcrash_count_widget, actual_3_year_fatalcrash_rate_widget])
+    actual_3_year_injurycrash_widgets = widgets.HBox([actual_3_year_injurycrash_count_widget, actual_3_year_injurycrash_rate_widget])
+    actual_3_year_pdocrash_widgets = widgets.HBox([actual_3_year_pdocrash_count_widget, actual_3_year_pdocrash_rate_widget])
+    
+    
+    
     # Statewide Average Crash Rate Build and No Build 
     state_crash_rate_group_nobuild_widget = widgets.FloatText(
         description="Rate Group (No Build):",
@@ -1160,6 +1246,8 @@ def create_widgets():
     crash_rate_permvm_widgets =  widgets.HBox([crash_rate_permvm_nobuild_widget, crash_rate_permvm_build_widget])
     fatal_crash_rate_widgets = widgets.HBox([percent_fatal_crash_nobuild_widget, percent_fatal_crash_build_widget])
     injury_crash_rate_widgets = widgets.HBox([percent_injury_crash_nobuild_widget, percent_injury_crash_build_widget])
+    
+      
 
     #Create Project Info Section
     # Project Info Section
@@ -1216,7 +1304,14 @@ def create_widgets():
         avo_section_info
     )
     
-
+    #Actual 3 Years Crash Data Section 
+    actual_3years_crash_data_section = create_section(
+        actual_3years_crash_title, 
+        actual_3years_crash_subtitle, 
+        [actual_3_year_totalcrash_widgets, actual_3_year_fatalcrash_widgets, actual_3_year_injurycrash_widgets, actual_3_year_pdocrash_widgets],
+        actual_3years_crash_info
+    )
+    
     # Statewide Crash Rate Section
     statewide_avg_crashrate_info_section = create_section(
         statewide_avg_crash_title, 
@@ -1224,10 +1319,13 @@ def create_widgets():
         [state_crash_rategroup_widgets, crash_rate_permvm_widgets, fatal_crash_rate_widgets, injury_crash_rate_widgets],
         statewide_avg_crash_info
     )
+    
 
+
+    
 
     # Stack all sections vertically
-    all_sections = widgets.VBox([project_info_section, highway_design_and_traffic_data_section, avo_section, on_ramp_volume_section, queue_formation_section, pavement_condition_section, statewide_avg_crashrate_info_section])
+    all_sections = widgets.VBox([project_info_section, highway_design_and_traffic_data_section, avo_section, on_ramp_volume_section, queue_formation_section, pavement_condition_section, actual_3years_crash_data_section, statewide_avg_crashrate_info_section])
 
 
 #     # Update the visibility of sections based on subcategory selection
@@ -1256,4 +1354,4 @@ def create_widgets():
     # Display the stacked sections
     display(all_sections)
 
-    
+

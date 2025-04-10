@@ -46,7 +46,7 @@ def create_section(title, subtitle, widget_list, widget_info_list):
     # Create the section as a VBox and add spacing between items
     entire_section = widgets.VBox(section, layout=widgets.Layout(margin="5px 0"))  # Adds margin between sections
 
-    # Return the entire section wrapped in a larger container (another VBox for layout if needed)
+    # Return the entire section wrapped in a larger container
     return widgets.VBox([entire_section], layout=widgets.Layout(margin="10px 0"))  # Adds margin between sections
 
 
@@ -117,6 +117,13 @@ avo_section_info = ["AVO General Traffic Non-Peak Build and No Build",
                     "AVO General Traffic Non-Peak Build and Build",
     "High Occupancy Vehicle  (if HOV/HOT lanes)"]
 
+
+# Actual Crash Data Section
+actual_3years_crash_title = "Actual Crash Data"
+actual_3years_crash_subtitle = "For Highway Rail Grade Crossing projects, enter 10-year accident data from FRA WBAPS in fatal and injury rows and collision prediction in total accident row,  else add Actual 3-year Crash Data"
+actual_3years_crash_info = ["Total Accidents for Highway Rail Grade Crossing project or Total Crashes for other projects", "Fatal Accidents for Highway Rail Grade Crossing project or Fatal Crashes for other projects", "Injury Accidents for Highway Rail Grade Crossing project or Injury Crashes for other projects", "PDO Accidents for Highway Rail Grade Crossing project or PDO Crashes for other projects" ]
+
+
 # Statewide Average Crash Rate Section
 statewide_avg_crash_title = "Statewide Basic Average Crash Rate"
 statewide_avg_crash_subtitle = "The model uses adjustment factors (the ratio of actual rates to statewide rates for existing facility) to estimate crash rates by crash type for the new road classification. Additional adjustments (crash savings) are made for highway TMS projects. Results are presented in the Model Inputs worksheet and can be changed by the user."
@@ -124,3 +131,8 @@ statewide_avg_crash_info = ["Include Base Rate if applicable",
                     "Insert statewide average crash rates per million vehicle-miles (or million vehicles, as appropriate) for build and no build highway rate groups. ",
     "Insert statewide % of fatal crashes for road classifications similar to build and no build facilities.",
                            "Insert statewide % of injury crashes for road classifications similar to build and no build facilities."]
+
+
+highway_speed_and_volume_input_title = "Highway Speed and Volume Inputs (Peak Period)"
+highway_speed_and_volume_input_subtitle = "This section allows user to review detailed speed and volume data estimated by the model. These values are estimated from the inputs provided in the earlier",
+highway_speed_and_volume_input_info = ["Change only if detailed data are available from a travel demand or micro-simulation model. User may enter HOV volume data for the highway to override model calculations. "]
