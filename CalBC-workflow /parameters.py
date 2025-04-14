@@ -217,3 +217,9 @@ class parameters:
             425: {"Auto": 0.932, "Truck": 0.734},
             450: {"Auto": 0.923, "Truck": 0.709}
         }
+        
+        self.transit_savings = {
+            "Transit Vehicle Location (AVL)": {"AVLTTsaving": 0.15, "AVLCapSaving": 0.02, "AvlOMsaving": 0.08},
+            "Transit Vehicle Signal Priority": {"SigTTsaving": 0.10},
+            "Bus Rapid Transit (BRT)": {"BrtTTsaving": 0.29},
+        }

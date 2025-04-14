@@ -13,7 +13,8 @@ from widgets_helper import (
     on_ramp_volume_title, on_ramp_volume_subtitle, on_ramp_volume_info,
     queue_formation_title, queue_formation_subtitle, queue_formation_info,
     actual_3years_crash_title, actual_3years_crash_subtitle, actual_3years_crash_info,
-    statewide_avg_crash_title, statewide_avg_crash_subtitle, statewide_avg_crash_info
+    statewide_avg_crash_title, statewide_avg_crash_subtitle, statewide_avg_crash_info,
+    rail_and_transit_data_title, rail_and_transit_data_subtitle, rail_and_transit_data_info
 )
 
 from widgets_helper import info_button_popup, create_section
@@ -78,7 +79,7 @@ common_layout = widgets.Layout(
 # Function to create the widgets and display them in the notebook
 def create_project_info_widgets():
     global projloc_widget, project_type_dropdown, subcategory_dropdown, construct_widget, one_two_way_widget, peak_period_widget, roadway_type_no_build_widget, roadway_type_build_widget, \
-        general_traffic_lanes_no_build_widget, general_traffic_lanes_build_widget, hov_hot_lanes_no_build_widget, hov_hot_lanes_build_widget, HOVRest_widget, Exclusive, free_flow_speed_no_build_widget, \
+        general_traffic_lanes_no_build_widget, general_traffic_lanes_build_widget, hov_hot_lanes_no_build_widget, hov_hot_lanes_build_widget, HOVRest_widget, Exclusive_widget, free_flow_speed_no_build_widget, \
         free_flow_speed_build_widget, ramp_design_speed_no_build_widget, ramp_design_speed_build_widget, highway_segment_no_build_widget, highway_segment_build_widget, \
         impacted_length_no_build_widget, impacted_length_build_widget, ADT_current_widget, adt_base_year_no_build_widget, adt_base_year_build_widget, ADT_20NB_widget, adt_20_year_build_widget, \
         AVO_traffic_NP_no_build_widget, AVO_traffic_NP_build_widget, AVO_traffic_P_no_build_widget, AVO_traffic_P_build_widget, AVOHovNB_widget, AVOHovB_widget, \
@@ -1183,65 +1184,65 @@ def create_project_info_widgets():
     
     
     # Statewide Average Crash Rate Build and No Build 
-    state_crash_rate_group_nobuild_widget = widgets.FloatText(
+    state_crash_rate_group_nobuild_widget = widgets.Text(
         description="Rate Group (No Build):",
-        value=None,  # Initially empty
+        value='',  # Initially empty
         disabled=False,  # Allow user to enter values
         style={'description_width': 'initial'},
         layout=common_layout
     )
     
-    state_crash_rate_group_build_widget = widgets.FloatText(
+    state_crash_rate_group_build_widget = widgets.Text(
         description="Rate Group (Build):",
-        value=None,  # Initially empty
+        value='',  # Initially empty
         disabled=False,  # Allow user to enter values
         style={'description_width': 'initial'},
         layout=common_layout
     )
     
-    crash_rate_permvm_nobuild_widget = widgets.FloatText(
+    crash_rate_permvm_nobuild_widget = widgets.Text(
         description="Crash Rate (per million vehicle-miles) (No Build):",
-        value=None,  # Initially empty
+        value='',  # Initially empty
         disabled=False,  # Allow user to enter values
         style={'description_width': 'initial'},
         layout=common_layout
     )
     
-    crash_rate_permvm_build_widget = widgets.FloatText(
+    crash_rate_permvm_build_widget = widgets.Text(
         description="Crash Rate (per million vehicle-miles) (Build):",
-        value=None,  # Initially empty
+        value='',  # Initially empty
         disabled=False,  # Allow user to enter values
         style={'description_width': 'initial'},
         layout=common_layout
     )
      
-    percent_fatal_crash_nobuild_widget = widgets.FloatText(
+    percent_fatal_crash_nobuild_widget = widgets.Text(
         description="Percent Fatal Crashes (Pct Fat) (No Build):",
-        value=None,  # Initially empty
+        value='',  # Initially empty
         disabled=False,  # Allow user to enter values
         style={'description_width': 'initial'},
         layout=common_layout
     )    
     
-    percent_fatal_crash_build_widget = widgets.FloatText(
+    percent_fatal_crash_build_widget = widgets.Text(
         description="Percent Fatal Crashes (Pct Fat) (Build):",
-        value=None,  # Initially empty
+        value='',  # Initially empty
         disabled=False,  # Allow user to enter values
         style={'description_width': 'initial'},
         layout=common_layout
     )   
     
-    percent_injury_crash_nobuild_widget = widgets.FloatText(
+    percent_injury_crash_nobuild_widget = widgets.Text(
         description="Percent Injury Crashes (Pct Inj) (No Build):",
-        value=None,  # Initially empty
+        value='',  # Initially empty
         disabled=False,  # Allow user to enter values
         style={'description_width': 'initial'},
         layout=common_layout
     )    
     
-    percent_injury_crash_build_widget = widgets.FloatText(
+    percent_injury_crash_build_widget = widgets.Text(
         description="Percent Injury Crashes (Pct Inj) (Build):",
-        value=None,  # Initially empty
+        value='',  # Initially empty
         disabled=False,  # Allow user to enter values
         style={'description_width': 'initial'},
         layout=common_layout
@@ -1252,7 +1253,490 @@ def create_project_info_widgets():
     fatal_crash_rate_widgets = widgets.HBox([percent_fatal_crash_nobuild_widget, percent_fatal_crash_build_widget])
     injury_crash_rate_widgets = widgets.HBox([percent_injury_crash_nobuild_widget, percent_injury_crash_build_widget])
     
-      
+    #Rail and Transit Data 
+    # Annual Person Trips Data 
+    TAPT1NB_widget = widgets.Text(
+        description="Annual Person Trips Base Year, Year 1, (No Build):",
+        value='',  # Initially empty
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    TAPT1B_widget = widgets.Text(
+        description="Annual Person Trips Base Year, Year 1, (Build):",
+        value='',  # Initially empty
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    TAPT20NB_widget = widgets.Text(
+        description="Annual Person Trips Forecast Year, Year 20, (No Build):",
+        value='',  # Initially empty
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    TAPT20B_widget = widgets.Text(
+        description="Annual Person Trips Forecast Year, Year 20, (Build):",
+        value='',  # Initially empty
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    annual_persontrips_year1_widgets = widgets.HBox([TAPT1NB_widget, TAPT1B_widget])
+    annual_persontrips_year20_widgets = widgets.HBox([TAPT20NB_widget, TAPT20B_widget])
+    
+    
+    TPerPeak_widget = widgets.FloatText(
+        description="Percent Trips during Peak Period:",
+        value=params.per_peak_adt,  # Initialize with 0
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    TPerHwy_widget = widgets.FloatText(
+        description="Percent New Trips from Parallel Highway:",
+        value=1,  # 100%
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    TVehMi1NB_widget = widgets.Text(
+        description="Annual Vehicle Miles Base Year, Year 1 (No Build):",
+        value='',  # Initialize with 0
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    TVehMi1B_widget = widgets.Text(
+        description="Annual Vehicle Miles Base Year, Year 1 (Build):",
+        value='',  
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    TVehMi20NB_widget = widgets.Text(
+        description="Annual Vehicle Miles Forecast Year, Year 20 (No Build):",
+        value='',  # Initialize with 0
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    TVehMi20B_widget = widgets.Text(
+        description="Annual Vehicle Miles Forecast Year, Year 20 (Build):",
+        value='', 
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    annual_vehmiles_year1_widgets = widgets.HBox([TVehMi1NB_widget, TVehMi1B_widget])
+    annual_vehmiles_year20_widgets = widgets.HBox([TVehMi20NB_widget, TVehMi20B_widget])
+    
+    TVehPerTrainNB_widget = widgets.Text(
+        description="Average Vehicles/Train (No Build):",
+        value='',  # Initialize with 0
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    TVehPerTrainB_widget = widgets.Text(
+        description="Average Vehicles/Train (Build):",
+        value='',  # Initialize with 0
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    annual_vehicle_per_train_widgets = widgets.HBox([TVehPerTrainNB_widget, TVehPerTrainB_widget])
+
+    TAccReductPer = widgets.Text(
+        description="Percent Reduction in Transit Accidents:",
+        value='',  
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    #Average Transit Travel Time
+    TInTimeNBN_widget = widgets.Text(
+        description="In Vehicle: Average Transit Travel Time Non Peak (No Build):",
+        value='',  # Initialize with 0
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    TInTimeBN_widget = widgets.IntText(
+        description="In Vehicle: Average Transit Travel Time Non Peak (Build):",
+        value=None,  
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    # Function to update the TInTimeBN_widget based on TInTimeNBN_widget and subcategory
+    def update_transit_travel_time_nonpeak(change=None):
+        # Retrieve relevant widget values
+        subcategory = subcategory_dropdown.value  # Get the selected subcategory
+        TInTimeNBN = TInTimeNBN_widget.value  # Get the entered value for TInTimeNBN
+
+        # Ensure TInTimeNBN has a valid number, otherwise set a default value (0)
+        if TInTimeNBN is None or TInTimeNBN == '':
+            TInTimeBN = 0  # Default value if no input is given
+        else:
+            # Apply the formula based on the subcategory selected
+            if subcategory == "Transit Vehicle Location (AVL)":
+                # Apply AVL savings
+                TInTimeBN = TInTimeNBN * (1 - params.transit_savings["Transit Vehicle Location (AVL)"]["AVLTTsaving"])
+            elif subcategory == "Transit Vehicle Signal Priority":
+                # Apply Signal Priority savings
+                TInTimeBN = TInTimeNBN * (1 - params.transit_savings["Transit Vehicle Signal Priority"]["SigTTsaving"])
+            elif subcategory == "Bus Rapid Transit (BRT)":
+                # Apply BRT savings
+                TInTimeBN = TInTimeNBN * (1 - params.transit_savings["Bus Rapid Transit (BRT)"]["BrtTTsaving"])
+            else:
+                # No savings applied if the subcategory is not one of the above
+                TInTimeBN = TInTimeNBN
+
+    # Initialize the calculation (this will execute once when the code runs)
+    update_transit_travel_time_nonpeak()
+    
+    # Attach observers to relevant widgets
+    TInTimeNBN_widget.observe(update_transit_travel_time_nonpeak, names='value')  # Observe changes to TInTimeNBN_widget
+    subcategory_dropdown.observe(update_transit_travel_time_nonpeak, names='value')  # Observe changes to subcategory_dropdown
+    
+    transit_travel_time_nonpeak_widgets = widgets.HBox([TInTimeNBN_widget, TInTimeBN_widget])
+        
+    # Define the widget for displaying the result (Transit Travel Time for Peak)
+    TInTimeNBP_widget = widgets.Text(
+        description="In Vehicle: Average Transit Travel Time Peak (No Build):",
+        value='',  # Initialize with an empty value
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+
+    TInTimeBP_widget = widgets.IntText(
+        description="In Vehicle: Average Transit Travel Time Peak (Build):",
+        value=None,  # Initialize with None or default value
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+
+    # Function to update the TInTimeBP_widget based on TInTimeNBP_widget and subcategory
+    def update_transit_travel_time_peak(change=None):
+        # Retrieve relevant widget values
+        subcategory = subcategory_dropdown.value  # Get the selected subcategory
+        TInTimeNBP = TInTimeNBP_widget.value  # Get the entered value for TInTimeNBP
+
+        # Ensure TInTimeNBP has a valid number, otherwise set a default value (0)
+        if TInTimeNBP == '' or TInTimeNBP is None:
+            TInTimeBP = 0  # Default value if no input is given
+        else:
+            TInTimeNBP = float(TInTimeNBP)  # Convert to float for calculations
+
+            # Apply the formula based on the subcategory selected
+            if subcategory == "Transit Vehicle Location (AVL)":
+                # Apply AVL savings
+                TInTimeBP = TInTimeNBP * (1 - params.transit_savings["Transit Vehicle Location (AVL)"]["AVLTTsaving"])
+            elif subcategory == "Transit Vehicle Signal Priority":
+                # Apply Signal Priority savings
+                TInTimeBP = TInTimeNBP * (1 - params.transit_savings["Transit Vehicle Signal Priority"]["SigTTsaving"])
+            elif subcategory == "Bus Rapid Transit (BRT)":
+                # Apply BRT savings
+                TInTimeBP = TInTimeNBP * (1 - params.transit_savings["Bus Rapid Transit (BRT)"]["BrtTTsaving"])
+            else:
+                # No savings applied if the subcategory is not one of the above
+                TInTimeBP = TInTimeNBP
+
+
+    # Initialize the calculation
+    update_transit_travel_time_peak()
+
+    # Attach observers to relevant widgets
+    TInTimeNBP_widget.observe(update_transit_travel_time_peak, names='value')  # Observe changes to TInTimeNBP_widget
+    subcategory_dropdown.observe(update_transit_travel_time_peak, names='value')  # Observe changes to subcategory_dropdown
+
+    # Widgets container to display both the input and the result for Peak Period
+    transit_travel_time_peak_widgets = widgets.HBox([TInTimeNBP_widget, TInTimeBP_widget])
+        
+    #Average Transit Travel Time Out of Vehicle
+    TOutTimeNBN_widget = widgets.IntText(
+        description="Out-of-Vehicle: Average Transit Travel Time Non Peak (No Build):",
+        value=0.0,  # Initialize with 0
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    TOutTimeBN_widget = widgets.IntText(
+        description="Out-of-Vehicle: Average Transit Travel Time Non Peak (Build):",
+        value=0.0,  
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    def update_outofveh_transit_travel_time_nonpeak(change=None):
+        # Retrieve relevant widget values
+        subcategory = subcategory_dropdown.value  # Get the selected subcategory
+        TOutTimeNBN = TOutTimeNBN_widget.value  # Get the entered value for TOutTimeNBN
+
+        # Initialize TOutTimeBN with the same value as TOutTimeNBN initially
+        TOutTimeBN = TOutTimeNBN
+
+        # Apply the formula based on the subcategory selected
+        if subcategory == "Transit Vehicle Location (AVL)":
+            # Apply AVL savings (TOutTimeNBN * (1 - AVLTTsaving))
+            TOutTimeBN = TOutTimeNBN * (1 - params.transit_savings["Transit Vehicle Location (AVL)"]["AVLTTsaving"])
+
+
+
+    # Initialize the calculation (this will execute once when the code runs)
+    update_outofveh_transit_travel_time_nonpeak()
+
+    # Attach observers to relevant widgets
+    TOutTimeNBN_widget.observe(update_outofveh_transit_travel_time_nonpeak, names='value')  # Observe changes to TOutTimeNBN_widget
+    subcategory_dropdown.observe(update_outofveh_transit_travel_time_nonpeak, names='value')  # Observe changes to subcategory_dropdown
+        
+    # Widgets container to display both the input and the result for Peak Period
+    transit_travel_time_outofveh_nonpeak_widgets = widgets.HBox([TOutTimeNBN_widget, TOutTimeBN_widget]) 
+    
+
+    #Average Transit Travel Time Out of Vehicle
+    TOutTimeNBP_widget = widgets.IntText(
+        description="Out-of-Vehicle: Average Transit Travel Time Peak (No Build):",
+        value=0.0,  # Initialize with 0
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    TOutTimeBP_widget = widgets.IntText(
+        description="Out-of-Vehicle: Average Transit Travel Time Peak (Build):",
+        value=0.0,  
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    def update_outofveh_transit_travel_time_peak(change=None):
+        # Retrieve relevant widget values
+        subcategory = subcategory_dropdown.value  # Get the selected subcategory
+        TOutTimeNBP = TOutTimeNBP_widget.value  # Get the entered value for TOutTimeNBN
+
+        # Initialize TOutTimeBN with the same value as TOutTimeNBN initially
+        TOutTimeBP = TOutTimeNBP
+
+        # Apply the formula based on the subcategory selected
+        if subcategory == "Transit Vehicle Location (AVL)":
+            # Apply AVL savings (TOutTimeNBN * (1 - AVLTTsaving))
+            TOutTimeBP = TOutTimeNBP * (1 - params.transit_savings["Transit Vehicle Location (AVL)"]["AVLTTsaving"])
+
+
+
+    # Initialize the calculation (this will execute once when the code runs)
+    update_outofveh_transit_travel_time_peak()
+
+    # Attach observers to relevant widgets
+    TOutTimeNBP_widget.observe(update_outofveh_transit_travel_time_peak, names='value')  # Observe changes to TOutTimeNBN_widget
+    subcategory_dropdown.observe(update_outofveh_transit_travel_time_peak, names='value')  # Observe changes to subcategory_dropdown
+        
+    # Widgets container to display both the input and the result for Peak Period
+    transit_travel_time_outofveh_peak_widgets = widgets.HBox([TOutTimeNBP_widget, TOutTimeBP_widget]) 
+    
+    NumTrain0_widget = widgets.Text(
+        description="Hwy Grade Crossing Annual Number of Trains (Current Year):",
+        value="",  # Initialize with 0
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    NumTrain1_widget = widgets.IntText(
+        description="Hwy Grade Crossing Annual Number of Trains (Year 1):",
+        value=0,  
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    NumTrain20_widget = widgets.Text(
+        description="Hwy Grade Crossing Annual Number of Trains (Year 20):",
+        value="",  
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    def update_numtrain1(change=None):
+        try:
+            # Convert inputs to float for calculation
+            NumTrain0 = float(NumTrain0_widget.value)
+            NumTrain20 = float(NumTrain20_widget.value)
+            Construct = float(construct_widget.value)
+
+            # Apply the formula:
+
+            NumTrain1 = NumTrain0 + (NumTrain20 - NumTrain0) * Construct / (Construct + 19)
+
+            # Update the widget value
+            NumTrain1_widget.value = round(NumTrain1)
+        except (ValueError, TypeError):
+            # If values are not valid numbers, fall back to 0
+            NumTrain1_widget.value = 0
+        
+    # Initial call to set default value
+    update_numtrain1()
+    
+    NumTrain0_widget.observe(update_numtrain1, names='value')
+    NumTrain20_widget.observe(update_numtrain1, names='value')
+    construct_widget.observe(update_numtrain1, names='value')
+
+    # Widgets container 
+    annual_number_of_train_widgets = widgets.HBox([NumTrain0_widget, NumTrain1_widget, NumTrain20_widget]) 
+    
+    
+    GateTime0_widget = widgets.Text(
+        description="Hwy Grade Crossing Avg. Gate Down Time (Current Year):",
+        value="",  # Initialize with 0
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    GateTime1_widget = widgets.IntText(
+        description="Hwy Grade Crossing Avg. Gate Down Time (Year 1):",
+        value=0.0,  
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    GateTime20_widget = widgets.Text(
+        description="Hwy Grade Crossing Avg. Gate Down Time (Year 20):",
+        value="",  
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    def update_gatetime1(change=None):
+        try:
+            # Convert inputs to float for calculation
+            GateTime0 = float(GateTime0_widget.value)
+            GateTime20 = float(GateTime20_widget.value)
+            Construct = float(construct_widget.value)
+
+            # Apply the formula:
+
+            GateTime1 = GateTime0 + (GateTime20 - GateTime0) * Construct / (Construct + 19)
+
+        except (ValueError, TypeError):
+            # If values are not valid numbers, fall back to 0
+            GateTime1_widget.value = 0.0
+        
+    # Initial call to set default value
+    update_gatetime1()
+    
+    GateTime0_widget.observe(update_gatetime1, names='value')
+    GateTime20_widget.observe(update_gatetime1, names='value')
+    construct_widget.observe(update_gatetime1, names='value')
+
+    # Widgets container 
+    average_gate_down_time_widgets = widgets.HBox([GateTime0_widget, GateTime1_widget, GateTime20_widget]) 
+        
+    #Transit Agency Cost
+    TCapCostNB_widget = widgets.Text(
+        description="Transit Agency Expenditure (No Build):",
+        value='',  # Initialize with 0
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    TCapCostB_widget = widgets.IntText(
+        description="Transit Agency Expenditure (Build):",
+        value=0,  
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    def update_annual_capex(change=None):
+        # Retrieve relevant widget values
+        subcategory = subcategory_dropdown.value  # Get the selected subcategory
+        TCapCostNB = TCapCostNB_widget.value  # Get the entered value for TOutTimeNBN
+
+        # Initialize TOutTimeBN with the same value as TOutTimeNBN initially
+        TCapCostB = TCapCostNB
+
+        # Apply the formula based on the subcategory selected
+        if subcategory == "Transit Vehicle Location (AVL)":
+            # Apply AVL savings (TOutTimeNBN * (1 - AVLTTsaving))
+            TCapCostB = TCapCostNB* (1 - params.transit_savings["Transit Vehicle Location (AVL)"]["AVLCapSaving"])
+            
+    # Initialize the calculation (this will execute once when the code runs)
+    update_annual_capex()
+
+    # Attach observers to relevant widgets
+    TCapCostNB_widget.observe(update_annual_capex, names='value')  # Observe changes to TOutTimeNBN_widget
+    subcategory_dropdown.observe(update_annual_capex, names='value')  # Observe changes to subcategory_dropdown   
+    
+    # Widgets container 
+    annual_capex_widgets = widgets.HBox([TCapCostNB_widget, TCapCostB_widget]) 
+    
+    #Opex Widget 
+    TOMCostNB_widget = widgets.Text(
+        description="Annual Ops and Maintenance Expenditure (No Build):",
+        value='',  # Initialize with 0
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    TOMCostB_widget = widgets.IntText(
+        description="Annual Ops and Maintenance Expenditure (Build):",
+        value=0,  
+        disabled=False,  # Allow user to enter values
+        style={'description_width': 'initial'},
+        layout=common_layout
+    )
+    
+    def update_annual_opex(change=None):
+        # Retrieve relevant widget values
+        subcategory = subcategory_dropdown.value  # Get the selected subcategory
+        TOMCostNB = TOMCostNB_widget.value  # Get the entered value for TOutTimeNBN
+
+        # Initialize TOutTimeBN with the same value as TOutTimeNBN initially
+        TOMCostB = TOMCostNB
+
+        # Apply the formula based on the subcategory selected
+        if subcategory == "Transit Vehicle Location (AVL)":
+            TOMCostB = TOMCostNB* (1 - params.transit_savings["Transit Vehicle Location (AVL)"]["AvlOMsaving"])
+            
+    # Initialize the calculation (this will execute once when the code runs)
+    update_annual_opex()
+
+    # Attach observers to relevant widgets
+    TOMCostNB_widget.observe(update_annual_opex, names='value')  # Observe changes to TOutTimeNBN_widget
+    subcategory_dropdown.observe(update_annual_opex, names='value')  # Observe changes to subcategory_dropdown   
+    
+    # Widgets container 
+    annual_opex_widgets = widgets.HBox([TOMCostNB_widget, TOMCostB_widget]) 
+    
+        
 
     #Create Project Info Section
     # Project Info Section
@@ -1325,12 +1809,20 @@ def create_project_info_widgets():
         statewide_avg_crash_info
     )
     
+    # Rail and Transit Data Section
+    rail_and_transit_data_section = create_section(
+        rail_and_transit_data_title, 
+        rail_and_transit_data_subtitle, 
+        [annual_persontrips_year1_widgets, annual_persontrips_year20_widgets, TPerPeak_widget, TPerHwy_widget, annual_vehmiles_year1_widgets, annual_vehmiles_year20_widgets, annual_vehicle_per_train_widgets, TAccReductPer, transit_travel_time_nonpeak_widgets, transit_travel_time_peak_widgets, transit_travel_time_outofveh_nonpeak_widgets, transit_travel_time_outofveh_peak_widgets, annual_number_of_train_widgets, average_gate_down_time_widgets, annual_capex_widgets, annual_opex_widgets],
+        rail_and_transit_data_info
+    )
 
+    
 
     
 
     # Stack all sections vertically
-    all_sections = widgets.VBox([project_info_section, highway_design_and_traffic_data_section, avo_section, on_ramp_volume_section, queue_formation_section, pavement_condition_section, actual_3years_crash_data_section, statewide_avg_crashrate_info_section])
+    all_sections = widgets.VBox([project_info_section, highway_design_and_traffic_data_section, avo_section, on_ramp_volume_section, queue_formation_section, pavement_condition_section, actual_3years_crash_data_section, statewide_avg_crashrate_info_section, rail_and_transit_data_section])
 
 
 #     # Update the visibility of sections based on subcategory selection
