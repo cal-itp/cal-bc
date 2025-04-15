@@ -49,6 +49,36 @@ def create_section(title, subtitle, widget_list, widget_info_list):
     # Return the entire section wrapped in a larger container
     return widgets.VBox([entire_section], layout=widgets.Layout(margin="10px 0"))  # Adds margin between sections
 
+def create_section_with_subsections(title, subtitle, widget_list=[], widget_info_list=[], subsections=None):
+    # Create section header
+    title_widget = widgets.HTML(value=f"<b style='color: darkblue;'>{title}</b>")
+    subtitle_widget = widgets.HTML(value=f"<i>{subtitle}</i>")
+    divider = widgets.HTML(value="<hr>")
+    
+    section_elements = [title_widget, subtitle_widget, divider]
+
+    # Add main widgets if provided (outside subsections)
+    if widget_list and widget_info_list:
+        for widget, info_text in zip(widget_list, widget_info_list):
+            info_button, info_popup = info_button_popup(info_text)
+            section_elements.append(widgets.HBox([widget, info_button]))
+            section_elements.append(info_popup)
+
+    # Handle up to 4 optional subsections (Year 1 Peak, Non-Peak, etc.)
+    if subsections:
+        for subsection in subsections:
+            # Subsection Header (e.g., Year 1 - Peak)
+            sub_header = widgets.HTML(value=f"<b style='margin-top: 8px; color: green;'>{subsection.get('subtitle', '')}</b>")
+            section_elements.append(sub_header)
+
+            # Add widgets and info buttons for the subsection
+            for widget, info_text in zip(subsection['widgets'], subsection['info_texts']):
+                info_button, info_popup = info_button_popup(info_text)
+                section_elements.append(widgets.HBox([widget, info_button]))
+                section_elements.append(info_popup)
+
+    section_box = widgets.VBox(section_elements, layout=widgets.Layout(margin="10px 0"))
+    return section_box
 
 
 # Descriptive texts for project info section
@@ -139,17 +169,14 @@ rail_and_transit_data_info = ["Insert estimated annual transit person-trips for 
                     "Insert forecasted annual transit person-trips for 20 years after construction completion in build and no build cases.", "Insert percent annual person-trips that occur during peak period.", "Insert % new transit person-trips originating on parallel highway.", "Insert estimated annual vehicle-miles for first year after construction completion in build and no build cases. For passenger rail projects, multiply the number of train-miles by the average number of rail cars per train consist.", "Insert forecasted annual vehicle-miles for 20 years after construction completion in build and no build cases." , "If passenger rail project, insert the average number of rail cars per train consist. This is used to calculate emissions.", "If project affects transit/rail safety, insert estimated percent accident reduction due to project. Increases should be entered as negative %.", "Insert average in-vehicle transit travel time in minutes during peak and non-peak periods in build and no build cases. For TMS Projects, insert the average for all transit routes impacted. Model assumes build is same as no build for most projects. Signal priority and bus rapid transit projects reduce time. User can adjust build travel times." , "Insert average in-vehicle transit travel time in minutes during peak and non-peak periods in build and no build cases. For TMS Projects, insert the average for all transit routes impacted. Model assumes build is same as no build for most projects. Signal priority and bus rapid transit projects reduce time. User can adjust build travel times.", "Insert average out-of-vehicle transit travel time in minutes during peak and non-peak periods. Model monetizes out-of-vehicle travel time at a higher value.", "Insert average out-of-vehicle transit travel time in minutes during peak and non-peak periods. Model monetizes out-of-vehicle travel time at a higher value.", "Insert annual number of passenger and freight trains entering highway-rail crossing.", "Insert average time per train in minutes that crossing gate is down for passenger and freight trains.", "If transit TMS project, insert annual agency capital expenditures for routes impacted by project. Model calculates cost reductions for expenditures in build case due to transit TMS.", "If transit TMS project, insert the annual average operating and maintenance costs for routes impacted by project. Model calculates cost reductions for expenditures in build case due to transit TMS."]
 
 
-# Highway Speed and Volume Section 
+# Highway Speed and Volume Section Subsections Description 
 highway_speed_and_volume_input_title = """
-Highway Speed and Volume Inputs 
+Highway Speed and Volume Inputs
 """
 
 highway_speed_and_volume_input_subtitle = """
-This section allows user to review detailed speed and volume data estimated by the model. The model estimates speeds and volumes on highway for HOVs, non-HOVs, weaving vehicles, and trucks during the peak and non-peak periods in Year 1 and Year 20 in build and no build cases. Speeds are estimated using a BPR curve (or queuing analysis). Adjustments are made to speed and volumes to account for weaving, transit mode shifts, pavement condition, and TMS. <br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No Build (Year 1) <br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>Peak Period</u>
+This section allows user to review detailed speed and volume data estimated by the model. The model estimates speeds and volumes on highways for HOVs, non-HOVs, weaving vehicles, and trucks during the peak and non-peak periods in Year 1 and Year 20 for both build and no-build cases. Speeds are estimated using a BPR curve (or queuing analysis). Adjustments are made to speed and volumes to account for weaving, transit mode shifts, pavement condition, and TMS.<br><br>
 """
-
 
 highway_speed_and_volume_input_info = [
     "Change only if detailed data are available from a travel demand or micro-simulation model. User may enter HOV volume data for the highway to override model calculations.",
@@ -159,6 +186,11 @@ highway_speed_and_volume_input_info = [
     "User may enter HOV Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
     "User may enter Non-HOV Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
     "User may enter Weaving Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
-    "User may enter Truck Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available."
+    "User may enter Truck Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Non-HOV volume data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Weaving volume data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Truck volume data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Non-HOV Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Weaving Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available."
 ]
 
