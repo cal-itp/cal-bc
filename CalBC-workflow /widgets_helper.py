@@ -193,6 +193,7 @@ highway_speed_and_volume_input_info = [
     "User may enter Non-HOV Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
     "User may enter Weaving Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
     "User may enter Truck Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
-    "Change only if detailed data are available from a travel demand or micro-simulation model. User may enter HOV volume data for the highway to override model calculations."
+    "Change only if detailed data are available from a travel demand or micro-simulation model. User may enter HOV volume data for the highway to override model calculations.",
+    "User may enter Non-HOV volume data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available."
 ]
 

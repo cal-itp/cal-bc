@@ -230,7 +230,6 @@ def create_new_widgets():
         # Update the Non-HOV Volume Peak Period widget
         Non_HOV_Vol_year1peak_modelcalc_widget.value = round(Non_HOV_Volume_Year1Peak_Model, 0)
     
-    update_Non_HOV_Year1Peak_Volume()
 
     # Attach observers to the relevant widgets to update the Non-HOV Volume widget dynamically
     projectinfo_widgets.adt_base_year_no_build_widget.observe(update_Non_HOV_Year1Peak_Volume, names='value')
@@ -1538,7 +1537,7 @@ def create_new_widgets():
     
     
     
- ########################################################################################################################################################################   
+  
 # Create the Non-HOV Volume widget to display the calculated value
     Non_HOV_Vol_year20peak_modelcalc_widget = widgets.IntText(
         value=0,  # Set initial value to 0, or any other valid integer
@@ -1682,7 +1681,7 @@ def create_new_widgets():
         {
             'subtitle': 'Year 20 - Peak Period',  # Fix the missing opening brace for this dictionary
             'widgets': [HOV_vol_year20peak_widgets, Non_HOV_vol_year20peak_widgets],
-            'info_texts': highway_speed_and_volume_input_info[14:15]
+            'info_texts': highway_speed_and_volume_input_info[14:16]
         }
     ]
 
