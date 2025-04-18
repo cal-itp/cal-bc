@@ -57,7 +57,7 @@ def create_section_with_subsections(title, subtitle, widget_list=[], widget_info
     
     section_elements = [title_widget, subtitle_widget, divider]
 
-    # Add main widgets if provided (outside subsections)
+   
     if widget_list and widget_info_list:
         for widget, info_text in zip(widget_list, widget_info_list):
             info_button, info_popup = info_button_popup(info_text)
@@ -67,7 +67,7 @@ def create_section_with_subsections(title, subtitle, widget_list=[], widget_info
     # Handle up to 4 optional subsections (Year 1 Peak, Non-Peak, etc.)
     if subsections:
         for subsection in subsections:
-            # Subsection Header (e.g., Year 1 - Peak)
+            # Subsection Header
             sub_header = widgets.HTML(value=f"<b style='margin-top: 8px; color: green;'>{subsection.get('subtitle', '')}</b>")
             section_elements.append(sub_header)
 
@@ -170,15 +170,15 @@ rail_and_transit_data_info = ["Insert estimated annual transit person-trips for 
 
 
 # Highway Speed and Volume Section Subsections Description 
-highway_speed_and_volume_input_title = """
-Highway Speed and Volume Inputs
+highway_speed_and_volume_input_nobuild_title = """
+Highway Speed and Volume Inputs (No Build)
 """
 
-highway_speed_and_volume_input_subtitle = """
-This section allows user to review detailed speed and volume data estimated by the model. The model estimates speeds and volumes on highways for HOVs, non-HOVs, weaving vehicles, and trucks during the peak and non-peak periods in Year 1 and Year 20 for both build and no-build cases. Speeds are estimated using a BPR curve (or queuing analysis). Adjustments are made to speed and volumes to account for weaving, transit mode shifts, pavement condition, and TMS.<br><br>
+highway_speed_and_volume_input_nobuild_subtitle = """
+This section allows user to review detailed speed and volume data estimated by the model. The model estimates speeds and volumes on highways for HOVs, non-HOVs, weaving vehicles, and trucks during the peak and non-peak periods in Year 1 and Year 20 for no-build cases. Speeds are estimated using a BPR curve (or queuing analysis). Adjustments are made to speed and volumes to account for weaving, transit mode shifts, pavement condition, and TMS.<br><br>
 """
 
-highway_speed_and_volume_input_info = [
+highway_speed_and_volume_input_nobuild_info = [
     "Change only if detailed data are available from a travel demand or micro-simulation model. User may enter HOV volume data for the highway to override model calculations.",
     "User may enter Non-HOV volume data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
     "User may enter Weaving volume data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
@@ -194,6 +194,57 @@ highway_speed_and_volume_input_info = [
     "User may enter Weaving Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
     "User may enter Truck Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
     "Change only if detailed data are available from a travel demand or micro-simulation model. User may enter HOV volume data for the highway to override model calculations.",
-    "User may enter Non-HOV volume data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available."
+    "User may enter Non-HOV volume data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Weaving Volume data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Truck volume data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter HOV Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Non-HOV Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Weaving Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Truck Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Non-HOV volume data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Weaving volume data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Truck volume data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Non-HOV Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Weaving Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Truck Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available."
 ]
 
+# Highway Speed and Volume Section Subsections Description 
+highway_speed_and_volume_input_build_title = """
+Highway Speed and Volume Inputs (Build)
+"""
+
+highway_speed_and_volume_input_build_subtitle = """
+This section allows user to review detailed speed and volume data estimated by the model. The model estimates speeds and volumes on highways for HOVs, non-HOVs, weaving vehicles, and trucks during the peak and non-peak periods in Year 1 and Year 20 for build cases. Speeds are estimated using a BPR curve (or queuing analysis). Adjustments are made to speed and volumes to account for weaving, transit mode shifts, pavement condition, and TMS.<br><br>
+"""
+
+highway_speed_and_volume_input_build_info = [
+    "Change only if detailed data are available from a travel demand or micro-simulation model. User may enter HOV volume data for the highway to override model calculations.",
+    "User may enter Non-HOV volume data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Weaving volume data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Truck volume data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter HOV Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Non-HOV Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Weaving Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Truck Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Non-HOV volume data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Weaving volume data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Truck volume data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Non-HOV Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Weaving Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Truck Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "Change only if detailed data are available from a travel demand or micro-simulation model. User may enter HOV volume data for the highway to override model calculations.",
+    "User may enter Non-HOV volume data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Weaving Volume data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Truck volume data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter HOV Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Non-HOV Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Weaving Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Truck Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Non-HOV volume data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Weaving volume data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Truck volume data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Non-HOV Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Weaving Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Truck Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available."
+]

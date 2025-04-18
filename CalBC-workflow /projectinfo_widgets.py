@@ -90,7 +90,8 @@ def create_project_info_widgets():
         actual_3_year_totalcrash_rate_widget, actual_3_year_fatalcrash_count_widget, actual_3_year_fatalcrash_rate_widget, actual_3_year_injurycrash_count_widget, \
         actual_3_year_injurycrash_rate_widget, actual_3_year_pdocrash_count_widget, actual_3_year_pdocrash_rate_widget, state_crash_rate_group_nobuild_widget, \
         state_crash_rate_group_build_widget, crash_rate_permvm_nobuild_widget, crash_rate_permvm_build_widget, percent_fatal_crash_nobuild_widget, \
-        percent_fatal_crash_build_widget, percent_injury_crash_nobuild_widget, percent_injury_crash_build_widget, GateTime1_widget, NumTrain1_widget
+        percent_fatal_crash_build_widget, percent_injury_crash_nobuild_widget, percent_injury_crash_build_widget, GateTime1_widget, NumTrain1_widget, GateTime20_widget, NumTrain20_widget, TPerPeak_widget, \
+        TPerHwy_widget, TAPT1B_widget, TAPT1NB_widget
 
 
     
