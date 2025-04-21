@@ -91,7 +91,7 @@ def create_project_info_widgets():
         actual_3_year_injurycrash_rate_widget, actual_3_year_pdocrash_count_widget, actual_3_year_pdocrash_rate_widget, state_crash_rate_group_nobuild_widget, \
         state_crash_rate_group_build_widget, crash_rate_permvm_nobuild_widget, crash_rate_permvm_build_widget, percent_fatal_crash_nobuild_widget, \
         percent_fatal_crash_build_widget, percent_injury_crash_nobuild_widget, percent_injury_crash_build_widget, GateTime1_widget, NumTrain1_widget, GateTime20_widget, NumTrain20_widget, TPerPeak_widget, \
-        TPerHwy_widget, TAPT1B_widget, TAPT1NB_widget
+        TPerHwy_widget, TAPT1B_widget, TAPT1NB_widget,TAPT20NB_widget,TAPT20B_widget
 
 
     
@@ -1853,3 +1853,68 @@ def create_project_info_widgets():
     display(all_sections)
 
 
+    # # Return dictionary of key widgets for reuse elsewhere
+    # return {
+    #     "ProjLoc": projloc_widget,
+    #     "ProjType": project_type_dropdown,
+    #     "ProjSubType": subcategory_dropdown,
+    #     "Construct": construct_widget,
+    #     "NumDirections": one_two_way_widget,
+    #     "PeakLngthNB": peak_period_widget,
+    #     "RoadTypeNB": roadway_type_no_build_widget,
+    #     "RoadTypeB": roadway_type_build_widget,
+    #     "GenLanesNB": general_traffic_lanes_no_build_widget,
+    #     "GenLanesB": general_traffic_lanes_build_widget,
+    #     "HOVLanesNB": hov_hot_lanes_no_build_widget,
+    #     "HOVLanesB": hov_hot_lanes_build_widget,
+    #     "HOVRest": HOVRest_widget,
+    #     "Exclusive": Exclusive_widget,
+    #     "FFSpeedNB": free_flow_speed_no_build_widget,
+    #     "FFSpeedB": free_flow_speed_build_widget,
+    #     "RampFFSpdNB": ramp_design_speed_no_build_widget,
+    #     "RampFFSpdB": ramp_design_speed_build_widget,
+    #     "SegmentNB": highway_segment_no_build_widget,
+    #     "SegmentB": highway_segment_build_widget,
+    #     "ImpactedNB": impacted_length_no_build_widget,
+    #     "ImpactedB": impacted_length_build_widget,
+    #     "ADT0": ADT_current_widget,
+    #     "ADT1NB": adt_base_year_no_build_widget,
+    #     "ADT1B": adt_base_year_build_widget,
+    #     "ADT20NB": ADT_20NB_widget,
+    #     "ADT20B": adt_20_year_build_widget,
+    #     "HOVvolNB": HOV_lane_nobuild_widget,
+    #     "HOVvolB": HOV_lane_build_widget,
+    #     "PerWeaveNB": percent_traffic_weave_no_build_widget,
+    #     "PerWeaveB": percent_traffic_weave_build_widget,
+    #     "PerIndHOV": percent_induced_trip_widget,
+    #     "PerTruckNB": percent_trucks_nobuild_widget,
+    #     "PerTruckB": percent_trucks_build_widget,
+    #     "TruckSpeed": truck_speed_widget,
+    #     "RampVolP": hourly_ramp_volume_peak_widget,
+    #     "RampVolNP": hourly_ramp_volume_nonpeak_widget,
+    #     "MeterStrat": metering_strategy_widget,
+    #     "ArrRate1": arrival_rate_base_year_no_build_widget,
+    #     "ArrRate20": arrival_rate_base_year_build_widget,
+    #     "DepRate1": departure_rate_forecast_year_no_build_widget,
+    #     "DepRate20": departure_rate_forecast_year_build_widget,
+    #     "IRI1NB": iri_base_year_no_build_widget,
+    #     "IRI1B": iri_base_year_build_widget,
+    #     "IRI20NB": iri_forecast_year_no_build_widget,
+    #     "IRI20B": iri_forecast_year_build_widget,
+    #     "AVONonNB": AVO_traffic_NP_no_build_widget,
+    #     "AVONonB": AVO_traffic_NP_build_widget,
+    #     "AVOPeakNB": AVO_traffic_P_no_build_widget,
+    #     "AVOPeakB": AVO_traffic_P_build_widget,
+    #     "AVOHovNB": AVOHovNB_widget,
+    #     "AVOHovB": AVOHovB_widget,
+    #     "GateTime1": GateTime1_widget,
+    #     "GateTime20": GateTime20_widget,
+    #     "NumTrain1": NumTrain1_widget,
+    #     "NumTrain20": NumTrain20_widget,
+    #     "TPerPeak": TPerPeak_widget,
+    #     "TPerHwy": TPerHwy_widget,
+    #     "TAPT1B": TAPT1B_widget,
+    #     "TAPT1NB": TAPT1NB_widget,
+    #     "TAPT20NB": TAPT20NB_widget,
+    #     "TAPT20B": TAPT20B_widget
+    # }
