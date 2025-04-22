@@ -162,6 +162,7 @@ statewide_avg_crash_info = ["Include Base Rate if applicable",
     "Insert statewide % of fatal crashes for road classifications similar to build and no build facilities.",
                            "Insert statewide % of injury crashes for road classifications similar to build and no build facilities."]
 
+<<<<<<< HEAD
 # Rail and Transit Data Section
 rail_and_transit_data_title = "Rail and Transit Data"
 rail_and_transit_data_subtitle = "This section is used for rail and transit projects only."
@@ -204,3 +205,9 @@ highway_speed_and_volume_input_build_subtitle = """
 This section allows user to review detailed speed and volume data estimated by the model. The model estimates speeds and volumes on highways for HOVs, non-HOVs, weaving vehicles, and trucks during the peak and non-peak periods in Year 1 and Year 20 for build cases. Speeds are estimated using a BPR curve (or queuing analysis). Adjustments are made to speed and volumes to account for weaving, transit mode shifts, pavement condition, and TMS.<br><br>
 """
 
+=======
+
+highway_speed_and_volume_input_title = "Highway Speed and Volume Inputs (Peak Period)"
+highway_speed_and_volume_input_subtitle = "This section allows user to review detailed speed and volume data estimated by the model. These values are estimated from the inputs provided in the earlier",
+highway_speed_and_volume_input_info = ["Change only if detailed data are available from a travel demand or micro-simulation model. User may enter HOV volume data for the highway to override model calculations. "]
+>>>>>>> 3ce506f0b22b27317d6525ffa8fe8b5e58771617
