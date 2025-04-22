@@ -192,7 +192,7 @@ highway_speed_and_volume_input_info = [
     "User may enter Truck volume data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
     "User may enter Non-HOV Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
     "User may enter Weaving Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
-    "User may enter Truck Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available.",
+    "User may enter Truck Speed data for the highway to override model calculations only if detailed data from travel demand model or microsimulation model is available."
 ]
 
 # Highway Speed and Volume Section Subsections Description 
@@ -204,3 +204,21 @@ highway_speed_and_volume_input_build_subtitle = """
 This section allows user to review detailed speed and volume data estimated by the model. The model estimates speeds and volumes on highways for HOVs, non-HOVs, weaving vehicles, and trucks during the peak and non-peak periods in Year 1 and Year 20 for build cases. Speeds are estimated using a BPR curve (or queuing analysis). Adjustments are made to speed and volumes to account for weaving, transit mode shifts, pavement condition, and TMS.<br><br>
 """
 
+# Highway Speed and Volume Section Subsections Description 
+ramp_and_arterial_input_title = """
+Ramp and Arterial Inputs
+"""
+
+ramp_and_arterial_input_subtitle = """
+This section allows users to enter detailed arterial information for an arterial signal management project or detailed ramp and arterial data for a highway TMS project.<br><br>
+"""
+
+ramp_and_arterial_input_info = [
+    "Input the total segment lengths for the ramps. These can be estimated from travel demand or micro-simulation model data as VMT/total trips.",
+    "Input the total segment lengths for the arterials. These can be estimated from travel demand or micro-simulation model data as VMT/total trips.",
+    "User may enter aggregate Ramp Volume during peak periods.",
+    "User may enter aggregate Arterial Volume during peak periods. If arterial signal management project, user must enter arterial data. Benefits are estimated assuming all vehicles are automobiles.",
+    "User may enter aggregate Ramp Speed during peak periods.",
+    "User may enter aggregate Arterial Speed during peak periods. If arterial signal management project, user must enter arterial data. Benefits are estimated assuming all vehicles are automobiles."
+    
+]
