@@ -13,12 +13,8 @@ from widgets_helper import (
     on_ramp_volume_title, on_ramp_volume_subtitle, on_ramp_volume_info,
     queue_formation_title, queue_formation_subtitle, queue_formation_info,
     actual_3years_crash_title, actual_3years_crash_subtitle, actual_3years_crash_info,
-<<<<<<< HEAD
     statewide_avg_crash_title, statewide_avg_crash_subtitle, statewide_avg_crash_info,
     rail_and_transit_data_title, rail_and_transit_data_subtitle, rail_and_transit_data_info
-=======
-    statewide_avg_crash_title, statewide_avg_crash_subtitle, statewide_avg_crash_info
->>>>>>> 3ce506f0b22b27317d6525ffa8fe8b5e58771617
 )
 
 from widgets_helper import info_button_popup, create_section
@@ -82,7 +78,6 @@ common_layout = widgets.Layout(
 
 # Function to create the widgets and display them in the notebook
 def create_project_info_widgets():
-<<<<<<< HEAD
     global projloc_widget, project_type_dropdown, subcategory_dropdown, construct_widget, one_two_way_widget, peak_period_widget, roadway_type_no_build_widget, roadway_type_build_widget, \
         general_traffic_lanes_no_build_widget, general_traffic_lanes_build_widget, hov_hot_lanes_no_build_widget, hov_hot_lanes_build_widget, HOVRest_widget, Exclusive_widget, free_flow_speed_no_build_widget, \
         free_flow_speed_build_widget, ramp_design_speed_no_build_widget, ramp_design_speed_build_widget, highway_segment_no_build_widget, highway_segment_build_widget, \
@@ -98,17 +93,6 @@ def create_project_info_widgets():
         percent_fatal_crash_build_widget, percent_injury_crash_nobuild_widget, percent_injury_crash_build_widget, GateTime1_widget, NumTrain1_widget, GateTime20_widget, NumTrain20_widget, TPerPeak_widget, \
         TPerHwy_widget, TAPT1B_widget, TAPT1NB_widget,TAPT20NB_widget,TAPT20B_widget
 
-=======
-    global projloc_widget, project_type_dropdown, subcategory_dropdown, construct_widget, one_two_way_widget, peak_period_widget, \
-           roadway_type_widgets, general_traffic_lanes_widgets, hov_hot_lanes_widgets, HOVRest_widget, Exclusive_widget, \
-           free_flow_speed_widgets, ramp_design_speed_widgets, highway_segment_widgets, impacted_length_widgets, ADT_current_widget, \
-           adt_base_widgets, adt_20_widget, hourly_hov_lane_traffic_widget, percent_induced_trip_widget, percent_traffic_weave_widgets, \
-           percent_trucks_widget, truck_speed_widget, hourly_ramp_volume_widget, metering_strategy_widget, arrival_rate_widgets, \
-           departure_rate_widgets, iri_base_year_widgets, iri_forecast_year_widgets, AVO_GenTraffic_NonPeak_widgets, \
-           AVO_GenTraffic_Peak_widgets, AVO_HOV_widgets, actual_3_year_totalcrash_widgets, actual_3_year_fatalcrash_widgets, \
-           actual_3_year_injurycrash_widgets, actual_3_year_pdocrash_widgets, state_crash_rategroup_widgets, \
-           crash_rate_permvm_widgets, fatal_crash_rate_widgets, injury_crash_rate_widgets, HOV_lane_nobuild_widget, percent_traffic_weave_no_build_widget
->>>>>>> 3ce506f0b22b27317d6525ffa8fe8b5e58771617
 
     
     # Create Project Location widget
@@ -1270,7 +1254,6 @@ def create_project_info_widgets():
     fatal_crash_rate_widgets = widgets.HBox([percent_fatal_crash_nobuild_widget, percent_fatal_crash_build_widget])
     injury_crash_rate_widgets = widgets.HBox([percent_injury_crash_nobuild_widget, percent_injury_crash_build_widget])
     
-<<<<<<< HEAD
     #Rail and Transit Data 
     # Annual Person Trips Data 
     TAPT1NB_widget = widgets.Text(
@@ -1755,9 +1738,6 @@ def create_project_info_widgets():
     annual_opex_widgets = widgets.HBox([TOMCostNB_widget, TOMCostB_widget]) 
     
         
-=======
-      
->>>>>>> 3ce506f0b22b27317d6525ffa8fe8b5e58771617
 
     #Create Project Info Section
     # Project Info Section
@@ -1830,7 +1810,6 @@ def create_project_info_widgets():
         statewide_avg_crash_info
     )
     
-<<<<<<< HEAD
     # Rail and Transit Data Section
     rail_and_transit_data_section = create_section(
         rail_and_transit_data_title, 
@@ -1838,21 +1817,13 @@ def create_project_info_widgets():
         [annual_persontrips_year1_widgets, annual_persontrips_year20_widgets, TPerPeak_widget, TPerHwy_widget, annual_vehmiles_year1_widgets, annual_vehmiles_year20_widgets, annual_vehicle_per_train_widgets, TAccReductPer, transit_travel_time_nonpeak_widgets, transit_travel_time_peak_widgets, transit_travel_time_outofveh_nonpeak_widgets, transit_travel_time_outofveh_peak_widgets, annual_number_of_train_widgets, average_gate_down_time_widgets, annual_capex_widgets, annual_opex_widgets],
         rail_and_transit_data_info
     )
-=======
->>>>>>> 3ce506f0b22b27317d6525ffa8fe8b5e58771617
-
-    
 
     
 
     
 
     # Stack all sections vertically
-<<<<<<< HEAD
     all_sections = widgets.VBox([project_info_section, highway_design_and_traffic_data_section, avo_section, on_ramp_volume_section, queue_formation_section, pavement_condition_section, actual_3years_crash_data_section, statewide_avg_crashrate_info_section, rail_and_transit_data_section])
-=======
-    all_sections = widgets.VBox([project_info_section, highway_design_and_traffic_data_section, avo_section, on_ramp_volume_section, queue_formation_section, pavement_condition_section, actual_3years_crash_data_section, statewide_avg_crashrate_info_section])
->>>>>>> 3ce506f0b22b27317d6525ffa8fe8b5e58771617
 
 
 #     # Update the visibility of sections based on subcategory selection
@@ -1882,7 +1853,6 @@ def create_project_info_widgets():
     display(all_sections)
 
 
-<<<<<<< HEAD
     # # Return dictionary of key widgets for reuse elsewhere
     # return {
     #     "ProjLoc": projloc_widget,
@@ -1948,5 +1918,3 @@ def create_project_info_widgets():
     #     "TAPT20NB": TAPT20NB_widget,
     #     "TAPT20B": TAPT20B_widget
     # }
-=======
->>>>>>> 3ce506f0b22b27317d6525ffa8fe8b5e58771617

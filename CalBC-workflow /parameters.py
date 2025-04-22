@@ -135,7 +135,7 @@ class parameters:
         self.TMSLookup = "NoAdj"
         self.UserAdjInputs = "False"
         
-<<<<<<< HEAD
+
         self.SpeedWeaveAdj = {
             0.000: {"Freeway": 1.000, "HOV": 1.000},
             0.002: {"Freeway": 0.982, "HOV": 0.988},
@@ -181,8 +181,7 @@ class parameters:
         }
 
         
-=======
->>>>>>> 3ce506f0b22b27317d6525ffa8fe8b5e58771617
+
         #TMS Parameters
         self.tms_adj = {
             "AMoth": {"SpeedWithout": 1.02, "VolumeWithout": 0.95, "SpeedWith": 1.02, "VolumeWith": 0.95, "TT": -5.05, "VOC": 12.81, "Em": 1.37, "Benefit": 0.74},
@@ -197,7 +196,7 @@ class parameters:
             "TIoth": {"SpeedWithout": 1.00, "VolumeWithout": 1.00, "SpeedWith": 1.02, "VolumeWith": 0.97, "TT": -0.11, "VOC": -0.12, "Em": -0.35, "Benefit": 1.00},
             "TIsev": {"SpeedWithout": 1.00, "VolumeWithout": 1.00, "SpeedWith": 1.01, "VolumeWith": 0.97, "TT": -0.39, "VOC": -0.39, "Em": -0.35, "Benefit": 1.00},
         }
-<<<<<<< HEAD
+
 
 
         self.SpeedPavAdj = {
@@ -227,5 +226,4 @@ class parameters:
             "Transit Vehicle Signal Priority": {"SigTTsaving": 0.10},
             "Bus Rapid Transit (BRT)": {"BrtTTsaving": 0.29},
         }
-=======
->>>>>>> 3ce506f0b22b27317d6525ffa8fe8b5e58771617
+
