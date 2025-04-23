@@ -389,7 +389,7 @@ def create_project_info_widgets():
     subcategory_dropdown.observe(calculate_impacted_length, names='value')
 
         # Define Impacted Length No Build widget
-    impacted_length_no_build_widget = widgets.FloatText(
+    impacted_length_no_build_widget = widgets.IntText(
         description='Impacted Length (No Build):',
         value=0.0,  # Default value set to 0.0
         disabled=False,
@@ -719,18 +719,18 @@ def create_project_info_widgets():
     def update_percent_traffic_weave_no_build(subcategory, gen_lanes_nb, num_directions):
         if subcategory == "Auxiliary Lane":
             if gen_lanes_nb < 2 * num_directions:
-                percent_traffic_weave_no_build_widget.value = 100
+                percent_traffic_weave_no_build_widget.value = 1
             else:
-                percent_traffic_weave_no_build_widget.value = (2 * num_directions) / gen_lanes_nb * 100
+                percent_traffic_weave_no_build_widget.value = (2 * num_directions) / gen_lanes_nb * 1
         elif subcategory == "Off-Ramp Widening":
             if gen_lanes_nb < 3 * num_directions:
-                percent_traffic_weave_no_build_widget.value = 100
+                percent_traffic_weave_no_build_widget.value = 1
             else:
                 percent_traffic_weave_no_build_widget.value = (3 * num_directions) / gen_lanes_nb * 100
         elif subcategory == "Freeway Connector":
-            percent_traffic_weave_no_build_widget.value = 2.5
+            percent_traffic_weave_no_build_widget.value = 0.025
         elif subcategory == "HOV Connector" or subcategory == "HOV Drop Ramp":
-            percent_traffic_weave_no_build_widget.value = 4
+            percent_traffic_weave_no_build_widget.value = 0.04
         else:
             percent_traffic_weave_no_build_widget.value = 0.0  # Default value if no condition is met
 
@@ -767,7 +767,7 @@ def create_project_info_widgets():
     # Define Percent Trucks (No Build) and Percent Trucks (Build) widgets
     percent_trucks_nobuild_widget = widgets.FloatText(
         description="Percent Trucks (No Build):",
-        value=9.0,  # Default value set to 9% (this can be adjusted)
+        value=0.09,  # Default value set to 9% (this can be adjusted)
         disabled=False,
         layout=common_layout,
         style={'description_width': 'initial'}
@@ -775,6 +775,7 @@ def create_project_info_widgets():
 
     percent_trucks_build_widget = widgets.FloatText(
         description="Percent Trucks (Build):",
+        value=percent_trucks_nobuild_widget.value,
         disabled=False,
         layout=common_layout,
         style={'description_width': 'initial'}
@@ -1734,6 +1735,7 @@ def create_project_info_widgets():
     TOMCostNB_widget.observe(update_annual_opex, names='value')  # Observe changes to TOutTimeNBN_widget
     subcategory_dropdown.observe(update_annual_opex, names='value')  # Observe changes to subcategory_dropdown   
     
+
     # Widgets container 
     annual_opex_widgets = widgets.HBox([TOMCostNB_widget, TOMCostB_widget]) 
     
