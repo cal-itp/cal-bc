@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import ipywidgets as widgets
 from IPython.display import display, clear_output
 
@@ -69,6 +70,8 @@ def calculate_average_volumes_highway(AnnualFactor):
             if period == 'NonPeak' and vehicle in ['Ramp', 'HOV', 'Arterial']:
                 continue
             for year in years:
+                avg_vol_nobuild = None
+                avg_vol_build = None
                 for state in project_states:
                     year_part = year.replace("Year", "")
                     state_part = 'NB' if state == 'NoBuild' else 'B'
@@ -76,12 +79,21 @@ def calculate_average_volumes_highway(AnnualFactor):
 
                     if volume_key in volume_dict:
                         average_volume = volume_dict[volume_key] * AnnualFactor
-                        all_combinations.append({
-                            'Combination': f"{period}_{vehicle}_{year}_{state}",
-                            'AverageVolume': average_volume
-                        })
+                        if state == 'NoBuild':
+                            avg_vol_nobuild = average_volume
+                        else:
+                            avg_vol_build = average_volume
                     else:
                         print(f"Warning: {volume_key} not found in widget values.")
+                
+                # Add to the list only if both values are found
+                if avg_vol_nobuild is not None and avg_vol_build is not None:
+                    all_combinations.append({
+                        'Combination': f"{period}_{vehicle}_{year}",
+                        'Avg_Vol_NoBuild': avg_vol_nobuild,
+                        'Avg_Vol_Build': avg_vol_build
+                    })
+
     return all_combinations
 
 
@@ -147,6 +159,8 @@ def calculate_average_speeds_highway(AnnualFactor):
             if period == 'NonPeak' and vehicle in ['Ramp', 'HOV', 'Arterial']:
                 continue
             for year in years:
+                avg_speed_nobuild = None
+                avg_speed_build = None
                 for state in project_states:
                     year_part = year.replace("Year", "")
                     state_part = 'NB' if state == 'NoBuild' else 'B'
@@ -154,12 +168,20 @@ def calculate_average_speeds_highway(AnnualFactor):
 
                     if speed_key in speed_dict:
                         average_speed = round(speed_dict[speed_key], 1)
-                        all_combinations.append({
-                            'Combination': f"{period}_{vehicle}_{year}_{state}",
-                            'AverageSpeed': average_speed
-                        })
+                        if state == 'NoBuild':
+                            avg_speed_nobuild = average_speed
+                        else:
+                            avg_speed_build = average_speed
                     else:
                         print(f"Warning: {speed_key} not found in widget values.")
+                
+                # Add to the list only if both values are found
+                if avg_speed_nobuild is not None and avg_speed_build is not None:
+                    all_combinations.append({
+                        'Combination': f"{period}_{vehicle}_{year}",
+                        'Avg_Speed_NoBuild': avg_speed_nobuild,
+                        'Avg_Speed_Build': avg_speed_build
+                    })
 
     return all_combinations
 
@@ -175,55 +197,63 @@ def calculate_person_trips_highway(average_volumes_highway):
     AVOPeakB = projectinfo_widgets.AVO_traffic_P_build_widget.value
     AVONonNB = projectinfo_widgets.AVO_traffic_NP_no_build_widget.value
     AVONonB = projectinfo_widgets.AVO_traffic_NP_build_widget.value
-    
-    
+
     person_trip_results = []
 
     for row in average_volumes_highway:
         combo = row['Combination']
-        volume = row['AverageVolume']
+        vol_nobuild = row.get('Avg_Vol_NoBuild', 0)
+        vol_build = row.get('Avg_Vol_Build', 0)
 
-        # Split the combination key into parts
-        period, vehicle, year, state = combo.split('_')
+        period, vehicle, year = combo.split('_')  # We ignore the last 'state' part
 
-        # Determine AVO based on rules
+        # Default AVO values
+        avo_nobuild = avo_build = 0
+
         if vehicle == 'HOV':
-            avo = AVOHovNB if state == 'NoBuild' else AVOHovB
+            avo_nobuild = AVOHovNB
+            avo_build = AVOHovB
 
         elif vehicle in ['NonHOV', 'Ramp', 'Arterial']:
             if period == 'Peak':
-                avo = AVOPeakNB if state == 'NoBuild' else AVOPeakB
+                avo_nobuild = AVOPeakNB
+                avo_build = AVOPeakB
             else:  # NonPeak
-                avo = AVONonNB if state == 'NoBuild' else AVONonB
+                avo_nobuild = AVONonNB
+                avo_build = AVONonB
 
         elif vehicle == 'Weaving':
             hov_condition = ProjType in ["HOV Connector", "HOV Drop Ramp"]
             if period == 'Peak':
-                avo = AVOHovNB if hov_condition and state == 'NoBuild' else (
-                      AVOHovB if hov_condition else (
-                      AVOPeakNB if state == 'NoBuild' else AVOPeakB))
+                avo_nobuild = AVOHovNB if hov_condition else AVOPeakNB
+                avo_build = AVOHovB if hov_condition else AVOPeakB
             else:  # NonPeak
-                avo = AVOHovNB if hov_condition and state == 'NoBuild' else (
-                      AVOHovB if hov_condition else (
-                      AVONonNB if state == 'NoBuild' else AVONonB))
+                avo_nobuild = AVOHovNB if hov_condition else AVONonNB
+                avo_build = AVOHovB if hov_condition else AVONonB
 
         elif vehicle == 'Truck':
-            avo = 1  # Person trips = volume for trucks
+            avo_nobuild = 1
+            avo_build = 1
 
         else:
             print(f"Unknown vehicle type: {vehicle}")
-            avo = 0
 
-        person_trips = volume * avo
+        # Multiply volumes with AVO to get person trips
+        person_trips_nobuild = vol_nobuild * avo_nobuild if vol_nobuild else 0
+        person_trips_build = vol_build * avo_build if vol_build else 0
 
         person_trip_results.append({
             'Combination': combo,
-            'AnnualPersonTrips': person_trips
+            'AnnualPersonTrips_NoBuild': person_trips_nobuild,
+            'AnnualPersonTrips_Build': person_trips_build
         })
 
     return person_trip_results
 
+
+# Call the function
 annual_person_trips = calculate_person_trips_highway(average_volumes_highway)
+
 
 
 def calculate_average_travel_time(average_speeds_highway):
@@ -235,69 +265,77 @@ def calculate_average_travel_time(average_speeds_highway):
     SegmentA = modelinputs_widgets.SegmentA_widget.value
     GateTime1 = projectinfo_widgets.GateTime1_widget.value
 
-    # Safe division helper
     def safe_divide(numerator, denominator):
-        return "#DIV/0!" if denominator == 0 else numerator / denominator
+        return "#DIV/0!" if denominator == 0 else round(numerator / denominator, 2)
 
-    # Results list
     average_travel_time_results = []
 
-    # Iterate over the average speed results
     for row in average_speeds_highway:
         combo = row['Combination']
-        speed = row['AverageSpeed']  
+        speed_nobuild = row.get('Avg_Speed_NoBuild', 0)
+        speed_build = row.get('Avg_Speed_Build', 0)
 
-        period, vehicle, year, state = combo.split('_')
+        period, vehicle, year = combo.split('_')
 
-        # Apply travel time logic based on vehicle type and period
+        travel_time_nobuild = "#N/A"
+        travel_time_build = "#N/A"
+
+        # Travel time calculations
         if vehicle == 'HOV':
             if period == 'Peak':
-                travel_time = safe_divide(ImpactedNB, speed) if state == 'NoBuild' else safe_divide(ImpactedB, speed)
-            else:  
-                continue
+                travel_time_nobuild = safe_divide(ImpactedNB, speed_nobuild)
+                travel_time_build = safe_divide(ImpactedB, speed_build)
 
         elif vehicle == 'NonHOV':
             if period == 'Peak':
-                travel_time = safe_divide(ImpactedNB, speed) if state == 'NoBuild' else safe_divide(ImpactedB, speed)
-            else:  
+                travel_time_nobuild = safe_divide(ImpactedNB, speed_nobuild)
+                travel_time_build = safe_divide(ImpactedB, speed_build)
+            else:
                 if ProjType == "Hwy-Rail Grade Crossing":
-                    travel_time = GateTime1 / 60 / 2
+                    gate_time = GateTime1 / 60 / 2
+                    travel_time_nobuild = gate_time
+                    travel_time_build = gate_time
                 else:
-                    travel_time = safe_divide(ImpactedNB, speed) if state == 'NoBuild' else safe_divide(ImpactedB, speed)
+                    travel_time_nobuild = safe_divide(ImpactedNB, speed_nobuild)
+                    travel_time_build = safe_divide(ImpactedB, speed_build)
 
         elif vehicle == 'Weaving':
-            travel_time = safe_divide(ImpactedNB, speed) if state == 'NoBuild' else safe_divide(ImpactedB, speed)
+            travel_time_nobuild = safe_divide(ImpactedNB, speed_nobuild)
+            travel_time_build = safe_divide(ImpactedB, speed_build)
 
         elif vehicle == 'Truck':
             if period == 'Peak':
-                travel_time = safe_divide(ImpactedNB, speed) if state == 'NoBuild' else safe_divide(ImpactedB, speed)
+                travel_time_nobuild = safe_divide(ImpactedNB, speed_nobuild)
+                travel_time_build = safe_divide(ImpactedB, speed_build)
             else:
                 if ProjType == "Hwy-Rail Grade Crossing":
-                    travel_time = GateTime1 / 60 / 2
+                    gate_time = GateTime1 / 60 / 2
+                    travel_time_nobuild = gate_time
+                    travel_time_build = gate_time
                 else:
-                    travel_time = safe_divide(ImpactedNB, speed) if state == 'NoBuild' else safe_divide(ImpactedB, speed)
+                    travel_time_nobuild = safe_divide(ImpactedNB, speed_nobuild)
+                    travel_time_build = safe_divide(ImpactedB, speed_build)
 
         elif vehicle == 'Ramp':
             if period == 'Peak':
-                travel_time = safe_divide(SegmentR, speed)
-            else:
-                continue
+                travel_time_nobuild = safe_divide(SegmentR, speed_nobuild)
+                travel_time_build = safe_divide(SegmentR, speed_build)
 
         elif vehicle == 'Arterial':
             if period == 'Peak':
-                travel_time = safe_divide(SegmentA, speed)
-            else:
-                continue
+                travel_time_nobuild = safe_divide(SegmentA, speed_nobuild)
+                travel_time_build = safe_divide(SegmentA, speed_build)
 
-        else:
-            travel_time = "#N/A"
-
+        # Append result
         average_travel_time_results.append({
             'Combination': combo,
-            'AverageTravelTime': travel_time
+            'Avg_TravelTime_NoBuild': travel_time_nobuild,
+            'Avg_TravelTime_Build': travel_time_build
         })
 
     return average_travel_time_results
+
+
 
 
 
@@ -454,7 +492,61 @@ def update_combined_results(change=None):
 
 
 
-def display_grouped_results_by_vehicle_period():
+# def display_grouped_results_by_vehicle_period():
+#     volume_results = calculate_average_volumes_highway(AnnualFactor)
+#     speed_results = calculate_average_speeds_highway(AnnualFactor)
+#     person_trips_results = calculate_person_trips_highway(volume_results)
+#     average_travel_time_results = calculate_average_travel_time(speed_results)
+
+#     if volume_results and speed_results and person_trips_results:
+#         # Convert to DataFrames
+#         df_volume = pd.DataFrame(volume_results)
+#         df_speed = pd.DataFrame(speed_results)
+#         df_person_trips = pd.DataFrame(person_trips_results)
+#         df_average_travel_time = pd.DataFrame(average_travel_time_results)
+
+#         # Merge all into one combined DataFrame
+#         df_combined = pd.merge(df_volume, df_speed, on="Combination", how="outer", suffixes=("_Volume", "_Speed"))
+#         df_combined = pd.merge(df_combined, df_person_trips, on="Combination", how="outer")
+#         df_combined = pd.merge(df_combined, df_average_travel_time, on="Combination", how="outer")
+
+#         # Split Combination into components (Period, Vehicle, Year)
+#         df_combined[['Period', 'Vehicle', 'Year']] = df_combined['Combination'].str.split('_', expand=True)
+
+#         # Modify Combination to just include Year1 and Year20
+#         df_combined['Combination'] = df_combined['Year']
+
+#         # Custom group order
+#         group_order = [
+#             "Peak_HOV", "Peak_NonHOV", "Peak_Weaving", "Peak_Truck", "Peak_Ramp", "Peak_Arterial",
+#             "NonPeak_NonHOV", "NonPeak_Weaving", "NonPeak_Truck"
+#         ]
+
+#         # Create Group column
+#         df_combined['Group'] = df_combined['Period'].astype(str) + "_" + df_combined['Vehicle'].astype(str)
+
+#         # Set Group as categorical and sort
+#         df_combined['Group'] = pd.Categorical(df_combined['Group'], categories=group_order, ordered=True)
+#         df_combined.sort_values(['Group', 'Year'], inplace=True)
+
+#         # Display one table per group (e.g. Peak_HOV, NonPeak_Truck)
+#         for group_name, group_df in df_combined.groupby('Group'):
+#             print(f"--- {group_name} ---")
+
+#             # Remove 'Year' suffix from Combination column (just keep the year value)
+#             group_df['Year'] = group_df['Year'].apply(lambda x: int(x.replace('Year', '')) if isinstance(x, str) else x)
+
+#             # Reorder columns to place 'Year' at the beginning
+#             cols = ['Year'] + [col for col in group_df.columns if col != 'Year']
+#             group_df = group_df[cols]
+            
+#             display(group_df.drop(columns=['Period', 'Vehicle', 'Group', 'Combination']))  # Drop columns we don't need
+#             print("\n")
+
+#     else:
+#         print("No results to display.")
+
+def get_grouped_highway_results():
     volume_results = calculate_average_volumes_highway(AnnualFactor)
     speed_results = calculate_average_speeds_highway(AnnualFactor)
     person_trips_results = calculate_person_trips_highway(volume_results)
@@ -472,21 +564,169 @@ def display_grouped_results_by_vehicle_period():
         df_combined = pd.merge(df_combined, df_person_trips, on="Combination", how="outer")
         df_combined = pd.merge(df_combined, df_average_travel_time, on="Combination", how="outer")
 
-        # Split Combination into components
-        df_combined[['Period', 'Vehicle', 'Year', 'State']] = df_combined['Combination'].str.split('_', expand=True)
-        df_combined['Period'] = pd.Categorical(df_combined['Period'], categories=['Peak', 'NonPeak'], ordered=True)
-        
-        # Create Group column
+        # Split Combination into components (Period, Vehicle, Year)
+        df_combined[['Period', 'Vehicle', 'Year']] = df_combined['Combination'].str.split('_', expand=True)
+
+        # Clean Year
+        df_combined['Year'] = df_combined['Year'].apply(lambda x: int(x.replace('Year', '')) if isinstance(x, str) else x)
+
+        # Reassign Combination to year only (if needed)
+        df_combined['Combination'] = df_combined['Year']
+
+        # Define group for sorting (if needed later)
         df_combined['Group'] = df_combined['Period'].astype(str) + "_" + df_combined['Vehicle'].astype(str)
 
-        # Display one table per group (e.g. Peak_HOV, NonPeak_Truck)
-        for group_name, group_df in df_combined.groupby('Group'):
-            print(f"--- {group_name} ---")
-            display(group_df.drop(columns=['Period', 'Vehicle', 'Year', 'State', 'Group']))
-            print("\n")
+        # Final clean-up: keep only selected columns
+        keep_columns = [
+            'Year', 'Group',
+            'Avg_Vol_NoBuild', 'Avg_Vol_Build',
+            'Avg_Speed_NoBuild', 'Avg_Speed_Build',
+            'AnnualPersonTrips_NoBuild', 'AnnualPersonTrips_Build',
+            'Avg_TravelTime_NoBuild', 'Avg_TravelTime_Build'
+        ]
+        df_combined = df_combined[keep_columns]
+
+        return df_combined
 
     else:
         print("No results to display.")
+        return None
+
+df_combined = get_grouped_highway_results()   
+    
 
 
+
+def calculate_trend_for_variables(df, variable_name, group_name):
+    """
+    Calculates trend for a variable within a specific group, handling 'DIV0' as 0 for regression but preserving it in output.
+    """
+
+    # Filter by group
+    group_df = df[df['Group'] == group_name]
+
+    # Helper to safely convert to float (return 0 if 'DIV0', else float)
+    def safe_float(val):
+        try:
+            return float(val)
+        except:
+            return 0.0
+
+    # Extract original values for Year 1 and Year 20
+    val1 = group_df.loc[group_df['Year'] == 1, variable_name].values[0]
+    val20 = group_df.loc[group_df['Year'] == 20, variable_name].values[0]
+
+    # Flags for DIV0 values
+    val1_is_div = str(val1).strip().upper() == 'DIV0'
+    val20_is_div = str(val20).strip().upper() == 'DIV0'
+
+    # Convert to numeric for trend
+    year_1_value = safe_float(val1)
+    year_20_value = safe_float(val20)
+
+    known_years = np.array([1, 20])
+    known_values = np.array([year_1_value, year_20_value])
+
+    # Perform regression
+    coefficients = np.polyfit(known_years, known_values, 1)
+    polynomial = np.poly1d(coefficients)
+
+    # Predict for years 2 to 19
+    predicted_years = np.arange(2, 20)
+    predicted_values = polynomial(predicted_years)
+
+    # Combine into full series
+    all_years = np.concatenate(([1], predicted_years, [20]))
+    all_values = np.concatenate(([year_1_value], predicted_values, [year_20_value]))
+
+    # Reinsert 'DIV0'
+    all_values = list(all_values)
+    if val1_is_div:
+        all_values[0] = 'DIV0'
+    if val20_is_div:
+        all_values[-1] = 'DIV0'
+
+    # Build DataFrame
+    df_trend = pd.DataFrame({
+        'Year': all_years,
+        'Group': group_name,
+        variable_name: all_values
+    })
+
+    return df_trend
+
+
+variable_names = ['Avg_Vol_NoBuild', 'Avg_Vol_Build', 'Avg_Speed_NoBuild', 'Avg_Speed_Build', 'AnnualPersonTrips_NoBuild', 'AnnualPersonTrips_Build', 'Avg_TravelTime_NoBuild', 'Avg_TravelTime_Build']
+    
+    
+def generate_trends_from_dataframe(df, variable_names):
+    all_group_trends = []
+
+    for group in df['Group'].unique():
+        group_trends = []
+
+        for variable_name in variable_names:
+            trend_df = calculate_trend_for_variables(df, variable_name, group)
+            group_trends.append(trend_df)
+
+        # Merge all variable trends for this group on Year and Group
+        group_result = group_trends[0]
+        for other_df in group_trends[1:]:
+            group_result = pd.merge(group_result, other_df, on=['Year', 'Group'], how='outer')
+
+        all_group_trends.append(group_result)
+
+    # Concatenate all groups
+    final_df = pd.concat(all_group_trends, ignore_index=True)
+
+    return final_df
+
+
+
+final_trend_df = generate_trends_from_dataframe(df_combined, variable_names)    
+    
+    
+def display_grouped_tables(final_trend_df):
+    if final_trend_df is None:
+        print("Nothing to display.")
+        return
+
+    # Custom order for Peak and NonPeak groups
+    peak_order = ["Peak_HOV", "Peak_NonHOV", "Peak_Weaving", "Peak_Truck", "Peak_Ramp", "Peak_Arterial"]
+    nonpeak_order = ["NonPeak_NonHOV", "NonPeak_Weaving", "NonPeak_Arterial"]
+
+    # Combine the two lists to define custom sorting order
+    custom_order = peak_order + nonpeak_order
+
+    # Sort the groups based on the custom order
+    sorted_groups = sorted(final_trend_df['Group'].unique(), key=lambda x: custom_order.index(x) if x in custom_order else len(custom_order))
+
+    for group_name in sorted_groups:
+        # Filter the dataframe for each group
+        group_df = final_trend_df[final_trend_df['Group'] == group_name]
+
+        # Ensure Year 1 and Year 20 are at the top
+        year_1_and_20 = group_df[group_df['Year'].isin([1, 20])]
+        rest_of_years = group_df[~group_df['Year'].isin([1, 20])]
+
+        # Sort the remaining years
+        rest_of_years = rest_of_years.sort_values(by='Year')
+
+        # Concatenate Year 1, Year 20 with the sorted remaining years
+        group_df_sorted = pd.concat([year_1_and_20, rest_of_years])
+
+        print(f"--- {group_name} ---")
         
+        # Reorder to put Year at the beginning
+        cols = ['Year'] + [col for col in group_df_sorted.columns if col not in ['Year', 'Period', 'Vehicle', 'Group', 'Combination']]
+        group_df_sorted = group_df_sorted[cols]
+                
+        # Display the group DataFrame
+        display(group_df)
+        print("\n")
+
+    
+    
+display_grouped_tables(final_trend_df)
+     
+
