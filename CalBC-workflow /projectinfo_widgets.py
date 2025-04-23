@@ -389,7 +389,7 @@ def create_project_info_widgets():
     subcategory_dropdown.observe(calculate_impacted_length, names='value')
 
         # Define Impacted Length No Build widget
-    impacted_length_no_build_widget = widgets.FloatText(
+    impacted_length_no_build_widget = widgets.IntText(
         description='Impacted Length (No Build):',
         value=0.0,  # Default value set to 0.0
         disabled=False,

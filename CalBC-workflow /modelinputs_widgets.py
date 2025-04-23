@@ -20,12 +20,10 @@ common_layout = widgets.Layout(
 
 
 
-
-
-
-
 def create_new_widgets():
-    global truck_speed_year20nonpeak_build_modelcalc_widget
+    global PHV1NB_widget, PHV1B_widget, PHV20NB_widget, PHV20B_widget, PNV1NB_widget, PNV1B_widget, PNV20NB_widget, PNV20B_widget, PWV1NB_widget, PWV1B_widget, PWV20NB_widget, PWV20B_widget, PTV1NB_widget, PTV1B_widget, PTV20NB_widget, PTV20B_widget, PRV1NB_widget, PRV1B_widget, PRV20NB_widget, PRV20B_widget, PAV1NB_widget, PAV1B_widget, PAV20NB_widget, PAV20B_widget, NNV1NB_widget, NNV1B_widget, NNV20NB_widget, NNV20B_widget, NWV1NB_widget, NWV1B_widget, NWV20NB_widget, NWV20B_widget, NTV1NB_widget, NTV1B_widget, NTV20NB_widget, NTV20B_widget, \
+       PHS1NB_widget, PHS1B_widget, PHS20NB_widget, PHS20B_widget, PNS1NB_widget, PNS1B_widget, PNS20NB_widget, PNS20B_widget, PWS1NB_widget, PWS1B_widget, PWS20NB_widget, PWS20B_widget, PTS1NB_widget, PTS1B_widget, PTS20NB_widget, PTS20B_widget, PRS1NB_widget, PRS1B_widget, PRS20NB_widget, PRS20B_widget, PAS1NB_widget, PAS1B_widget, PAS20NB_widget, PAS20B_widget, NNS1NB_widget, NNS1B_widget, NNS20NB_widget, NNS20B_widget, NWS1NB_widget, NWS1B_widget, NWS20NB_widget, NWS20B_widget, NTS1NB_widget, NTS1B_widget, NTS20NB_widget, NTS20B_widget, SegmentA_widget, SegmentR_widget
+
 
     
 #     #Defining functions from Project Info for easy calculations
