@@ -787,11 +787,11 @@ def traveltime_benefit():
 
 
             # Add the calculated values to the results
-            traveltime_benefit_results.append({
-                'Combination': combo,
-                'ExistingBenefit': travel_time_benefit_existing,
-                'InducedBenefit': travel_time_benefit_induced,
-            })
+        traveltime_benefit_results.append({
+            'Combination': combo,
+            'ExistingBenefit': travel_time_benefit_existing,
+            'InducedBenefit': travel_time_benefit_induced,
+        })
             
     return traveltime_benefit_results  
 
