@@ -102,7 +102,7 @@ average_volumes_highway = calculate_average_volumes_highway(AnnualFactor)
 
 
 
-######################################################################### HIGHWAY BENEFITS #########################################################################
+
 ############################################################ Average Speed ############################################################
 
 def calculate_average_speeds_highway(AnnualFactor):
@@ -189,6 +189,8 @@ def calculate_average_speeds_highway(AnnualFactor):
 # Call the function for speed calculations
 average_speeds_highway = calculate_average_speeds_highway(AnnualFactor)
 
+############################################################ Person Trips ############################################################
+
 def calculate_person_trips_highway(average_volumes_highway):
     ProjType = projectinfo_widgets.subcategory_dropdown.value
     AVOHovNB = projectinfo_widgets.AVOHovNB_widget.value
@@ -255,6 +257,7 @@ def calculate_person_trips_highway(average_volumes_highway):
 annual_person_trips = calculate_person_trips_highway(average_volumes_highway)
 
 
+############################################################ Average Travel Time ############################################################
 
 def calculate_average_travel_time(average_speeds_highway):
     # Fetch required values from widgets
@@ -335,20 +338,472 @@ def calculate_average_travel_time(average_speeds_highway):
 
     return average_travel_time_results
 
+# Call the function
+average_travel_time = calculate_average_travel_time(average_speeds_highway)
+
+############################################################ Travel Time Benefits #############################################################################
 
 
+def traveltime_benefit():    
+    def safe_float(val):
+        try:
+            return float(val)
+        except (ValueError, TypeError):
+            return 0.0
+        
+    # Debugging: Check lengths of the lists
+    print(f"Length of average_travel_time: {len(average_travel_time)}")
+    print(f"Length of annual_person_trips: {len(annual_person_trips)}")
+        
+        
+    # Fetch required values from widgets
+    ProjType = projectinfo_widgets.subcategory_dropdown.value
+    PerIndHOV = projectinfo_widgets.percent_induced_trip_widget.value
+    PNT1Ind = modelinputs_widgets.PNT1Ind_widget.value
+    PNT20Ind = modelinputs_widgets.PNT20Ind_widget.value
+    PTT1Ind = modelinputs_widgets.PTT1Ind_widget.value
+    PTT20Ind = modelinputs_widgets.PTT20Ind_widget.value
+    NNT1Ind = modelinputs_widgets.NNT1Ind_widget.value
+    NNT20Ind = modelinputs_widgets.NNT20Ind_widget.value
+    NTT1Ind = modelinputs_widgets.NTT1Ind_widget.value
+    NTT20Ind = modelinputs_widgets.NTT20Ind_widget.value
+    TMSLookup = params.TMSLookup
+    TMSAdj = params.tms_adj
+    UserAdjInputs = params.UserAdjInputs
+    Induced = params.Induced
+    RADataAvail = modelinputs_widgets.RADataAvail_widget.value
+    
+    # Initialize existing_benefits for the sum for Arterial Ramp
+    NonHOVexistingPeakTTBenefit = 0  # NonHOV Peak
+    WeavingexistingPeakTTBenefit = 0  # Weaving Peak
+    TruckexistingPeakTTBenefit = 0  # Truck Peak
+    NonHOVinducedPeakTTBenefit = 0  # NonHOV Peak
+    WeavinginducedPeakTTBenefit = 0  # Weaving Peak
+    TruckinducedPeakTTBenefit = 0  # Truck Peak
+    
+    
+    traveltime_benefit_results = []
+
+    for tt_row, trip_row in zip(average_travel_time, annual_person_trips):
+        combo = tt_row['Combination']
+        
+        avg_tt_nobuild = safe_float(tt_row.get('Avg_TravelTime_NoBuild', 0))
+        avg_tt_build = safe_float(tt_row.get('Avg_TravelTime_Build', 0))
+        annual_trips_nobuild = safe_float(trip_row.get('AnnualPersonTrips_NoBuild', 0))
+        annual_trips_build = safe_float(trip_row.get('AnnualPersonTrips_Build', 0))
+
+        period, vehicle, year = combo.split('_')
+
+        travel_time_benefit_existing = 0
+        travel_time_benefit_induced = 0
+
+        if vehicle == 'HOV' and period == 'Peak':
+            if ProjType in ['Truck Only Lane', 'Bypass', 'HOV-2 to HOV-3 Conv', 'HOT Lane Conversion', 'On-Ramp Widening', 'Ramp Metering', 'Ramp Metering Signal Coord', 'Incident Management', 'Traveler Information']:
+                travel_time_benefit_existing = (
+                    annual_trips_nobuild * avg_tt_nobuild - annual_trips_build * avg_tt_build
+                )
+            else:
+                travel_time_benefit_existing = (
+                    (avg_tt_nobuild - avg_tt_build) * min(annual_trips_nobuild, annual_trips_build)
+                )
+
+            if (
+                annual_trips_build > annual_trips_nobuild
+                and ProjType not in ['Truck Only Lane', 'Bypass', 'HOV-2 to HOV-3 Conv', 'HOT Lane Conversion', 'On-Ramp Widening', 'Ramp Metering', 'Ramp Metering Signal Coord', 'Incident Management', 'Traveler Information']
+                and Induced == "Y"
+            ):
+                travel_time_benefit_induced = (
+                    (avg_tt_nobuild - avg_tt_build)
+                    * (annual_trips_build - annual_trips_nobuild)
+                    * 0.5
+                )
+            else:
+                travel_time_benefit_induced = 0
+
+        elif vehicle == 'NonHOV' and period == 'Peak':
+            if ProjType in ['Truck Only Lane', 'Bypass', 'HOV-2 to HOV-3 Conv', 'HOT Lane Conversion', 'On-Ramp Widening', 'Ramp Metering', 'Ramp Metering Signal Coord', 'Incident Management', 'Traveler Information']:
+                base_benefit_existing = (
+                    annual_trips_nobuild * avg_tt_nobuild - annual_trips_build * avg_tt_build
+                )
+            else:
+                base_benefit_existing = (
+                    (avg_tt_nobuild - avg_tt_build) * min(annual_trips_nobuild, annual_trips_build)
+                )
+
+            # Apply multiplier only if UserAdjInputs is the string "True"
+            multiplier = TMSAdj.get(TMSLookup, {}).get('Em', 0) if UserAdjInputs == "True" else 1
+            travel_time_benefit_existing = base_benefit_existing * multiplier
+
+            # Assign value to (NonHOV Peak)
+            NonHOVexistingPeakTTBenefit = travel_time_benefit_existing
+
+            if (
+                annual_trips_build > annual_trips_nobuild
+                and ProjType not in ['Truck Only Lane', 'Bypass', 'HOV-2 to HOV-3 Conv', 'HOT Lane Conversion', 'On-Ramp Widening', 'Ramp Metering', 'Ramp Metering Signal Coord', 'Incident Management', 'Traveler Information']
+                and Induced == "Y"
+            ):
+                base_benefit_induced = (
+                    (avg_tt_nobuild - avg_tt_build)
+                    * (annual_trips_build - annual_trips_nobuild)
+                    * 0.5
+                )
+
+            elif ProjType in ['HOV-2 to HOV-3 Conv', 'HOT Lane Conversion']:
+                # Extract the year from the 'Combination' value (e.g., 'Peak_HOV_Year1' or 'Peak_HOV_Year20')
+                year = combo.split('_')[-1]  # This will give 'Year1' or 'Year20'
+                year_number = year.replace('Year', '')  # Extract '1' or '20' by removing 'Year'
+
+                # Find the Peak_HOV row that matches the current year from the data
+                peak_hov_row = next(
+                    (row for row in average_travel_time if row['Combination'] == f'Peak_HOV_{year}'),
+                    None
+                )
+                avg_tt_build_hov = peak_hov_row.get('Avg_TravelTime_Build', 0)
+
+                # Check if the year is 20 or not, and select the appropriate PNT value
+                if year_number == '20':
+                    PNTInd = PNT20Ind
+                else:
+                    PNTInd = PNT1Ind  
+
+                # Calculate the induced benefit using the selected PNTInd
+                base_benefit_induced = (
+                    (avg_tt_nobuild - ((1 - PerIndHOV) * avg_tt_build + PerIndHOV * avg_tt_build_hov))
+                    * PNTInd
+                    * (-0.5 if Induced == "Y" else -1)
+                )
+
+            else:
+                base_benefit_induced = 0
+
+            # Apply multiplier only if UserAdjInputs is the string "True"
+            multiplier = TMSAdj.get(TMSLookup, {}).get('Em', 0) if UserAdjInputs == "True" else 1
+            travel_time_benefit_induced = base_benefit_induced * multiplier
+
+            # Assign value to (NonHOV Peak)
+            NonHOVinducedPeakTTBenefit = travel_time_benefit_induced
+
+        elif vehicle == 'Weaving' and period == 'Peak':
+            # Check if the project type is one of the special types
+            if ProjType in ['Truck Only Lane', 'Bypass', 'HOV-2 to HOV-3 Conv', 'HOT Lane Conversion', 'On-Ramp Widening', 'Ramp Metering', 'Ramp Metering Signal Coord', 'Incident Management', 'Traveler Information']:
+                # Calculate the base benefit for existing conditions
+                base_benefit_existing = (
+                    annual_trips_nobuild * avg_tt_nobuild - annual_trips_build * avg_tt_build
+                )
+            else:
+                # Calculate base benefit when project type isn't one of the special cases
+                base_benefit_existing = (
+                    (avg_tt_nobuild - avg_tt_build) * min(annual_trips_nobuild, annual_trips_build)
+                )
+
+            # Apply multiplier only if UserAdjInputs is the string "True"
+            multiplier = TMSAdj.get(TMSLookup, {}).get('Em', 0) if UserAdjInputs == "True" else 1
+            travel_time_benefit_existing = base_benefit_existing * multiplier
+
+            # Assign value to (Weaving)
+            WeavingexistingPeakTTBenefit = travel_time_benefit_existing
+
+            # If trips are greater in the build scenario and the project is not special, apply induced benefit
+            if (
+                annual_trips_build > annual_trips_nobuild
+                and ProjType not in ['Truck Only Lane', 'Bypass', 'HOV-2 to HOV-3 Conv', 'HOT Lane Conversion', 'On-Ramp Widening', 'Ramp Metering', 'Ramp Metering Signal Coord', 'Incident Management', 'Traveler Information']
+                and Induced == "Y"
+            ):
+                base_benefit_induced = (
+                    (avg_tt_nobuild - avg_tt_build)
+                    * (annual_trips_build - annual_trips_nobuild)
+                    * 0.5
+                )
+            else:
+                # If not induced or conditions are not met, set induced benefit to 0
+                base_benefit_induced = 0
+
+            # Apply multiplier only if UserAdjInputs is the string "True"
+            travel_time_benefit_induced = base_benefit_induced * multiplier
+
+            # Assign value to (Weaving)
+            WeavinginducedPeakTTBenefit = travel_time_benefit_induced
+
+        elif vehicle == 'Truck' and period == 'Peak':
+            # Check if the project type is one of the special types
+            if ProjType in ['Truck Only Lane', 'Bypass', 'HOV-2 to HOV-3 Conv', 'HOT Lane Conversion', 'On-Ramp Widening', 'Ramp Metering', 'Ramp Metering Signal Coord', 'Incident Management', 'Traveler Information']:
+                # Calculate the base benefit for existing conditions
+                base_benefit_existing = (
+                    annual_trips_nobuild * avg_tt_nobuild - annual_trips_build * avg_tt_build
+                )
+            else:
+                # Calculate base benefit when project type isn't one of the special cases
+                base_benefit_existing = (
+                    (avg_tt_nobuild - avg_tt_build) * min(annual_trips_nobuild, annual_trips_build)
+                )
+
+            # Apply multiplier only if UserAdjInputs is the string "True"
+            multiplier = TMSAdj.get(TMSLookup, {}).get('Em', 0) if UserAdjInputs == "True" else 1
+            travel_time_benefit_existing = base_benefit_existing * multiplier
+
+            # Assign value to (NonHOV Peak)
+            TruckexistingPeakTTBenefit = travel_time_benefit_existing
+
+            if (
+                annual_trips_build > annual_trips_nobuild
+                and ProjType not in ['Truck Only Lane', 'Bypass', 'HOV-2 to HOV-3 Conv', 'HOT Lane Conversion', 'On-Ramp Widening', 'Ramp Metering', 'Ramp Metering Signal Coord', 'Incident Management', 'Traveler Information']
+                and Induced == "Y"
+            ):
+                base_benefit_induced = (
+                    (avg_tt_nobuild - avg_tt_build)
+                    * (annual_trips_build - annual_trips_nobuild)
+                    * 0.5
+                )
+
+            elif ProjType in ['HOV-2 to HOV-3 Conv', 'HOT Lane Conversion']:
+                # Extract the year from the 'Combination' value (e.g., 'Peak_HOV_Year1' or 'Peak_HOV_Year20')
+                year = combo.split('_')[-1]
+                year_number = year.replace('Year', '')  # Extract '1' or '20' by removing 'Year'
+
+                # Find the Peak_HOV row that matches the current year from the data
+                peak_hov_row = next(
+                    (row for row in average_travel_time if row['Combination'] == f'Peak_HOV_{year}'),
+                    None
+                )
+                avg_tt_build_hov = peak_hov_row.get('Avg_TravelTime_Build', 0)
+
+                # Check if the year is 20 or not, and select the appropriate PNT value
+                if year_number == '20':
+                    PTTInd = PNT20Ind
+                else:
+                    PTTInd = PNT1Ind  
+
+                base_benefit_induced = (
+                    (avg_tt_nobuild - ((1 - PerIndHOV) * avg_tt_build + PerIndHOV * avg_tt_build_hov))
+                    * PTTInd
+                    * (-0.5 if Induced == "Y" else -1)
+                )
+
+            else:
+                base_benefit_induced = 0
+
+            # Apply multiplier only if UserAdjInputs is the string "True"
+            multiplier = TMSAdj.get(TMSLookup, {}).get('Em', 0) if UserAdjInputs == "True" else 1
+            travel_time_benefit_induced = base_benefit_induced * multiplier        
+
+            # Assign value to (Weaving)
+            TruckinducedPeakTTBenefit = travel_time_benefit_induced
+
+        elif vehicle == 'Ramp' and period == 'Peak':
+            if RADataAvail == "Y":
+                travel_time_benefit_existing = (
+                    (avg_tt_nobuild - avg_tt_build) * min(annual_trips_nobuild, annual_trips_build)
+                )
+            else:
+                travel_time_benefit_existing = 0
+
+            if (
+                annual_trips_build > annual_trips_nobuild
+                and RADataAvail == "Y"
+                and Induced == "Y"
+            ):
+                travel_time_benefit_induced = (
+                    (avg_tt_nobuild - avg_tt_build)
+                    * (annual_trips_build - annual_trips_nobuild)
+                    * 0.5
+                )
+            else:
+                travel_time_benefit_induced = 0
+
+        elif vehicle == 'Arterial' and period == 'Peak':
+            if RADataAvail == "Y":
+                travel_time_benefit_existing = (
+                    (avg_tt_nobuild - avg_tt_build) * min(annual_trips_nobuild, annual_trips_build)
+                )
+            else:
+                travel_time_benefit_existing = (NonHOVexistingPeakTTBenefit + WeavingexistingPeakTTBenefit + TruckexistingPeakTTBenefit) * TMSAdj.get(TMSLookup, {}).get('Benefit', 1)
+
+            if (
+                annual_trips_build > annual_trips_nobuild
+                and RADataAvail == "Y"
+                and Induced == "Y"
+            ):
+                travel_time_benefit_induced = (
+                    (avg_tt_nobuild - avg_tt_build)
+                    * (annual_trips_build - annual_trips_nobuild)
+                    * 0.5
+                )
+            else:
+                travel_time_benefit_induced = (NonHOVinducedPeakTTBenefit + WeavinginducedPeakTTBenefit + TruckinducedPeakTTBenefit) * TMSAdj.get(TMSLookup, {}).get('Benefit', 1)
+
+        # NonPeak NonHOV
+        elif vehicle == 'NonHOV' and period == 'NonPeak':
+            if ProjType in ['Truck Only Lane', 'Bypass', 'HOV-2 to HOV-3 Conv', 'HOT Lane Conversion', 'On-Ramp Widening', 'Ramp Metering', 'Ramp Metering Signal Coord', 'Incident Management', 'Traveler Information']:
+                travel_time_benefit_existing = (
+                    annual_trips_nobuild * avg_tt_nobuild - annual_trips_build * avg_tt_build
+                )
+            else:
+                travel_time_benefit_existing = (
+                    (avg_tt_nobuild - avg_tt_build) * min(annual_trips_nobuild, annual_trips_build)
+                )
+
+            if (
+                annual_trips_build > annual_trips_nobuild
+                and ProjType not in ['Truck Only Lane', 'Bypass', 'HOV-2 to HOV-3 Conv', 'HOT Lane Conversion', 'On-Ramp Widening', 'Ramp Metering', 'Ramp Metering Signal Coord', 'Incident Management', 'Traveler Information']
+                and Induced == "Y"
+            ):
+                travel_time_benefit_induced = (
+                    (avg_tt_nobuild - avg_tt_build)
+                    * (annual_trips_build - annual_trips_nobuild)
+                    * 0.5
+                )
+
+            elif ProjType in ['HOV-2 to HOV-3 Conv', 'HOT Lane Conversion']:
+                # Extract the year from the 'Combination' value (e.g., 'NonPeak_HOV_Year1' or 'NonPeak_HOV_Year20')
+                year = combo.split('_')[-1]
+                year_number = year.replace('Year', '')  # Extract '1' or '20' by removing 'Year'
+
+                # Check if the year is 20 or not, and select the appropriate PNT value
+                if year_number == '20':
+                    NNTInd = NNT20Ind  
+                else:
+                    NNTInd = NNT1Ind   
+
+                # Calculate the induced benefit using the selected NNTInd
+                travel_time_benefit_induced = (
+                    (avg_tt_nobuild - avg_tt_build) * NNTInd * (-0.5 if Induced == "Y" else -1)
+                )
+            else:
+                travel_time_benefit_induced = 0
+
+        # NonPeak Weaving
+        elif vehicle == 'Weaving' and period == 'NonPeak':
+            # Check if the project type is one of the special types
+            if ProjType in ['Truck Only Lane', 'Bypass', 'HOV-2 to HOV-3 Conv', 'HOT Lane Conversion', 'On-Ramp Widening', 'Ramp Metering', 'Ramp Metering Signal Coord', 'Incident Management', 'Traveler Information']:
+                # Calculate the base benefit for existing conditions
+                travel_time_benefit_existing = (
+                    annual_trips_nobuild * avg_tt_nobuild - annual_trips_build * avg_tt_build
+                )
+            else:
+                # Calculate base benefit when project type isn't one of the special cases
+                travel_time_benefit_existing = (
+                    (avg_tt_nobuild - avg_tt_build) * min(annual_trips_nobuild, annual_trips_build)
+                )
+
+            if (
+                annual_trips_build > annual_trips_nobuild
+                and ProjType not in ['Truck Only Lane', 'Bypass', 'HOV-2 to HOV-3 Conv', 'HOT Lane Conversion', 'On-Ramp Widening', 'Ramp Metering', 'Ramp Metering Signal Coord', 'Incident Management', 'Traveler Information']
+                and Induced == "Y"
+            ):
+                travel_time_benefit_induced = (
+                    (avg_tt_nobuild - avg_tt_build)
+                    * (annual_trips_build - annual_trips_nobuild)
+                    * 0.5
+                )
+            else:
+                # If not induced or conditions are not met, set induced benefit to 0
+                travel_time_benefit_induced = 0
+
+        # NonPeak Truck
+        elif vehicle == 'Truck' and period == 'NonPeak':
+            # Check if the project type is one of the special types
+            if ProjType in ['Truck Only Lane', 'Bypass', 'HOV-2 to HOV-3 Conv', 'HOT Lane Conversion', 'On-Ramp Widening', 'Ramp Metering', 'Ramp Metering Signal Coord', 'Incident Management', 'Traveler Information']:
+                # Calculate the base benefit for existing conditions
+                travel_time_benefit_existing = (
+                    annual_trips_nobuild * avg_tt_nobuild - annual_trips_build * avg_tt_build
+                )
+            else:
+                # Calculate base benefit when project type isn't one of the special cases
+                travel_time_benefit_existing = (
+                    (avg_tt_nobuild - avg_tt_build) * min(annual_trips_nobuild, annual_trips_build)
+                )
+
+            if (
+                annual_trips_build > annual_trips_nobuild
+                and ProjType not in ['Truck Only Lane', 'Bypass', 'HOV-2 to HOV-3 Conv', 'HOT Lane Conversion', 'On-Ramp Widening', 'Ramp Metering', 'Ramp Metering Signal Coord', 'Incident Management', 'Traveler Information']
+                and Induced == "Y"
+            ):
+                travel_time_benefit_induced = (
+                    (avg_tt_nobuild - avg_tt_build)
+                    * (annual_trips_build - annual_trips_nobuild)
+                    * 0.5
+                )
+
+            elif ProjType in ['HOV-2 to HOV-3 Conv', 'HOT Lane Conversion']:
+                # Extract the year from the 'Combination' value (e.g., 'NonPeak_HOV_Year1' or 'NonPeak_HOV_Year20')
+                year = combo.split('_')[-1]
+                year_number = year.replace('Year', '')  # Extract '1' or '20' by removing 'Year'
+
+                # Check if the year is 20 or not, and select the appropriate PNT value
+                if year_number == '20':
+                    NTTInd = NNT20Ind  
+                else:
+                    NTTInd = NNT1Ind  
+
+                travel_time_benefit_induced = (
+                    (avg_tt_nobuild - avg_tt_build) * PTTInd  * (-0.5 if Induced == "Y" else -1)
+                )
+            else:
+                travel_time_benefit_induced = 0
+
+        # NonPeak Ramp
+        elif vehicle == 'Ramp' and period == 'NonPeak':
+            if RADataAvail == "Y":
+                travel_time_benefit_existing = (
+                    (avg_tt_nobuild - avg_tt_build) * min(annual_trips_nobuild, annual_trips_build)
+                )
+            else:
+                travel_time_benefit_existing = 0
+
+            if (
+                annual_trips_build > annual_trips_nobuild
+                and RADataAvail == "Y"
+                and Induced == "Y"
+            ):
+                travel_time_benefit_induced = (
+                    (avg_tt_nobuild - avg_tt_build)
+                    * (annual_trips_build - annual_trips_nobuild)
+                    * 0.5
+                )
+            else:
+                travel_time_benefit_induced = 0
+
+        # NonPeak Arterial
+        elif vehicle == 'Arterial' and period == 'NonPeak':
+            if RADataAvail == "Y":
+                travel_time_benefit_existing = (
+                    (avg_tt_nobuild - avg_tt_build) * min(annual_trips_nobuild, annual_trips_build)
+                )
+            else:
+                travel_time_benefit_existing = (NonHOVexistingPeakTTBenefit + WeavingexistingPeakTTBenefit + TruckexistingPeakTTBenefit)* TMSAdj.get(TMSLookup, {}).get('Benefit', 1)
+
+            if (
+                annual_trips_build > annual_trips_nobuild
+                and RADataAvail == "Y"
+                and Induced == "Y"
+            ):
+                travel_time_benefit_induced = (
+                    (avg_tt_nobuild - avg_tt_build)
+                    * (annual_trips_build - annual_trips_nobuild)
+                    * 0.5
+                )                   
+            else:
+                travel_time_benefit_induced = (NonHOVinducedPeakTTBenefit + WeavinginducedPeakTTBenefit + TruckinducedPeakTTBenefit)* TMSAdj.get(TMSLookup, {}).get('Benefit', 1)
 
 
+            # Add the calculated values to the results
+            traveltime_benefit_results.append({
+                'Combination': combo,
+                'ExistingBenefit': travel_time_benefit_existing,
+                'InducedBenefit': travel_time_benefit_induced,
+            })
+            
+    return traveltime_benefit_results  
 
 
+# Call the function    
+travel_time_benefit = traveltime_benefit()    
 
-
-
-
-
-
-
-
+    
+    
+    
+    
+# ################################ Widget Observers for Average Volume, Average Trips, Person Trips and Average Travel Time #####################################
 
 # List of widgets to observe for both volume and speed (combining the existing ones)
 widget_triggers_volumes = [
@@ -462,11 +917,14 @@ for widget in widget_triggers_avgtraveltime:
     widget.observe(calculate_average_travel_time, names='value')
     
 
+############################### Combined Results Table #####################################
+
 def update_combined_results(change=None):
         volume_results = calculate_average_volumes_highway(AnnualFactor)
         speed_results = calculate_average_speeds_highway(AnnualFactor)
         person_trips_results = calculate_person_trips_highway(volume_results)
         average_travel_time_results = calculate_average_travel_time(speed_results)
+        travel_time_benefit = traveltime_benefit()
 
         if volume_results and speed_results and person_trips_results:
             # Combine into DataFrames and merge
@@ -474,6 +932,7 @@ def update_combined_results(change=None):
             df_speed = pd.DataFrame(speed_results)
             df_person_trips = pd.DataFrame(person_trips_results)
             df_average_travel_time = pd.DataFrame(average_travel_time_results)
+            df_travel_time_benefit = pd.DataFrame(travel_time_benefit)
 
             # Merge volume and speed first, adding suffixes
             df_combined = pd.merge(df_volume, df_speed, on="Combination", how="outer", suffixes=("_Volume", "_Speed"))
@@ -483,74 +942,24 @@ def update_combined_results(change=None):
             
             #Merge average travel time
             df_combined = pd.merge(df_combined, df_average_travel_time, on="Combination", how="outer")
+            
+            #Merge travel time benefit
+            df_combined = pd.merge(df_combined, df_travel_time_benefit, on="Combination", how="outer")            
 
             # Display the combined table
-            display(df_combined)  # This will show the table every time
+            display(df_combined)
         else:
             print("No results to display.")
 
 
 
-
-# def display_grouped_results_by_vehicle_period():
-#     volume_results = calculate_average_volumes_highway(AnnualFactor)
-#     speed_results = calculate_average_speeds_highway(AnnualFactor)
-#     person_trips_results = calculate_person_trips_highway(volume_results)
-#     average_travel_time_results = calculate_average_travel_time(speed_results)
-
-#     if volume_results and speed_results and person_trips_results:
-#         # Convert to DataFrames
-#         df_volume = pd.DataFrame(volume_results)
-#         df_speed = pd.DataFrame(speed_results)
-#         df_person_trips = pd.DataFrame(person_trips_results)
-#         df_average_travel_time = pd.DataFrame(average_travel_time_results)
-
-#         # Merge all into one combined DataFrame
-#         df_combined = pd.merge(df_volume, df_speed, on="Combination", how="outer", suffixes=("_Volume", "_Speed"))
-#         df_combined = pd.merge(df_combined, df_person_trips, on="Combination", how="outer")
-#         df_combined = pd.merge(df_combined, df_average_travel_time, on="Combination", how="outer")
-
-#         # Split Combination into components (Period, Vehicle, Year)
-#         df_combined[['Period', 'Vehicle', 'Year']] = df_combined['Combination'].str.split('_', expand=True)
-
-#         # Modify Combination to just include Year1 and Year20
-#         df_combined['Combination'] = df_combined['Year']
-
-#         # Custom group order
-#         group_order = [
-#             "Peak_HOV", "Peak_NonHOV", "Peak_Weaving", "Peak_Truck", "Peak_Ramp", "Peak_Arterial",
-#             "NonPeak_NonHOV", "NonPeak_Weaving", "NonPeak_Truck"
-#         ]
-
-#         # Create Group column
-#         df_combined['Group'] = df_combined['Period'].astype(str) + "_" + df_combined['Vehicle'].astype(str)
-
-#         # Set Group as categorical and sort
-#         df_combined['Group'] = pd.Categorical(df_combined['Group'], categories=group_order, ordered=True)
-#         df_combined.sort_values(['Group', 'Year'], inplace=True)
-
-#         # Display one table per group (e.g. Peak_HOV, NonPeak_Truck)
-#         for group_name, group_df in df_combined.groupby('Group'):
-#             print(f"--- {group_name} ---")
-
-#             # Remove 'Year' suffix from Combination column (just keep the year value)
-#             group_df['Year'] = group_df['Year'].apply(lambda x: int(x.replace('Year', '')) if isinstance(x, str) else x)
-
-#             # Reorder columns to place 'Year' at the beginning
-#             cols = ['Year'] + [col for col in group_df.columns if col != 'Year']
-#             group_df = group_df[cols]
-            
-#             display(group_df.drop(columns=['Period', 'Vehicle', 'Group', 'Combination']))  # Drop columns we don't need
-#             print("\n")
-
-#     else:
-#         print("No results to display.")
-
+################################ Travel Time Metrics Table #####################################
 def get_grouped_highway_results():
     volume_results = calculate_average_volumes_highway(AnnualFactor)
     speed_results = calculate_average_speeds_highway(AnnualFactor)
     person_trips_results = calculate_person_trips_highway(volume_results)
     average_travel_time_results = calculate_average_travel_time(speed_results)
+    travel_time_benefit = traveltime_benefit()
 
     if volume_results and speed_results and person_trips_results:
         # Convert to DataFrames
@@ -558,11 +967,13 @@ def get_grouped_highway_results():
         df_speed = pd.DataFrame(speed_results)
         df_person_trips = pd.DataFrame(person_trips_results)
         df_average_travel_time = pd.DataFrame(average_travel_time_results)
+        df_travel_time_benefit = pd.DataFrame(travel_time_benefit)
 
         # Merge all into one combined DataFrame
         df_combined = pd.merge(df_volume, df_speed, on="Combination", how="outer", suffixes=("_Volume", "_Speed"))
         df_combined = pd.merge(df_combined, df_person_trips, on="Combination", how="outer")
         df_combined = pd.merge(df_combined, df_average_travel_time, on="Combination", how="outer")
+        df_combined = pd.merge(df_combined, df_travel_time_benefit, on="Combination", how="outer")
 
         # Split Combination into components (Period, Vehicle, Year)
         df_combined[['Period', 'Vehicle', 'Year']] = df_combined['Combination'].str.split('_', expand=True)
@@ -582,7 +993,7 @@ def get_grouped_highway_results():
             'Avg_Vol_NoBuild', 'Avg_Vol_Build',
             'Avg_Speed_NoBuild', 'Avg_Speed_Build',
             'AnnualPersonTrips_NoBuild', 'AnnualPersonTrips_Build',
-            'Avg_TravelTime_NoBuild', 'Avg_TravelTime_Build'
+            'Avg_TravelTime_NoBuild', 'Avg_TravelTime_Build', 'ExistingBenefit', 'InducedBenefit'
         ]
         df_combined = df_combined[keep_columns]
 
@@ -685,7 +1096,9 @@ def generate_trends_from_dataframe(df, variable_names):
 
 final_trend_df = generate_trends_from_dataframe(df_combined, variable_names)    
     
+
     
+################################ Final Display Function #####################################
 def display_grouped_tables(final_trend_df):
     if final_trend_df is None:
         print("Nothing to display.")

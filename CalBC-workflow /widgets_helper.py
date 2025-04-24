@@ -204,7 +204,7 @@ highway_speed_and_volume_input_build_subtitle = """
 This section allows user to review detailed speed and volume data estimated by the model. The model estimates speeds and volumes on highways for HOVs, non-HOVs, weaving vehicles, and trucks during the peak and non-peak periods in Year 1 and Year 20 for build cases. Speeds are estimated using a BPR curve (or queuing analysis). Adjustments are made to speed and volumes to account for weaving, transit mode shifts, pavement condition, and TMS.<br><br>
 """
 
-# Highway Speed and Volume Section Subsections Description 
+# Ramp and Arterial Subsections Description 
 ramp_and_arterial_input_title = """
 Ramp and Arterial Inputs
 """
@@ -214,6 +214,7 @@ This section allows users to enter detailed arterial information for an arterial
 """
 
 ramp_and_arterial_input_info = [
+    "Detailed Information Available: Input `Yes` if detailed arterial and/or ramp data are available. Model automatically selects if other data are inputted.",
     "Input the total segment lengths for the ramps. These can be estimated from travel demand or micro-simulation model data as VMT/total trips.",
     "Input the total segment lengths for the arterials. These can be estimated from travel demand or micro-simulation model data as VMT/total trips.",
     "User may enter aggregate Ramp Volume during peak periods.",
@@ -222,3 +223,14 @@ ramp_and_arterial_input_info = [
     "User may enter aggregate Arterial Speed during peak periods. If arterial signal management project, user must enter arterial data. Benefits are estimated assuming all vehicles are automobiles."
     
 ]
+
+
+annual_person_trips_title = """
+Annual Person Trips
+"""
+
+annual_person_trips_subtitle = """
+This section is for information purposes only. It allows user to examine number trips estimated for projects that affect Average Vehicle Occupancy (e.g., HOT lane and HOV conversions).<br><br>
+"""
+
+annual_person_trips_info = ["This section is for information purposes only. Change only if information different from what is here is available"]
