@@ -189,8 +189,7 @@ def calculate_average_speeds_highway(AnnualFactor):
 # Call the function for speed calculations
 average_speeds_highway = calculate_average_speeds_highway(AnnualFactor)
 
-
-
+# List of widgets to observe for both volume and speed (combining the existing ones)
 widget_triggers_volumes = [
     modelinputs_widgets.PHV1NB_widget,
     modelinputs_widgets.PHV1B_widget,
@@ -274,42 +273,30 @@ for widget in widget_triggers_volumes:
     widget.observe(calculate_average_volumes_highway, names='value')
 for widget in widget_triggers_speed:
     widget.observe(calculate_average_speeds_highway, names='value')
-    
-    
-################################ Travel Time Metrics Table #####################################
-def get_grouped_highway_results():
+
+
+
+############################### Combined Results Table #####################################
+
+def update_combined_results(change=None):
     volume_results = calculate_average_volumes_highway(AnnualFactor)
     speed_results = calculate_average_speeds_highway(AnnualFactor)
-
 
     if volume_results and speed_results:
         # Convert to DataFrames
         df_volume = pd.DataFrame(volume_results)
         df_speed = pd.DataFrame(speed_results)
 
-        # Merge all into one combined DataFrame
+        # Merge volume and speed DataFrames on 'Combination'
         df_combined = pd.merge(df_volume, df_speed, on="Combination", how="outer", suffixes=("_Volume", "_Speed"))
 
-        # Split 'Combination' into components
+        # --- Extract 'Period', 'Vehicle', 'Year' from 'Combination' ---
         df_combined[['Period', 'Vehicle', 'Year']] = df_combined['Combination'].str.split('_', expand=True)
+        df_combined['Group'] = df_combined['Period'] + '_' + df_combined['Vehicle']
+        df_combined['Year'] = df_combined['Year'].str.replace('Year', '').astype(int)
 
-        # Clean 'Year' column (remove 'Year' text and convert to integer)
-        df_combined['Year'] = df_combined['Year'].apply(lambda x: int(x.replace('Year', '')) if isinstance(x, str) else x)
-
-        # Create a new column that holds only the year (optional, since 'Year' already does this)
-        df_combined['Combination_YearOnly'] = df_combined['Year']
-
-
-        # Define group for sorting (if needed later)
-        df_combined['Group'] = df_combined['Period'].astype(str) + "_" + df_combined['Vehicle'].astype(str)
-
-        # Final clean-up: keep only selected columns
-        keep_columns = ['Combination',
-            'Year', 'Group',
-            'Avg_Vol_NoBuild', 'Avg_Vol_Build',
-            'Avg_Speed_NoBuild', 'Avg_Speed_Build'
-        ]
-        df_combined = df_combined[keep_columns]
+        # Drop columns we no longer need
+        df_combined.drop(columns=['Period', 'Vehicle'], inplace=True)
 
         return df_combined
 
@@ -317,9 +304,13 @@ def get_grouped_highway_results():
         print("No results to display.")
         return None
 
-df_combined = get_grouped_highway_results()   
-    
 
+            
+df_combined = update_combined_results()
+            
+            
+############################### Trend Function #####################################
+            
 
 def calculate_trend_for_variables(df, variable_name, group_name):
     """
@@ -376,14 +367,11 @@ def calculate_trend_for_variables(df, variable_name, group_name):
         'Group': group_name,
         variable_name: all_values
     })
-    
-    
 
     return df_trend
 
 
 variable_names = ['Avg_Vol_NoBuild', 'Avg_Vol_Build', 'Avg_Speed_NoBuild', 'Avg_Speed_Build']
-
     
     
 def generate_trends_from_dataframe(df, variable_names):
@@ -401,9 +389,6 @@ def generate_trends_from_dataframe(df, variable_names):
         for other_df in group_trends[1:]:
             group_result = pd.merge(group_result, other_df, on=['Year', 'Group'], how='outer')
 
-        # Create new column 'Combination' combining Group and Year
-        group_result['Combination'] = group_result['Group'] + '_Year' + group_result['Year'].astype(str)
-
         all_group_trends.append(group_result)
 
     # Concatenate all groups
@@ -412,9 +397,10 @@ def generate_trends_from_dataframe(df, variable_names):
     return final_df
 
 
-final_trend_df = generate_trends_from_dataframe(df_combined, variable_names)
-    
-############################################################ Person Trips ############################################################
+
+final_trend_df = generate_trends_from_dataframe(df_combined, variable_names)  
+
+########################################################### Annual Person Trips ############################################################
 
 def calculate_person_trips_highway(final_trend_df):
     ProjType = projectinfo_widgets.subcategory_dropdown.value
@@ -425,27 +411,31 @@ def calculate_person_trips_highway(final_trend_df):
     AVONonNB = projectinfo_widgets.AVO_traffic_NP_no_build_widget.value
     AVONonB = projectinfo_widgets.AVO_traffic_NP_build_widget.value
 
-    person_trip_results = []
+    # Initialize empty columns
+    final_trend_df['AnnualPersonTrips_NoBuild'] = 0
+    final_trend_df['AnnualPersonTrips_Build'] = 0
 
-    for _, row in final_trend_df.iterrows():
-        combo = row['Combination']
+    for idx, row in final_trend_df.iterrows():
+        group = row['Group']
+        period, vehicle = group.split('_')
         vol_nobuild = row.get('Avg_Vol_NoBuild', 0)
         vol_build = row.get('Avg_Vol_Build', 0)
 
-        period, vehicle, year = combo.split('_')
-
+        # Default AVOs
         avo_nobuild = avo_build = 0
 
         if vehicle == 'HOV':
             avo_nobuild = AVOHovNB
             avo_build = AVOHovB
+
         elif vehicle in ['NonHOV', 'Ramp', 'Arterial']:
             if period == 'Peak':
                 avo_nobuild = AVOPeakNB
                 avo_build = AVOPeakB
-            else:
+            else:  # NonPeak
                 avo_nobuild = AVONonNB
                 avo_build = AVONonB
+
         elif vehicle == 'Weaving':
             hov_condition = ProjType in ["HOV Connector", "HOV Drop Ramp"]
             if period == 'Peak':
@@ -454,30 +444,30 @@ def calculate_person_trips_highway(final_trend_df):
             else:
                 avo_nobuild = AVOHovNB if hov_condition else AVONonNB
                 avo_build = AVOHovB if hov_condition else AVONonB
-        elif vehicle == 'Truck':
-            avo_nobuild = 1
-            avo_build = 1
 
+        elif vehicle == 'Truck':
+            avo_nobuild = avo_build = 1
+
+        else:
+            print(f"Unknown vehicle type: {vehicle}")
+
+        # Calculate person trips
         person_trips_nobuild = vol_nobuild * avo_nobuild if vol_nobuild else 0
         person_trips_build = vol_build * avo_build if vol_build else 0
 
-        row_result = row.to_dict()
-        row_result.update({
-            'AnnualPersonTrips_NoBuild': person_trips_nobuild,
-            'AnnualPersonTrips_Build': person_trips_build
-        })
+        # Store in the DataFrame
+        final_trend_df.at[idx, 'AnnualPersonTrips_NoBuild'] = person_trips_nobuild
+        final_trend_df.at[idx, 'AnnualPersonTrips_Build'] = person_trips_build
 
-        person_trip_results.append(row_result)
+    return final_trend_df
 
-    return pd.DataFrame(person_trip_results)
+# Call the function
+final_trend_df = calculate_person_trips_highway(final_trend_df)
 
+########################################################### Average Travel Time ############################################################
 
-annual_person_trips = calculate_person_trips_highway(final_trend_df)
-
-############################################################ Average Travel Time ############################################################
-
-def calculate_average_travel_time(annual_person_trips):
-    # Fetch required values from widgets
+def calculate_average_travel_time(final_trend_df):
+    # Widget values
     ProjType = projectinfo_widgets.subcategory_dropdown.value
     ImpactedNB = projectinfo_widgets.impacted_length_no_build_widget.value
     ImpactedB = projectinfo_widgets.impacted_length_build_widget.value
@@ -488,14 +478,17 @@ def calculate_average_travel_time(annual_person_trips):
     def safe_divide(numerator, denominator):
         return "#DIV/0!" if denominator == 0 else round(numerator / denominator, 2)
 
-    average_travel_time_results = []
+    # Initialize empty columns
+    final_trend_df['Avg_TravelTime_NoBuild'] = None
+    final_trend_df['Avg_TravelTime_Build'] = None
 
-    for _, row in annual_person_trips.iterrows():
-        combo = row['Combination']
+    # Iterate and populate
+    for idx, row in final_trend_df.iterrows():
+        group = row['Group']
+        year = row['Year']
+        period, vehicle = group.split('_')
         speed_nobuild = row.get('Avg_Speed_NoBuild', 0)
         speed_build = row.get('Avg_Speed_Build', 0)
-
-        period, vehicle, year = combo.split('_')
 
         travel_time_nobuild = "#N/A"
         travel_time_build = "#N/A"
@@ -545,36 +538,20 @@ def calculate_average_travel_time(annual_person_trips):
                 travel_time_nobuild = safe_divide(SegmentA, speed_nobuild)
                 travel_time_build = safe_divide(SegmentA, speed_build)
 
-        # Create a copy of the row as a dictionary
-        row_result = row.to_dict()
+        # Assign directly into the DataFrame
+        final_trend_df.at[idx, 'Avg_TravelTime_NoBuild'] = travel_time_nobuild
+        final_trend_df.at[idx, 'Avg_TravelTime_Build'] = travel_time_build
 
-        # Update with new travel time results
-        row_result.update({
-            'Avg_TravelTime_NoBuild': travel_time_nobuild,
-            'Avg_TravelTime_Build': travel_time_build
-        })
-
-        # Append the updated row to the results list
-        average_travel_time_results.append(row_result)
-
-    # Convert the list of dicts into a DataFrame and return it
-    return pd.DataFrame(average_travel_time_results)
+    return final_trend_df
 
 
 # Call the function
-average_traveltime_and_annual_persontrips = calculate_average_travel_time(annual_person_trips)
+final_trend_df = calculate_average_travel_time(final_trend_df)
 
-############################################################ Travel Time Benefits #############################################################################
-
+# ################################ Widget Observers for Person Trips and Average Travel Time #####################################
 
 
     
-    
-    
-    
-# ################################ Widget Observers for Average Volume, Average Trips, Person Trips and Average Travel Time #####################################
-
-# List of widgets to observe for both volume and speed (combining the existing ones)   
 widget_triggers_persontrips = [    
     #PersonTrips-related widgets
     projectinfo_widgets.subcategory_dropdown,
@@ -602,63 +579,50 @@ for widget in widget_triggers_persontrips:
     widget.observe(calculate_person_trips_highway, names='value')
 for widget in widget_triggers_avgtraveltime:
     widget.observe(calculate_average_travel_time, names='value')
-    
 
 
 
+# ############################################################ Travel Time Benefits #############################################################################
 
 
+import numpy as np
 
-
-    
-
-        
-def traveltime_benefit():    
+def traveltime_benefit(final_trend_df):    
     def safe_float(val):
         try:
             return float(val)
         except (ValueError, TypeError):
-            return 0
+            return 0.0
         
-                
     # Fetch required values from widgets
     ProjType = projectinfo_widgets.subcategory_dropdown.value
     PerIndHOV = projectinfo_widgets.percent_induced_trip_widget.value
     PNT1Ind = modelinputs_widgets.PNT1Ind_widget.value
     PNT20Ind = modelinputs_widgets.PNT20Ind_widget.value
-    PTT1Ind = modelinputs_widgets.PTT1Ind_widget.value
-    PTT20Ind = modelinputs_widgets.PTT20Ind_widget.value
-    NNT1Ind = modelinputs_widgets.NNT1Ind_widget.value
-    NNT20Ind = modelinputs_widgets.NNT20Ind_widget.value
-    NTT1Ind = modelinputs_widgets.NTT1Ind_widget.value
-    NTT20Ind = modelinputs_widgets.NTT20Ind_widget.value
+    RADataAvail = modelinputs_widgets.RADataAvail_widget
     TMSLookup = params.TMSLookup
     TMSAdj = params.tms_adj
     UserAdjInputs = params.UserAdjInputs
     Induced = params.Induced
-    RADataAvail = modelinputs_widgets.RADataAvail_widget.value
     
-    # Initialize existing_benefits for the sum for Arterial Ramp
-    NonHOVexistingPeakTTBenefit = 0  # NonHOV Peak
-    WeavingexistingPeakTTBenefit = 0  # Weaving Peak
-    TruckexistingPeakTTBenefit = 0  # Truck Peak
-    NonHOVinducedPeakTTBenefit = 0  # NonHOV Peak
-    WeavinginducedPeakTTBenefit = 0  # Weaving Peak
-    TruckinducedPeakTTBenefit = 0  # Truck Peak
+    NonHOVinducedPeakTTBenefit = 0
+    WeavinginducedPeakTTBenefit = 0
+    TruckinducedPeakTTBenefit = 0
+    NonHOVexistingPeakTTBenefit = 0
+    WeavingexistingPeakTTBenefit = 0
+    TruckexistingPeakTTBenefit = 0 
     
     
-    traveltime_benefit_results = []
-
-    for _, row in average_traveltime_and_annual_persontrips.iterrows():
-        row_result = row.to_dict()
+    # Iterate through rows of final_trend_df and calculate the benefits
+    for idx, row in final_trend_df.iterrows():
+        combo = row['Group']
+        period, vehicle = combo.split('_')  # Split to get period and vehicle
+        year = row['Year']  # Year is directly from the 'Year' column
         
-        combo = row['Combination']
         avg_tt_nobuild = safe_float(row.get('Avg_TravelTime_NoBuild', 0))
         avg_tt_build = safe_float(row.get('Avg_TravelTime_Build', 0))
         annual_trips_nobuild = safe_float(row.get('AnnualPersonTrips_NoBuild', 0))
         annual_trips_build = safe_float(row.get('AnnualPersonTrips_Build', 0))
-
-        period, vehicle, year = combo.split('_')
 
         travel_time_benefit_existing = 0
         travel_time_benefit_induced = 0
@@ -696,7 +660,7 @@ def traveltime_benefit():
                     (avg_tt_nobuild - avg_tt_build) * min(annual_trips_nobuild, annual_trips_build)
                 )
 
-            # Apply multiplier only if UserAdjInputs is the string "True"
+            # Apply multiplier if UserAdjInputs is the string "True"
             multiplier = TMSAdj.get(TMSLookup, {}).get('Em', 0) if UserAdjInputs == "True" else 1
             travel_time_benefit_existing = base_benefit_existing * multiplier
 
@@ -716,48 +680,42 @@ def traveltime_benefit():
 
             elif ProjType in ['HOV-2 to HOV-3 Conv', 'HOT Lane Conversion']:
 
-                year = combo.split('_')[-1]  # This will give 'Year1' or 'Year20'
-                year_number = year.replace('Year', '')  # Extract '1' or '20' by removing 'Year'
-
                 # Find the Peak_HOV row that matches the current year from the data
                 peak_hov_row = next(
-                    (row for row in average_travel_time if row['Combination'] == f'Peak_HOV_{year}'),
+                    (row for row in average_travel_time if row['Group'] == 'Peak_HOV'),
                     None
                 )
                 avg_tt_build_hov = peak_hov_row.get('Avg_TravelTime_Build', 0)
 
                 # Calculate the induced benefit for Year 1 (base_benefit_induced_Year1)
-                if year_number == '1':
+                if year == 1:
                     base_benefit_induced = (
                         (avg_tt_nobuild - ((1 - PerIndHOV) * avg_tt_build + PerIndHOV * avg_tt_build_hov))
                         * PNT1Ind  # Directly using PNT1Ind for Year 1
                         * (-0.5 if Induced == "Y" else -1)
                     )
-                    # Store the Year 1 value for later use in L55
+                    # Store the Year 1 value for later use
                     base_benefit_induced_Year1 = base_benefit_induced
                 # Calculate the induced benefit for Year 20 (base_benefit_induced_Year20)
-                elif year_number == '20':
+                elif year == 20:
                     base_benefit_induced = (
                         (avg_tt_nobuild - ((1 - PerIndHOV) * avg_tt_build + PerIndHOV * avg_tt_build_hov))
                         * PNT20Ind  # Directly using PNT20Ind for Year 20
                         * (-0.5 if Induced == "Y" else -1)
                     )
-                    # Store the Year 20 value for later use in L56
+                    # Store the Year 20 value for later use
                     base_benefit_induced_Year20 = base_benefit_induced
-                    
+
                 else:  # For years 2 to 19, perform linear interpolation between Year 1 and Year 20
                     # Known values for years 1 and 20
                     years_known = np.array([1, 20])
                     benefits_known = np.array([base_benefit_induced_Year1, base_benefit_induced_Year20])
 
-                    # Point at which we want to calculate the trend (for example, year_number is B58)
-                    year_to_predict = int(year_number)
-
                     # Calculate the linear trend using NumPy's polyfit (linear regression)
                     slope, intercept = np.polyfit(years_known, benefits_known, 1)
 
-                    # Now, calculate the interpolated value for the given year (B58)
-                    interpolated_value = np.polyval([slope, intercept], year_to_predict)
+                    # Now, calculate the interpolated value for the current year
+                    interpolated_value = np.polyval([slope, intercept], year)
 
                     # Final induced benefit using the interpolated value
                     base_benefit_induced = interpolated_value * (-0.5 if Induced == "Y" else -1)
@@ -844,48 +802,42 @@ def traveltime_benefit():
 
             elif ProjType in ['HOV-2 to HOV-3 Conv', 'HOT Lane Conversion']:
 
-                year = combo.split('_')[-1]  # This will give 'Year1' or 'Year20'
-                year_number = year.replace('Year', '')  # Extract '1' or '20' by removing 'Year'
-
                 # Find the Peak_HOV row that matches the current year from the data
                 peak_hov_row = next(
-                    (row for row in average_travel_time if row['Combination'] == f'Peak_HOV_{year}'),
+                    (row for row in average_travel_time if row['Group'] == 'Peak_HOV'),
                     None
                 )
                 avg_tt_build_hov = peak_hov_row.get('Avg_TravelTime_Build', 0)
 
                 # Calculate the induced benefit for Year 1 (base_benefit_induced_Year1)
-                if year_number == '1':
+                if year == 1:
                     base_benefit_induced = (
                         (avg_tt_nobuild - ((1 - PerIndHOV) * avg_tt_build + PerIndHOV * avg_tt_build_hov))
-                        * PTT1Ind 
+                        * PTT1Ind  # Directly using PNT1Ind for Year 1
                         * (-0.5 if Induced == "Y" else -1)
                     )
-                    # Store the Year 1 value for later use in L55
+                    # Store the Year 1 value for later use
                     base_benefit_induced_Year1 = base_benefit_induced
                 # Calculate the induced benefit for Year 20 (base_benefit_induced_Year20)
-                elif year_number == '20':
+                elif year == 20:
                     base_benefit_induced = (
                         (avg_tt_nobuild - ((1 - PerIndHOV) * avg_tt_build + PerIndHOV * avg_tt_build_hov))
-                        * PTT20Ind 
+                        * PTT20Ind  # Directly using PNT20Ind for Year 20
                         * (-0.5 if Induced == "Y" else -1)
                     )
-                    # Store the Year 20 value for later use in L56
+                    # Store the Year 20 value for later use
                     base_benefit_induced_Year20 = base_benefit_induced
-                    
+
                 else:  # For years 2 to 19, perform linear interpolation between Year 1 and Year 20
                     # Known values for years 1 and 20
                     years_known = np.array([1, 20])
                     benefits_known = np.array([base_benefit_induced_Year1, base_benefit_induced_Year20])
 
-                    # Point at which we want to calculate the trend (for example, year_number is B58)
-                    year_to_predict = int(year_number)
-
                     # Calculate the linear trend using NumPy's polyfit (linear regression)
                     slope, intercept = np.polyfit(years_known, benefits_known, 1)
 
-                    # Now, calculate the interpolated value for the given year (B58)
-                    interpolated_value = np.polyval([slope, intercept], year_to_predict)
+                    # Now, calculate the interpolated value for the current year
+                    interpolated_value = np.polyval([slope, intercept], year)
 
                     # Final induced benefit using the interpolated value
                     base_benefit_induced = interpolated_value * (-0.5 if Induced == "Y" else -1)
@@ -896,8 +848,6 @@ def traveltime_benefit():
 
                 # Assign value to (NonHOV Peak) for induced travel time benefit
                 TruckinducedPeakTTBenefit = travel_time_benefit_induced
-
-            
 
         elif vehicle == 'Ramp' and period == 'Peak':
             if RADataAvail == "Y":
@@ -963,42 +913,42 @@ def traveltime_benefit():
                     * 0.5
                 )
 
-            elif ProjType in ['HOV-2 to HOV-3 Conv', 'HOT Lane Conversion']:
-                # Extract the year from the 'Combination' value (e.g., 'NonPeak_HOV_Year1' or 'NonPeak_HOV_Year20')
-                year = combo.split('_')[-1]
-                year_number = year.replace('Year', '')  # Extract '1' or '20' by removing 'Year'
 
-                # Check if the year is 1, 20, or in between
-                if year_number == '1':  
-                    travel_time_benefit_induced = (
+            elif ProjType in ['HOV-2 to HOV-3 Conv', 'HOT Lane Conversion']:
+                # Extract the year from the 'Year' value
+                year = row['Year']
+
+                # Initialize the variable for the induced benefit
+                travel_time_benefit_induced = 0
+
+                if year == 1:
+                    # Calculate the induced benefit for Year 1
+                    travel_time_benefit_induced_Year1 = (
                         (avg_tt_nobuild - avg_tt_build) * NNT1Ind * (-0.5 if Induced == "Y" else -1)
                     )
-                    # Store the Year 1 value for later interpolation
-                    base_benefit_induced_Year1 = travel_time_benefit_induced
+                    travel_time_benefit_induced = travel_time_benefit_induced_Year1
 
-                elif year_number == '20':  # For Year 20, use NNT20Ind
-                    travel_time_benefit_induced = (
+                elif year == 20:
+                    # Calculate the induced benefit for Year 20
+                    travel_time_benefit_induced_Year20 = (
                         (avg_tt_nobuild - avg_tt_build) * NNT20Ind * (-0.5 if Induced == "Y" else -1)
                     )
-                    # Store the Year 20 value for later interpolation
-                    base_benefit_induced_Year20 = travel_time_benefit_induced
+                    travel_time_benefit_induced = travel_time_benefit_induced_Year20
 
-                else:  # For years 2 to 19, perform linear interpolation between Year 1 and Year 20
-                    # Known values for years 1 and 20
+                else:
+                    # For years between 2 and 19, interpolate between Year 1 and Year 20 benefits
+                    # Known values for Year 1 and Year 20
+                    travel_time_benefit_induced_known = np.array([travel_time_benefit_induced_Year1, travel_time_benefit_induced_Year20])
+
+                    # Known years for interpolation
                     years_known = np.array([1, 20])
-                    benefits_known = np.array([base_benefit_induced_Year1, base_benefit_induced_Year20])
 
-                    # Point at which we want to calculate the trend (for example, year_number is B58)
-                    year_to_predict = int(year_number)
+                    # Calculate linear interpolation between Year 1 and Year 20 benefits
+                    slope, intercept = np.polyfit(years_known, travel_time_benefit_induced_known, 1)
 
-                    # Calculate the linear trend using NumPy's polyfit (linear regression)
-                    slope, intercept = np.polyfit(years_known, benefits_known, 1)
+                    # Now, calculate the interpolated value for the current year
+                    travel_time_benefit_induced = np.polyval([slope, intercept], year)
 
-                    # Now, calculate the interpolated value for the given year
-                    interpolated_value = np.polyval([slope, intercept], year_to_predict)
-
-                    # Set the interpolated value as the induced benefit for the current year
-                    travel_time_benefit_induced = interpolated_value
 
         # NonPeak Weaving
         elif vehicle == 'Weaving' and period == 'NonPeak':
@@ -1054,42 +1004,39 @@ def traveltime_benefit():
                 )
 
             elif ProjType in ['HOV-2 to HOV-3 Conv', 'HOT Lane Conversion']:
-                # Extract the year from the 'Combination' value (e.g., 'NonPeak_HOV_Year1' or 'NonPeak_HOV_Year20')
-                year = combo.split('_')[-1]
-                year_number = year.replace('Year', '')  # Extract '1' or '20' by removing 'Year'
+                # Extract the year from the 'Year' value
+                year = row['Year']
 
-                # Calculate the induced benefit for Year 1 or Year 20
-                if year_number == '1':  
-                    travel_time_benefit_induced = (
+                # Initialize the variable for the induced benefit
+                travel_time_benefit_induced = 0
+
+                if year == 1:
+                    # Calculate the induced benefit for Year 1
+                    travel_time_benefit_induced_Year1 = (
                         (avg_tt_nobuild - avg_tt_build) * NTT1Ind * (-0.5 if Induced == "Y" else -1)
                     )
-                    # Store the Year 1 value for later interpolation
-                    base_benefit_induced_Year1 = travel_time_benefit_induced
+                    travel_time_benefit_induced = travel_time_benefit_induced_Year1
 
-                elif year_number == '20':  
-                    travel_time_benefit_induced = (
+                elif year == 20:
+                    # Calculate the induced benefit for Year 20
+                    travel_time_benefit_induced_Year20 = (
                         (avg_tt_nobuild - avg_tt_build) * NTT20Ind * (-0.5 if Induced == "Y" else -1)
                     )
-                    # Store the Year 20 value for later interpolation
-                    base_benefit_induced_Year20 = travel_time_benefit_induced
+                    travel_time_benefit_induced = travel_time_benefit_induced_Year20
 
-                else:  # For years 2 to 19, perform linear interpolation between Year 1 and Year 20
-                    # Known values for years 1 and 20
+                else:
+                    # For years between 2 and 19, interpolate between Year 1 and Year 20 benefits
+                    # Known values for Year 1 and Year 20
+                    travel_time_benefit_induced_known = np.array([travel_time_benefit_induced_Year1, travel_time_benefit_induced_Year20])
+
+                    # Known years for interpolation
                     years_known = np.array([1, 20])
-                    benefits_known = np.array([base_benefit_induced_Year1, base_benefit_induced_Year20])
 
-                    # Point at which we want to calculate the trend (for example, year_number is B58)
-                    year_to_predict = int(year_number)
+                    # Calculate linear interpolation between Year 1 and Year 20 benefits
+                    slope, intercept = np.polyfit(years_known, travel_time_benefit_induced_known, 1)
 
-                    # Calculate the linear trend using NumPy's polyfit (linear regression)
-                    slope, intercept = np.polyfit(years_known, benefits_known, 1)
-
-                    # Now, calculate the interpolated value for the given year
-                    interpolated_value = np.polyval([slope, intercept], year_to_predict)
-
-                    # Set the interpolated value as the induced benefit for the current year
-                    travel_time_benefit_induced = interpolated_value
-
+                    # Now, calculate the interpolated value for the current year
+                    travel_time_benefit_induced = np.polyval([slope, intercept], year)
 
         # NonPeak Ramp
         elif vehicle == 'Ramp' and period == 'NonPeak':
@@ -1136,69 +1083,129 @@ def traveltime_benefit():
                 travel_time_benefit_induced = (NonHOVinducedPeakTTBenefit + WeavinginducedPeakTTBenefit + TruckinducedPeakTTBenefit)* TMSAdj.get(TMSLookup, {}).get('Benefit', 1)
 
 
-            # Add the calculated values to the results
-        row_result.update({
-            'ExistingBenefit': travel_time_benefit_existing,
-            'InducedBenefit': travel_time_benefit_induced,
-        })
+        # Assign the benefits to the row directly
+        final_trend_df.at[idx, 'ExistingBenefit'] = travel_time_benefit_existing
+        final_trend_df.at[idx, 'InducedBenefit'] = travel_time_benefit_induced
 
-        # Append updated row
-        traveltime_benefit_results.append(row_result)
+    # Return the updated DataFrame with benefits columns
+    return final_trend_df
 
-    return pd.DataFrame(traveltime_benefit_results)
+# Call the function    
+final_trend_df = traveltime_benefit(final_trend_df)
+
+# Display the updated DataFrame with travel time benefits
+display(final_trend_df)
+    
+    
+
+    
 
 
-traveltime_benefit = traveltime_benefit()
+
+
+
+# ################################ Travel Time Metrics Table #####################################
+# def get_grouped_highway_results():
+#     volume_results = calculate_average_volumes_highway(AnnualFactor)
+#     speed_results = calculate_average_speeds_highway(AnnualFactor)
+#     person_trips_results = calculate_person_trips_highway(volume_results)
+#     average_travel_time_results = calculate_average_travel_time(speed_results)
+#     travel_time_benefit = traveltime_benefit()
+
+#     if volume_results and speed_results and person_trips_results:
+#         # Convert to DataFrames
+#         df_volume = pd.DataFrame(volume_results)
+#         df_speed = pd.DataFrame(speed_results)
+#         df_person_trips = pd.DataFrame(person_trips_results)
+#         df_average_travel_time = pd.DataFrame(average_travel_time_results)
+#         df_travel_time_benefit = pd.DataFrame(travel_time_benefit)
+
+#         # Merge all into one combined DataFrame
+#         df_combined = pd.merge(df_volume, df_speed, on="Combination", how="outer", suffixes=("_Volume", "_Speed"))
+#         df_combined = pd.merge(df_combined, df_person_trips, on="Combination", how="outer")
+#         df_combined = pd.merge(df_combined, df_average_travel_time, on="Combination", how="outer")
+#         df_combined = pd.merge(df_combined, df_travel_time_benefit, on="Combination", how="outer")
+
+#         # Split Combination into components (Period, Vehicle, Year)
+#         df_combined[['Period', 'Vehicle', 'Year']] = df_combined['Combination'].str.split('_', expand=True)
+
+#         # Clean Year
+#         df_combined['Year'] = df_combined['Year'].apply(lambda x: int(x.replace('Year', '')) if isinstance(x, str) else x)
+
+#         # Reassign Combination to year only (if needed)
+#         df_combined['Combination'] = df_combined['Year']
+
+#         # Define group for sorting (if needed later)
+#         df_combined['Group'] = df_combined['Period'].astype(str) + "_" + df_combined['Vehicle'].astype(str)
+
+#         # Final clean-up: keep only selected columns
+#         keep_columns = [
+#             'Year', 'Group',
+#             'Avg_Vol_NoBuild', 'Avg_Vol_Build',
+#             'Avg_Speed_NoBuild', 'Avg_Speed_Build',
+#             'AnnualPersonTrips_NoBuild', 'AnnualPersonTrips_Build',
+#             'Avg_TravelTime_NoBuild', 'Avg_TravelTime_Build', 'ExistingBenefit', 'InducedBenefit'
+#         ]
+#         df_combined = df_combined[keep_columns]
+
+#         return df_combined
+
+#     else:
+#         print("No results to display.")
+#         return None
+
+# df_combined = get_grouped_highway_results()   
+    
 
 
 
 
 
+    
 
-def get_grouped_travel_time_benefit_tables(df):
-    # Define custom group order
+    
+################################ Final Display Function #####################################
+def display_grouped_tables(final_trend_df):
+    if final_trend_df is None:
+        print("Nothing to display.")
+        return
+
+    # Custom order for Peak and NonPeak groups
     peak_order = ["Peak_HOV", "Peak_NonHOV", "Peak_Weaving", "Peak_Truck", "Peak_Ramp", "Peak_Arterial"]
     nonpeak_order = ["NonPeak_NonHOV", "NonPeak_Weaving", "NonPeak_Arterial"]
+
+    # Combine the two lists to define custom sorting order
     custom_order = peak_order + nonpeak_order
 
-    # Add temporary sort key for group order
-    df['GroupOrder'] = df['Group'].apply(lambda x: custom_order.index(x) if x in custom_order else len(custom_order))
+    # Sort the groups based on the custom order
+    sorted_groups = sorted(final_trend_df['Group'].unique(), key=lambda x: custom_order.index(x) if x in custom_order else len(custom_order))
 
-    # Add custom sorting for 'Year', where 1 and 20 should come first, then others in ascending order
-    def custom_year_sort(year):
-        if year == 1:
-            return -1  # Make year 1 come first
-        elif year == 20:
-            return 0  # Make year 20 come second
-        else:
-            return year  # Keep the rest in ascending order
+    for group_name in sorted_groups:
+        # Filter the dataframe for each group
+        group_df = final_trend_df[final_trend_df['Group'] == group_name]
 
-    # Sort by 'GroupOrder' first, then by custom year sorting
-    df['YearSortOrder'] = df['Year'].apply(custom_year_sort)
-    
-    # Sort by the 'GroupOrder' and 'YearSortOrder', then drop helper columns
-    df_sorted = df.sort_values(by=['GroupOrder', 'YearSortOrder']).drop(columns=['GroupOrder', 'Combination', 'YearSortOrder'])
+        # Ensure Year 1 and Year 20 are at the top
+        year_1_and_20 = group_df[group_df['Year'].isin([1, 20])]
+        rest_of_years = group_df[~group_df['Year'].isin([1, 20])]
 
-    # Group by 'Group' and reset index for each group
-    grouped_tables = {
-        group: group_df.reset_index(drop=True)
-        for group, group_df in df_sorted.groupby('Group')
-    }
+        # Sort the remaining years
+        rest_of_years = rest_of_years.sort_values(by='Year')
 
-    # Display each group (you can adjust this to how you want to view it)
-    for group, group_df in grouped_tables.items():
-        print(f"Group: {group}")
-        display(group_df)  # This will render it in Jupyter or IPython environments
+        # Concatenate Year 1, Year 20 with the sorted remaining years
+        group_df_sorted = pd.concat([year_1_and_20, rest_of_years])
 
-    return grouped_tables
-
-
-
-
-grouped_tables = get_grouped_travel_time_benefit_tables(traveltime_benefit)
-
+        print(f"--- {group_name} ---")
+        
+        # Reorder to put Year at the beginning
+        cols = ['Year'] + [col for col in group_df_sorted.columns if col not in ['Year', 'Period', 'Vehicle', 'Group', 'Combination']]
+        group_df_sorted = group_df_sorted[cols]
+                
+        # Display the group DataFrame
+        display(group_df_sorted)  # Changed to display group_df_sorted, as that's the sorted dataframe.
+        print("\n")
 
     
-
+    
+display_grouped_tables(final_trend_df)
      
 
