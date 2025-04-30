@@ -14,6 +14,13 @@ import modelinputs_widgets
 # Getting values used in all the functions 
 AnnualFactor = params.AnnualFactor
 
+common_layout = widgets.Layout(
+    width='500px', 
+    background_color='#CCFFCC',  # Background color for all widgets
+    padding='2px',
+    border='2px solid gray'  # Border color and thickness
+)
+
 ######################################################################### HIGHWAY BENEFITS #########################################################################
 ############################################################ Average Volume ############################################################
 
@@ -1125,7 +1132,7 @@ def add_discounted_value_column(df, value_column_name, output_column_name):
 final_trend_df = add_discounted_value_column(final_trend_df, value_column_name='Constant Dollar', output_column_name='Present Value')
 
 # Display the updated DataFrame with travel time benefits
-display(final_trend_df)  
+# display(final_trend_df)  
 
 widget_triggers_presentvalue =[
     projectinfo_widgets.construct_widget
@@ -1229,38 +1236,49 @@ sum_by_year_df = sum_present_value_by_year(final_trend_df)
 
 # sum_by_year_df = add_constant_dollars_column(sum_by_year_df, value_column_name='Total Present Value', output_column_name='Constant Dollars')
 
-display(sum_by_year_df)
 
 
 ############################################## Summary Table ##############################################
 
-def calculate_benefit_cost_ratio(sum_by_year_df, total_cost):
-    # Extract Total Travel Time Benefits (from the last row)
-    total_benefit = sum_by_year_df[sum_by_year_df['Year'] == 'Total Travel Time Benefits']['Total Present Value'].values[0]
-    
-    # Calculate Benefit-Cost Ratio
-    BCR = total_benefit / total_cost if total_cost != 0 else float('inf')
-    
-    return BCR
+# Extract Total Travel Time Benefits (from the last row)
+total_benefit_value = sum_by_year_df[sum_by_year_df['Year'] == 'Total Travel Time Benefits']['Total Present Value'].values[0]
 
-# Create the input widget for Total Cost
-total_cost_widget = widgets.FloatText(
-    value=1000000,  # Default total cost value
-    description='Total Cost ($):',
-    disabled=False
+# Total Benefit widget (read-only)
+total_benefit_widget = widgets.FloatText(
+    value=total_benefit_value,
+    description="Total Benefit ($):",
+    disabled=True,
+    layout=common_layout,
+    style={'description_width': 'initial'}
 )
 
-# Create the output area to display the BCR
-output = widgets.Output()
+# Total Cost widget (editable)
+total_cost_widget = widgets.FloatText(
+    value=0,
+    description='Total Cost ($):',
+    layout=common_layout,
+    style={'description_width': 'initial'}
+)
 
-# Define the function to update the output area based on the input value
-def update_bcr(total_cost):
-    with output:
-        BCR = calculate_benefit_cost_ratio(sum_by_year_df, total_cost)
-        display(HTML(f"<h2><strong>BCR = {BCR:.2f}</strong></h2>"))
+# Output widget to update display without stacking
+bcr_output = widgets.Output()
 
-# Set up the interactive widget (this will automatically display the total_cost_widget)
-interact(update_bcr, total_cost=total_cost_widget)
+# Update function for BCR display
+def update_bcr(change=None):
+    with bcr_output:
+        bcr_output.clear_output()
+        total_cost = total_cost_widget.value
+        if total_cost == 0 or total_benefit_value == 0:
+            display(HTML(f"<h4 style='color: red;'>BCR = Error: Benefit or Cost not calculated...</h4>"))
+        else:
+            bcr = total_benefit_value / total_cost
+            display(HTML(f"<h2 style='font-size: 40px; color: blue;'><strong>BCR = {bcr:.2f}</strong></h2>"))
 
-# Display the output area
-display(output)
+# Trigger BCR update when cost changes
+total_cost_widget.observe(update_bcr, names='value')
+
+# Display input widgets
+display(total_benefit_widget, total_cost_widget, bcr_output)
+
+# Initial display
+update_bcr()

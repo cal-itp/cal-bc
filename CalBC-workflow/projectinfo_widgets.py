@@ -325,102 +325,175 @@ def create_project_info_widgets():
     ramp_design_speed_widgets = widgets.HBox([ramp_design_speed_no_build_widget, ramp_design_speed_build_widget])
 
     
-    # Highway Segment No Build widget (initially empty)
+    # --- Segment Input Widgets ---
     highway_segment_no_build_widget = widgets.FloatText(
         description='Highway Segment (No Build):',
-        value=None,  # Default is None (blank)
-        disabled=False,
-        style={'description_width': 'initial'},
-        layout=common_layout  # Adjust width to accommodate description
-    )
-
-    # Highway Segment Build widget (initially mirrors No Build)
-    highway_segment_build_widget = widgets.FloatText(
-        description='Highway Segment (Build):',
-        value=None,  # Default is None (blank)
-        disabled=False,
-        style={'description_width': 'initial'},
-        layout=common_layout,  # Adjust width to accommodate description
-        readout_format='.1f'  # Ensures the value displays with 1 decimal point
-    )
-
-    # Function to update Build field when No Build field is changed
-    def sync_build_value(change):
-        # If No Build value is changed and not None, set Build to the same value
-        if highway_segment_no_build_widget.value is not None:
-            highway_segment_build_widget.value = highway_segment_no_build_widget.value
-        # If No Build is 0, set Build to 0.0
-        elif highway_segment_no_build_widget.value == 0.0:
-            highway_segment_build_widget.value = 0.0
-
-    # Link the No Build widget to update Build widget
-    highway_segment_no_build_widget.observe(sync_build_value, names='value')
-
-    # Combine both "No Build" and "Build" input fields into a horizontal layout
-    highway_segment_widgets = widgets.HBox([highway_segment_no_build_widget, highway_segment_build_widget])
-    
-    def calculate_impacted_length(change):
-        # Get current values
-        highway_segment_no_build = highway_segment_no_build_widget.value
-        subcategory = subcategory_dropdown.value
-
-        # Initialize impacted length no build to the No Build value
-        impacted_length_no_build = highway_segment_no_build
-
-        # Check the subcategory and calculate Impacted Length (No Build)
-        if subcategory == "Auxiliary Lane" or subcategory == "Off-Ramp Widening":
-            impacted_length_no_build = 1500 / 5280  # Add 1500 feet (converted to miles)
-        elif subcategory == "Freeway Connector" or subcategory == "HOV Connector" or subcategory == "HOV Drop Ramp":
-            impacted_length_no_build = 3250 / 5280  # Add 3250 feet (converted to miles)
-        elif subcategory == "Passing Lane":
-            impacted_length_no_build += 3  # Add 3 miles if Passing Lane is selected
-        else:
-            # For all other cases, keep the Highway Segment No Build value
-            impacted_length_no_build = highway_segment_no_build
-
-        # Update the Impacted Length (No Build) widget value
-        impacted_length_no_build_widget.value = round(impacted_length_no_build, 1)  # Round to 1 decimal place
-
-        # Set the Build value to be the same as No Build
-        impacted_length_build_widget.value = impacted_length_no_build
-
-    # Link the Highway Segment No Build widget, Subcategory dropdown to the calculation
-    highway_segment_no_build_widget.observe(calculate_impacted_length, names='value')
-    subcategory_dropdown.observe(calculate_impacted_length, names='value')
-
-        # Define Impacted Length No Build widget
-    impacted_length_no_build_widget = widgets.IntText(
-        description='Impacted Length (No Build):',
-        value=None,  # Default value set to 0.0
-        disabled=False,
-        style={'description_width': 'initial'},
-        layout=common_layout
-    )
-
-    # Define Impacted Length Build widget
-    impacted_length_build_widget = widgets.FloatText(
-        description='Impacted Length (Build):',
-        value=None,  # Default is None (blank)
+        value=None,
         disabled=False,
         style={'description_width': 'initial'},
         layout=common_layout,
-        readout_format='.1f'  # Ensures the value displays with 1 decimal point
+        readout_format='.1f'
     )
+
+    highway_segment_build_widget = widgets.FloatText(
+        description='Highway Segment (Build):',
+        value=None,
+        disabled=False,
+        style={'description_width': 'initial'},
+        layout=common_layout,
+        readout_format='.1f'
+    )
+
+    # --- Sync Build with No Build (when No Build changes) ---
+    def sync_build_value_highwaysegment(change):
+        # Sync the Build value with No Build if No Build changes
+        if highway_segment_no_build_widget.value is not None:
+            highway_segment_build_widget.value = highway_segment_no_build_widget.value
+            
+    highway_segment_no_build_widget.observe(sync_build_value_highwaysegment, names='value')
+
+    # --- Impacted Length Output Widgets ---
+    impacted_length_no_build_widget = widgets.FloatText(
+        description='Impacted Length (No Build):',
+        value=None,
+        disabled=False,  # Read-only field
+        style={'description_width': 'initial'},
+        layout=common_layout,
+        readout_format='.1f',
+    )
+
+    impacted_length_build_widget = widgets.FloatText(
+        description='Impacted Length (Build):',
+        value=None,
+        disabled=False,  # Read-only field
+        style={'description_width': 'initial'},
+        layout=common_layout,
+        readout_format='.1f',
+    )
+
+    # Function to calculate impacted length for No Build scenario
+    def calculate_impacted_length_no_build(change=None):
+        subcategory = subcategory_dropdown.value
+
+        # These values may be None if the user hasn't input anything yet
+        segmentnb = highway_segment_no_build_widget.value
+
+        # Ensure segment value defaults to 0 if None
+        segmentnb = segmentnb if segmentnb is not None else 0
+
+        # --- No Build Calculations ---
+        if subcategory in ["Auxiliary Lane", "Off-Ramp Widening"]:
+            length = 1500 / 5280  # 1500 feet converted to miles
+            impacted_length_no_build_widget.value = round(length, 1)
+        elif subcategory in ["Freeway Connector", "HOV Connector", "HOV Drop Ramp"]:
+            length = 3250 / 5280  # 3250 feet converted to miles
+            impacted_length_no_build_widget.value = round(length, 1)
+        elif subcategory == "Passing Lane":
+            impacted_length_no_build_widget.value = round(segmentnb + 3, 1)
+        else:
+            impacted_length_no_build_widget.value = round(segmentnb, 1)
+
+    # Observe changes for subcategory dropdown
+    subcategory_dropdown.observe(calculate_impacted_length_no_build, names='value')  # For No Build
+    highway_segment_no_build_widget.observe(calculate_impacted_length_no_build, names='value')
+    impacted_length_build_widget.observe(calculate_impacted_length_no_build, names='value')
+
+    # Function to calculate impacted length for Build scenario
+    def calculate_impacted_length_build(change=None):
+        subcategory = subcategory_dropdown.value
+
+        # These values may be None if the user hasn't input anything yet
+        segmentb = highway_segment_build_widget.value
+
+        # Ensure segment value defaults to 0 if None
+        segmentb = segmentb if segmentb is not None else 0
+
+        # --- Build Calculations ---
+        if subcategory in ["Auxiliary Lane", "Off-Ramp Widening"]:
+            length = 1500 / 5280  # 1500 feet converted to miles
+            impacted_length_build_widget.value = round(length, 1)
+        elif subcategory in ["Freeway Connector", "HOV Connector", "HOV Drop Ramp"]:
+            length = 3250 / 5280  # 3250 feet converted to miles
+            impacted_length_build_widget.value = round(length, 1)
+        elif subcategory == "Passing Lane":
+            impacted_length_build_widget.value = round(segmentb + 3, 1)
+        else:
+            impacted_length_build_widget.value = round(segmentb, 1)
+
+
+
+    subcategory_dropdown.observe(calculate_impacted_length_build, names='value')  # For Build            
+    highway_segment_build_widget.observe(calculate_impacted_length_build, names='value')
+
+
+
     
     
-    # Combine both "No Build" and "Build" input fields into a horizontal layout
-    impacted_length_widgets = widgets.HBox([impacted_length_no_build_widget, impacted_length_build_widget])
+
+    # --- Display Widgets ---
+    highway_segment_widgets = widgets.HBox([
+        highway_segment_no_build_widget,
+        highway_segment_build_widget
+    ])
+
+    impacted_length_widgets = widgets.HBox([
+        impacted_length_no_build_widget,
+        impacted_length_build_widget
+    ])
     
-    ADT_current_widget = widgets.IntText(
+    # Define Percent Trucks (No Build) and Percent Trucks (Build) widgets
+    percent_trucks_nobuild_widget = widgets.FloatText(
+        description="Percent Trucks (No Build):",
+        value=0.09,  # Default value set to 9% (this can be adjusted)
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    percent_trucks_build_widget = widgets.FloatText(
+        description="Percent Trucks (Build):",
+        value=percent_trucks_nobuild_widget.value,
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    # Define a function to calculate the Percent Trucks (Build) based on the No Build value and subcategory selection
+    def calculate_truck_percentage(change=None):
+        # Get the current values from the widgets
+        TruckLaneSelected = (subcategory_dropdown.value == "Truck Only Lane")  # Check if "Truck Only Lane" is selected
+        PerTruckNB = percent_trucks_nobuild_widget.value  # Percent Trucks (No Build)
+
+        # Calculate Percent Trucks (Build) based on the condition
+        if TruckLaneSelected:  # If "Truck Only Lane" is selected, the Build value should be 0%
+            percent_trucks_build_widget.value = 0.0
+        else:  # Otherwise, set the Build value based on No Build value
+            percent_trucks_build_widget.value = PerTruckNB  # Same as No Build for now, can be adjusted if needed
+
+        # Allow user to override the calculated value for Build
+        if percent_trucks_build_widget.value != PerTruckNB:
+            percent_trucks_build_widget.disabled = False
+
+
+    # Link the widgets to trigger the calculation
+    subcategory_dropdown.observe(calculate_truck_percentage, names='value')  # Observe changes in subcategory
+    percent_trucks_nobuild_widget.observe(calculate_truck_percentage, names='value')  # Observe changes in Percent Trucks (No Build)
+
+    # Define the layout for the widgets
+    percent_trucks_widget = widgets.HBox([percent_trucks_nobuild_widget, percent_trucks_build_widget])
+    
+    ADT_current_widget = widgets.FloatText(
         description="Current Average Daily Traffic:",
+        value=None,  # Initially empty
         disabled=False,
         layout=common_layout,
         style={'description_width': 'initial'}
     )
 
     # ADT in 20 Years (No Build) widget (changed to ADT_20NB_widget)
-    ADT_20NB_widget = widgets.IntText(
+    ADT_20NB_widget = widgets.FloatText(
         description="ADT Year 20 (No Build):",
+        value=None,  # Initially empty
         disabled=False,
         layout=common_layout,
         style={'description_width': 'initial'}
@@ -453,69 +526,71 @@ def create_project_info_widgets():
         style={'description_width': 'initial'},
         layout=common_layout
     )
-
-    # Function to calculate ADT Base Year (No Build), ADT Base Year (Build), and ADT 20 Year Build
-    def calculate_adt_base_year(change):
+    
+    # Function to calculate ADT Base Year (No Build)
+    def calculate_adt_base_year_no_build(change):
         # Get the current values from the widgets
         ADT_current = ADT_current_widget.value
         ADT_20NB = ADT_20NB_widget.value  # ADT in 20 years (No Build)
         construct_years = construct_widget.value
-        subcategory = subcategory_dropdown.value  # Get selected subcategory
 
-        # Check if "Truck Only Lane" is selected in the subcategory dropdown
-        truck_only_lane_selected = (subcategory == "Truck Only Lane")
+        # Prevent division by zero if construct_years is 0
+        if construct_years == 0:
+            adt_base_year_no_build = ADT_current  # No growth in ADT if construct_years is 0
+        else:
+            # Calculate ADT Base Year (No Build) using the formula
+            adt_base_year_no_build = ADT_current + (ADT_20NB - ADT_current) * (construct_years / (construct_years + 19))
 
-        # Calculate ADT Base Year (No Build)
-        adt_base_year_no_build = ADT_current + (ADT_20NB - ADT_current) * (construct_years / (construct_years + 19))
-
-        # If the user hasn't input any value, let the formula calculate and display it
-        if ADT_current == 0 or ADT_20NB == 0:
-            adt_base_year_no_build_widget.value = adt_base_year_no_build
-        elif adt_base_year_no_build_widget.value == 0:  # If user hasn't entered a custom value, set calculated value
-            adt_base_year_no_build_widget.value = adt_base_year_no_build
-
-        # Formula for ADT Base Year (Build)
+        # Set the calculated ADT Base Year (No Build) to the widget
+        adt_base_year_no_build_widget.value = adt_base_year_no_build
+        
+    # Linking the widgets to their respective functions
+    ADT_current_widget.observe(calculate_adt_base_year_no_build, names='value')
+    ADT_20NB_widget.observe(calculate_adt_base_year_no_build, names='value')
+    construct_widget.observe(calculate_adt_base_year_no_build, names='value')
+        
+    # Function to calculate ADT Base Year (Build)    
+    def calculate_adt_base_year_build(change):
+        # Get the current values from the widgets
+        ADT_20NB = ADT_20NB_widget.value  # ADT in 20 years (No Build)
         ADT1NB = adt_base_year_no_build_widget.value  # ADT Base Year No Build value
 
+        # Formula for ADT Base Year (Build) with the new factor of 0.93
         if ADT_20NB == 0:
             adt_base_year_build = 0
         else:
             adt_base_year_build = (ADT_20NB / ADT_20NB) * ADT1NB  # Using ADT1NB as ADT Base Year No Build
+            adt_base_year_build = adt_base_year_build / 0.93  # Apply the division by 0.93
 
-        if ADT_20NB == 0:
-            adt_base_year_build_widget.value = adt_base_year_build
-        else:
-            adt_base_year_build_widget.value = adt_base_year_build  # Set to calculated value
+        # Set the calculated ADT Base Year (Build) to the widget
+        adt_base_year_build_widget.value = adt_base_year_build
+        
+    ADT_20NB_widget.observe(calculate_adt_base_year_build, names='value')
+    adt_base_year_no_build_widget.observe(calculate_adt_base_year_build, names='value')
+        
+        
+    def calculate_adt_20_year_build(change):
+        # Get the current values from the widgets
+        ADT_20NB = ADT_20NB_widget.value  # ADT in 20 years (No Build)
+        subcategory = subcategory_dropdown.value  # Get selected subcategory
+        PerTruckNB = percent_trucks_nobuild_widget.value
 
         # Formula for ADT 20 Year Build (adjusted based on Truck Only Lane)
-        if truck_only_lane_selected:
-            ADT_20B = ADT_20NB * (1 - 0.10)  # Example: Assuming 10% reduction for trucks
+        if subcategory == "Truck Only Lane":
+            adt_20_year_build = ADT_20NB * (1 - PerTruckNB)  # Assuming 10% reduction for trucks
         else:
-            ADT_20B = ADT_20NB  # No change to ADT_20B for other subcategories
+            adt_20_year_build = ADT_20NB  # No change to ADT_20B for other subcategories
 
-        if ADT_20NB == 0:
-            adt_20_year_build_widget.value = ADT_20B
-        else:
-            adt_20_year_build_widget.value = ADT_20B  # Set to calculated value
+        # Set the calculated ADT 20 Year Build to the widget
+        adt_20_year_build_widget.value = adt_20_year_build
 
-        # Allow user to override calculated value if they input manually
-        if adt_base_year_no_build_widget.value != adt_base_year_no_build:
-            # If user entered a custom value, allow them to edit it
-            adt_base_year_no_build_widget.disabled = False
+    subcategory_dropdown.observe(calculate_adt_20_year_build, names='value')    
+    ADT_20NB_widget.observe(calculate_adt_20_year_build, names='value')    
+    adt_base_year_no_build_widget.observe(calculate_adt_20_year_build, names='value')
+    adt_base_year_build_widget.observe(calculate_adt_20_year_build, names='value')
+    ADT_current_widget.observe(calculate_adt_20_year_build, names='value')
+    percent_trucks_nobuild_widget.observe(calculate_adt_20_year_build, names='value')
 
-        if adt_base_year_build_widget.value != adt_base_year_build:
-            # If user entered a custom value, allow them to edit it
-            adt_base_year_build_widget.disabled = False
-
-        if adt_20_year_build_widget.value != ADT_20B:
-            # If user entered a custom value, allow them to edit it
-            adt_20_year_build_widget.disabled = False
-
-    # Link the widgets to the calculate function
-    ADT_current_widget.observe(calculate_adt_base_year, names='value')
-    ADT_20NB_widget.observe(calculate_adt_base_year, names='value')
-    construct_widget.observe(calculate_adt_base_year, names='value')
-    subcategory_dropdown.observe(calculate_adt_base_year, names='value')
 
 
 
@@ -698,7 +773,7 @@ def create_project_info_widgets():
     # Create the "Build" widget for Percent Traffic in Weave
     percent_traffic_weave_build_widget = widgets.FloatText(
         description='Percent Traffic in Weave (Build):',
-        value=0.0,  # Default value is 0%
+        value=0.01,  # Default value is 0%
         disabled=False,
         style={'description_width': 'initial'},
         layout=common_layout  # Adjust width to accommodate description
@@ -707,7 +782,7 @@ def create_project_info_widgets():
     # Create the "No Build" widget for Percent Traffic in Weave
     percent_traffic_weave_no_build_widget = widgets.FloatText(
         description='Percent Traffic in Weave (No Build):',
-        value=0.0,  # Initially 0%, will be calculated
+        value=None,  # Initially 0%, will be calculated
         disabled=False,  
         style={'description_width': 'initial'},
         layout=common_layout  # Adjust width to accommodate description
@@ -762,46 +837,7 @@ def create_project_info_widgets():
     
     percent_traffic_weave_widgets = widgets.HBox([percent_traffic_weave_no_build_widget, percent_traffic_weave_build_widget])
     
-    # Define Percent Trucks (No Build) and Percent Trucks (Build) widgets
-    percent_trucks_nobuild_widget = widgets.FloatText(
-        description="Percent Trucks (No Build):",
-        value=0.09,  # Default value set to 9% (this can be adjusted)
-        disabled=False,
-        layout=common_layout,
-        style={'description_width': 'initial'}
-    )
 
-    percent_trucks_build_widget = widgets.FloatText(
-        description="Percent Trucks (Build):",
-        value=percent_trucks_nobuild_widget.value,
-        disabled=False,
-        layout=common_layout,
-        style={'description_width': 'initial'}
-    )
-
-    # Define a function to calculate the Percent Trucks (Build) based on the No Build value and subcategory selection
-    def calculate_truck_percentage(change=None):
-        # Get the current values from the widgets
-        TruckLaneSelected = (subcategory_dropdown.value == "Truck Only Lane")  # Check if "Truck Only Lane" is selected
-        PerTruckNB = percent_trucks_nobuild_widget.value  # Percent Trucks (No Build)
-
-        # Calculate Percent Trucks (Build) based on the condition
-        if TruckLaneSelected:  # If "Truck Only Lane" is selected, the Build value should be 0%
-            percent_trucks_build_widget.value = 0.0
-        else:  # Otherwise, set the Build value based on No Build value
-            percent_trucks_build_widget.value = PerTruckNB  # Same as No Build for now, can be adjusted if needed
-
-        # Allow user to override the calculated value for Build
-        if percent_trucks_build_widget.value != PerTruckNB:
-            percent_trucks_build_widget.disabled = False
-
-
-    # Link the widgets to trigger the calculation
-    subcategory_dropdown.observe(calculate_truck_percentage, names='value')  # Observe changes in subcategory
-    percent_trucks_nobuild_widget.observe(calculate_truck_percentage, names='value')  # Observe changes in Percent Trucks (No Build)
-
-    # Define the layout for the widgets
-    percent_trucks_widget = widgets.HBox([percent_trucks_nobuild_widget, percent_trucks_build_widget])
     
     truck_speed_widget = widgets.FloatText(
         description="Truck Speed:",
