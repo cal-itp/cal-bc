@@ -5,8 +5,7 @@ from IPython.display import display, Markdown
 from parameters import parameters
 params = parameters()
 
-from widgets_helper import (highway_speed_and_volume_input_nobuild_title, highway_speed_and_volume_input_nobuild_subtitle, highway_speed_and_volume_input_info, highway_speed_and_volume_input_build_title, highway_speed_and_volume_input_build_subtitle, ramp_and_arterial_input_title, ramp_and_arterial_input_subtitle, ramp_and_arterial_input_info
-)
+from widgets_helper import (highway_speed_and_volume_input_nobuild_title, highway_speed_and_volume_input_nobuild_subtitle, highway_speed_and_volume_input_info, highway_speed_and_volume_input_build_title, highway_speed_and_volume_input_build_subtitle, ramp_and_arterial_input_title, ramp_and_arterial_input_subtitle, ramp_and_arterial_input_info, annual_person_trips_title, annual_person_trips_subtitle, annual_person_trips_info)
 
 import projectinfo_widgets
 from widgets_helper import info_button_popup, create_section, create_section_with_subsections
@@ -21,8 +20,25 @@ common_layout = widgets.Layout(
 
 
 def create_new_widgets():
-    global PHV1NB_widget, PHV1B_widget, PHV20NB_widget, PHV20B_widget, PNV1NB_widget, PNV1B_widget, PNV20NB_widget, PNV20B_widget, PWV1NB_widget, PWV1B_widget, PWV20NB_widget, PWV20B_widget, PTV1NB_widget, PTV1B_widget, PTV20NB_widget, PTV20B_widget, PRV1NB_widget, PRV1B_widget, PRV20NB_widget, PRV20B_widget, PAV1NB_widget, PAV1B_widget, PAV20NB_widget, PAV20B_widget, NNV1NB_widget, NNV1B_widget, NNV20NB_widget, NNV20B_widget, NWV1NB_widget, NWV1B_widget, NWV20NB_widget, NWV20B_widget, NTV1NB_widget, NTV1B_widget, NTV20NB_widget, NTV20B_widget, \
-       PHS1NB_widget, PHS1B_widget, PHS20NB_widget, PHS20B_widget, PNS1NB_widget, PNS1B_widget, PNS20NB_widget, PNS20B_widget, PWS1NB_widget, PWS1B_widget, PWS20NB_widget, PWS20B_widget, PTS1NB_widget, PTS1B_widget, PTS20NB_widget, PTS20B_widget, PRS1NB_widget, PRS1B_widget, PRS20NB_widget, PRS20B_widget, PAS1NB_widget, PAS1B_widget, PAS20NB_widget, PAS20B_widget, NNS1NB_widget, NNS1B_widget, NNS20NB_widget, NNS20B_widget, NWS1NB_widget, NWS1B_widget, NWS20NB_widget, NWS20B_widget, NTS1NB_widget, NTS1B_widget, NTS20NB_widget, NTS20B_widget, SegmentA_widget, SegmentR_widget
+    global PHV1NB_widget, PHV1B_widget, PHV20NB_widget, PHV20B_widget, PNV1NB_widget,  \
+    PNV1B_widget, PNV20NB_widget, PNV20B_widget, PWV1NB_widget, PWV1B_widget,  \
+    PWV20NB_widget, PWV20B_widget, PTV1NB_widget, PTV1B_widget, PTV20NB_widget,  \
+    PTV20B_widget, PRV1NB_widget, PRV1B_widget, PRV20NB_widget, PRV20B_widget,  \
+    PAV1NB_widget, PAV1B_widget, PAV20NB_widget, PAV20B_widget, NNV1NB_widget,  \
+    NNV1B_widget, NNV20NB_widget, NNV20B_widget, NWV1NB_widget, NWV1B_widget,  \
+    NWV20NB_widget, NWV20B_widget, NTV1NB_widget, NTV1B_widget, NTV20NB_widget,  \
+    NTV20B_widget, PHS1NB_widget, PHS1B_widget, PHS20NB_widget, PHS20B_widget,  \
+    PNS1NB_widget, PNS1B_widget, PNS20NB_widget, PNS20B_widget, PWS1NB_widget,  \
+    PWS1B_widget, PWS20NB_widget, PWS20B_widget, PTS1NB_widget, PTS1B_widget,  \
+    PTS20NB_widget, PTS20B_widget, PRS1NB_widget, PRS1B_widget, PRS20NB_widget,  \
+    PRS20B_widget, PAS1NB_widget, PAS1B_widget, PAS20NB_widget, PAS20B_widget,  \
+    NNS1NB_widget, NNS1B_widget, NNS20NB_widget, NNS20B_widget, NWS1NB_widget,  \
+    NWS1B_widget, NWS20NB_widget, NWS20B_widget, NTS1NB_widget, NTS1B_widget,  \
+    NTS20NB_widget, NTS20B_widget, RADataAvail_widget, SegmentA_widget, SegmentR_widget,  \
+    PNT1Ind_widget, PTT1Ind_widget, NNT1Ind_widget, NTT1Ind_widget, PNT20Ind_widget,  \
+    PTT20Ind_widget, NNT20Ind_widget, NTT20Ind_widget
+
+
 
 
     
@@ -6460,6 +6476,15 @@ def create_new_widgets():
 
 ##############################################################################################################################################################################################################   
 
+    RADataAvail_widget = widgets.Dropdown(
+        options=['Yes', 'No'],
+        value='No',  
+        description='Detailed Information on Ramp and Arterial Inputs Available:',
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+    
     SegmentR_widget = widgets.IntText(
         value=0,
         description="Aggregate Segment Length in miles (All Ramps):",
@@ -7207,15 +7232,325 @@ def create_new_widgets():
 
     
     
+##############################################################################################################################################################################################################  
+
+    HOVtrips_year1_nobuild_peak_widget = widgets.IntText(
+        value=0,
+        description="HOV Annual Person Trips (No Build):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    HOVtrips_year1_build_peak_widget = widgets.IntText(
+        value=0,
+        description="HOV Annual Person Trips (Build):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+    
+    # Combine the widgets into layout for display 
+    Annual_person_trips_year1_peak_HOV_widgets = widgets.HBox([HOVtrips_year1_nobuild_peak_widget, HOVtrips_year1_build_peak_widget])
+
+    NonHOVtrips_year1_nobuild_peak_widget = widgets.IntText(
+        value=0,
+        description="Non-HOV Annual Person Trips (No Build):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    NonHOVtrips_year1_build_peak_widget = widgets.IntText(
+        value=0,
+        description="Non-HOV Annual Person Trips (Build):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    PNT1Ind_widget = widgets.IntText(
+        value=0,
+        description="Non-HOV Annual Person Trips (Induced):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+    
+    # Combine the widgets into layout for display 
+    Annual_person_trips_year1_peak_NonHOV_widgets = widgets.HBox([NonHOVtrips_year1_nobuild_peak_widget, NonHOVtrips_year1_build_peak_widget, PNT1Ind_widget])
+
+    TruckTrips_year1_nobuild_peak_widget = widgets.IntText(
+        value=0,
+        description="Truck Annual Trips (No Build):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    TruckTrips_year1_build_peak_widget = widgets.IntText(
+        value=0,
+        description="Truck Annual Trips (Build):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    PTT1Ind_widget = widgets.IntText(
+        value=0,
+        description="Truck Annual Trips (Induced):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+    
+    # Combine the widgets into layout for display 
+    Annual_person_trips_year1_peak_Truck_widgets = widgets.HBox([TruckTrips_year1_nobuild_peak_widget, TruckTrips_year1_build_peak_widget, PTT1Ind_widget])
+
+    NonHOVtrips_year1_nobuild_widget = widgets.IntText(
+        value=0,
+        description="Non-HOV Annual Person Trips (No Build):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    NonHOVtrips_year1_build_widget = widgets.IntText(
+        value=0,
+        description="Non-HOV Annual Person Trips (Build):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    NNT1Ind_widget = widgets.IntText(
+        value=0,
+        description="Non-HOV Annual Person Trips (Induced):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+    
+    # Combine the widgets into layout for display 
+    Annual_person_trips_year1_nonpeak_nonHOV_widgets = widgets.HBox([NonHOVtrips_year1_nobuild_widget, NonHOVtrips_year1_build_widget, NNT1Ind_widget])
+
+    TruckTrips_year1_nobuild_widget = widgets.IntText(
+        value=0,
+        description="Truck Annual Trips (No Build):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    TruckTrips_year1_build_widget = widgets.IntText(
+        value=0,
+        description="Truck Annual Trips (Build):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    NTT1Ind_widget = widgets.IntText(
+        value=0,
+        description="Truck Annual Trips (Induced):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+    
+    # Combine the widgets into layout for display 
+    Annual_person_trips_year1_nonpeak_Truck_widgets = widgets.HBox([TruckTrips_year1_nobuild_widget, TruckTrips_year1_build_widget, NTT1Ind_widget])
+
+    TotalTrips_year1_nobuild_widget = widgets.IntText(
+        value=0,
+        description="Total Annual Trips (No Build):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    TotalTrips_year1_build_widget = widgets.IntText(
+        value=0,
+        description="Total Annual Trips (Build):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    TotalTrips_year1_induced_widget = widgets.IntText(
+        value=0,
+        description="Total Annual Trips (Induced):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+    
+    # Combine the widgets into layout for display 
+    Annual_person_trips_year1_nonpeak_TotalTrips_widgets = widgets.HBox([TotalTrips_year1_nobuild_widget, TotalTrips_year1_build_widget, TotalTrips_year1_induced_widget])
+
+    HOVtrips_year20_nobuild_peak_widget = widgets.IntText(
+        value=0,
+        description="HOV Annual Person Trips (No Build):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    HOVtrips_year20_build_peak_widget = widgets.IntText(
+        value=0,
+        description="HOV Annual Person Trips (Build):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    # Combine the widgets into layout for display 
+    Annual_person_trips_year20_peak_HOV_widgets = widgets.HBox([HOVtrips_year20_nobuild_peak_widget, HOVtrips_year20_build_peak_widget])
+
+    NonHOVtrips_year20_nobuild_peak_widget = widgets.IntText(
+        value=0,
+        description="Non-HOV Annual Person Trips (No Build):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    NonHOVtrips_year20_build_peak_widget = widgets.IntText(
+        value=0,
+        description="Non-HOV Annual Person Trips (Build):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    PNT20Ind_widget = widgets.IntText(
+        value=0,
+        description="Non-HOV Annual Person Trips (Induced):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    # Combine the widgets into layout for display 
+    Annual_person_trips_year20_peak_NonHOV_widgets = widgets.HBox([NonHOVtrips_year20_nobuild_peak_widget, NonHOVtrips_year20_build_peak_widget, PNT20Ind_widget])
+
+    TruckTrips_year20_nobuild_peak_widget = widgets.IntText(
+        value=0,
+        description="Truck Annual Trips (No Build):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    TruckTrips_year20_build_peak_widget = widgets.IntText(
+        value=0,
+        description="Truck Annual Trips (Build):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    PTT20Ind_widget = widgets.IntText(
+        value=0,
+        description="Truck Annual Trips (Induced):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    # Combine the widgets into layout for display 
+    Annual_person_trips_year20_peak_Truck_widgets = widgets.HBox([TruckTrips_year20_nobuild_peak_widget, TruckTrips_year20_build_peak_widget, PTT20Ind_widget])
+
+    NonHOVtrips_year20_nobuild_widget = widgets.IntText(
+        value=0,
+        description="Non-HOV Annual Person Trips (No Build):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    NonHOVtrips_year20_build_widget = widgets.IntText(
+        value=0,
+        description="Non-HOV Annual Person Trips (Build):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    NNT20Ind_widget = widgets.IntText(
+        value=0,
+        description="Non-HOV Annual Person Trips (Induced):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    # Combine the widgets into layout for display 
+    Annual_person_trips_year20_nonpeak_nonHOV_widgets = widgets.HBox([NonHOVtrips_year20_nobuild_widget, NonHOVtrips_year20_build_widget, NNT20Ind_widget])
+
+    TruckTrips_year20_nobuild_widget = widgets.IntText(
+        value=0,
+        description="Truck Annual Trips (No Build):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    TruckTrips_year20_build_widget = widgets.IntText(
+        value=0,
+        description="Truck Annual Trips (Build):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    NTT20Ind_widget = widgets.IntText(
+        value=0,
+        description="Truck Annual Trips (Induced):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    # Combine the widgets into layout for display 
+    Annual_person_trips_year20_nonpeak_Truck_widgets = widgets.HBox([TruckTrips_year20_nobuild_widget, TruckTrips_year20_build_widget, NTT20Ind_widget])
+
+    TotalTrips_year20_nobuild_widget = widgets.IntText(
+        value=0,
+        description="Total Annual Trips (No Build):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    TotalTrips_year20_build_widget = widgets.IntText(
+        value=0,
+        description="Total Annual Trips (Build):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    TotalTrips_year20_induced_widget = widgets.IntText(
+        value=0,
+        description="Total Annual Trips (Induced):",
+        disabled=False,
+        layout=common_layout,
+        style={'description_width': 'initial'}
+    )
+
+    # Combine the widgets into layout for display 
+    Annual_person_trips_year20_nonpeak_TotalTrips_widgets = widgets.HBox([TotalTrips_year20_nobuild_widget, TotalTrips_year20_build_widget, TotalTrips_year20_induced_widget])
+
     
     
     
-    
-    
-    
-    
-    
-    
+ 
+
+
+
+
+       
     # Highway Speed and Volume Inputs Section
     
     highway_subsections_nobuild = [
@@ -7265,6 +7600,117 @@ def create_new_widgets():
         }
     ]
          
+
+    
+    ramp_and_arterial_input_subsections = [
+        {
+            'subtitle': 'Aggregate Segment Length', 
+            'widgets': [
+                RADataAvail_widget,
+                SegmentR_widget,
+                SegmentA_widget
+            ],
+            'info_texts': ramp_and_arterial_input_info[:3]
+        },
+        
+        {
+            'subtitle': 'No Build (Year 1 - Peak Period)', 
+            'widgets': [
+                Agg_ramp_vol_year1_nobuild_widgets,
+                Avg_arterial_vol_year1_nobuild_widgets,
+                Avg_ramp_speed_year1_nobuild_widgets,
+                Avg_arterial_speed_year1_nobuild_widgets
+            ],
+            'info_texts': ramp_and_arterial_input_info[3:6]
+        },
+        {
+            'subtitle': 'No Build (Year 20 - Peak Period)', 
+            'widgets': [
+                Agg_ramp_vol_year20_nobuild_widgets,
+                Avg_arterial_vol_year20_nobuild_widgets,
+                Avg_ramp_speed_year20_nobuild_widgets,
+                Avg_arterial_speed_year20_nobuild_widgets
+            ],
+            'info_texts': ramp_and_arterial_input_info[3:6]
+        },
+        {
+            'subtitle': 'Build (Year 1 - Peak Period)',  
+            'widgets': [
+                Agg_ramp_vol_year1_build_widgets,
+                Avg_arterial_vol_year1_build_widgets,
+                Avg_ramp_speed_year1_build_widgets,
+                Avg_arterial_speed_year1_build_widgets
+            ],
+            'info_texts': ramp_and_arterial_input_info[3:6]
+        },
+        {
+            'subtitle': 'Build (Year 20 - Peak Period)',   
+            'widgets': [
+                Agg_ramp_vol_year20_build_widgets,
+                Avg_arterial_vol_year20_build_widgets,
+                Avg_ramp_speed_year20_build_widgets,
+                Avg_arterial_speed_year20_build_widgets
+            ],
+            'info_texts': ramp_and_arterial_input_info[3:6]
+        }
+    ]
+    
+    annual_person_trips_subsections = [
+     
+        {
+            'subtitle': 'Year 1 - Peak Period', 
+            'widgets': [
+                Annual_person_trips_year1_peak_HOV_widgets, 
+                Annual_person_trips_year1_peak_NonHOV_widgets,
+                Annual_person_trips_year1_peak_Truck_widgets
+            ],
+            'info_texts': annual_person_trips_info[:1]
+        },
+        {
+            'subtitle': 'Year 1 - Non-Peak Period', 
+            'widgets': [
+                Annual_person_trips_year1_nonpeak_nonHOV_widgets,
+                Annual_person_trips_year20_peak_Truck_widgets                
+            ],
+            'info_texts': annual_person_trips_info[:1]
+        },  
+        {
+            'subtitle': 'Year 1 - Total', 
+            'widgets': [
+                Annual_person_trips_year1_nonpeak_TotalTrips_widgets
+            ],
+            'info_texts':annual_person_trips_info[:1]
+        },
+        
+        {
+            'subtitle': 'Year 20 - Peak Period', 
+            'widgets': [
+                Annual_person_trips_year20_peak_HOV_widgets, 
+                Annual_person_trips_year20_peak_NonHOV_widgets,
+                Annual_person_trips_year20_peak_Truck_widgets
+            ],
+            'info_texts': annual_person_trips_info[:1]
+        },
+        {
+            'subtitle': 'Year 20 - Non-Peak Period', 
+            'widgets': [
+                Annual_person_trips_year20_nonpeak_nonHOV_widgets,
+                Annual_person_trips_year20_nonpeak_Truck_widgets                
+            ],
+            'info_texts': annual_person_trips_info[:1]
+        },  
+        {
+            'subtitle': 'Year 20 - Total', 
+            'widgets': [
+                Annual_person_trips_year20_nonpeak_TotalTrips_widgets
+            ],
+            'info_texts': annual_person_trips_info[:1]
+        }
+    ]
+        
+        
+    
+
     highway_speed_and_volume_input_nobuild_section = create_section_with_subsections(
         highway_speed_and_volume_input_nobuild_title,
         highway_speed_and_volume_input_nobuild_subtitle,
@@ -7277,62 +7723,16 @@ def create_new_widgets():
         subsections=highway_subsections_build
     )
     
-    ramp_and_arterial_input_subsections = [
-        {
-            'subtitle': 'Aggregate Segment Length', 
-            'widgets': [
-                SegmentR_widget,
-                SegmentA_widget
-            ],
-            'info_texts': ramp_and_arterial_input_info[:2]
-        },
-        
-        {
-            'subtitle': 'No Build (Year 1 - Peak Period)', 
-            'widgets': [
-                Agg_ramp_vol_year1_nobuild_widgets,
-                Avg_arterial_vol_year1_nobuild_widgets,
-                Avg_ramp_speed_year1_nobuild_widgets,
-                Avg_arterial_speed_year1_nobuild_widgets
-            ],
-            'info_texts': ramp_and_arterial_input_info[2:6]
-        },
-        {
-            'subtitle': 'No Build (Year 20 - Peak Period)', 
-            'widgets': [
-                Agg_ramp_vol_year20_nobuild_widgets,
-                Avg_arterial_vol_year20_nobuild_widgets,
-                Avg_ramp_speed_year20_nobuild_widgets,
-                Avg_arterial_speed_year20_nobuild_widgets
-            ],
-            'info_texts': ramp_and_arterial_input_info[2:6]
-        },
-        {
-            'subtitle': 'Build (Year 1 - Peak Period)',  
-            'widgets': [
-                Agg_ramp_vol_year1_build_widgets,
-                Avg_arterial_vol_year1_build_widgets,
-                Avg_ramp_speed_year1_build_widgets,
-                Avg_arterial_speed_year1_build_widgets
-            ],
-            'info_texts': ramp_and_arterial_input_info[2:6]
-        },
-        {
-            'subtitle': 'Build (Year 20 - Peak Period)',   
-            'widgets': [
-                Agg_ramp_vol_year20_build_widgets,
-                Avg_arterial_vol_year20_build_widgets,
-                Avg_ramp_speed_year20_build_widgets,
-                Avg_arterial_speed_year20_build_widgets
-            ],
-            'info_texts': ramp_and_arterial_input_info[2:6]
-        }
-    ]
-
     ramp_and_arterial_input_section = create_section_with_subsections(
         ramp_and_arterial_input_title,
         ramp_and_arterial_input_subtitle,
         subsections=ramp_and_arterial_input_subsections
+    )
+    
+    annual_person_trips_section = create_section_with_subsections(
+        annual_person_trips_title,
+        annual_person_trips_subtitle,
+        subsections=annual_person_trips_subsections
     )
 
 
@@ -7346,7 +7746,7 @@ def create_new_widgets():
     # Non-HOV Volume Widget
     
     
-    all_sections = widgets.VBox([highway_speed_and_volume_input_nobuild_section, highway_speed_and_volume_input_build_section, ramp_and_arterial_input_section])
+    all_sections = widgets.VBox([highway_speed_and_volume_input_nobuild_section, highway_speed_and_volume_input_build_section, ramp_and_arterial_input_section, annual_person_trips_section])
 
     
     display(all_sections)

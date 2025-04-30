@@ -350,7 +350,7 @@ def create_project_info_widgets():
         if highway_segment_no_build_widget.value is not None:
             highway_segment_build_widget.value = highway_segment_no_build_widget.value
         # If No Build is 0, set Build to 0.0
-        elif highway_segment_no_build_widget.value == 0:
+        elif highway_segment_no_build_widget.value == 0.0:
             highway_segment_build_widget.value = 0.0
 
     # Link the No Build widget to update Build widget
@@ -379,7 +379,7 @@ def create_project_info_widgets():
             impacted_length_no_build = highway_segment_no_build
 
         # Update the Impacted Length (No Build) widget value
-        impacted_length_no_build_widget.value = round(impacted_length_no_build, 0)  # Round to 1 decimal place
+        impacted_length_no_build_widget.value = round(impacted_length_no_build, 1)  # Round to 1 decimal place
 
         # Set the Build value to be the same as No Build
         impacted_length_build_widget.value = impacted_length_no_build
@@ -391,7 +391,7 @@ def create_project_info_widgets():
         # Define Impacted Length No Build widget
     impacted_length_no_build_widget = widgets.IntText(
         description='Impacted Length (No Build):',
-        value=0.0,  # Default value set to 0.0
+        value=None,  # Default value set to 0.0
         disabled=False,
         style={'description_width': 'initial'},
         layout=common_layout
@@ -653,29 +653,27 @@ def create_project_info_widgets():
 
 
         # Calculate Average Hourly HOV/HOT Lane Traffic based on the formula
-        if HOV2to3_selected:  # If "HOV-2 to HOV-3 Conv" is selected, use the adjusted formula
-            hov_hot_traffic = (AVOHovNB - 2) / (AVOHovB - 2) * HOVvolNB  # Corrected formula using AVOHovB
-        else:
-            hov_hot_traffic = HOVvolNB  # If not "HOV2to3", use the No Build value
-
-        # Update the HOV_lane_build_widget with the calculated value
-        HOV_lane_build_widget.value = hov_hot_traffic
+        if HOV_lane_build_widget.value == 0:  # Default condition, you can check for another value as needed
+            # Calculate Average Hourly HOV/HOT Lane Traffic based on the formula
+            if HOV2to3_selected:  # If "HOV-2 to HOV-3 Conv" is selected, use the adjusted formula
+                hov_hot_traffic = (AVOHovNB - 2) / (AVOHovB - 2) * HOVvolNB  # Corrected formula using AVOHovB
+            else:
+                hov_hot_traffic = HOVvolNB  # If not "HOV2to3", use the No Build value
         
             
     # Link the widgets to trigger the calculation
-    project_type_dropdown.observe(update_subcategory, names='value')  # Observe changes in project type
     HOV_lane_nobuild_widget.observe(calculate_hov_hot_traffic, names='value')  # Observe changes in HOVvolNB
     HOV_lane_build_widget.observe(calculate_hov_hot_traffic, names='value')  # Observe changes in HOVvolB
     AVOHovNB_widget.observe(calculate_hov_hot_traffic, names='value')  # Observe changes in AVOHovNB
     AVOHovB_widget.observe(calculate_hov_hot_traffic, names='value')  # Observe changes in AVOHovB
-    subcategory_dropdown.observe(calculate_hov_hot_traffic, names='value')  # Observe changes in subcategory
-   
+    subcategory_dropdown.observe(calculate_hov_hot_traffic, names='value')  # Observe changes in subcategory   
+    
     hourly_hov_lane_traffic_widget = widgets.HBox([HOV_lane_nobuild_widget, HOV_lane_build_widget])    
 
     
     percent_induced_trip_widget = widgets.IntText(
         description='Percent of Induced Trips in HOV (if HOT or 2-to-3 conv.):',
-        value=100,  # Default value is 100%
+        value=1,  # Default value is 100%
         disabled=False,
         style={'description_width': 'initial'},
         layout=common_layout  # Adjust width to accommodate description

@@ -116,12 +116,12 @@ class parameters:
 
 #Parameter that needs further Calculations 
         # Calculate all the values once during initialization
-        self.value_of_time_automobile = round(self.WageStatewide * 0.5 / 5, 2) * 5
-        self.value_of_time_truck = round((self.WageTruck + self.FringeTruck) / 5, 2) * 5
+        self.ValTimeAuto = round(self.WageStatewide * 0.5 / 5, 2) * 5
+        self.ValTimeTruck = round((self.WageTruck + self.FringeTruck) / 5, 2) * 5
         self.value_of_time_auto_and_truck_composite = round(
-            (1.3 * self.value_of_time_automobile * 0.91 + self.value_of_time_truck * 0.09) / 5, 2
+            (1.3 * self.ValTimeAuto * 0.91 + self.ValTimeTruck * 0.09) / 5, 2
         ) * 5
-        self.value_of_time_transit = round(self.WageStatewide * 0.5 / 5, 2) * 5
+        self.ValTimeTransit = round(self.WageStatewide * 0.5 / 5, 2) * 5
         self.fatality_crash_rate = round(self.FatCount / self.CATravTrend, 3)
         self.injury_crash_rate = round(self.InjCount / self.CATravTrend, 3)
         self.pdo_crash_rate = round(self.NoInjCount / self.CATravTrend, 3)
@@ -227,3 +227,6 @@ class parameters:
             "Bus Rapid Transit (BRT)": {"BrtTTsaving": 0.29},
         }
 
+
+        
+        self.Induced = "Y"
