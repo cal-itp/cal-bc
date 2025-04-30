@@ -1,7 +1,8 @@
 import pandas as pd
 import numpy as np
 import ipywidgets as widgets
-from IPython.display import display, clear_output
+from ipywidgets import interact
+from IPython.display import display, clear_output, HTML
 
 from parameters import parameters
 params = parameters()
@@ -585,7 +586,6 @@ for widget in widget_triggers_avgtraveltime:
 # ############################################################ Travel Time Benefits #############################################################################
 
 
-import numpy as np
 
 def traveltime_benefit(final_trend_df):    
     def safe_float(val):
@@ -1038,50 +1038,6 @@ def traveltime_benefit(final_trend_df):
                     # Now, calculate the interpolated value for the current year
                     travel_time_benefit_induced = np.polyval([slope, intercept], year)
 
-        # NonPeak Ramp
-        elif vehicle == 'Ramp' and period == 'NonPeak':
-            if RADataAvail == "Y":
-                travel_time_benefit_existing = (
-                    (avg_tt_nobuild - avg_tt_build) * min(annual_trips_nobuild, annual_trips_build)
-                )
-            else:
-                travel_time_benefit_existing = 0
-
-            if (
-                annual_trips_build > annual_trips_nobuild
-                and RADataAvail == "Y"
-                and Induced == "Y"
-            ):
-                travel_time_benefit_induced = (
-                    (avg_tt_nobuild - avg_tt_build)
-                    * (annual_trips_build - annual_trips_nobuild)
-                    * 0.5
-                )
-            else:
-                travel_time_benefit_induced = 0
-
-        # NonPeak Arterial
-        elif vehicle == 'Arterial' and period == 'NonPeak':
-            if RADataAvail == "Y":
-                travel_time_benefit_existing = (
-                    (avg_tt_nobuild - avg_tt_build) * min(annual_trips_nobuild, annual_trips_build)
-                )
-            else:
-                travel_time_benefit_existing = (NonHOVexistingPeakTTBenefit + WeavingexistingPeakTTBenefit + TruckexistingPeakTTBenefit)* TMSAdj.get(TMSLookup, {}).get('Benefit', 1)
-
-            if (
-                annual_trips_build > annual_trips_nobuild
-                and RADataAvail == "Y"
-                and Induced == "Y"
-            ):
-                travel_time_benefit_induced = (
-                    (avg_tt_nobuild - avg_tt_build)
-                    * (annual_trips_build - annual_trips_nobuild)
-                    * 0.5
-                )                   
-            else:
-                travel_time_benefit_induced = (NonHOVinducedPeakTTBenefit + WeavinginducedPeakTTBenefit + TruckinducedPeakTTBenefit)* TMSAdj.get(TMSLookup, {}).get('Benefit', 1)
-
 
         # Assign the benefits to the row directly
         final_trend_df.at[idx, 'ExistingBenefit'] = travel_time_benefit_existing
@@ -1093,77 +1049,95 @@ def traveltime_benefit(final_trend_df):
 # Call the function    
 final_trend_df = traveltime_benefit(final_trend_df)
 
+widget_triggers_traveltime_benefit =[
+    projectinfo_widgets.subcategory_dropdown,
+    projectinfo_widgets.percent_induced_trip_widget,
+    modelinputs_widgets.PNT1Ind_widget,
+    modelinputs_widgets.PNT20Ind_widget,
+    modelinputs_widgets.RADataAvail_widget,
+]
+    
+
+for widget in widget_triggers_traveltime_benefit:
+    widget.observe(traveltime_benefit, names='value')
+    
+    
+
+################################ Constant Dollars Column #####################################
+
+def add_dollar_calculated_column(final_trend_df):
+    # Access the values from the params and projectinfo_widgets objects
+    ValTimeAuto = params.ValTimeAuto
+    TTUprater = params.TTUprater
+    ValTimeIMFactor = params.ValTimeIMFactor
+    Construct = projectinfo_widgets.construct_widget.value
+    ProjType = projectinfo_widgets.subcategory_dropdown.value
+    
+    # Perform the calculation row-wise
+    def calculate_new_column(row):
+        # Sum of ExistingBenefit and InducedBenefit
+        sum_benefits = row['ExistingBenefit'] + row['InducedBenefit']
+        
+        # Apply the calculation: Use ValTimeIMFactor if ProjType is 'Incident Management'
+        factor_im = ValTimeIMFactor if ProjType == 'Incident Management' else 1
+        
+        # Apply the compound factor for the year (adjust for Construct value)
+        year_factor = (1 + TTUprater) ** (row['Year'] + Construct - 1)
+        
+        # Calculate the result for the 'Constant Dollar' column
+        result = sum_benefits * ValTimeAuto * factor_im * year_factor
+        return result
+    
+    # Apply the calculation to each row and add the result as a new column named 'Constant Dollar'
+    final_trend_df['Constant Dollar'] = final_trend_df.apply(calculate_new_column, axis=1)
+    
+    return final_trend_df  # Return the modified DataFrame
+
+# Call the function and store the modified DataFrame
+final_trend_df = add_dollar_calculated_column(final_trend_df)
+
+
+widget_triggers_constantdollars =[
+    projectinfo_widgets.subcategory_dropdown,
+    projectinfo_widgets.construct_widget
+]
+    
+
+for widget in widget_triggers_constantdollars:
+    widget.observe(add_dollar_calculated_column, names='value')
+
+
+################################ Present Dollars Column #####################################    
+
+def add_discounted_value_column(df, value_column_name, output_column_name):
+    Construct = projectinfo_widgets.construct_widget.value
+    DiscRate = params.discount_rate
+    
+    def calculate_discounted_value(row):
+        value = row[value_column_name]
+        year = row['Year']
+        discounted_value = value / ((1 + DiscRate) ** (year + Construct - 1))
+        return discounted_value
+
+    df[output_column_name] = df.apply(calculate_discounted_value, axis=1)
+    return df
+
+final_trend_df = add_discounted_value_column(final_trend_df, value_column_name='Constant Dollar', output_column_name='Present Value')
+
 # Display the updated DataFrame with travel time benefits
-display(final_trend_df)
+display(final_trend_df)  
+
+widget_triggers_presentvalue =[
+    projectinfo_widgets.construct_widget
+]
     
-    
 
-    
-
-
-
-
-
-# ################################ Travel Time Metrics Table #####################################
-# def get_grouped_highway_results():
-#     volume_results = calculate_average_volumes_highway(AnnualFactor)
-#     speed_results = calculate_average_speeds_highway(AnnualFactor)
-#     person_trips_results = calculate_person_trips_highway(volume_results)
-#     average_travel_time_results = calculate_average_travel_time(speed_results)
-#     travel_time_benefit = traveltime_benefit()
-
-#     if volume_results and speed_results and person_trips_results:
-#         # Convert to DataFrames
-#         df_volume = pd.DataFrame(volume_results)
-#         df_speed = pd.DataFrame(speed_results)
-#         df_person_trips = pd.DataFrame(person_trips_results)
-#         df_average_travel_time = pd.DataFrame(average_travel_time_results)
-#         df_travel_time_benefit = pd.DataFrame(travel_time_benefit)
-
-#         # Merge all into one combined DataFrame
-#         df_combined = pd.merge(df_volume, df_speed, on="Combination", how="outer", suffixes=("_Volume", "_Speed"))
-#         df_combined = pd.merge(df_combined, df_person_trips, on="Combination", how="outer")
-#         df_combined = pd.merge(df_combined, df_average_travel_time, on="Combination", how="outer")
-#         df_combined = pd.merge(df_combined, df_travel_time_benefit, on="Combination", how="outer")
-
-#         # Split Combination into components (Period, Vehicle, Year)
-#         df_combined[['Period', 'Vehicle', 'Year']] = df_combined['Combination'].str.split('_', expand=True)
-
-#         # Clean Year
-#         df_combined['Year'] = df_combined['Year'].apply(lambda x: int(x.replace('Year', '')) if isinstance(x, str) else x)
-
-#         # Reassign Combination to year only (if needed)
-#         df_combined['Combination'] = df_combined['Year']
-
-#         # Define group for sorting (if needed later)
-#         df_combined['Group'] = df_combined['Period'].astype(str) + "_" + df_combined['Vehicle'].astype(str)
-
-#         # Final clean-up: keep only selected columns
-#         keep_columns = [
-#             'Year', 'Group',
-#             'Avg_Vol_NoBuild', 'Avg_Vol_Build',
-#             'Avg_Speed_NoBuild', 'Avg_Speed_Build',
-#             'AnnualPersonTrips_NoBuild', 'AnnualPersonTrips_Build',
-#             'Avg_TravelTime_NoBuild', 'Avg_TravelTime_Build', 'ExistingBenefit', 'InducedBenefit'
-#         ]
-#         df_combined = df_combined[keep_columns]
-
-#         return df_combined
-
-#     else:
-#         print("No results to display.")
-#         return None
-
-# df_combined = get_grouped_highway_results()   
+for widget in widget_triggers_presentvalue:
+    widget.observe(add_discounted_value_column, names='value')
     
 
 
 
-
-
-    
-
-    
 ################################ Final Display Function #####################################
 def display_grouped_tables(final_trend_df):
     if final_trend_df is None:
@@ -1206,6 +1180,87 @@ def display_grouped_tables(final_trend_df):
 
     
     
-display_grouped_tables(final_trend_df)
+# display_grouped_tables(final_trend_df)
      
 
+############################################## Summary Table ##############################################
+def sum_present_value_by_year(final_trend_df):
+    # Group by the 'Year' column and sum the 'Present Value' for each year
+    sum_by_year = final_trend_df.groupby('Year')['Present Value'].sum().reset_index()
+    
+    # Rename the column for clarity
+    sum_by_year = sum_by_year.rename(columns={'Present Value': 'Total Present Value'})
+    
+    # Add a total row
+    total_value = sum_by_year['Total Present Value'].sum()
+    total_row = pd.DataFrame([{'Year': 'Total Travel Time Benefits', 'Total Present Value': total_value}])
+    
+    # Append the total row
+    sum_by_year = pd.concat([sum_by_year, total_row], ignore_index=True)
+    
+    return sum_by_year
+
+sum_by_year_df = sum_present_value_by_year(final_trend_df)
+
+
+
+# def add_constant_dollars_column(df, value_column_name, output_column_name):
+#     Construct = projectinfo_widgets.construct_widget.value
+#     DiscRate = params.discount_rate
+    
+#     def calculate_constant_dollars(row):
+#         value = row[value_column_name]
+#         year = row['Year']
+#         constant_value = value * ((1 + DiscRate) ** (year + Construct - 1))
+#         return constant_value
+
+#     df[output_column_name] = df.apply(calculate_constant_dollars, axis=1)
+#     return df
+
+
+
+# widget_triggers_constantdollars =[
+#     projectinfo_widgets.construct_widget
+# ]
+    
+
+# for widget in widget_triggers_presentvalue:
+#     widget.observe(add_constant_dollars_column, names='value')
+
+# sum_by_year_df = add_constant_dollars_column(sum_by_year_df, value_column_name='Total Present Value', output_column_name='Constant Dollars')
+
+display(sum_by_year_df)
+
+
+############################################## Summary Table ##############################################
+
+def calculate_benefit_cost_ratio(sum_by_year_df, total_cost):
+    # Extract Total Travel Time Benefits (from the last row)
+    total_benefit = sum_by_year_df[sum_by_year_df['Year'] == 'Total Travel Time Benefits']['Total Present Value'].values[0]
+    
+    # Calculate Benefit-Cost Ratio
+    BCR = total_benefit / total_cost if total_cost != 0 else float('inf')
+    
+    return BCR
+
+# Create the input widget for Total Cost
+total_cost_widget = widgets.FloatText(
+    value=1000000,  # Default total cost value
+    description='Total Cost ($):',
+    disabled=False
+)
+
+# Create the output area to display the BCR
+output = widgets.Output()
+
+# Define the function to update the output area based on the input value
+def update_bcr(total_cost):
+    with output:
+        BCR = calculate_benefit_cost_ratio(sum_by_year_df, total_cost)
+        display(HTML(f"<h2><strong>BCR = {BCR:.2f}</strong></h2>"))
+
+# Set up the interactive widget (this will automatically display the total_cost_widget)
+interact(update_bcr, total_cost=total_cost_widget)
+
+# Display the output area
+display(output)
