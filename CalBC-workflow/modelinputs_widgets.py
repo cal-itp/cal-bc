@@ -478,11 +478,13 @@ def create_new_widgets():
         PTV1NB_widget.value = PTV1NB
 
     truck_volume_year1peak_nobuild_userchanged_widget.observe(calculate_ptv1nb, names='value')
+    truck_volume_year1peak_nobuild_modelcalc_widget.observe(calculate_ptv1nb, names='value')
 
     # Layout for display
     Truck_Volume_year1peak_nobuild_widgets = widgets.HBox([
         truck_volume_year1peak_nobuild_modelcalc_widget,
         truck_volume_year1peak_nobuild_userchanged_widget,
+        PTV1NB_widget,
         PTV1NB_explanation_widget
     ])
 
@@ -576,10 +578,15 @@ def create_new_widgets():
                 GenAlphaNB = capacity_params["GenAlphaNB"]
                 GenBetaNB = capacity_params["GenBetaNB"]
                 GenLaneCapNB = capacity_params["GenLaneCapNB"]
+                TMS_value = TMSAdj.get(TMSLookup, {}).get("SpeedWithout", 1)
 
                 volume_term = flow_sum / (GenLanesNB * GenLaneCapNB * PeakLngthNB)
-                delay_speed = FFSpeedNB / (IRI1NB * (1 + GenAlphaNB * min(volume_term, MaxVC) ** GenBetaNB))
-                base_speed = delay_speed * TMSAdj[TMSLookup][1]
+                if IRI1NB == 0 or (1 + GenAlphaNB * min(volume_term, MaxVC) ** GenBetaNB) == 0:
+                    delay_speed = 0  
+                else:
+                    delay_speed = FFSpeedNB / (IRI1NB * (1 + GenAlphaNB * min(volume_term, MaxVC) ** GenBetaNB))
+
+                base_speed = delay_speed * TMS_value
 
                 if ProjType == "Passing":
                     nonhov_speed = (TruckSpeed + FFSpeedNB) / 2
@@ -1032,7 +1039,7 @@ def create_new_widgets():
             result = (1 - PerPeakADT) * ADT1NB * (1 - traffic_factor)
 
         # Update the output widget
-        Non_HOV_Vol_year1peak_nobuild_modelcalc_widget.value = round(result, 0)
+        Non_HOV_Vol_year1nonpeak_modelcalc_widget.value = round(result, 0)
     
     projectinfo_widgets.subcategory_dropdown.observe(update_NonHOV_year1nonpeak_Volume, names='value')
     projectinfo_widgets.HOV_lane_nobuild_widget.observe(update_NonHOV_year1nonpeak_Volume, names='value')
@@ -1666,10 +1673,10 @@ def create_new_widgets():
                 HOV_Volume_Year20Peak_Model = PeakLngthNB * HOVvolNB * hov_factor
 
             # Update the widget with the result
-            hov_volume_year20peak_modelcalc_widget.value = round(HOV_Volume_Year20Peak_Model, 2)
+            HOV_Vol_year20peak_modelcalc_widget.value = round(HOV_Volume_Year20Peak_Model, 2)
 
         except Exception:
-            hov_volume_year20peak_modelcalc_widget.value = 0
+            HOV_Vol_year20peak_modelcalc_widget.value = 0
             
     # Attach observers to the relevant widgets to update the HOV Volume widget dynamically
     projectinfo_widgets.subcategory_dropdown.observe(update_HOV_Year20Peak_Volume, names='value')
@@ -4819,7 +4826,7 @@ def create_new_widgets():
             PerPeakADT = projectinfo_widgets.percent_peak_adt_widget.value
             PerWeaveNB = projectinfo_widgets.percent_traffic_weave_no_build_widget.value
             HOVvolB = projectinfo_widgets.HOV_lane_build_widget.value
-            HOV_Vol_year20peak_build_modelcalc_widget = projectinfo_widgets.HOV_Vol_year20peak_build_modelcalc_widget
+
             
             # Check if project type is "Hwy-Rail Grade Crossing"
             if ProjType == "Hwy-Rail Grade Crossing":

@@ -14,13 +14,6 @@ import modelinputs_widgets
 # Getting values used in all the functions 
 AnnualFactor = params.AnnualFactor
 
-common_layout = widgets.Layout(
-    width='500px', 
-    background_color='#CCFFCC',  # Background color for all widgets
-    padding='2px',
-    border='2px solid gray'  # Border color and thickness
-)
-
 ######################################################################### HIGHWAY BENEFITS #########################################################################
 ############################################################ Average Volume ############################################################
 
@@ -85,14 +78,16 @@ def calculate_average_volumes_highway(AnnualFactor):
                     state_part = 'NB' if state == 'NoBuild' else 'B'
                     volume_key = f"{period[:1]}{vehicle[:1]}V{year_part}{state_part}"
 
-                    if volume_key in volume_dict:
-                        average_volume = volume_dict[volume_key] * AnnualFactor
+                if volume_key in volume_dict:
+                    # Check if the widget has a 'value' attribute and extract the value
+                    if hasattr(volume_dict[volume_key], 'value') and volume_dict[volume_key].value is not None:
+                        average_volume = volume_dict[volume_key].value * AnnualFactor
                         if state == 'NoBuild':
                             avg_vol_nobuild = average_volume
                         else:
                             avg_vol_build = average_volume
                     else:
-                        print(f"Warning: {volume_key} not found in widget values.")
+                        print(f"Warning: {volume_key} has no value or is None.")
                 
                 # Add to the list only if both values are found
                 if avg_vol_nobuild is not None and avg_vol_build is not None:
@@ -558,6 +553,14 @@ final_trend_df = calculate_average_travel_time(final_trend_df)
 
 # ################################ Widget Observers for Person Trips and Average Travel Time #####################################
 
+# Wrappers for widgets
+def on_persontrips_widget_change(change):
+    global final_trend_df
+    final_trend_df = calculate_person_trips_highway(final_trend_df)
+
+def on_avgtraveltime_widget_change(change):
+    global final_trend_df
+    final_trend_df = calculate_average_travel_time(final_trend_df)
 
     
 widget_triggers_persontrips = [    
@@ -583,10 +586,12 @@ widget_triggers_avgtraveltime =[
     
 
 
+# Attach observe function to each widget
 for widget in widget_triggers_persontrips:
-    widget.observe(calculate_person_trips_highway, names='value')
+    widget.observe(on_persontrips_widget_change, names='value')
+
 for widget in widget_triggers_avgtraveltime:
-    widget.observe(calculate_average_travel_time, names='value')
+    widget.observe(on_avgtraveltime_widget_change, names='value')
 
 
 
@@ -1056,6 +1061,10 @@ def traveltime_benefit(final_trend_df):
 # Call the function    
 final_trend_df = traveltime_benefit(final_trend_df)
 
+def on_traveltime_benefit_widget_change(change):
+    global final_trend_df 
+    final_trend_df = traveltime_benefit(final_trend_df)
+
 widget_triggers_traveltime_benefit =[
     projectinfo_widgets.subcategory_dropdown,
     projectinfo_widgets.percent_induced_trip_widget,
@@ -1065,8 +1074,9 @@ widget_triggers_traveltime_benefit =[
 ]
     
 
+# Attach observe function to each widget
 for widget in widget_triggers_traveltime_benefit:
-    widget.observe(traveltime_benefit, names='value')
+    widget.observe(on_traveltime_benefit_widget_change, names='value')
     
     
 
@@ -1103,6 +1113,10 @@ def add_dollar_calculated_column(final_trend_df):
 # Call the function and store the modified DataFrame
 final_trend_df = add_dollar_calculated_column(final_trend_df)
 
+def add_dollarcalculated_widget_change(change):
+    global final_trend_df 
+    final_trend_df = add_dollar_calculated_column(final_trend_df)
+
 
 widget_triggers_constantdollars =[
     projectinfo_widgets.subcategory_dropdown,
@@ -1111,7 +1125,7 @@ widget_triggers_constantdollars =[
     
 
 for widget in widget_triggers_constantdollars:
-    widget.observe(add_dollar_calculated_column, names='value')
+    widget.observe(add_dollarcalculated_widget_change, names='value')
 
 
 ################################ Present Dollars Column #####################################    
@@ -1132,7 +1146,13 @@ def add_discounted_value_column(df, value_column_name, output_column_name):
 final_trend_df = add_discounted_value_column(final_trend_df, value_column_name='Constant Dollar', output_column_name='Present Value')
 
 # Display the updated DataFrame with travel time benefits
-# display(final_trend_df)  
+# display(final_trend_df) 
+
+def add_discountedvalue_widget_change(change):
+    global final_trend_df
+    # Pass value_column_name and output_column_name when calling the function
+    final_trend_df = add_discounted_value_column(final_trend_df, value_column_name='Constant Dollar', output_column_name='Present Value')
+
 
 widget_triggers_presentvalue =[
     projectinfo_widgets.construct_widget
@@ -1140,7 +1160,7 @@ widget_triggers_presentvalue =[
     
 
 for widget in widget_triggers_presentvalue:
-    widget.observe(add_discounted_value_column, names='value')
+    widget.observe(add_discountedvalue_widget_change, names='value')
     
 
 
@@ -1236,49 +1256,51 @@ sum_by_year_df = sum_present_value_by_year(final_trend_df)
 
 # sum_by_year_df = add_constant_dollars_column(sum_by_year_df, value_column_name='Total Present Value', output_column_name='Constant Dollars')
 
+# display(sum_by_year_df)
 
 
 ############################################## Summary Table ##############################################
 
-# Extract Total Travel Time Benefits (from the last row)
 total_benefit_value = sum_by_year_df[sum_by_year_df['Year'] == 'Total Travel Time Benefits']['Total Present Value'].values[0]
 
-# Total Benefit widget (read-only)
+def calculate_benefit_cost_ratio(sum_by_year_df, total_cost):
+    # Extract Total Travel Time Benefits (from the last row)
+    total_benefit = sum_by_year_df[sum_by_year_df['Year'] == 'Total Travel Time Benefits']['Total Present Value'].values[0]
+    
+    # Calculate Benefit-Cost Ratio
+    BCR = total_benefit / total_cost if total_cost != 0 else float('inf')
+    
+    return BCR
+
+# Create the widget to display Total Benefit (read-only)
 total_benefit_widget = widgets.FloatText(
     value=total_benefit_value,
-    description="Total Benefit ($):",
-    disabled=True,
-    layout=common_layout,
-    style={'description_width': 'initial'}
+    description='Total Benefit ($):',
+    disabled=True
 )
 
-# Total Cost widget (editable)
+# Create the input widget for Total Cost
 total_cost_widget = widgets.FloatText(
-    value=0,
+    value=1000000,
     description='Total Cost ($):',
-    layout=common_layout,
-    style={'description_width': 'initial'}
+    disabled=False
 )
 
-# Output widget to update display without stacking
-bcr_output = widgets.Output()
+# Create the output area
+output = widgets.Output()
 
-# Update function for BCR display
-def update_bcr(change=None):
-    with bcr_output:
-        bcr_output.clear_output()
-        total_cost = total_cost_widget.value
-        if total_cost == 0 or total_benefit_value == 0:
-            display(HTML(f"<h4 style='color: red;'>BCR = Error: Benefit or Cost not calculated...</h4>"))
-        else:
-            bcr = total_benefit_value / total_cost
-            display(HTML(f"<h2 style='font-size: 40px; color: blue;'><strong>BCR = {bcr:.2f}</strong></h2>"))
+# Define the function to update the output
+def update_bcr(total_cost):
+    with output:
+        output.clear_output()  # Clear previous output
+        BCR = calculate_benefit_cost_ratio(sum_by_year_df, total_cost)
+        display(HTML(f"<h2><strong>BCR = {BCR:.2f}</strong></h2>"))
 
-# Trigger BCR update when cost changes
-total_cost_widget.observe(update_bcr, names='value')
+# Set up the interactive behavior
+widgets.interactive(update_bcr, total_cost=total_cost_widget)
 
-# Display input widgets
-display(total_benefit_widget, total_cost_widget, bcr_output)
+# Display everything together
+display(widgets.VBox([total_benefit_widget, total_cost_widget, output]))
 
-# Initial display
-update_bcr()
+# Trigger initial display
+update_bcr(total_cost_widget.value)
