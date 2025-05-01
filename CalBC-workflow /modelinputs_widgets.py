@@ -1032,7 +1032,7 @@ def create_new_widgets():
             result = (1 - PerPeakADT) * ADT1NB * (1 - traffic_factor)
 
         # Update the output widget
-        Non_HOV_Vol_year1peak_nobuild_modelcalc_widget.value = round(result, 0)
+        Non_HOV_Vol_year1nonpeak_modelcalc_widget.value = round(result, 0)
     
     projectinfo_widgets.subcategory_dropdown.observe(update_NonHOV_year1nonpeak_Volume, names='value')
     projectinfo_widgets.HOV_lane_nobuild_widget.observe(update_NonHOV_year1nonpeak_Volume, names='value')

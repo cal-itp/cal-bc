@@ -1229,10 +1229,12 @@ sum_by_year_df = sum_present_value_by_year(final_trend_df)
 
 # sum_by_year_df = add_constant_dollars_column(sum_by_year_df, value_column_name='Total Present Value', output_column_name='Constant Dollars')
 
-display(sum_by_year_df)
+# display(sum_by_year_df)
 
 
 ############################################## Summary Table ##############################################
+
+total_benefit_value = sum_by_year_df[sum_by_year_df['Year'] == 'Total Travel Time Benefits']['Total Present Value'].values[0]
 
 def calculate_benefit_cost_ratio(sum_by_year_df, total_cost):
     # Extract Total Travel Time Benefits (from the last row)
@@ -1243,24 +1245,35 @@ def calculate_benefit_cost_ratio(sum_by_year_df, total_cost):
     
     return BCR
 
+# Create the widget to display Total Benefit (read-only)
+total_benefit_widget = widgets.FloatText(
+    value=total_benefit_value,
+    description='Total Benefit ($):',
+    disabled=True
+)
+
 # Create the input widget for Total Cost
 total_cost_widget = widgets.FloatText(
-    value=1000000,  # Default total cost value
+    value=1000000,
     description='Total Cost ($):',
     disabled=False
 )
 
-# Create the output area to display the BCR
+# Create the output area
 output = widgets.Output()
 
-# Define the function to update the output area based on the input value
+# Define the function to update the output
 def update_bcr(total_cost):
     with output:
+        output.clear_output()  # Clear previous output
         BCR = calculate_benefit_cost_ratio(sum_by_year_df, total_cost)
         display(HTML(f"<h2><strong>BCR = {BCR:.2f}</strong></h2>"))
 
-# Set up the interactive widget (this will automatically display the total_cost_widget)
-interact(update_bcr, total_cost=total_cost_widget)
+# Set up the interactive behavior
+widgets.interactive(update_bcr, total_cost=total_cost_widget)
 
-# Display the output area
-display(output)
+# Display everything together
+display(widgets.VBox([total_benefit_widget, total_cost_widget, output]))
+
+# Trigger initial display
+update_bcr(total_cost_widget.value)
