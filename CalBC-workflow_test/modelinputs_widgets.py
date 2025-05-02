@@ -196,6 +196,7 @@ def create_new_widgets():
     HOV_vol_year1peak_nobuild_widgets = widgets.HBox([
         HOV_Vol_year1peak_nobuild_modelcalc_widget,
         HOV_Vol_year1peak_nobuild_userchanged_widget,
+        PHV1NB_widget,
         PHV1NB_explaination_widget
     ])
 
@@ -405,6 +406,7 @@ def create_new_widgets():
     Weaving_Volume_year1peak_nobuild_widgets = widgets.HBox([
         weaving_volume_year1peak_nobuild_modelcalc_widget,
         weaving_volume_year1peak_nobuild_userchanged_widget,
+        PWV1NB_widget,
         PWV1NB_explanation_widget
     ])
 
@@ -647,8 +649,8 @@ def create_new_widgets():
 
     ###################################################################     
     # HOV Speed widgets 
-    hov_speed_year1peak_nobuild_modelcalc_widget = widgets.IntText(
-        value=0,
+    hov_speed_year1peak_nobuild_modelcalc_widget = widgets.FloatText(
+        value=0.0,
         description="HOV Speed (Calculated by Model):",
         disabled=True,
         layout=common_layout,
@@ -758,6 +760,7 @@ def create_new_widgets():
             updated_HOV_speed = max(hov_speed_year1peak_nobuild_modelcalc_widget.value, 5)
 
         PHS1NB_widget.value = updated_HOV_speed
+        
 
     hov_speed_year1peak_nobuild_userchanged_widget.observe(calculate_phs1nb, names='value')
     hov_speed_year1peak_nobuild_modelcalc_widget.observe(calculate_phs1nb, names='value')
@@ -765,13 +768,14 @@ def create_new_widgets():
     HOV_Speed_year1peak_nobuild_widgets = widgets.HBox([
         hov_speed_year1peak_nobuild_modelcalc_widget,
         hov_speed_year1peak_nobuild_userchanged_widget,
+        PHS1NB_widget,
         PHS1NB_explanation_widget
     ])
 
 
     ###################################################################    
     # Weaving Speed widgets 
-    weave_speed_year1peak_nobuild_modelcalc_widget = widgets.IntText(
+    weave_speed_year1peak_nobuild_modelcalc_widget = widgets.FloatText(
         value=0,
         description="Weaving Speed (Calculated by Model):",
         disabled=True,
@@ -872,13 +876,18 @@ def create_new_widgets():
     projectinfo_widgets.iri_base_year_no_build_widget.observe(update_weaving_speed_year1peak_nobuild, names='value')
 
     def calculate_pws1nb(change):
-        try:
-            val = float(weave_speed_year1peak_nobuild_userchanged_widget.value)
-            updated_weave_speed = max(val, 5)
-        except:
-            updated_weave_speed = max(weave_speed_year1peak_nobuild_modelcalc_widget.value, 5)
+        user_val_raw = weave_speed_year1peak_nobuild_userchanged_widget.value
 
-        PWS1NB_widget.value = updated_weave_speed
+        if user_val_raw.strip() == "":
+            # User didn't enter a value; use the model value
+            base_val = weave_speed_year1peak_nobuild_modelcalc_widget.value
+        else:
+            try:
+                base_val = float(user_val_raw)
+            except ValueError:
+                base_val = weave_speed_year1peak_nobuild_modelcalc_widget.value
+
+        PWS1NB_widget.value = max(base_val, 5)
 
     weave_speed_year1peak_nobuild_userchanged_widget.observe(calculate_pws1nb, names='value')
     weave_speed_year1peak_nobuild_modelcalc_widget.observe(calculate_pws1nb, names='value')
@@ -886,6 +895,7 @@ def create_new_widgets():
     Weave_Speed_year1peak_nobuild_widgets = widgets.HBox([
         weave_speed_year1peak_nobuild_modelcalc_widget,
         weave_speed_year1peak_nobuild_userchanged_widget,
+        PWS1NB_widget,
         PWS1NB_explanation_widget
     ])
 
@@ -977,6 +987,7 @@ def create_new_widgets():
     Truck_Speed_year1peak_nobuild_widgets = widgets.HBox([
         truck_speed_year1peak_nobuild_modelcalc_widget,
         truck_speed_year1peak_nobuild_userchanged_widget,
+        PTS1NB_widget,
         PTS1NB_explanation_widget
     ])
 
@@ -1076,7 +1087,7 @@ def create_new_widgets():
     Non_HOV_Vol_year1nonpeak_modelcalc_widget.observe(calculate_nnv1nb, names='value')
 
     # Combine all widgets into a horizontal layout for HOV Volume
-    Non_HOV_vol_year1nonpeak_widgets = widgets.HBox([Non_HOV_Vol_year1nonpeak_modelcalc_widget, Non_HOV_Vol_year1nonpeak_userchanged_widget, NNV1NB_explanation_widget])
+    Non_HOV_vol_year1nonpeak_widgets = widgets.HBox([Non_HOV_Vol_year1nonpeak_modelcalc_widget, Non_HOV_Vol_year1nonpeak_userchanged_widget, NNV1NB_widget, NNV1NB_explanation_widget])
     
     ###################################################################    
     
@@ -1387,26 +1398,29 @@ def create_new_widgets():
     
         # Function to calculate NNS1NB
     def calculate_nns1nb(change):
-        # Access the user-modified value directly from the widget
-        if isinstance(nonhov_speed_year1nonpeak_userchanged_widget.value, (int, float)) and nonhov_speed_year1nonpeak_userchanged_widget.value >= 0:
-            NNS1NB= max(nonhov_speed_year1nonpeak_userchanged_widget.value, 5)  # Ensure the speed is at least 5
-        else:
-            NNS1NB = max(nonhov_speed_year1nonpeak_modelcalc_widget.value, 5)  # Use the model value if the user value is invalid
-            
-        # Update the value of NNS1NB widget
-        NNS1NB_widget.value = NNS1NB
+        try:
+            val = float(nonhov_speed_year1nonpeak_userchanged_widget.value)
+            updated_speed = max(val, 5)
+        except:
+            updated_speed = max(nonhov_speed_year1nonpeak_modelcalc_widget.value, 5)
+
+        NNS1NB_widget.value = updated_speed
 
     # Link the PHV1NB widget update to changes in HOV_Vol_peak_userchanged_widget
     nonhov_speed_year1nonpeak_userchanged_widget.observe(calculate_nns1nb, names='value')
     nonhov_speed_year1nonpeak_modelcalc_widget.observe(calculate_nns1nb, names='value')
 
     # Combine all widgets into a horizontal layout for HOV Volume
-    NonHOV_speed_year1nonpeak_widgets = widgets.HBox([nonhov_speed_year1nonpeak_modelcalc_widget, nonhov_speed_year1nonpeak_userchanged_widget, NNS1NB_explanation_widget])
+    NonHOV_speed_year1nonpeak_widgets = widgets.HBox([nonhov_speed_year1nonpeak_modelcalc_widget, nonhov_speed_year1nonpeak_userchanged_widget, NNS1NB_widget, NNS1NB_explanation_widget])
+    
+    
+    
+
     
     ###################################################################    
     
     # Weaving Non Peak Speed widgets 
-    weave_speed_year1nonpeak_modelcalc_widget = widgets.IntText(
+    weave_speed_year1nonpeak_modelcalc_widget = widgets.FloatText(
         value=0,  # Set initial value to 0 or any other valid integer
         description="Weaving Speed (Calculated by Model):",
         disabled=True,  # Make it read-only so the user cannot modify the value
@@ -1498,23 +1512,22 @@ def create_new_widgets():
     projectinfo_widgets.peak_period_widget.observe(update_year1nonpeak_weave_speed, names='value')
     projectinfo_widgets.iri_base_year_no_build_widget.observe(update_year1nonpeak_weave_speed, names='value')
  
-    # Function to calculate NNS1NB
+    # Function to calculate NWS1NB        
     def calculate_nws1nb(change):
-        # Access the user-modified value directly from the widget
-        if isinstance(weave_speed_year1nonpeak_userchanged_widget.value, (int, float)) and weave_speed_year1nonpeak_userchanged_widget.value >= 0:
-            NWS1NB= max(weave_speed_year1nonpeak_userchanged_widget.value, 5)  # Ensure the speed is at least 5
-        else:
-            NWS1NB = max(weave_speed_year1nonpeak_modelcalc_widget.value, 5)  # Use the model value if the user value is invalid
-            
-        # Update the value of NNS1NB widget
-        NWS1NB_widget.value = NWS1NB
+        try:
+            val = float(weave_speed_year1nonpeak_userchanged_widget.value)
+            updated_speed = max(val, 5)
+        except:
+            updated_speed = max(weave_speed_year1nonpeak_modelcalc_widget.value, 5)
+
+        NWS1NB_widget.value = updated_speed
 
     # Link the PHV1NB widget update to changes in HOV_Vol_peak_userchanged_widget
     weave_speed_year1nonpeak_userchanged_widget.observe(calculate_nws1nb, names='value')
     weave_speed_year1nonpeak_modelcalc_widget.observe(calculate_nws1nb, names='value')
 
     # Combine all widgets into a horizontal layout for HOV Volume
-    Weave_speed_year1nonpeak_widgets = widgets.HBox([weave_speed_year1nonpeak_modelcalc_widget, weave_speed_year1nonpeak_userchanged_widget, NWS1NB_explanation_widget])
+    Weave_speed_year1nonpeak_widgets = widgets.HBox([weave_speed_year1nonpeak_modelcalc_widget, weave_speed_year1nonpeak_userchanged_widget,NWS1NB_widget, NWS1NB_explanation_widget])
 
     ###################################################################
     # Truck Non Peak Speed widgets 
@@ -1615,7 +1628,7 @@ def create_new_widgets():
     truck_speed_year1nonpeak_modelcalc_widget.observe(calculate_nts1nb, names='value')
     
     # Combine all the Non HOV Speed widgets into a horizontal layout for display
-    Truck_speed_year1nonpeak_widgets = widgets.HBox([truck_speed_year1nonpeak_modelcalc_widget, truck_speed_year1nonpeak_userchanged_widget, NTS1NB_explanation_widget])     
+    Truck_speed_year1nonpeak_widgets = widgets.HBox([truck_speed_year1nonpeak_modelcalc_widget, truck_speed_year1nonpeak_userchanged_widget, NTS1NB_widget, NTS1NB_explanation_widget])     
     
     
 ######################################################################################################################################################################
@@ -1721,7 +1734,7 @@ def create_new_widgets():
     HOV_Vol_year20peak_modelcalc_widget.observe(calculate_phv20nb, names='value')
 
     # Combine all widgets into a horizontal layout for HOV Volume
-    HOV_vol_year20peak_widgets = widgets.HBox([HOV_Vol_year20peak_modelcalc_widget, HOV_Vol_year20peak_userchanged_widget, PHV20NB_explaination_widget])
+    HOV_vol_year20peak_widgets = widgets.HBox([HOV_Vol_year20peak_modelcalc_widget, HOV_Vol_year20peak_userchanged_widget, PHV20NB_widget, PHV20NB_explaination_widget])
 
 
     
@@ -1852,7 +1865,7 @@ def create_new_widgets():
     Non_HOV_Vol_year20peak_userchanged_widget.observe(calculate_pnv20nb, names='value')    
 
     # Combine all the Non-HOV volume widgets into a horizontal layout for display
-    Non_HOV_vol_year20peak_widgets = widgets.HBox([Non_HOV_Vol_year20peak_modelcalc_widget, Non_HOV_Vol_year20peak_userchanged_widget, PNV20NB_explanation_widget])
+    Non_HOV_vol_year20peak_widgets = widgets.HBox([Non_HOV_Vol_year20peak_modelcalc_widget, Non_HOV_Vol_year20peak_userchanged_widget, PNV20NB_widget, PNV20NB_explanation_widget])
     
     ###################################################################
        
@@ -1958,7 +1971,7 @@ def create_new_widgets():
     weaving_volume_year20peak_userchanged_widget.observe(calculate_pwv20nb, names='value')    
 
     # Combine all the Non-HOV volume widgets into a horizontal layout for display
-    Weaving_Volume_year20peak_widgets = widgets.HBox([weaving_volume_year20peak_modelcalc_widget, weaving_volume_year20peak_userchanged_widget, PWV20NB_explanation_widget])
+    Weaving_Volume_year20peak_widgets = widgets.HBox([weaving_volume_year20peak_modelcalc_widget, weaving_volume_year20peak_userchanged_widget, PWV20NB_widget, PWV20NB_explanation_widget])
         
 
     ###################################################################
@@ -2060,12 +2073,12 @@ def create_new_widgets():
     truck_volume_year20peak_userchanged_widget.observe(calculate_ptv20nb, names='value')    
 
     # Combine all the Non-HOV volume widgets into a horizontal layout for display
-    Truck_Volume_year20peak_widgets = widgets.HBox([truck_volume_year20peak_modelcalc_widget, truck_volume_year20peak_userchanged_widget, PTV20NB_explanation_widget])
+    Truck_Volume_year20peak_widgets = widgets.HBox([truck_volume_year20peak_modelcalc_widget, truck_volume_year20peak_userchanged_widget, PTV20NB_widget, PTV20NB_explanation_widget])
     
     ###################################################################
     # Non-HOV Speed widgets 
-    nonhov_speed_year20peak_modelcalc_widget = widgets.IntText(
-        value=0,  # Set initial value to 0 or any other valid integer
+    nonhov_speed_year20peak_modelcalc_widget = widgets.FloatText(
+        value=0.0,  # Set initial value to 0 or any other valid integer
         description="Non-HOV Speed (Calculated by Model):",
         disabled=True,  # Make it read-only so the user cannot modify the value
         layout=common_layout,
@@ -2119,6 +2132,8 @@ def create_new_widgets():
             TMSAdj = params.tms_adj
             TMSLookup = params.TMSLookup
             TruckSpeed = projectinfo_widgets.truck_speed_widget.value
+            PerPeakADT = params.per_peak_adt
+            roadway_capacity_non_HOV = params.roadway_capacity_non_HOV
             
             # Accessing the relevant traffic volume widgets (PHV20NB, PNV20NB, PWV20NB, PTV20NB)
             traffic_volumes = [
@@ -2156,11 +2171,12 @@ def create_new_widgets():
                     GenAlphaNB = capacity_params["GenAlphaNB"]
                     GenBetaNB = capacity_params["GenBetaNB"]
                     GenLaneCapNB = capacity_params["GenLaneCapNB"]
+                    TMS_value = TMSAdj.get(TMSLookup, {}).get("SpeedWithout", 1)
 
                     # Apply the speed calculation formula
                     volume_term = flow_sum / (GenLanesNB * GenLaneCapNB * PeakLngthNB)
                     delay_speed = FFSpeedNB / (1 + GenAlphaNB * min(volume_term, MaxVC) ** GenBetaNB)
-                    base_speed = delay_speed * TMSAdj[TMSLookup][1]
+                    base_speed = delay_speed * TMS_value
 
                     if ProjType == "Passing":
                         nonhov_speed = (TruckSpeed + FFSpeedNB) / 2
@@ -2211,21 +2227,23 @@ def create_new_widgets():
     projectinfo_widgets.percent_traffic_weave_no_build_widget.observe(update_nonhov_year20peak_speed, names='value')  # PerWeaveNB
     projectinfo_widgets.iri_forecast_year_no_build_widget.observe(update_nonhov_year20peak_speed, names='value')  # IRI20NB
     
+
+        
     def calculate_pns20nb(change):
-        # Access the user-modified value directly from the widget
-        if isinstance(nonhov_speed_year20peak_userchanged_widget.value, (int, float)) and nonhov_speed_year20peak_userchanged_widget.value >= 0:
-            updated_NonHOV_year20peak_speed = max(nonhov_speed_year20peak_userchanged_widget.value, 5)  # Ensure the speed is at least 5
-        else:
-            updated_NonHOV_year20peak_speed = max(nonhov_speed_year20peak_modelcalc_widget.value, 5)  # Use the model value if the user value is invalid
+        try:
+            val = float(nonhov_speed_year20peak_userchanged_widget.value)
+            updated_speed = max(val, 5)
+        except:
+            updated_speed = max(nonhov_speed_year20peak_modelcalc_widget.value, 5)
 
-        # Update the value of PNS20NB widget
-        PNS20NB_widget.value = updated_NonHOV_year20peak_speed
-
+        PNS20NB_widget.value = updated_speed
 
     nonhov_speed_year20peak_userchanged_widget.observe(calculate_pns20nb, names='value')
+    nonhov_speed_year20peak_modelcalc_widget.observe(calculate_pns20nb, names='value')
+    
 
     # Combine into layout
-    NonHOV_Year20Peak_Speed_widgets = widgets.HBox([nonhov_speed_year20peak_modelcalc_widget, nonhov_speed_year20peak_userchanged_widget, PNS20NB_explanation_widget])
+    NonHOV_Year20Peak_Speed_widgets = widgets.HBox([nonhov_speed_year20peak_modelcalc_widget, nonhov_speed_year20peak_userchanged_widget, PNS20NB_widget, PNS20NB_explanation_widget])
     
     ###################################################################        
      # HOV Speed widgets for Year 20
@@ -2344,14 +2362,17 @@ def create_new_widgets():
 
     def calculate_phs20nb(change):
         try:
+            # Try converting user input to a float
             user_input = float(hov_speed_year20peak_userchanged_widget.value)
             if user_input >= 0:
                 updated_HOV_year20peak_speed = max(user_input, 5)
             else:
-                raise ValueError  # Treat negative values as invalid
+                updated_HOV_year20peak_speed = max(hov_speed_year20peak_modelcalc_widget.value, 5)
         except (ValueError, TypeError):
+            # Fallback to model-calculated value if input is invalid
             updated_HOV_year20peak_speed = max(hov_speed_year20peak_modelcalc_widget.value, 5)
 
+        # Update the dependent widget
         PHS20NB_widget.value = updated_HOV_year20peak_speed
 
 
@@ -2363,7 +2384,7 @@ def create_new_widgets():
     
     ###################################################################    
     # Weaving Speed widgets 
-    weave_speed_year20peak_modelcalc_widget = widgets.IntText(
+    weave_speed_year20peak_modelcalc_widget = widgets.FloatText(
         value=0,  # Set initial value to 0 or any other valid integer
         description="Weaving Speed (Calculated by Model):",
         disabled=True,  # Make it read-only so the user cannot modify the value
@@ -2418,30 +2439,31 @@ def create_new_widgets():
             if PWV20NB == 0:
                 Year20PeakWeaveSpeed = 55
             else:
-                # If ProjType is Auxiliary Lane or Off-Ramp Widening, perform the calculation
-                if ProjType == "Auxiliary Lane" or ProjType == "Off-Ramp Widening":
-                    # Applying the formula for calculating adjusted speed
-                    exponent_part = math.exp((PWV20NB + PTV20NB) / NumDirections / PeakLngthNB / 1000)
-                    part1 = FFSpeedNB - (FFSpeedNB - 42) * (0.321 + 0.0039 * exponent_part - 0.002 * (1083 if ProjType == "Off-Ramp Widening" else SegmentNB * 5280) * RampFFSpdNB / 1000)
-                    adjusted_speed = 1.1 * part1
+                if ProjType in ["Auxiliary Lane", "Off-Ramp Widening"]:
+                    # Exponential adjustment
+                    exp_factor = math.exp((PWV20NB + PTV20NB) / NumDirections / PeakLngthNB / 1000)
 
-                    # If ProjType is Pavement, apply pavement adjustment using SpeedPavAdj
+                    # Segment length factor depending on project type
+                    ramp_term_factor = 1083 if ProjType == "Off-Ramp Widening" else SegmentNB * 5280
+                    ramp_term = 0.002 * ramp_term_factor * RampFFSpdNB / 1000
+
+                    # Main formula
+                    base_speed = FFSpeedNB - (FFSpeedNB - 42) * (0.321 + 0.0039 * exp_factor - ramp_term)
+                    adjusted_speed = 1.1 * base_speed
+
+                    # Apply TMS adjustment
+                    TMS_adj_factor = TMSAdj.get(TMSLookup, {}).get("SpeedWithout", 1)
+                    adjusted_speed *= TMS_adj_factor
+
+                    # Apply pavement adjustment if applicable
                     if ProjType == "Pavement":
-                        # Perform the lookup in SpeedPavAdj for the given IRI20NB
                         closest_iri_key = min(SpeedPavAdj.keys(), key=lambda x: abs(x - IRI20NB))
-                        speed_adj = SpeedPavAdj[closest_iri_key]["Auto"]  # Use "Auto" adjustment factor
-
-                        # Adjust the speed based on the pavement condition
+                        speed_adj = SpeedPavAdj[closest_iri_key]["Auto"]
                         adjusted_speed *= speed_adj
 
-                    # Apply the lookup adjustment for TMS
-                    tms_adj = TMSAdj.get(TMSLookup, [1.0])[1]  # Default to 1 if no match in TMSAdj
-
-                    # Final calculated speed considering the adjustments
-                    Year20PeakWeaveSpeed = max(5, min(PNS20NB, adjusted_speed * tms_adj))
-
+                    # Final bounded result
+                    Year20PeakWeaveSpeed = max(5, min(PNS20NB, adjusted_speed))
                 else:
-                    # If not Auxiliary Lane or Off-Ramp Widening, just use PNS20NB
                     Year20PeakWeaveSpeed = PNS20NB
 
             # Update the widget with the calculated result
@@ -2464,22 +2486,23 @@ def create_new_widgets():
     projectinfo_widgets.hov_hot_lanes_no_build_widget.observe(update_year20peak_weave_speed, names='value')
     projectinfo_widgets.highway_segment_no_build_widget.observe(update_year20peak_weave_speed, names='value')
     projectinfo_widgets.iri_forecast_year_no_build_widget.observe(update_year20peak_weave_speed, names='value')
-
+    
+    
     def calculate_pws20nb(change):
-        # Access the user-modified value directly from the widget
-        if isinstance(weave_speed_year20peak_userchanged_widget.value, (int, float)) and weave_speed_year20peak_userchanged_widget.value >= 0:
-            updated_Weave_year20peak_speed = max(weave_speed_year20peak_userchanged_widget.value, 5)  # Ensure the speed is at least 5
-        else:
-            updated_Weave_year20peak_speed = max(weave_speed_year20peak_modelcalc_widget.value, 5)  # Use the model value if the user value is invalid
+        try:
+            val = float(weave_speed_year20peak_userchanged_widget.value)
+            updated_speed = max(val, 5)
+        except:
+            updated_speed = max(weave_speed_year20peak_modelcalc_widget.value, 5)
 
-        # Update the value of PWS20NB widget (project evaluation widget)
-        PWS20NB_widget.value = updated_Weave_year20peak_speed
+        PWS20NB_widget.value = updated_speed
 
-    # Link the function to the user input widget change
     weave_speed_year20peak_userchanged_widget.observe(calculate_pws20nb, names='value')
+    weave_speed_year20peak_modelcalc_widget.observe(calculate_pws20nb, names='value')
+                        
 
     # Combine into layout for display
-    Weave_Year20Peak_Speed_widgets = widgets.HBox([weave_speed_year20peak_modelcalc_widget, weave_speed_year20peak_userchanged_widget, PWS20NB_explanation_widget])
+    Weave_Year20Peak_Speed_widgets = widgets.HBox([weave_speed_year20peak_modelcalc_widget, weave_speed_year20peak_userchanged_widget, PWS20NB_widget, PWS20NB_explanation_widget])
 
     ###################################################################
     # Truck Speed widgets 
@@ -2528,40 +2551,30 @@ def create_new_widgets():
             TruckSpeed = projectinfo_widgets.truck_design_speed_no_build_widget.value
             SpeedPavAdj = params.SpeedPavAdj
 
-            # Check if the value of PTV20NB is 0
+            # Check if PTV20NB is 0
             if PTV20NB == 0:
                 Year20PeakTruckSpeed = 55
             else:
-                # If ProjType is Auxiliary Lane or Off-Ramp Widening, perform the calculation
-                if ProjType == "Auxiliary Lane" or ProjType == "Off-Ramp Widening":
-                    # Formula for truck speed adjustment based on pavement and other factors
-                    if ProjType == "Pavement":  # Check if the project type is Pavement
-                        # Perform the lookup in SpeedPavAdj for the given IRI20NB
-                        closest_iri_key = min(SpeedPavAdj.keys(), key=lambda x: abs(x - IRI20NB))
-                        speed_adj_auto = SpeedPavAdj[closest_iri_key]["Auto"]
-                        speed_adj_truck = SpeedPavAdj[closest_iri_key]["Truck"]
-                    else:
-                        speed_adj_auto = 1
-                        speed_adj_truck = 1
+                is_aux_or_offramp = ProjType in ["Auxiliary Lane", "Off-Ramp Widening"]
+                is_pavement = ProjType == "Pavement"
 
-                    adjusted_speed = min(TruckSpeed, PWS20NB if ProjType in ["Auxiliary Lane", "Off-Ramp Widening"] else PNS20NB) * speed_adj_truck
+                base_speed = PWS20NB if is_aux_or_offramp else PNS20NB
 
-                    # Apply pavement adjustment if necessary
-                    if ProjType == "Pavement":
-                        adjusted_speed *= speed_adj_auto
+                auto_adj = 1
+                truck_adj = 1
 
-                    # Final calculated truck speed
-                    Year20PeakTruckSpeed = max(5, adjusted_speed)
+                if is_pavement:
+                    closest_iri_key = min(SpeedPavAdj.keys(), key=lambda x: abs(x - IRI20NB))
+                    auto_adj = SpeedPavAdj[closest_iri_key]["Auto"]
+                    truck_adj = SpeedPavAdj[closest_iri_key]["Truck"]
 
-                else:
-                    # If not Auxiliary Lane or Off-Ramp Widening, just use PNS20NB
-                    Year20PeakTruckSpeed = PNS20NB
+                adjusted_base = base_speed / auto_adj if is_pavement else base_speed
+                min_speed = min(TruckSpeed, adjusted_base)
+                Year20PeakTruckSpeed = min_speed * truck_adj
 
-            # Update the widget with the calculated result
             truck_speed_year20peak_modelcalc_widget.value = round(Year20PeakTruckSpeed, 2)
 
         except Exception:
-            # In case of any error, set the result to 0 without printing anything
             truck_speed_year20peak_modelcalc_widget.value = 0
 
     # Initial call to set the value based on the current widget state
@@ -2588,9 +2601,10 @@ def create_new_widgets():
 
     # Link the function to the user input widget change
     truck_speed_year20peak_userchanged_widget.observe(calculate_pts20nb, names='value')
+    truck_speed_year20peak_modelcalc_widget.observe(calculate_pts20nb, names='value')
 
     # Combine into layout for display
-    Truck_Year20Peak_Speed_widgets = widgets.HBox([truck_speed_year20peak_modelcalc_widget, truck_speed_year20peak_userchanged_widget, PTS20NB_explanation_widget])
+    Truck_Year20Peak_Speed_widgets = widgets.HBox([truck_speed_year20peak_modelcalc_widget, truck_speed_year20peak_userchanged_widget, PTS20NB_widget, PTS20NB_explanation_widget])
     
 ######################################################################################################################################################################
 ############################### NonPeak Period ###############################
