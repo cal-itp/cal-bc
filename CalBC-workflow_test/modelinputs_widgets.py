@@ -1463,47 +1463,44 @@ def create_new_widgets():
     ) 
     
     def update_year1nonpeak_weave_speed(change=None):
-        try:
-            # Retrieve relevant widget values
-            NWV1NB = NWV1NB_widget.value
-            NNS1NB = NNS1NB_widget.value
-            NTV1NB = NTV1NB_widget.value
-            
-            # Retrieve project information values
-            ProjType = projectinfo_widgets.subcategory_dropdown.value
-            FFSpeedNB = projectinfo_widgets.free_flow_speed_no_build_widget.value
-            RampFFSpdNB = projectinfo_widgets.ramp_design_speed_no_build_widget.value
-            SegmentNB = projectinfo_widgets.highway_segment_no_build_widget.value
-            NumDirections = projectinfo_widgets.one_two_way_widget.value
-            PeakLngthNB = projectinfo_widgets.peak_period_widget.value
-            SpeedPavAdj = params.SpeedPavAdj
-            IRI1NB = projectinfo_widgets.iri_base_year_no_build_widget.value
-            
-            # Apply the formula
-            if NWV1NB == 0:
-                Year1NonPeakWeaveSpeed = 55
+        # Retrieve relevant widget values
+        NWV1NB = NWV1NB_widget.value
+        NNS1NB = NNS1NB_widget.value
+        NTV1NB = NTV1NB_widget.value
+
+        # Retrieve project information values
+        ProjType = projectinfo_widgets.subcategory_dropdown.value
+        FFSpeedNB = projectinfo_widgets.free_flow_speed_no_build_widget.value
+        RampFFSpdNB = projectinfo_widgets.ramp_design_speed_no_build_widget.value
+        SegmentNB = projectinfo_widgets.highway_segment_no_build_widget.value
+        NumDirections = projectinfo_widgets.one_two_way_widget.value
+        PeakLngthNB = projectinfo_widgets.peak_period_widget.value
+        SpeedPavAdj = params.SpeedPavAdj
+        IRI1NB = projectinfo_widgets.iri_base_year_no_build_widget.value
+
+        # Apply the formula
+        if NWV1NB == 0:
+            Year1NonPeakWeaveSpeed = 55
+        else:
+            if ProjType == "Auxiliary Lane" or ProjType == "Off-Ramp Widening":
+                exponent_part = math.exp((NWV1NB + NTV1NB) / NumDirections / (24 - PeakLngthNB) / 1000)
+                part1 = FFSpeedNB - (FFSpeedNB - 42) * (0.321 + 0.0039 * exponent_part - 0.002 * (1083 if ProjType == "Off-Ramp Widening" else SegmentNB * 5280) * RampFFSpdNB / 1000)
+                adjusted_speed = 1.1 * part1
+
+                # If ProjType is Pavement, apply pavement adjustment using SpeedPavAdj
+                if ProjType == "Pavement":
+                    # Lookup SpeedPavAdj for the provided IRI1NB value
+                    speed_adj = SpeedPavAdj.get(IRI1NB, {"Auto": 1.0})  # Default to Auto: 1.0 if no match
+                    auto_speed_factor = speed_adj["Auto"]  # Assuming we are interested in the "Auto" value for adjustment
+                    adjusted_speed *= auto_speed_factor
+
+                Year1NonPeakWeaveSpeed = max(5, min(NNS1NB, adjusted_speed))
             else:
-                if ProjType == "Auxiliary Lane" or ProjType == "Off-Ramp Widening":
-                    exponent_part = math.exp((NWV1NB + NTV1NB) / NumDirections / (24 - PeakLngthNB) / 1000)
-                    part1 = FFSpeedNB - (FFSpeedNB - 42) * (0.321 + 0.0039 * exponent_part - 0.002 * (1083 if ProjType == "Off-Ramp Widening" else SegmentNB * 5280) * RampFFSpdNB / 1000)
-                    adjusted_speed = 1.1 * part1
+                Year1NonPeakWeaveSpeed = NNS1NB
 
-                    # If ProjType is Pavement, apply pavement adjustment using SpeedPavAdj
-                    if ProjType == "Pavement":
-                        # Lookup SpeedPavAdj for the provided IRI1NB value
-                        speed_adj = SpeedPavAdj.get(IRI1NB, {"Auto": 1.0})  # Default to Auto: 1.0 if no match
-                        auto_speed_factor = speed_adj["Auto"]  # Assuming we are interested in the "Auto" value for adjustment
-                        adjusted_speed *= auto_speed_factor
+        # Update the widget with the result
+        weave_speed_year1nonpeak_modelcalc_widget.value = round(Year1NonPeakWeaveSpeed, 2)
 
-                    Year1NonPeakWeaveSpeed = max(5, min(NNS1NB, adjusted_speed))
-                else:
-                    Year1NonPeakWeaveSpeed = NNS1NB
-
-            # Update the widget with the result
-            weave_speed_year1nonpeak_modelcalc_widget.value = round(Year1NonPeakWeaveSpeed, 2)
-
-        except Exception:
-            weave_speed_year1nonpeak_modelcalc_widget.value = 0
             
     
     # Link the update function to changes in relevant widgets
@@ -1680,38 +1677,34 @@ def create_new_widgets():
     # Function to update HOV Volume dynamically
     # Function to update HOV Volume dynamically
     def update_HOV_Year20Peak_Volume(change):
-        try:
-            # Retrieve relevant widget values from the provided list
-            ProjType = projectinfo_widgets.subcategory_dropdown.value
-            PeakLngthNB = projectinfo_widgets.peak_period_widget.value
-            ADT1NB = projectinfo_widgets.adt_base_year_no_build_widget.value
-            DepRate1 = projectinfo_widgets.departure_rate_forecast_year_no_build_widget.value
-            ADT20NB = projectinfo_widgets.ADT_20NB_widget.value
-            PerPeakADT = params.per_peak_adt
-            PerWeaveNB = projectinfo_widgets.percent_traffic_weave_no_build_widget.value
-            HOVvolNB = projectinfo_widgets.HOV_lane_nobuild_widget.value
-            
-            
-            # Check if project type is "Hwy-Rail Grade Crossing"
-            if ProjType == "Hwy-Rail Grade Crossing":
-                HOV_Volume_Year20Peak_Model = 0
+        # Retrieve relevant widget values from the provided list
+        ProjType = projectinfo_widgets.subcategory_dropdown.value
+        PeakLngthNB = projectinfo_widgets.peak_period_widget.value
+        ADT1NB = projectinfo_widgets.adt_base_year_no_build_widget.value
+        DepRate1 = projectinfo_widgets.departure_rate_forecast_year_no_build_widget.value
+        ADT20NB = projectinfo_widgets.ADT_20NB_widget.value
+        PerPeakADT = params.per_peak_adt
+        PerWeaveNB = projectinfo_widgets.percent_traffic_weave_no_build_widget.value
+        HOVvolNB = projectinfo_widgets.HOV_lane_nobuild_widget.value
 
-            # Check if project type is "Queuing"
-            elif ProjType == "Queuing":
-                numerator = PeakLngthNB * (DepRate1 - ADT1NB * (1 - PerPeakADT) / (24 - PeakLngthNB))
-                denominator = (ADT1NB / ADT20NB * DepRate20 - ADT1NB * (1 - PerPeakADT) / (24 - PeakLngthNB))
-                HOV_Volume_Year20Peak_Model = numerator / denominator if denominator != 0 else 0
+        # Check if project type is "Hwy-Rail Grade Crossing"
+        if ProjType == "Hwy-Rail Grade Crossing":
+            HOV_Volume_Year20Peak_Model = 0
 
-            # Default case for other project types
-            else:
-                hov_factor = (1 - PerWeaveNB) if ProjType in ["HOV Connector", "HOV Drop Ramp"] else 1
-                HOV_Volume_Year20Peak_Model = PeakLngthNB * HOVvolNB * hov_factor
+        # Check if project type is "Queuing"
+        elif ProjType == "Queuing":
+            numerator = PeakLngthNB * (DepRate1 - ADT1NB * (1 - PerPeakADT) / (24 - PeakLngthNB))
+            denominator = (ADT1NB / ADT20NB * DepRate20 - ADT1NB * (1 - PerPeakADT) / (24 - PeakLngthNB))
+            HOV_Volume_Year20Peak_Model = numerator / denominator if denominator != 0 else 0
 
-            # Update the widget with the result
-            HOV_Vol_year20peak_modelcalc_widget.value = round(HOV_Volume_Year20Peak_Model, 2)
+        # Default case for other project types
+        else:
+            hov_factor = (1 - PerWeaveNB) if ProjType in ["HOV Connector", "HOV Drop Ramp"] else 1
+            HOV_Volume_Year20Peak_Model = PeakLngthNB * HOVvolNB * hov_factor
 
-        except Exception:
-            HOV_Vol_year20peak_modelcalc_widget.value = 0
+        # Update the widget with the result
+        HOV_Vol_year20peak_modelcalc_widget.value = round(HOV_Volume_Year20Peak_Model, 2)
+
             
     # Attach observers to the relevant widgets to update the HOV Volume widget dynamically
     projectinfo_widgets.subcategory_dropdown.observe(update_HOV_Year20Peak_Volume, names='value')
@@ -1915,43 +1908,39 @@ def create_new_widgets():
     
     # Update Weaving Volume Calculation based on widget values
     def update_weaving_year20peak_volume(change=None):
-        try:
-            # Retrieve relevant widget values from the provided list
-            ProjType = projectinfo_widgets.subcategory_dropdown.value
-            PerPeakADT = params.per_peak_adt
-            ADT20NB = projectinfo_widgets.ADT_20NB_widget.value
-            PerWeaveNB = projectinfo_widgets.percent_traffic_weave_no_build_widget.value
-            PerTruckNB = projectinfo_widgets.percent_trucks_nobuild_widget.value
-            TMSLookup = params.TMSLookup
-            TMSAdj = params.tms_adj
-            RampVolP = projectinfo_widgets.hourly_ramp_volume_peak_widget.value
-            PeakLngthNB = projectinfo_widgets.peak_period_widget.value
-            HOVvolNB = projectinfo_widgets.HOV_lane_nobuild_widget.value
-            
-            # Look up the TMS adjustment factor
-            TMS_value = TMSAdj.get(TMSLookup, {}).get("VolumeWithout", 1)
+        # Retrieve relevant widget values from the provided list
+        ProjType = projectinfo_widgets.subcategory_dropdown.value
+        PerPeakADT = params.per_peak_adt
+        ADT20NB = projectinfo_widgets.ADT_20NB_widget.value
+        PerWeaveNB = projectinfo_widgets.percent_traffic_weave_no_build_widget.value
+        PerTruckNB = projectinfo_widgets.percent_trucks_nobuild_widget.value
+        TMSLookup = params.TMSLookup
+        TMSAdj = params.tms_adj
+        RampVolP = projectinfo_widgets.hourly_ramp_volume_peak_widget.value
+        PeakLngthNB = projectinfo_widgets.peak_period_widget.value
+        HOVvolNB = projectinfo_widgets.HOV_lane_nobuild_widget.value
 
-            # Initialize total weaving volume model for year 20 peak
-            Weaving_Volume_Model_20peak = 0
+        # Look up the TMS adjustment factor
+        TMS_value = TMSAdj.get(TMSLookup, {}).get("VolumeWithout", 1)
 
-            # First condition
-            if ProjType in ["Auxiliary Lane", "Off-Ramp Widening"]:
-                Weaving_Volume_Model_20peak += (PerPeakADT * ADT20NB) * (PerWeaveNB - PerTruckNB) * TMS_value
+        # Initialize total weaving volume model for year 20 peak
+        Weaving_Volume_Model_20peak = 0
 
-            # Second condition:
-            if ProjType == "Auxiliary Lane":
-                Weaving_Volume_Model_20peak += RampVolP * PeakLngthNB
+        # First condition
+        if ProjType in ["Auxiliary Lane", "Off-Ramp Widening"]:
+            Weaving_Volume_Model_20peak += (PerPeakADT * ADT20NB) * (PerWeaveNB - PerTruckNB) * TMS_value
 
-            # Third condition: IF(OR(HOVConn,HOVDrop), ...)
-            if ProjType in ["HOV Connector", "HOV Drop Ramp"]:
-                Weaving_Volume_Model_20peak += PerWeaveNB * HOVvolNB * PeakLngthNB
+        # Second condition
+        if ProjType == "Auxiliary Lane":
+            Weaving_Volume_Model_20peak += RampVolP * PeakLngthNB
 
-            # Update the widget with the calculated value
-            weaving_volume_year20peak_modelcalc_widget.value = round(Weaving_Volume_Model_20peak, 0)
-        
-        except Exception:
-            # In case of an error, silently handle it by setting a default value (0 or other)
-            weaving_volume_year20peak_modelcalc_widget.value = 0
+        # Third condition
+        if ProjType in ["HOV Connector", "HOV Drop Ramp"]:
+            Weaving_Volume_Model_20peak += PerWeaveNB * HOVvolNB * PeakLngthNB
+
+        # Update the widget with the calculated value
+        weaving_volume_year20peak_modelcalc_widget.value = round(Weaving_Volume_Model_20peak, 0)
+
         
     # Link the update function to changes in relevant widgets
     projectinfo_widgets.ADT_20NB_widget.observe(update_weaving_year20peak_volume, names='value')
@@ -2121,97 +2110,89 @@ def create_new_widgets():
     )    
     
     def update_nonhov_year20peak_speed(change=None):
-        try:
-            # Accessing relevant widget values from the provided list
-            ProjType = projectinfo_widgets.subcategory_dropdown.value
-            PeakLngthNB = projectinfo_widgets.peak_period_widget.value
-            DepRate1 = projectinfo_widgets.departure_rate_forecast_year_no_build_widget.value
-            DepRate20 = projectinfo_widgets.departure_rate_forecast_year_build_widget.value
-            ArrRate1 = projectinfo_widgets.arrival_rate_base_year_no_build_widget.value
-            ArrRate20 = projectinfo_widgets.arrival_rate_base_year_build_widget.value
-            ADT1NB = projectinfo_widgets.adt_base_year_no_build_widget.value
-            FFSpeedNB = projectinfo_widgets.free_flow_speed_no_build_widget.value
-            IRI20NB = projectinfo_widgets.iri_forecast_year_no_build_widget.value
-            ImpactedNB = projectinfo_widgets.impacted_length_no_build_widget.value
-            HOVLanesNB = projectinfo_widgets.hov_hot_lanes_no_build_widget.value
-            GenLanesNB = projectinfo_widgets.general_traffic_lanes_no_build_widget.value
-            MaxVC = params.MaxVC
-            SpeedWeaveAdj = params.SpeedWeaveAdj
-            SpeedPavAdj = params.SpeedPavAdj
-            TMSAdj = params.tms_adj
-            TMSLookup = params.TMSLookup
-            TruckSpeed = projectinfo_widgets.truck_speed_widget.value
-            PerPeakADT = params.per_peak_adt
-            roadway_capacity_non_HOV = params.roadway_capacity_non_HOV
-            
-            # Accessing the relevant traffic volume widgets (PHV20NB, PNV20NB, PWV20NB, PTV20NB)
-            traffic_volumes = [
-                PHV20NB_widget.value,  
-                PNV20NB_widget.value,  
-                PWV20NB_widget.value,  
-                PTV20NB_widget.value   
-            ]
+        # Accessing relevant widget values from the provided list
+        ProjType = projectinfo_widgets.subcategory_dropdown.value
+        PeakLngthNB = projectinfo_widgets.peak_period_widget.value
+        DepRate1 = projectinfo_widgets.departure_rate_forecast_year_no_build_widget.value
+        DepRate20 = projectinfo_widgets.departure_rate_forecast_year_build_widget.value
+        ArrRate1 = projectinfo_widgets.arrival_rate_base_year_no_build_widget.value
+        ArrRate20 = projectinfo_widgets.arrival_rate_base_year_build_widget.value
+        ADT1NB = projectinfo_widgets.adt_base_year_no_build_widget.value
+        FFSpeedNB = projectinfo_widgets.free_flow_speed_no_build_widget.value
+        IRI20NB = projectinfo_widgets.iri_forecast_year_no_build_widget.value
+        ImpactedNB = projectinfo_widgets.impacted_length_no_build_widget.value
+        HOVLanesNB = projectinfo_widgets.hov_hot_lanes_no_build_widget.value
+        GenLanesNB = projectinfo_widgets.general_traffic_lanes_no_build_widget.value
+        MaxVC = params.MaxVC
+        SpeedWeaveAdj = params.SpeedWeaveAdj
+        SpeedPavAdj = params.SpeedPavAdj
+        TMSAdj = params.tms_adj
+        TMSLookup = params.TMSLookup
+        TruckSpeed = projectinfo_widgets.truck_speed_widget.value
+        PerPeakADT = params.per_peak_adt
+        roadway_capacity_non_HOV = params.roadway_capacity_non_HOV
 
-            sum_all = sum(traffic_volumes)
+        # Accessing the relevant traffic volume widgets (PHV20NB, PNV20NB, PWV20NB, PTV20NB)
+        traffic_volumes = [
+            PHV20NB_widget.value,  
+            PNV20NB_widget.value,  
+            PWV20NB_widget.value,  
+            PTV20NB_widget.value   
+        ]
 
-            # Step 1: Formula for Non-HOV Speed calculation
-            if sum_all == 0:
-                nonhov_speed = 55  # If total volume is zero, use default value
+        sum_all = sum(traffic_volumes)
+
+        # Step 1: Formula for Non-HOV Speed calculation
+        if sum_all == 0:
+            nonhov_speed = 55  # If total volume is zero, use default value
+        else:
+            if ProjType == "Queuing":
+                try:
+                    part1 = (
+                        PeakLngthNB / DepRate20 / 2
+                        * (ArrRate20 - DepRate20)
+                        * (DepRate1 - ADT1NB * (1 - PerPeakADT) / (24 - PeakLngthNB))
+                        / (ArrRate1 - ADT1NB * (1 - PerPeakADT) / (24 - PeakLngthNB))
+                    )
+                except ZeroDivisionError:
+                    part1 = float("inf")
+
+                nonhov_speed = ImpactedNB / (max(part1, 0) + ImpactedNB / FFSpeedNB)
             else:
-                if ProjType == "Queuing":
-                    # Special case for queuing calculation
-                    try:
-                        part1 = (
-                            PeakLngthNB / DepRate20 / 2
-                            * (ArrRate20 - DepRate20)
-                            * (DepRate1 - ADT1NB * (1 - PerPeakADT) / (24 - PeakLngthNB))
-                            / (ArrRate1 - ADT1NB * (1 - PerPeakADT) / (24 - PeakLngthNB))
-                        )
-                    except ZeroDivisionError:
-                        part1 = float("inf")
+                flow_sum = sum(traffic_volumes[1:]) if HOVLanesNB != 0 else sum(traffic_volumes)
 
-                    nonhov_speed = ImpactedNB / (max(part1, 0) + ImpactedNB / FFSpeedNB)
+                capacity_params = roadway_capacity_non_HOV["Non-HOV Lanes"]["No Build"]
+                GenAlphaNB = capacity_params["GenAlphaNB"]
+                GenBetaNB = capacity_params["GenBetaNB"]
+                GenLaneCapNB = capacity_params["GenLaneCapNB"]
+                TMS_value = TMSAdj.get(TMSLookup, {}).get("SpeedWithout", 1)
+
+                volume_term = flow_sum / (GenLanesNB * GenLaneCapNB * PeakLngthNB)
+                delay_speed = FFSpeedNB / (1 + GenAlphaNB * min(volume_term, MaxVC) ** GenBetaNB)
+                base_speed = delay_speed * TMS_value
+
+                if ProjType == "Passing":
+                    nonhov_speed = (TruckSpeed + FFSpeedNB) / 2
                 else:
-                    # Normal speed calculation using "No Build" parameters from the formula
-                    flow_sum = sum(traffic_volumes[1:]) if HOVLanesNB != 0 else sum(traffic_volumes)
+                    nonhov_speed = min(base_speed, FFSpeedNB)
 
-                    # Access the "No Build" parameters from the roadway_capacity_non_HOV dictionary
-                    capacity_params = roadway_capacity_non_HOV["Non-HOV Lanes"]["No Build"]
-                    GenAlphaNB = capacity_params["GenAlphaNB"]
-                    GenBetaNB = capacity_params["GenBetaNB"]
-                    GenLaneCapNB = capacity_params["GenLaneCapNB"]
-                    TMS_value = TMSAdj.get(TMSLookup, {}).get("SpeedWithout", 1)
+        # === Apply adjustments based on project type ===
 
-                    # Apply the speed calculation formula
-                    volume_term = flow_sum / (GenLanesNB * GenLaneCapNB * PeakLngthNB)
-                    delay_speed = FFSpeedNB / (1 + GenAlphaNB * min(volume_term, MaxVC) ** GenBetaNB)
-                    base_speed = delay_speed * TMS_value
+        # Adjust for Freeway Connector using SpeedWeaveAdj
+        if ProjType == "Freeway Connector":
+            nonhov_speed *= SpeedWeaveAdj.get(PerWeaveNB, {"Freeway": 1.0})["Freeway"]
 
-                    if ProjType == "Passing":
-                        nonhov_speed = (TruckSpeed + FFSpeedNB) / 2
-                    else:
-                        nonhov_speed = min(base_speed, FFSpeedNB)
+        # Adjust for HOV Connector / Drop Ramp using SpeedWeaveAdj
+        if ProjType in ["HOV Connector", "HOV Drop Ramp"]:
+            nonhov_speed *= SpeedWeaveAdj.get(PerWeaveNB, {"HOV": 1.0})["HOV"]
 
-            # === Apply adjustments based on project type ===
+        # Apply pavement condition adjustments using SpeedPavAdj
+        closest_iri_key = min(SpeedPavAdj.keys(), key=lambda x: abs(x - IRI20NB))
+        nonhov_speed *= SpeedPavAdj[closest_iri_key]["Auto"]
 
-            # Adjust for Freeway Connector using SpeedWeaveAdj
-            if ProjType == "Freeway Connector":
-                nonhov_speed *= SpeedWeaveAdj.get(PerWeaveNB, {"Freeway": 1.0})["Freeway"]
+        # Update the widget with the final calculated speed value
+        nonhov_speed_year20peak_modelcalc_widget.value = round(nonhov_speed, 1)
 
-            # Adjust for HOV Connector / Drop Ramp using SpeedWeaveAdj
-            if ProjType in ["HOV Connector", "HOV Drop Ramp"]:
-                nonhov_speed *= SpeedWeaveAdj.get(PerWeaveNB, {"HOV": 1.0})["HOV"]
-
-            # Apply pavement condition adjustments using SpeedPavAdj
-            closest_iri_key = min(SpeedPavAdj.keys(), key=lambda x: abs(x - IRI20NB))
-            nonhov_speed *= SpeedPavAdj[closest_iri_key]["Auto"]
-
-            # Update the widget with the final calculated speed value
-            nonhov_speed_year20peak_modelcalc_widget.value = round(nonhov_speed, 1)
-            
-        except Exception:
-            # In case of any error, silently handle it by setting a default value (0 or other)
-            nonhov_speed_year20peak_modelcalc_widget.value = 0
 
 
 
@@ -2555,7 +2536,7 @@ def create_new_widgets():
         PNS20NB = PNS20NB_widget.value
         ProjType = projectinfo_widgets.subcategory_dropdown.value
         IRI20NB = projectinfo_widgets.iri_forecast_year_no_build_widget.value
-        TruckSpeed = projectinfo_widgets.truck_design_speed_no_build_widget.value
+        TruckSpeed = projectinfo_widgets.truck_speed_widget.value
         SpeedPavAdj = params.SpeedPavAdj
 
         # Check if PTV20NB is 0
@@ -2763,9 +2744,9 @@ def create_new_widgets():
         ProjType = projectinfo_widgets.subcategory_dropdown.value
         PerPeakADT = params.per_peak_adt
         ADT20NB = projectinfo_widgets.ADT_20NB_widget.value
-        PerWeaveNB = projectinfo_widgets.percent_weave_nobuild_widget.value
+        PerWeaveNB = projectinfo_widgets.percent_traffic_weave_no_build_widget.value
         PerTruckNB = projectinfo_widgets.percent_trucks_nobuild_widget.value
-        RampVolNP = projectinfo_widgets.ramp_volume_non_peak_widget.value
+        RampVolNP = projectinfo_widgets.hourly_ramp_volume_nonpeak_widget.value
         PeakLngthNB = projectinfo_widgets.peak_period_widget.value
 
         # Apply the formula as provided
@@ -2944,86 +2925,84 @@ def create_new_widgets():
     )
     
     def update_nonhov_year20nonpeak_speed(change=None):
-        try:           
-            ProjType = projectinfo_widgets.subcategory_dropdown.value
-            GenLanesNB = projectinfo_widgets.general_traffic_lanes_no_build_widget.value
-            HOVLanesNB = projectinfo_widgets.hov_hot_lanes_no_build_widget.value
-            PeakLngthNB = projectinfo_widgets.peak_period_widget.value
-            FFSpeedNB = projectinfo_widgets.free_flow_speed_no_build_widget.value
-            ADT1NB = projectinfo_widgets.adt_base_year_no_build_widget.value
-            ADT20NB = projectinfo_widgets.ADT_20NB_widget.value
-            DepRate1 = projectinfo_widgets.departure_rate_forecast_year_no_build_widget.value
-            DepRate20 = projectinfo_widgets.departure_rate_forecast_year_build_widget.value
-            MaxVC = params.MaxVC
-            IdleSpeed = params.IdleSpeed
-            SpeedWeaveAdj = params.SpeedWeaveAdj
-            SpeedPavAdj = params.SpeedPavAdj
-            IRI20NB = projectinfo_widgets.iri_forecast_year_no_build_widget.value
-            roadway_capacity_non_HOV = params.roadway_capacity_non_HOV
-            NNV20NB = NNV20NB_widget.value  
-            NWV20NB = NWV20NB_widget.value  
-            NTV20NB = NTV20NB_widget.value
-            PerPeakADT = params.per_peak_adt
-            
-            
-            capacity_params = roadway_capacity_non_HOV["Non-HOV Lanes"]["No Build"]
-            GenAlphaNB = capacity_params["GenAlphaNB"]
-            GenBetaNB = capacity_params["GenBetaNB"]
-            GenLaneCapNB = capacity_params["GenLaneCapNB"]
+        # Retrieve relevant widget values
+        ProjType = projectinfo_widgets.subcategory_dropdown.value
+        GenLanesNB = projectinfo_widgets.general_traffic_lanes_no_build_widget.value
+        HOVLanesNB = projectinfo_widgets.hov_hot_lanes_no_build_widget.value
+        PeakLngthNB = projectinfo_widgets.peak_period_widget.value
+        FFSpeedNB = projectinfo_widgets.free_flow_speed_no_build_widget.value
+        ADT1NB = projectinfo_widgets.adt_base_year_no_build_widget.value
+        ADT20NB = projectinfo_widgets.ADT_20NB_widget.value
+        DepRate1 = projectinfo_widgets.departure_rate_forecast_year_no_build_widget.value
+        DepRate20 = projectinfo_widgets.departure_rate_forecast_year_build_widget.value
+        MaxVC = params.MaxVC
+        IdleSpeed = params.IdleSpeed
+        SpeedWeaveAdj = params.SpeedWeaveAdj
+        SpeedPavAdj = params.SpeedPavAdj
+        IRI20NB = projectinfo_widgets.iri_forecast_year_no_build_widget.value
+        roadway_capacity_non_HOV = params.roadway_capacity_non_HOV
+        NNV20NB = NNV20NB_widget.value  
+        NWV20NB = NWV20NB_widget.value  
+        NTV20NB = NTV20NB_widget.value
+        PerPeakADT = params.per_peak_adt
 
-            # Hwy-Rail special case
-            if ProjType == "Hwy-Rail Grade Crossing":
-                speed = IdleSpeed
+        # Retrieve capacity parameters
+        capacity_params = roadway_capacity_non_HOV["Non-HOV Lanes"]["No Build"]
+        GenAlphaNB = capacity_params["GenAlphaNB"]
+        GenBetaNB = capacity_params["GenBetaNB"]
+        GenLaneCapNB = capacity_params["GenLaneCapNB"]
 
+        # Hwy-Rail special case
+        if ProjType == "Hwy-Rail Grade Crossing":
+            speed = IdleSpeed
+
+        else:
+            # Total volume
+            total_volume = NNV20NB_widget.value + NWV20NB_widget.value + NTV20NB_widget.value
+
+            if total_volume == 0:
+                speed = 55
             else:
-                # Total volume
-                total_volume = NNV20NB_widget.value + NWV20NB_widget.value + NTV20NB_widget.value
+                # Queuing check for adjustment
+                queuing_adjustment = 1
+                if ProjType == "Queuing":
+                    numerator = DepRate1 - ADT1NB * (1 - PerPeakADT) / (24 - PeakLngthNB)
+                    denominator = (ADT1NB / ADT20NB) * DepRate20 - ADT1NB * (1 - PerPeakADT) / (24 - PeakLngthNB)
+                    queuing_adjustment = numerator / denominator if denominator != 0 else 1
 
-                if total_volume == 0:
-                    speed = 55
+                hours = 24 - PeakLngthNB * queuing_adjustment
+                capacity = (GenLanesNB + HOVLanesNB) * GenLaneCapNB * hours
+
+                vc_ratio = min(total_volume / capacity, MaxVC) if capacity > 0 else MaxVC
+                speed_bpr = FFSpeedNB / (1 + GenAlphaNB * (vc_ratio ** GenBetaNB))
+
+                # Speed selection logic
+                if ProjType == "Passing":
+                    speed = min(speed_bpr, (TruckSpeed + FFSpeedNB) / 2)
                 else:
-                    # Queuing check for adjustment
-                    queuing_adjustment = 1
-                    if ProjType == "Queuing":
-                        numerator = DepRate1 - ADT1NB * (1 - PerPeakADT) / (24 - PeakLngthNB)
-                        denominator = (ADT1NB / ADT20NB) * DepRate20 - ADT1NB * (1 - PerPeakADT) / (24 - PeakLngthNB)
-                        queuing_adjustment = numerator / denominator if denominator != 0 else 1
+                    speed = min(speed_bpr, FFSpeedNB)
 
-                    hours = 24 - PeakLngthNB * queuing_adjustment
-                    capacity = (GenLanesNB + HOVLanesNB) * GenLaneCapNB * hours
+        # Freeway Connector Adjustment
+        if ProjType == "Freeway Connector":
+            closest_key = min(SpeedWeaveAdj.keys(), key=lambda k: abs(k - PerWeaveNB))
+            adj = SpeedWeaveAdj.get(closest_key, {}).get("Freeway", 1)
+            speed *= adj
 
-                    vc_ratio = min(total_volume / capacity, MaxVC) if capacity > 0 else MaxVC
-                    speed_bpr = FFSpeedNB / (1 + GenAlphaNB * (vc_ratio ** GenBetaNB))
+        # HOV Connector or Drop Ramp
+        if ProjType in ["HOV Connector", "HOV Drop Ramp"]:
+            closest_key = min(SpeedWeaveAdj.keys(), key=lambda k: abs(k - PerWeaveNB))
+            adj = SpeedWeaveAdj.get(closest_key, {}).get("HOV", 1)
+            speed *= adj
 
-                    # Speed selection logic
-                    if ProjType == "Passing":
-                        speed = min(speed_bpr, (TruckSpeed + FFSpeedNB) / 2)
-                    else:
-                        speed = min(speed_bpr, FFSpeedNB)
+        # Pavement Adjustment
+        if ProjType == "Pavement":
+            iri_key = min(SpeedPavAdj.keys(), key=lambda k: abs(k - IRI20NB))
+            adj = SpeedPavAdj.get(iri_key, {}).get("Auto", 1)
+            speed *= adj
 
-            # Freeway Connector Adjustment
-            if ProjType == "Freeway Connector":
-                closest_key = min(SpeedWeaveAdj.keys(), key=lambda k: abs(k - PerWeaveNB))
-                adj = SpeedWeaveAdj.get(closest_key, {}).get("Freeway", 1)
-                speed *= adj
+        # Final assignment to widget
+        nonhov_speed_year20nonpeak_modelcalc_widget.value = round(speed, 1)
 
-            # HOV Connector or Drop Ramp
-            if ProjType in ["HOV Connector", "HOV Drop Ramp"]:
-                closest_key = min(SpeedWeaveAdj.keys(), key=lambda k: abs(k - PerWeaveNB))
-                adj = SpeedWeaveAdj.get(closest_key, {}).get("HOV", 1)
-                speed *= adj
-
-            # Pavement Adjustment
-            if ProjType == "Pavement":
-                iri_key = min(SpeedPavAdj.keys(), key=lambda k: abs(k - IRI20NB))
-                adj = SpeedPavAdj.get(iri_key, {}).get("Auto", 1)
-                speed *= adj
-
-            # Final assignment to widget
-            nonhov_speed_year20nonpeak_modelcalc_widget.value = round(speed, 1)
-
-        except Exception:
-            nonhov_speed_year20nonpeak_modelcalc_widget.value = 0
             
     
     # Observer triggers
@@ -3098,47 +3077,43 @@ def create_new_widgets():
     )
     
     def update_year20nonpeak_weave_speed(change=None):
-        try:
-            # Retrieve relevant widget values from project info
-            ProjType = projectinfo_widgets.subcategory_dropdown.value
-            FFSpeedNB = projectinfo_widgets.free_flow_speed_no_build_widget.value
-            PeakLngthNB = projectinfo_widgets.peak_period_widget.value
-            NWV20NB = projectinfo_widgets.NWV20NB_widget.value
-            NTV20NB = projectinfo_widgets.NTV20NB_widget.value
-            NumDirections = projectinfo_widgets.one_two_way_widget.value
-            RampFFSpdNB = projectinfo_widgets.ramp_design_speed_no_build_widget.value
-            SegmentNB = projectinfo_widgets.highway_segment_no_build_widget.value
-            IRI20NB = projectinfo_widgets.iri_forecast_year_no_build_widget.value
-            SpeedPavAdj = params.SpeedPavAdj
-            SpeedWeaveAdj = params.SpeedWeaveAdj
-            MaxVC = params.MaxVC
-            NNS20NB = NNS20NB_widget.value
-            
-            if NWV20NB_widget.value == 0:
-                speed = 55
-            elif ProjType in ["Auxiliary Lane", "Off-Ramp Widening"]:
-                base_speed = FFSpeedNB - (FFSpeedNB - 42) * (
-                    0.321 + 0.0039 * math.exp(
-                        (NWV20NB_widget.value + NTV20NB_widget.value) / NumDirections / (24 - PeakLngthNB)
-                        / 1000
-                    ) - 0.002 * ((1083 if ProjType == "Off-Ramp Widening" else SegmentNB * 5280) * RampFFSpdNB / 1000)
-                )
+        # Retrieve relevant widget values from project info
+        ProjType = projectinfo_widgets.subcategory_dropdown.value
+        FFSpeedNB = projectinfo_widgets.free_flow_speed_no_build_widget.value
+        PeakLngthNB = projectinfo_widgets.peak_period_widget.value
+        NWV20NB = NWV20NB_widget.value
+        NTV20NB = NTV20NB_widget.value
+        NumDirections = projectinfo_widgets.one_two_way_widget.value
+        RampFFSpdNB = projectinfo_widgets.ramp_design_speed_no_build_widget.value
+        SegmentNB = projectinfo_widgets.highway_segment_no_build_widget.value
+        IRI20NB = projectinfo_widgets.iri_forecast_year_no_build_widget.value
+        SpeedPavAdj = params.SpeedPavAdj
+        SpeedWeaveAdj = params.SpeedWeaveAdj
+        MaxVC = params.MaxVC
+        NNS20NB = NNS20NB_widget.value
 
-                speed = min(NNS20NB_widget.value, 1.1 * base_speed)
+        if NWV20NB == 0:
+            speed = 55
+        elif ProjType in ["Auxiliary Lane", "Off-Ramp Widening"]:
+            base_speed = FFSpeedNB - (FFSpeedNB - 42) * (
+                0.321 + 0.0039 * math.exp(
+                    (NWV20NB + NTV20NB) / NumDirections / (24 - PeakLngthNB) / 1000
+                ) - 0.002 * ((1083 if ProjType == "Off-Ramp Widening" else SegmentNB * 5280) * RampFFSpdNB / 1000)
+            )
 
-                # Pavement adjustment
-                if ProjType == "Pavement":
-                    iri_key = min(SpeedPavAdj.keys(), key=lambda k: abs(k - IRI20NB))  # Closest IRI
-                    speed *= SpeedPavAdj.get(iri_key, {}).get("Auto", 1)
+            speed = min(NNS20NB, 1.1 * base_speed)
 
-                speed = max(speed, 5)  # Ensure a minimum speed of 5
-            else:
-                speed = NNS20NB_widget.value  # Fallback
+            # Pavement adjustment
+            if ProjType == "Pavement":
+                iri_key = min(SpeedPavAdj.keys(), key=lambda k: abs(k - IRI20NB))
+                speed *= SpeedPavAdj.get(iri_key, {}).get("Auto", 1)
 
-            weave_speed_year20nonpeak_modelcalc_widget.value = round(speed, 1)
+            speed = max(speed, 5)
+        else:
+            speed = NNS20NB
 
-        except Exception:
-            weave_speed_year20nonpeak_modelcalc_widget.value = 0
+        weave_speed_year20nonpeak_modelcalc_widget.value = round(speed, 1)
+
   
     
     
@@ -3202,44 +3177,39 @@ def create_new_widgets():
     )
     
     def update_year20nonpeak_truck_speed(change=None):
-        try:
-            ProjType = projectinfo_widgets.subcategory_dropdown.value
-            IdleSpeed = params.IdleSpeed
-            TruckSpeed = projectinfo_widgets.truck_speed_widget.value
-            NTV20NB = NTV20NB_widget.value
-            NTS20NB = NTS20NB_widget.value
-            NNS20NB = NNS20NB_widget.value
-            IRI20NB = projectinfo_widgets.iri_forecast_year_no_build_widget.value
-            SpeedPavAdj = params.SpeedPavAdj
-            
-            if ProjType == "Hwy-Rail Grade Crossing":
-                speed = IdleSpeed
-            elif NTV20NB_widget.value == 0:
-                speed = 55
+        ProjType = projectinfo_widgets.subcategory_dropdown.value
+        IdleSpeed = params.IdleSpeed
+        TruckSpeed = projectinfo_widgets.truck_speed_widget.value
+        NTV20NB = NTV20NB_widget.value
+        NTS20NB = NTS20NB_widget.value
+        NNS20NB = NNS20NB_widget.value
+        IRI20NB = projectinfo_widgets.iri_forecast_year_no_build_widget.value
+        SpeedPavAdj = params.SpeedPavAdj
+
+        if ProjType == "Hwy-Rail Grade Crossing":
+            speed = IdleSpeed
+        elif NTV20NB == 0:
+            speed = 55
+        else:
+            # Formula for truck speed calculation
+            if ProjType in ["Auxiliary Lane", "Off-Ramp Widening"]:
+                base_speed = min(
+                    TruckSpeed,
+                    NTS20NB if ProjType in ["Auxiliary Lane", "Off-Ramp Widening"] else NNS20NB
+                )
+
+                # Apply Pavement condition adjustment
+                if ProjType == "Pavement":
+                    iri_key = min(SpeedPavAdj.keys(), key=lambda k: abs(k - IRI20NB))
+                    base_speed /= SpeedPavAdj.get(iri_key, {}).get("Auto", 1)
+                    base_speed *= SpeedPavAdj.get(iri_key, {}).get("Truck", 1)
+
+                speed = base_speed
             else:
-                # Formula for truck speed calculation
-                if ProjType in ["Auxiliary Lane", "Off-Ramp Widening"]:
-                    base_speed = min(
-                        TruckSpeed,
-                        NTS20NB_widget.value if (ProjType == "Auxiliary Lane" or ProjType == "Off-Ramp Widening") else NNS20NB_widget.value
-                    )
+                speed = NNS20NB  # Fallback for other project types
 
-                    # Apply Pavement condition
-                    if ProjType == "Pavement":
-                        iri_key = min(SpeedPavAdj.keys(), key=lambda k: abs(k - IRI20NB))  # Closest IRI
-                        speed = base_speed / SpeedPavAdj.get(iri_key, {}).get("Auto", 1)
-                    else:
-                        speed = base_speed
+        truck_speed_year20nonpeak_modelcalc_widget.value = round(speed, 1)
 
-                    # Further adjustment based on Pavement (if applicable)
-                    if ProjType == "Pavement":
-                        speed *= SpeedPavAdj.get(IRI20NB, {}).get("Truck", 1)
-                else:
-                    speed = NNS20NB_widget.value  # Fallback if no special conditions
-
-            truck_speed_year20nonpeak_modelcalc_widget.value = round(speed, 1)
-        except Exception:
-            truck_speed_year20nonpeak_modelcalc_widget.value = 0
 
     
             
@@ -3310,25 +3280,23 @@ def create_new_widgets():
 
     # Function to calculate HOV Volume Year 1 Peak Build
     def update_HOV_Year1Peak_Build_Volume(change=None):
-        try:
-            # Retrieve relevant project information parameters
-            ProjType = projectinfo_widgets.subcategory_dropdown.value
-            HOVvolB = projectinfo_widgets.HOV_lane_build_widget.value
-            PeakLngthNB = projectinfo_widgets.peak_period_widget.value
-            PerWeaveNB = projectinfo_widgets.percent_traffic_weave_no_build_widget.value
-            
-            if ProjType == "Hwy-Rail Grade Crossing":
-                # For Hwy-Rail, HOV Volume is 0
-                volume = 0
-            else:
-                # Formula for HOV Volume Year 1 Peak Build
-                volume = HOVvolB * PeakLngthNB * (1 - PerWeaveNB if (ProjType == "HOV Connector" or ProjType == "HOV Drop Ramp") else 1)
+        # Retrieve relevant project information parameters
+        ProjType = projectinfo_widgets.subcategory_dropdown.value
+        HOVvolB = projectinfo_widgets.HOV_lane_build_widget.value
+        PeakLngthNB = projectinfo_widgets.peak_period_widget.value
+        PerWeaveNB = projectinfo_widgets.percent_traffic_weave_no_build_widget.value
 
-            # Update the widget with the calculated result
-            HOV_vol_year1peak_build_modelcalc_widget.value = round(volume, 2)
-        except Exception:
-            # In case of any error, set the result to 0 without printing anything
-            HOV_vol_year1peak_build_modelcalc_widget.value = 0
+        if ProjType == "Hwy-Rail Grade Crossing":
+            # For Hwy-Rail, HOV Volume is 0
+            volume = 0
+        else:
+            # Formula for HOV Volume Year 1 Peak Build
+            reduction_factor = (1 - PerWeaveNB) if ProjType in ["HOV Connector", "HOV Drop Ramp"] else 1
+            volume = HOVvolB * PeakLngthNB * reduction_factor
+
+        # Update the widget with the calculated result
+        HOV_vol_year1peak_build_modelcalc_widget.value = round(volume, 2)
+
 
     # Trigger updates based on used variables
     projectinfo_widgets.HOV_lane_build_widget.observe(update_HOV_Year1Peak_Build_Volume, names='value')  # HOVvolB
@@ -3511,52 +3479,38 @@ def create_new_widgets():
 
     # Function to calculate Weaving Volume Year 1 Peak Build
     def update_weaving_year1peak_Build_volume(change=None):
-        try:
-            ProjType = projectinfo_widgets.subcategory_dropdown.value
-            ADT1B = projectinfo_widgets.adt_base_year_build_widget.value
-            PerPeakADT = params.per_peak_adt
-            PerWeaveB = projectinfo_widgets.percent_traffic_weave_build_widget.value
-            PerTruckB = projectinfo_widgets.percent_trucks_build_widget.value
-            TMSAdj = params.tms_adj 
-            TMSLookup = params.TMSLookup
-            HOVvolB = projectinfo_widgets.HOV_lane_build_widget.value
-            PeakLngthNB = projectinfo_widgets.peak_period_widget.value
-            RampVolP = projectinfo_widgets.hourly_ramp_volume_peak_widget.value
-            
-            # If ProjType is "Hwy-Rail Grade Crossing", set volume to 0 directly
-            if ProjType == "Hwy-Rail Grade Crossing":
-                volume = 0
+        ProjType = projectinfo_widgets.subcategory_dropdown.value
+        ADT1B = projectinfo_widgets.adt_base_year_build_widget.value
+        PerPeakADT = params.per_peak_adt
+        PerWeaveB = projectinfo_widgets.percent_traffic_weave_build_widget.value
+        PerTruckB = projectinfo_widgets.percent_trucks_build_widget.value
+        TMSAdj = params.tms_adj 
+        TMSLookup = params.TMSLookup
+        HOVvolB = projectinfo_widgets.HOV_lane_build_widget.value
+        PeakLngthNB = projectinfo_widgets.peak_period_widget.value
+        RampVolP = projectinfo_widgets.hourly_ramp_volume_peak_widget.value
+        PerWeaveNB = projectinfo_widgets.percent_traffic_weave_no_build_widget.value  # Added definition
+
+        if ProjType == "Hwy-Rail Grade Crossing":
+            volume = 0
+        else:
+            tms_adj_values = TMSAdj.get(TMSLookup, {"VolumeWith": 1})  # Safe fallback
+
+            if ProjType in ["Auxiliary Lane", "Off-Ramp Widening"]:
+                volume = (PerPeakADT * ADT1B) * (PerWeaveB - PerTruckB) * tms_adj_values["VolumeWith"]
+            elif ProjType in ["HOV Connector", "HOV Drop Ramp"]:
+                volume = PerWeaveNB * HOVvolB * PeakLngthNB
             else:
-                # Retrieve the TMS adjustments for the given TMSLookup
-                tms_adj_values = TMSAdj[TMSLookup]  # Directly access the dictionary for TMS adjustments
+                volume = 0
 
-                # Weaving Volume Formula:
-                # Weaving Volume calculation will depend on the ProjType (AuxLane, OffRamp, etc.)
+            if ProjType == "Auxiliary Lane":
+                volume += RampVolP * PeakLngthNB
 
-                # Check for conditions where auxiliary lane or off-ramp might apply
-                if ProjType in ["Auxiliary Lane", "Off-Ramp Widening"]:
-                    # Formula: Volume = (PerPeakADT * ADT1B) * (PerWeaveB - PerTruckB) * VolumeWith adjustment
-                    volume = (PerPeakADT * ADT1B) * (PerWeaveB - PerTruckB) * tms_adj_values["VolumeWith"]
-                elif ProjType in ["HOV Connector", "HOV Drop Ramp"]:
-                    # For HOV connectors, use HOVvolB and PeakLngthNB in the calculation
-                    volume = PerWeaveNB * HOVvolB * PeakLngthNB
-                else:
-                    volume = 0  # Default to 0 if ProjType is not one of the specified types
+            if ProjType in ["HOV Connector", "HOV Drop Ramp"]:
+                volume += PerWeaveNB * HOVvolB * PeakLngthNB
 
-                # If ProjType is "Auxiliary Lane", add RampVolP * PeakLngthNB to the volume
-                if ProjType == "Auxiliary Lane":
-                    volume += RampVolP * PeakLngthNB
+        weaving_vol_year1peak_build_modelcalc_widget.value = round(volume, 2)
 
-                # If ProjType is "HOV Connector" or "HOV Drop Ramp", add PerWeaveNB * HOVvolB * PeakLngthNB to the volume
-                if ProjType in ["HOV Connector", "HOV Drop Ramp"]:
-                    volume += PerWeaveNB * HOVvolB * PeakLngthNB
-
-            # Round and set the calculated volume value to the widget
-            weaving_vol_year1peak_build_modelcalc_widget.value = round(volume, 2)
-
-        except Exception:
-            # If there's an error in the calculation, set the value to 0 without printing anything
-            weaving_vol_year1peak_build_modelcalc_widget.value = 0
 
 
     # Trigger updates based on used variables
@@ -3988,51 +3942,48 @@ def create_new_widgets():
     )
     
     def update_weave_year1peak_Build_speed(change=None):
-        try:
-            ProjType = projectinfo_widgets.subcategory_dropdown.value
-            NumDirections = projectinfo_widgets.one_two_way_widget.value
-            PeakLngthNB = projectinfo_widgets.peak_period_widget.value
-            SegmentB = projectinfo_widgets.highway_segment_build_widget.value
-            RampFFSpdB = projectinfo_widgets.ramp_design_speed_build_widget.value
-            FFSpeedB = projectinfo_widgets.free_flow_speed_build_widget.value
-            TMSAdj = params.tms_adj
-            TMSLookup = params.TMSLookup
-            SpeedPavAdj = params.SpeedPavAdj
-            IRI1B = projectinfo_widgets.iri_base_year_build_widget.value
-            PWV1B = PWV1B_widget.value
-            PTV1B = PTV1B_widget.value
-            PNS1B = PNS1B_widget.value
+        ProjType = projectinfo_widgets.subcategory_dropdown.value
+        NumDirections = projectinfo_widgets.one_two_way_widget.value
+        PeakLngthNB = projectinfo_widgets.peak_period_widget.value
+        SegmentB = projectinfo_widgets.highway_segment_build_widget.value
+        RampFFSpdB = projectinfo_widgets.ramp_design_speed_build_widget.value
+        FFSpeedB = projectinfo_widgets.free_flow_speed_build_widget.value
+        TMSAdj = params.tms_adj
+        TMSLookup = params.TMSLookup
+        SpeedPavAdj = params.SpeedPavAdj
+        IRI1B = projectinfo_widgets.iri_base_year_build_widget.value
 
-            if PWV1B == 0:
-                weave_speed = 55
-            elif ProjType == "Auxiliary Lane":
-                exp_component = math.exp((PWV1B + PTV1B) / NumDirections / PeakLngthNB / 1000)
-                ramp_factor = 1083 if ProjType == "Off-Ramp Widening" else SegmentB * 5280
-                ramp_effect = 0.002 * (ramp_factor * RampFFSpdB / 1000)
+        PWV1B = PWV1B_widget.value
+        PTV1B = PTV1B_widget.value
+        PNS1B = PNS1B_widget.value
 
-                base_speed = FFSpeedB - (FFSpeedB - 42) * (0.321 + 0.0039 * exp_component - ramp_effect)
-                adjusted_speed = 1.1 * base_speed
+        if PWV1B == 0:
+            weave_speed = 55
+        elif ProjType == "Auxiliary Lane":
+            exp_component = math.exp((PWV1B + PTV1B) / NumDirections / PeakLngthNB / 1000)
+            ramp_factor = 1083 if ProjType == "Off-Ramp Widening" else SegmentB * 5280
+            ramp_effect = 0.002 * (ramp_factor * RampFFSpdB / 1000)
 
-                # Pavement Adjustment
-                pavement_adj = 1
-                if ProjType == "Pavement":
-                    closest_iri_key = min(SpeedPavAdj.keys(), key=lambda x: abs(x - IRI1B))
-                    pavement_adj = SpeedPavAdj[closest_iri_key]["Auto"]
+            base_speed = FFSpeedB - (FFSpeedB - 42) * (0.321 + 0.0039 * exp_component - ramp_effect)
+            adjusted_speed = 1.1 * base_speed
 
-                # TMS Adjustment
-                tms_adj = TMSAdj.get(TMSLookup, {}).get("SpeedWith", 1)
+            # Pavement Adjustment
+            pavement_adj = 1
+            if ProjType == "Pavement":
+                closest_iri_key = min(SpeedPavAdj.keys(), key=lambda x: abs(x - IRI1B))
+                pavement_adj = SpeedPavAdj.get(closest_iri_key, {}).get("Auto", 1)
 
-                # Final Speed
-                final_speed = adjusted_speed * tms_adj * pavement_adj
-                weave_speed = max(5, min(PNS1B, final_speed))
+            # TMS Adjustment
+            tms_adj = TMSAdj.get(TMSLookup, {}).get("SpeedWith", 1)
 
-            else:
-                weave_speed = PNS1B
+            # Final Speed
+            final_speed = adjusted_speed * tms_adj * pavement_adj
+            weave_speed = max(5, min(PNS1B, final_speed))
+        else:
+            weave_speed = PNS1B
 
-            weaving_speed_year1peak_build_modelcalc_widget.value = round(weave_speed, 2)
+        weaving_speed_year1peak_build_modelcalc_widget.value = round(weave_speed, 2)
 
-        except Exception:
-            weaving_speed_year1peak_build_modelcalc_widget.value = 0
 
 
     
@@ -4098,39 +4049,35 @@ def create_new_widgets():
     )
     
     def update_truck_year1peak_Build_speed(change=None):
-        try:
-            ProjType = projectinfo_widgets.subcategory_dropdown.value
-            IRI1B = projectinfo_widgets.iri_base_year_build_widget.value
-            TruckSpeed = projectinfo_widgets.truck_speed_widget.value
-            SpeedPavAdj = params.SpeedPavAdj
-            
-            # Get widget values
-            PTV1B = PTV1B_widget.value
-            PWS1B = PWS1B_widget.value
-            PNS1B = PNS1B_widget.value
+        ProjType = projectinfo_widgets.subcategory_dropdown.value
+        IRI1B = projectinfo_widgets.iri_base_year_build_widget.value
+        TruckSpeed = projectinfo_widgets.truck_speed_widget.value
+        SpeedPavAdj = params.SpeedPavAdj
 
-            if PTV1B == 0:
-                truck_speed = 55
-            else:
-                # Lookup IRI adjustment
-                closest_iri_key = min(SpeedPavAdj.keys(), key=lambda x: abs(x - IRI1B))
+        # Get widget values
+        PTV1B = PTV1B_widget.value
+        PWS1B = PWS1B_widget.value
+        PNS1B = PNS1B_widget.value
 
-                # Apply adjustment values only if ProjType == "Pavement"
-                speed_adj_auto = SpeedPavAdj[closest_iri_key]["Auto"] if ProjType == "Pavement" else 1
-                speed_adj_truck = SpeedPavAdj[closest_iri_key]["Truck"] if ProjType == "Pavement" else 1
+        if PTV1B == 0:
+            truck_speed = 55
+        else:
+            # Find the closest IRI key
+            closest_iri_key = min(SpeedPavAdj.keys(), key=lambda x: abs(x - IRI1B))
 
-                # Pick correct speed limit based on ProjType == "Auxiliary Lane"
-                limit_speed = PWS1B if ProjType == "Auxiliary Lane" else PNS1B
+            # Adjustments if ProjType is "Pavement"
+            speed_adj_auto = SpeedPavAdj[closest_iri_key]["Auto"] if ProjType == "Pavement" else 1
+            speed_adj_truck = SpeedPavAdj[closest_iri_key]["Truck"] if ProjType == "Pavement" else 1
 
-                # Calculate adjusted speed
-                base_speed = min(TruckSpeed, limit_speed / speed_adj_auto)
-                truck_speed = base_speed * speed_adj_truck
+            # Determine limit speed
+            limit_speed = PWS1B if ProjType == "Auxiliary Lane" else PNS1B
 
-            # Output result
-            truck_speed_year1peak_build_modelcalc_widget.value = round(truck_speed, 2)
+            # Apply speed adjustments
+            base_speed = min(TruckSpeed, limit_speed / speed_adj_auto)
+            truck_speed = base_speed * speed_adj_truck
 
-        except Exception:
-            truck_speed_year1peak_build_modelcalc_widget.value = 0
+        truck_speed_year1peak_build_modelcalc_widget.value = round(truck_speed, 2)
+
             
         
     
@@ -4324,31 +4271,26 @@ def create_new_widgets():
 
     # Function to calculate Weaving Volume Year 1 Non-Peak Build
     def update_weaving_year1nonpeak_Build_volume(change=None):
-        try:
-            ProjType = projectinfo_widgets.subcategory_dropdown.value
-            PerPeakADT = params.per_peak_adt
-            ADT1B = projectinfo_widgets.adt_base_year_build_widget.value
-            PerWeaveB = projectinfo_widgets.percent_traffic_weave_build_widget.value
-            PerTruckB = projectinfo_widgets.percent_trucks_build_widget.value
-            RampVolNP = projectinfo_widgets.hourly_ramp_volume_nonpeak_widget.value
-            PeakLngthNB = projectinfo_widgets.peak_period_widget.value
-            
-            if ProjType in ["Auxiliary Lane", "Off-Ramp Widening"]:
-                # Formula: Volume = ((1 - PerPeakADT) * ADT1B) * (PerWeaveB - PerTruckB)
-                volume = ((1 - PerPeakADT) * ADT1B) * (PerWeaveB - PerTruckB)
-            else:
-                volume = 0  # Default to 0 if ProjType is not one of the specified types
+        ProjType = projectinfo_widgets.subcategory_dropdown.value
+        PerPeakADT = params.per_peak_adt
+        ADT1B = projectinfo_widgets.adt_base_year_build_widget.value
+        PerWeaveB = projectinfo_widgets.percent_traffic_weave_build_widget.value
+        PerTruckB = projectinfo_widgets.percent_trucks_build_widget.value
+        RampVolNP = projectinfo_widgets.hourly_ramp_volume_nonpeak_widget.value
+        PeakLngthNB = projectinfo_widgets.peak_period_widget.value
 
-            # If ProjType is "Auxiliary Lane", add RampVolNP * (24 - PeakLngthNB) to the volume
-            if ProjType == "Auxiliary Lane":
-                volume += RampVolNP * (24 - PeakLngthNB)
+        # Initialize volume
+        volume = 0
 
-            # Set the calculated volume value to the widget
-            weaving_vol_year1nonpeak_build_modelcalc_widget.value = round(volume, 2)
+        if ProjType in ["Auxiliary Lane", "Off-Ramp Widening"]:
+            volume = ((1 - PerPeakADT) * ADT1B) * (PerWeaveB - PerTruckB)
 
-        except Exception:
-            # If there's an error in the calculation, set the value to 0
-            weaving_vol_year1nonpeak_build_modelcalc_widget.value = 0
+        # Add ramp volume contribution for Auxiliary Lane
+        if ProjType == "Auxiliary Lane":
+            volume += RampVolNP * (24 - PeakLngthNB)
+
+        weaving_vol_year1nonpeak_build_modelcalc_widget.value = round(volume, 2)
+
 
     # Trigger updates based on used variables
     projectinfo_widgets.adt_base_year_build_widget.observe(update_weaving_year1nonpeak_Build_volume, names='value')  # ADT1B
@@ -4420,35 +4362,33 @@ def create_new_widgets():
     
     
     def update_truck_year1nonpeak_Build_volume(change=None):
-        try:
-            ProjType = projectinfo_widgets.subcategory_dropdown.value
-            ArrRate1 = projectinfo_widgets.arrival_rate_base_year_no_build_widget.value
-            GateTime1 = projectinfo_widgets.GateTime1_widget.value
-            DepRate1 = projectinfo_widgets.departure_rate_forecast_year_no_build_widget.value
-            NumTrain1 = projectinfo_widgets.NumTrain1_widget.value
-            AnnualFactor = params.AnnualFactor
-            PerTruckNB = projectinfo_widgets.percent_trucks_nobuild_widget.value
-            ADT20B = projectinfo_widgets.adt_20_year_build_widget.value
-            ADT20NB = projectinfo_widgets.ADT_20NB_widget.value
-            PerPeakADT = params.per_peak_adt
-            ADT1B = projectinfo_widgets.adt_base_year_build_widget.value
-            PerTruckB = projectinfo_widgets.percent_trucks_build_widget.value
-            
-            if ProjType == "Hwy-Rail Grade Crossing":
-                result = (
-                    (ArrRate1 * GateTime1 / 60)
-                    / (1 - (ArrRate1 / DepRate1))
-                    * (NumTrain1 / AnnualFactor)
-                    * PerTruckNB
-                    * ADT20B / ADT20NB
-                )
-            else:
-                result = ((1 - PerPeakADT) * ADT1B) * PerTruckB
+        ProjType = projectinfo_widgets.subcategory_dropdown.value
+        ArrRate1 = projectinfo_widgets.arrival_rate_base_year_no_build_widget.value
+        GateTime1 = projectinfo_widgets.GateTime1_widget.value
+        DepRate1 = projectinfo_widgets.departure_rate_forecast_year_no_build_widget.value
+        NumTrain1 = projectinfo_widgets.NumTrain1_widget.value
+        AnnualFactor = params.AnnualFactor
+        PerTruckNB = projectinfo_widgets.percent_trucks_nobuild_widget.value
+        ADT20B = projectinfo_widgets.adt_20_year_build_widget.value
+        ADT20NB = projectinfo_widgets.ADT_20NB_widget.value
+        PerPeakADT = params.per_peak_adt
+        ADT1B = projectinfo_widgets.adt_base_year_build_widget.value
+        PerTruckB = projectinfo_widgets.percent_trucks_build_widget.value
 
-            truck_vol_year1nonpeak_build_modelcalc_widget.value = round(result, 0)
+        if ProjType == "Hwy-Rail Grade Crossing":
+            numerator = ArrRate1 * GateTime1 / 60
+            denominator = 1 - (ArrRate1 / DepRate1) if DepRate1 != 0 else 1  # Prevent division by zero
+            result = (
+                numerator / denominator
+                * (NumTrain1 / AnnualFactor)
+                * PerTruckNB
+                * ADT20B / ADT20NB if ADT20NB != 0 else 0
+            )
+        else:
+            result = ((1 - PerPeakADT) * ADT1B) * PerTruckB
 
-        except Exception:
-            truck_vol_year1nonpeak_build_modelcalc_widget.value = 0
+        truck_vol_year1nonpeak_build_modelcalc_widget.value = round(result, 0)
+
             
 
     projectinfo_widgets.subcategory_dropdown.observe(update_truck_year1nonpeak_Build_volume, names='value')  # ProjType
@@ -4646,47 +4586,46 @@ def create_new_widgets():
     )
 
     def update_weave_year1nonpeak_Build_speed(change=None):
-        try:
-            ProjType = projectinfo_widgets.subcategory_dropdown.value
-            FFSpeedB = projectinfo_widgets.free_flow_speed_build_widget.value
-            PeakLngthNB = projectinfo_widgets.peak_period_widget.value
-            NumDirections = projectinfo_widgets.one_two_way_widget.value
-            SegmentB = projectinfo_widgets.highway_segment_build_widget.value
-            RampFFSpdB = projectinfo_widgets.ramp_design_speed_build_widget.value
-            SpeedPavAdj = params.SpeedPavAdj
-            IRI1B = projectinfo_widgets.iri_base_year_build_widget.value
-            
-            NWV1B = NWV1B_widget.value
-            NTV1B = NTV1B_widget.value
-            NNS1B = NNS1B_widget.value
+        ProjType = projectinfo_widgets.subcategory_dropdown.value
+        FFSpeedB = projectinfo_widgets.free_flow_speed_build_widget.value
+        PeakLngthNB = projectinfo_widgets.peak_period_widget.value
+        NumDirections = projectinfo_widgets.one_two_way_widget.value
+        SegmentB = projectinfo_widgets.highway_segment_build_widget.value
+        RampFFSpdB = projectinfo_widgets.ramp_design_speed_build_widget.value
+        SpeedPavAdj = params.SpeedPavAdj
+        IRI1B = projectinfo_widgets.iri_base_year_build_widget.value
 
-            if NWV1B == 0:
-                weave_speed = 55
-            elif ProjType == "Auxiliary Lane":
-                exp_component = math.exp((NWV1B + NTV1B) / NumDirections / (24 - PeakLngthNB) / 1000)
-                ramp_factor = 1083 if ProjType == "Off-Ramp Widening" else SegmentB * 5280
-                ramp_effect = 0.002 * (ramp_factor * RampFFSpdB / 1000)
+        NWV1B = NWV1B_widget.value
+        NTV1B = NTV1B_widget.value
+        NNS1B = NNS1B_widget.value
 
-                base_speed = FFSpeedB - (FFSpeedB - 42) * (0.321 + 0.0039 * exp_component - ramp_effect)
-                adjusted_speed = 1.1 * base_speed
+        if NWV1B == 0:
+            weave_speed = 55
+        elif ProjType == "Auxiliary Lane":
+            # Calculate exponential component for base speed adjustment
+            exp_component = math.exp((NWV1B + NTV1B) / NumDirections / (24 - PeakLngthNB) / 1000)
+            ramp_factor = 1083 if ProjType == "Off-Ramp Widening" else SegmentB * 5280
+            ramp_effect = 0.002 * (ramp_factor * RampFFSpdB / 1000)
 
-                # Pavement Adjustment
-                pavement_adj = 1
-                if ProjType == "Pavement":
-                    closest_iri_key = min(SpeedPavAdj.keys(), key=lambda x: abs(x - IRI1B))
-                    pavement_adj = SpeedPavAdj[closest_iri_key]["Auto"]
+            base_speed = FFSpeedB - (FFSpeedB - 42) * (0.321 + 0.0039 * exp_component - ramp_effect)
+            adjusted_speed = 1.1 * base_speed
 
-                # Final Speed
-                final_speed = adjusted_speed * pavement_adj
-                weave_speed = max(5, min(NNS1B, final_speed))
+            # Apply Pavement Adjustment if necessary
+            pavement_adj = 1
+            if ProjType == "Pavement":
+                closest_iri_key = min(SpeedPavAdj.keys(), key=lambda x: abs(x - IRI1B))
+                pavement_adj = SpeedPavAdj[closest_iri_key]["Auto"]
 
-            else:
-                weave_speed = NNS1B
+            # Calculate the final speed considering pavement adjustment
+            final_speed = adjusted_speed * pavement_adj
+            weave_speed = max(5, min(NNS1B, final_speed))
 
-            weaving_speed_year1nonpeak_build_modelcalc_widget.value = round(weave_speed, 2)
+        else:
+            weave_speed = NNS1B
 
-        except Exception:
-            weaving_speed_year1nonpeak_build_modelcalc_widget.value = 0
+        # Update the widget value with the calculated speed
+        weaving_speed_year1nonpeak_build_modelcalc_widget.value = round(weave_speed, 2)
+
 
 
 
@@ -4760,39 +4699,45 @@ def create_new_widgets():
     )
 
     def update_truck_year1nonpeak_Build_speed(change=None):
-        try:
-            NTV1B = NTV1B_widget.value
-            NNS1B = NNS1B_widget.value
-            NWS1B = NWS1B_widget.value
-            ProjType = projectinfo_widgets.subcategory_dropdown.value
-            FFSpeedB = projectinfo_widgets.free_flow_speed_build_widget.value
-            TruckSpeed = projectinfo_widgets.truck_speed_widget.value
-            IRI1B = projectinfo_widgets.iri_base_year_build_widget.value
-            SpeedPavAdj = params.SpeedPavAdj
+        # Retrieve necessary widget values
+        NTV1B = NTV1B_widget.value
+        NNS1B = NNS1B_widget.value
+        NWS1B = NWS1B_widget.value
+        ProjType = projectinfo_widgets.subcategory_dropdown.value
+        FFSpeedB = projectinfo_widgets.free_flow_speed_build_widget.value
+        TruckSpeed = projectinfo_widgets.truck_speed_widget.value
+        IRI1B = projectinfo_widgets.iri_base_year_build_widget.value
+        SpeedPavAdj = params.SpeedPavAdj
 
-            # If HwyRail is true, set truck speed to Free Flow Speed
-            if ProjType == "Hwy-Rail Grade Crossing":
-                truck_speed = FFSpeedB
-            elif NTV1B == 0:
-                truck_speed = 55
+        # If ProjType is "Hwy-Rail Grade Crossing", set truck speed to Free Flow Speed
+        if ProjType == "Hwy-Rail Grade Crossing":
+            truck_speed = FFSpeedB
+        elif NTV1B == 0:
+            truck_speed = 55  # Default speed when there is no truck volume
+        else:
+            # For other project types, calculate the truck speed based on provided formulas
+            if ProjType == "Auxiliary Lane":
+                # For auxiliary lanes, the truck speed is based on a formula involving SpeedPavAdj
+                truck_speed = min(
+                    TruckSpeed,
+                    max(NWS1B, NNS1B) / (SpeedPavAdj.get(IRI1B, {}).get("Auto", 1))
+                )
             else:
-                # Use the provided formula to calculate the truck speed
-                if ProjType == "Auxiliary Lane":
-                    truck_speed = min(TruckSpeed, max(NWS1B, NNS1B) / (SpeedPavAdj.get(IRI1B, {}).get("Auto", 1)))
-                else:
-                    truck_speed = min(TruckSpeed, max(NWS1B, NNS1B) / SpeedPavAdj.get(IRI1B, {}).get("Auto", 1))
+                # For non-auxiliary lanes, calculate speed using the pavement adjustment factor
+                truck_speed = min(
+                    TruckSpeed,
+                    max(NWS1B, NNS1B) / SpeedPavAdj.get(IRI1B, {}).get("Auto", 1)
+                )
 
-                # Pavement Adjustment
-                if ProjType == "Pavement":
-                    closest_iri_key = min(SpeedPavAdj.keys(), key=lambda x: abs(x - IRI1B))
-                    pavement_adj = SpeedPavAdj[closest_iri_key].get("Truck", 1)
-                    truck_speed *= pavement_adj
+            # Apply additional pavement adjustments if the project type is "Pavement"
+            if ProjType == "Pavement":
+                closest_iri_key = min(SpeedPavAdj.keys(), key=lambda x: abs(x - IRI1B))
+                pavement_adj = SpeedPavAdj[closest_iri_key].get("Truck", 1)
+                truck_speed *= pavement_adj
 
-            # Set the calculated truck speed value
-            truck_speed_year1nonpeak_build_modelcalc_widget.value = round(truck_speed, 2)
+        # Set the final truck speed in the widget, rounding to 2 decimal places
+        truck_speed_year1nonpeak_build_modelcalc_widget.value = round(truck_speed, 2)
 
-        except Exception:
-            truck_speed_year1nonpeak_build_modelcalc_widget.value = 0
 
 
 
@@ -5785,7 +5730,7 @@ def create_new_widgets():
     )
 
     # Final value used for project evaluation
-    NNV20B_widget = widgets.FloatText(
+    NNV20B_widget = widgets.IntText(
         value=nonHOV_Vol_year20nonpeak_build_modelcalc_widget.value,
         description="Non-HOV Volume (Used for Proj Evaluation):",
         disabled=True,
@@ -5937,7 +5882,7 @@ def create_new_widgets():
     )
 
     # Final value used for project evaluation (Non-Peak Year 20)
-    NWV20B_widget = widgets.FloatText(
+    NWV20B_widget = widgets.IntText(
         value=weaving_Vol_year20nonpeak_build_modelcalc_widget.value,
         description="Weaving Volume (Used for Proj Evaluation):",
         disabled=True,
@@ -5965,7 +5910,8 @@ def create_new_widgets():
         RampVolNP = projectinfo_widgets.hourly_ramp_volume_nonpeak_widget.value
         PeakLngthNB = projectinfo_widgets.peak_period_widget.value
 
-
+        weaving_volume = 0 
+        
         # Calculate the volume based on the formula
         if ProjType in ["Auxiliary Lane", "Off-Ramp Widening"]:
             weaving_volume += ((1 - PerPeakADT) * ADT20B) * (PerWeaveB - PerTruckB)
@@ -6029,7 +5975,7 @@ def create_new_widgets():
     )
 
     # Final value used for project evaluation
-    NTV20B_widget = widgets.FloatText(
+    NTV20B_widget = widgets.IntText(
         value=truck_Vol_year20nonpeak_build_modelcalc_widget.value,
         description="Truck Volume (Used for Proj Evaluation - Non-Peak):",
         disabled=True,
@@ -6063,6 +6009,7 @@ def create_new_widgets():
         PerPeakADT = params.per_peak_adt
         PerTruckB = projectinfo_widgets.percent_trucks_build_widget.value
 
+        # Perform the calculation based on Project Type
         if ProjType == "Hwy-Rail Grade Crossing":
             truck_volume = (ArrRate20 * GateTime20 / 60) / (1 - ArrRate20 / DepRate20) * NumTrain20 / AnnualFactor * PerTruckNB * ADT20B / ADT20NB
         elif ProjType == "Queuing":
@@ -6074,38 +6021,41 @@ def create_new_widgets():
             truck_volume = (1 - PerPeakADT) * ADT20B * PerTruckB
 
         # Update the truck volume model calculation widget with the calculated value
-        truck_Vol_year20nonpeak_build_modelcalc_widget.value = round(truck_volume, 2)
-
+        truck_Vol_year20nonpeak_build_modelcalc_widget.value = round(truck_volume, 2)  # Change here: Update widget value with calculated truck volume
 
     # Observer setup for non-peak truck volume
     projectinfo_widgets.subcategory_dropdown.observe(update_truck_Year20NonPeak_Build_Volume, names='value')  # ProjType
     projectinfo_widgets.adt_20_year_build_widget.observe(update_truck_Year20NonPeak_Build_Volume, names='value')  # ADT20B
+    projectinfo_widgets.percent_trucks_build_widget.observe(update_truck_Year20NonPeak_Build_Volume, names='value')  # PerTruckB
     projectinfo_widgets.departure_rate_forecast_year_build_widget.observe(update_truck_Year20NonPeak_Build_Volume, names='value')  # DepRate20
     projectinfo_widgets.peak_period_widget.observe(update_truck_Year20NonPeak_Build_Volume, names='value')  # PeakLngthNB
     projectinfo_widgets.departure_rate_forecast_year_no_build_widget.observe(update_truck_Year20NonPeak_Build_Volume, names='value')  # DepRate1
     projectinfo_widgets.adt_base_year_no_build_widget.observe(update_truck_Year20NonPeak_Build_Volume, names='value')  # ADT1NB
     projectinfo_widgets.ADT_20NB_widget.observe(update_truck_Year20NonPeak_Build_Volume, names='value')  # ADT20NB
-    projectinfo_widgets.percent_trucks_build_widget.observe(update_truck_Year20NonPeak_Build_Volume, names='value')  # PerTruckB
+    projectinfo_widgets.arrival_rate_base_year_build_widget.observe(update_truck_Year20NonPeak_Build_Volume, names='value')
+    projectinfo_widgets.GateTime20_widget.observe(update_truck_Year20NonPeak_Build_Volume, names='value')
+    projectinfo_widgets.NumTrain20_widget.observe(update_truck_Year20NonPeak_Build_Volume, names='value')
+    projectinfo_widgets.percent_trucks_nobuild_widget.observe(update_truck_Year20NonPeak_Build_Volume, names='value')
+    projectinfo_widgets.adt_base_year_no_build_widget.observe(update_truck_Year20NonPeak_Build_Volume, names='value')
+    
 
-
-    # Final value widget logic for Non-Peak Truck Volume
-    def calculate_ntv20b(change=None):
+    # Final value widget logic for Non-Peak Truck Volume           
+    def calculate_ntv20b(change):
         try:
-            # Access the user-modified value directly from the widget
-            val = truck_Vol_year20nonpeak_build_userchanged_widget.value
-            if isinstance(val, (int, float)) or (isinstance(val, str) and val.replace('.', '', 1).isdigit()):
-                NTV20B = max(float(val), 0)
+            # Ensure user input is valid
+            if isinstance(truck_Vol_year20nonpeak_build_userchanged_widget.value, (int, float)) and truck_Vol_year20nonpeak_build_userchanged_widget.value >= 0:
+                NTV20B = max(float(truck_Vol_year20nonpeak_build_userchanged_widget.value), 0)  # Change here: Ensure user input is valid and non-negative
             else:
-                NTV20B = max(truck_Vol_year20nonpeak_build_modelcalc_widget.value, 0)
+                NTV20B = max(truck_Vol_year20nonpeak_build_modelcalc_widget.value, 0)  # Change here: Fallback to model value if user input is invalid
 
-            # Update the NTV20B widget with the final calculated value
-            NTV20B_widget.value = round(NTV20B, 2)
+            # Update the NTV widget with the final value
+            NTV20B_widget.value = NTV20B
         except Exception:
-            NTV20B_widget.value = max(truck_Vol_year20nonpeak_build_modelcalc_widget.value, 0)
+            NTV20B_widget.value = max(truck_Vol_year20nonpeak_build_modelcalc_widget.value, 0)  # Change here: Default to model value on error
 
     # Link the function to the user-modified truck volume input widget
-    truck_Vol_year20nonpeak_build_userchanged_widget.observe(calculate_ntv20b, names='value')
-    truck_Vol_year20nonpeak_build_modelcalc_widget.observe(calculate_ntv20b, names='value')
+    truck_Vol_year20nonpeak_build_userchanged_widget.observe(calculate_ntv20b, names='value')  # Change here: Observe the user input for changes
+    truck_Vol_year20nonpeak_build_modelcalc_widget.observe(calculate_ntv20b, names='value')  # Change here: Observe the model value for changes
 
     # Combine into layout for display
     Truck_vol_year20nonpeak_build_widgets = widgets.HBox([

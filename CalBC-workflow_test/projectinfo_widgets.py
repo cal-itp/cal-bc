@@ -482,18 +482,18 @@ def create_project_info_widgets():
     # Define the layout for the widgets
     percent_trucks_widget = widgets.HBox([percent_trucks_nobuild_widget, percent_trucks_build_widget])
     
-    ADT_current_widget = widgets.FloatText(
+    ADT_current_widget = widgets.IntText(
         description="Current Average Daily Traffic:",
-        value=None,  # Initially empty
+        value=0,  # Initially empty
         disabled=False,
         layout=common_layout,
         style={'description_width': 'initial'}
     )
 
     # ADT in 20 Years (No Build) widget (changed to ADT_20NB_widget)
-    ADT_20NB_widget = widgets.FloatText(
+    ADT_20NB_widget = widgets.IntText(
         description="ADT Year 20 (No Build):",
-        value=None,  # Initially empty
+        value=0,  # Initially empty
         disabled=False,
         layout=common_layout,
         style={'description_width': 'initial'}
@@ -501,34 +501,34 @@ def create_project_info_widgets():
 
 
     # ADT Base Year No Build widget (calculated)
-    adt_base_year_no_build_widget = widgets.FloatText(
+    adt_base_year_no_build_widget = widgets.IntText(
         description="ADT Base Year (No Build):",
-        value=None,  # Initially empty
+        value=0,  # Initially empty
         disabled=False,  # Read-only since it will be calculated
         style={'description_width': 'initial'},
         layout=common_layout
     )
 
     # ADT Base Year Build widget (calculated)
-    adt_base_year_build_widget = widgets.FloatText(
+    adt_base_year_build_widget = widgets.IntText(
         description="ADT Base Year (Build):",
-        value=None,  # Initially empty
+        value=0,  # Initially empty
         disabled=False,  # Read-only since it will be calculated
         style={'description_width': 'initial'},
         layout=common_layout
     )
 
     # ADT 20 Year Build widget (calculated based on Truck Lane selection)
-    adt_20_year_build_widget = widgets.FloatText(
+    adt_20_year_build_widget = widgets.IntText(
         description="ADT Year 20 (Build):",
-        value=None,  # Initially empty
+        value=0,  # Initially empty
         disabled=False,  # Read-only since it will be calculated
         style={'description_width': 'initial'},
         layout=common_layout
     )
     
     # Function to calculate ADT Base Year (No Build)
-    def calculate_adt_base_year_no_build(change):
+    def calculate_adt_base_year_no_build(change=None):
         # Get the current values from the widgets
         ADT_current = ADT_current_widget.value
         ADT_20NB = ADT_20NB_widget.value  # ADT in 20 years (No Build)
@@ -550,7 +550,7 @@ def create_project_info_widgets():
     construct_widget.observe(calculate_adt_base_year_no_build, names='value')
         
     # Function to calculate ADT Base Year (Build)    
-    def calculate_adt_base_year_build(change):
+    def calculate_adt_base_year_build(change=None):
         # Get the current values from the widgets
         ADT_20NB = ADT_20NB_widget.value  # ADT in 20 years (No Build)
         ADT1NB = adt_base_year_no_build_widget.value  # ADT Base Year No Build value
@@ -569,7 +569,7 @@ def create_project_info_widgets():
     adt_base_year_no_build_widget.observe(calculate_adt_base_year_build, names='value')
         
         
-    def calculate_adt_20_year_build(change):
+    def calculate_adt_20_year_build(change=None):
         # Get the current values from the widgets
         ADT_20NB = ADT_20NB_widget.value  # ADT in 20 years (No Build)
         subcategory = subcategory_dropdown.value  # Get selected subcategory
