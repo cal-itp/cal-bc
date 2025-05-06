@@ -4,27 +4,72 @@ import ipywidgets as widgets
 from ipywidgets import interact
 from IPython.display import display, clear_output, HTML
 
+
+pd.set_option('display.max_columns', None)  
+pd.set_option('display.width', None)
+pd.set_option('display.expand_frame_repr', False)
+pd.set_option('display.float_format', '{:.2f}'.format)
+
+
+
+
 from parameters import parameters
 params = parameters()
 
 import projectinfo_widgets
 import modelinputs_widgets
 
+common_layout = widgets.Layout(
+    width='450px', 
+    background_color='#CCFFCC',  # Background color for all widgets
+    padding='5px',
+    border='2px solid gray'  # Border color and thickness
+)
+
 
 # Getting values used in all the functions 
 AnnualFactor = params.AnnualFactor
+variable_names = ['Avg_Vol_NoBuild', 'Avg_Vol_Build', 'Avg_Speed_NoBuild', 'Avg_Speed_Build']
 
-######################################################################### HIGHWAY BENEFITS #########################################################################
-############################################################ Average Volume ############################################################
+# Create the input widget for Total Cost
+total_cost_widget = widgets.FloatText(
+    value=1000000,
+    description='Total Cost ($):',
+    layout = common_layout,
+    disabled=False
+)
 
-def calculate_average_volumes_highway(AnnualFactor):
+total_benefit_widget = widgets.FloatText(
+    value=0,
+    description='Total Benefit ($):',
+    layout = common_layout,
+    disabled=False
+)
+
+# Create the input widget for Total Cost
+BCR_widget = widgets.FloatText(
+    value=0.0,
+    description='Benefit-Cost Ratio:',
+    layout = common_layout,
+    disabled=True
+)
+
+
+# Display everything together
+display(widgets.VBox([total_cost_widget, total_benefit_widget, BCR_widget]))
+
+
+        
+def calculate_combined_average(AnnualFactor):    
+    global df_combined 
+    
     # Define combinations
     periods = ['Peak', 'NonPeak']
     vehicle_types = ['HOV', 'NonHOV', 'Weaving', 'Truck', 'Ramp', 'Arterial']
     years = ['Year1', 'Year20']
     project_states = ['NoBuild', 'Build']
 
-    # Build a dictionary of widget values
+    # Build a dictionary of widget values for volume (from your existing code)
     volume_dict = {
         'PHV1NB': modelinputs_widgets.PHV1NB_widget.value,
         'PHV1B': modelinputs_widgets.PHV1B_widget.value,
@@ -64,58 +109,7 @@ def calculate_average_volumes_highway(AnnualFactor):
         'NTV20B': modelinputs_widgets.NTV20B_widget.value,
     }
 
-    all_combinations = []
-
-    for period in periods:
-        for vehicle in vehicle_types:
-            if period == 'NonPeak' and vehicle in ['Ramp', 'HOV', 'Arterial']:
-                continue
-            for year in years:
-                avg_vol_nobuild = None
-                avg_vol_build = None
-                for state in project_states:
-                    year_part = year.replace("Year", "")
-                    state_part = 'NB' if state == 'NoBuild' else 'B'
-                    volume_key = f"{period[:1]}{vehicle[:1]}V{year_part}{state_part}"
-
-                if volume_key in volume_dict:
-                    # Check if the widget has a 'value' attribute and extract the value
-                    if hasattr(volume_dict[volume_key], 'value') and volume_dict[volume_key].value is not None:
-                        average_volume = volume_dict[volume_key].value * AnnualFactor
-                        if state == 'NoBuild':
-                            avg_vol_nobuild = average_volume
-                        else:
-                            avg_vol_build = average_volume
-                    else:
-                        print(f"Warning: {volume_key} has no value or is None.")
-                
-                # Add to the list only if both values are found
-                if avg_vol_nobuild is not None and avg_vol_build is not None:
-                    all_combinations.append({
-                        'Combination': f"{period}_{vehicle}_{year}",
-                        'Avg_Vol_NoBuild': avg_vol_nobuild,
-                        'Avg_Vol_Build': avg_vol_build
-                    })
-
-    return all_combinations
-
-
-# Call the function
-average_volumes_highway = calculate_average_volumes_highway(AnnualFactor)
-
-
-
-
-############################################################ Average Speed ############################################################
-
-def calculate_average_speeds_highway(AnnualFactor):
-    # Define combinations
-    periods = ['Peak', 'NonPeak']
-    vehicle_types = ['HOV', 'NonHOV', 'Weaving', 'Truck', 'Ramp', 'Arterial']
-    years = ['Year1', 'Year20']
-    project_states = ['NoBuild', 'Build']
-
-    # Build a dictionary of widget values for speed (replacing 'V' with 'S')
+    # Build a dictionary of widget values for speed (same as before)
     speed_dict = {
         'PHS1NB': modelinputs_widgets.PHS1NB_widget.value,
         'PHS1B': modelinputs_widgets.PHS1B_widget.value,
@@ -157,163 +151,65 @@ def calculate_average_speeds_highway(AnnualFactor):
 
     all_combinations = []
 
+    # Loop through periods, vehicle types, and years
     for period in periods:
         for vehicle in vehicle_types:
             if period == 'NonPeak' and vehicle in ['Ramp', 'HOV', 'Arterial']:
                 continue
             for year in years:
+                avg_vol_nobuild = None
+                avg_vol_build = None
                 avg_speed_nobuild = None
                 avg_speed_build = None
+
                 for state in project_states:
                     year_part = year.replace("Year", "")
                     state_part = 'NB' if state == 'NoBuild' else 'B'
+
+                    # For volume calculation
+                    volume_key = f"{period[:1]}{vehicle[:1]}V{year_part}{state_part}"
+                    vol_value = volume_dict.get(volume_key, 0) or 0
+                    avg_vol = vol_value * AnnualFactor
+
+                    # For speed calculation
                     speed_key = f"{period[:1]}{vehicle[:1]}S{year_part}{state_part}"
+                    speed_value = speed_dict.get(speed_key, 0) or 0
+                    avg_speed = round(speed_value, 1)
 
-                    if speed_key in speed_dict:
-                        average_speed = round(speed_dict[speed_key], 1)
-                        if state == 'NoBuild':
-                            avg_speed_nobuild = average_speed
-                        else:
-                            avg_speed_build = average_speed
+                    if state == 'NoBuild':
+                        avg_vol_nobuild = avg_vol
+                        avg_speed_nobuild = avg_speed
                     else:
-                        print(f"Warning: {speed_key} not found in widget values.")
-                
-                # Add to the list only if both values are found
-                if avg_speed_nobuild is not None and avg_speed_build is not None:
-                    all_combinations.append({
-                        'Combination': f"{period}_{vehicle}_{year}",
-                        'Avg_Speed_NoBuild': avg_speed_nobuild,
-                        'Avg_Speed_Build': avg_speed_build
-                    })
+                        avg_vol_build = avg_vol
+                        avg_speed_build = avg_speed
 
-    return all_combinations
+                # Append combined result to all_combinations
+                all_combinations.append({
+                    'Combination': f"{period}_{vehicle}_{year}",
+                    'Avg_Vol_NoBuild': avg_vol_nobuild if avg_vol_nobuild is not None else 0,
+                    'Avg_Vol_Build': avg_vol_build if avg_vol_build is not None else 0,
+                    'Avg_Speed_NoBuild': avg_speed_nobuild if avg_speed_nobuild is not None else 0,
+                    'Avg_Speed_Build': avg_speed_build if avg_speed_build is not None else 0
+                })
 
+    # Create a DataFrame from the combined results
+    df_combined = pd.DataFrame(all_combinations)
 
-# Call the function for speed calculations
-average_speeds_highway = calculate_average_speeds_highway(AnnualFactor)
+    # Extract 'Period', 'Vehicle', 'Year' from 'Combination'
+    df_combined[['Period', 'Vehicle', 'Year']] = df_combined['Combination'].str.split('_', expand=True)
+    
+    
+    # Create a 'Group' column
+    df_combined['Group'] = df_combined['Period'] + '_' + df_combined['Vehicle']
+    
+    # Convert 'Year' from 'Year1'/'Year20' to integer (1/20)
+    df_combined['Year'] = df_combined['Year'].str.replace('Year', '').astype(int)
+    
+    # Drop columns we no longer need
+    df_combined.drop(columns=['Period', 'Vehicle'], inplace=True)
 
-# List of widgets to observe for both volume and speed (combining the existing ones)
-widget_triggers_volumes = [
-    modelinputs_widgets.PHV1NB_widget,
-    modelinputs_widgets.PHV1B_widget,
-    modelinputs_widgets.PHV20NB_widget,
-    modelinputs_widgets.PHV20B_widget,
-    modelinputs_widgets.PNV1NB_widget,
-    modelinputs_widgets.PNV1B_widget,
-    modelinputs_widgets.PNV20NB_widget,
-    modelinputs_widgets.PNV20B_widget,
-    modelinputs_widgets.PWV1NB_widget,
-    modelinputs_widgets.PWV1B_widget,
-    modelinputs_widgets.PWV20NB_widget,
-    modelinputs_widgets.PWV20B_widget,
-    modelinputs_widgets.PTV1NB_widget,
-    modelinputs_widgets.PTV1B_widget,
-    modelinputs_widgets.PTV20NB_widget,
-    modelinputs_widgets.PTV20B_widget,
-    modelinputs_widgets.PRV1NB_widget,
-    modelinputs_widgets.PRV1B_widget,
-    modelinputs_widgets.PRV20NB_widget,
-    modelinputs_widgets.PRV20B_widget,
-    modelinputs_widgets.PAV1NB_widget,
-    modelinputs_widgets.PAV1B_widget,
-    modelinputs_widgets.PAV20NB_widget,
-    modelinputs_widgets.PAV20B_widget,
-    modelinputs_widgets.NNV1NB_widget,
-    modelinputs_widgets.NNV1B_widget,
-    modelinputs_widgets.NNV20NB_widget,
-    modelinputs_widgets.NNV20B_widget,
-    modelinputs_widgets.NWV1NB_widget,
-    modelinputs_widgets.NWV1B_widget,
-    modelinputs_widgets.NWV20NB_widget,
-    modelinputs_widgets.NWV20B_widget,
-    modelinputs_widgets.NTV1NB_widget,
-    modelinputs_widgets.NTV1B_widget,
-    modelinputs_widgets.NTV20NB_widget,
-    modelinputs_widgets.NTV20B_widget
-]
+    return df_combined
 
-widget_triggers_speed = [
-    modelinputs_widgets.PHS1NB_widget,
-    modelinputs_widgets.PHS1B_widget,
-    modelinputs_widgets.PHS20NB_widget,
-    modelinputs_widgets.PHS20B_widget,
-    modelinputs_widgets.PNS1NB_widget,
-    modelinputs_widgets.PNS1B_widget,
-    modelinputs_widgets.PNS20NB_widget,
-    modelinputs_widgets.PNS20B_widget,
-    modelinputs_widgets.PWS1NB_widget,
-    modelinputs_widgets.PWS1B_widget,
-    modelinputs_widgets.PWS20NB_widget,
-    modelinputs_widgets.PWS20B_widget,
-    modelinputs_widgets.PTS1NB_widget,
-    modelinputs_widgets.PTS1B_widget,
-    modelinputs_widgets.PTS20NB_widget,
-    modelinputs_widgets.PTS20B_widget,
-    modelinputs_widgets.PRS1NB_widget,
-    modelinputs_widgets.PRS1B_widget,
-    modelinputs_widgets.PRS20NB_widget,
-    modelinputs_widgets.PRS20B_widget,
-    modelinputs_widgets.PAS1NB_widget,
-    modelinputs_widgets.PAS1B_widget,
-    modelinputs_widgets.PAS20NB_widget,
-    modelinputs_widgets.PAS20B_widget,
-    modelinputs_widgets.NNS1NB_widget,
-    modelinputs_widgets.NNS1B_widget,
-    modelinputs_widgets.NNS20NB_widget,
-    modelinputs_widgets.NNS20B_widget,
-    modelinputs_widgets.NWS1NB_widget,
-    modelinputs_widgets.NWS1B_widget,
-    modelinputs_widgets.NWS20NB_widget,
-    modelinputs_widgets.NWS20B_widget,
-    modelinputs_widgets.NTS1NB_widget,
-    modelinputs_widgets.NTS1B_widget,
-    modelinputs_widgets.NTS20NB_widget,
-    modelinputs_widgets.NTS20B_widget
-]
-
-# Attach observers to all widgets
-for widget in widget_triggers_volumes:
-    widget.observe(calculate_average_volumes_highway, names='value')
-for widget in widget_triggers_speed:
-    widget.observe(calculate_average_speeds_highway, names='value')
-
-
-
-############################### Combined Results Table #####################################
-
-def update_combined_results(change=None):
-    volume_results = calculate_average_volumes_highway(AnnualFactor)
-    speed_results = calculate_average_speeds_highway(AnnualFactor)
-
-    if volume_results and speed_results:
-        # Convert to DataFrames
-        df_volume = pd.DataFrame(volume_results)
-        df_speed = pd.DataFrame(speed_results)
-
-        # Merge volume and speed DataFrames on 'Combination'
-        df_combined = pd.merge(df_volume, df_speed, on="Combination", how="outer", suffixes=("_Volume", "_Speed"))
-
-        # --- Extract 'Period', 'Vehicle', 'Year' from 'Combination' ---
-        df_combined[['Period', 'Vehicle', 'Year']] = df_combined['Combination'].str.split('_', expand=True)
-        df_combined['Group'] = df_combined['Period'] + '_' + df_combined['Vehicle']
-        df_combined['Year'] = df_combined['Year'].str.replace('Year', '').astype(int)
-
-        # Drop columns we no longer need
-        df_combined.drop(columns=['Period', 'Vehicle'], inplace=True)
-
-        return df_combined
-
-    else:
-        print("No results to display.")
-        return None
-
-
-            
-df_combined = update_combined_results()
-            
-            
-############################### Trend Function #####################################
-            
 
 def calculate_trend_for_variables(df, variable_name, group_name):
     """
@@ -374,9 +270,6 @@ def calculate_trend_for_variables(df, variable_name, group_name):
     return df_trend
 
 
-variable_names = ['Avg_Vol_NoBuild', 'Avg_Vol_Build', 'Avg_Speed_NoBuild', 'Avg_Speed_Build']
-    
-    
 def generate_trends_from_dataframe(df, variable_names):
     all_group_trends = []
 
@@ -399,11 +292,6 @@ def generate_trends_from_dataframe(df, variable_names):
 
     return final_df
 
-
-
-final_trend_df = generate_trends_from_dataframe(df_combined, variable_names)  
-
-########################################################### Annual Person Trips ############################################################
 
 def calculate_person_trips_highway(final_trend_df):
     ProjType = projectinfo_widgets.subcategory_dropdown.value
@@ -464,10 +352,6 @@ def calculate_person_trips_highway(final_trend_df):
 
     return final_trend_df
 
-# Call the function
-final_trend_df = calculate_person_trips_highway(final_trend_df)
-
-########################################################### Average Travel Time ############################################################
 
 def calculate_average_travel_time(final_trend_df):
     # Widget values
@@ -548,57 +432,6 @@ def calculate_average_travel_time(final_trend_df):
     return final_trend_df
 
 
-# Call the function
-final_trend_df = calculate_average_travel_time(final_trend_df)
-
-# ################################ Widget Observers for Person Trips and Average Travel Time #####################################
-
-# Wrappers for widgets
-def on_persontrips_widget_change(change):
-    global final_trend_df
-    final_trend_df = calculate_person_trips_highway(final_trend_df)
-
-def on_avgtraveltime_widget_change(change):
-    global final_trend_df
-    final_trend_df = calculate_average_travel_time(final_trend_df)
-
-    
-widget_triggers_persontrips = [    
-    #PersonTrips-related widgets
-    projectinfo_widgets.subcategory_dropdown,
-    projectinfo_widgets.AVOHovNB_widget,
-    projectinfo_widgets.AVOHovB_widget,
-    projectinfo_widgets.AVO_traffic_P_no_build_widget,
-    projectinfo_widgets.AVO_traffic_P_build_widget,
-    projectinfo_widgets.AVO_traffic_NP_no_build_widget,
-    projectinfo_widgets.AVO_traffic_NP_build_widget
-    
-]
-
-widget_triggers_avgtraveltime =[
-    projectinfo_widgets.subcategory_dropdown,
-    projectinfo_widgets.impacted_length_no_build_widget,
-    projectinfo_widgets.impacted_length_build_widget,
-    modelinputs_widgets.SegmentR_widget,
-    modelinputs_widgets.SegmentA_widget,
-    projectinfo_widgets.GateTime1_widget,
-]
-    
-
-
-# Attach observe function to each widget
-for widget in widget_triggers_persontrips:
-    widget.observe(on_persontrips_widget_change, names='value')
-
-for widget in widget_triggers_avgtraveltime:
-    widget.observe(on_avgtraveltime_widget_change, names='value')
-
-
-
-# ############################################################ Travel Time Benefits #############################################################################
-
-
-
 def traveltime_benefit(final_trend_df):    
     def safe_float(val):
         try:
@@ -611,7 +444,13 @@ def traveltime_benefit(final_trend_df):
     PerIndHOV = projectinfo_widgets.percent_induced_trip_widget.value
     PNT1Ind = modelinputs_widgets.PNT1Ind_widget.value
     PNT20Ind = modelinputs_widgets.PNT20Ind_widget.value
-    RADataAvail = modelinputs_widgets.RADataAvail_widget
+    NNT1Ind = modelinputs_widgets.NNT1Ind_widget.value
+    NNT20Ind = modelinputs_widgets.NNT20Ind_widget.value
+    PTT1Ind = modelinputs_widgets.PTT1Ind_widget.value
+    PTT20Ind = modelinputs_widgets.PTT20Ind_widget.value
+    NTT1Ind = modelinputs_widgets.NTT1Ind_widget.value
+    NTT20Ind = modelinputs_widgets.NTT20Ind_widget.value
+    RADataAvail = modelinputs_widgets.RADataAvail_widget.value
     TMSLookup = params.TMSLookup
     TMSAdj = params.tms_adj
     UserAdjInputs = params.UserAdjInputs
@@ -662,7 +501,7 @@ def traveltime_benefit(final_trend_df):
             else:
                 travel_time_benefit_induced = 0
 
-        elif vehicle == 'NonHOV' and period == 'Peak':
+        if vehicle == 'NonHOV' and period == 'Peak':
             if ProjType in ['Truck Only Lane', 'Bypass', 'HOV-2 to HOV-3 Conv', 'HOT Lane Conversion', 'On-Ramp Widening', 'Ramp Metering', 'Ramp Metering Signal Coord', 'Incident Management', 'Traveler Information']:
                 base_benefit_existing = (
                     annual_trips_nobuild * avg_tt_nobuild - annual_trips_build * avg_tt_build
@@ -694,7 +533,7 @@ def traveltime_benefit(final_trend_df):
 
                 # Find the Peak_HOV row that matches the current year from the data
                 peak_hov_row = next(
-                    (row for row in average_travel_time if row['Group'] == 'Peak_HOV'),
+                    (row for row in final_trend_df if row['Group'] == 'Peak_HOV'),
                     None
                 )
                 avg_tt_build_hov = peak_hov_row.get('Avg_TravelTime_Build', 0)
@@ -740,7 +579,7 @@ def traveltime_benefit(final_trend_df):
                 NonHOVinducedPeakTTBenefit = travel_time_benefit_induced
 
 
-        elif vehicle == 'Weaving' and period == 'Peak':
+        if vehicle == 'Weaving' and period == 'Peak':
             # Check if the project type is one of the special types
             if ProjType in ['Truck Only Lane', 'Bypass', 'HOV-2 to HOV-3 Conv', 'HOT Lane Conversion', 'On-Ramp Widening', 'Ramp Metering', 'Ramp Metering Signal Coord', 'Incident Management', 'Traveler Information']:
                 # Calculate the base benefit for existing conditions
@@ -781,7 +620,7 @@ def traveltime_benefit(final_trend_df):
             # Assign value to (Weaving)
             WeavinginducedPeakTTBenefit = travel_time_benefit_induced
 
-        elif vehicle == 'Truck' and period == 'Peak':
+        if vehicle == 'Truck' and period == 'Peak':
             # Check if the project type is one of the special types
             if ProjType in ['Truck Only Lane', 'Bypass', 'HOV-2 to HOV-3 Conv', 'HOT Lane Conversion', 'On-Ramp Widening', 'Ramp Metering', 'Ramp Metering Signal Coord', 'Incident Management', 'Traveler Information']:
                 # Calculate the base benefit for existing conditions
@@ -816,7 +655,7 @@ def traveltime_benefit(final_trend_df):
 
                 # Find the Peak_HOV row that matches the current year from the data
                 peak_hov_row = next(
-                    (row for row in average_travel_time if row['Group'] == 'Peak_HOV'),
+                    (row for row in final_trend_df if row['Group'] == 'Peak_HOV'),
                     None
                 )
                 avg_tt_build_hov = peak_hov_row.get('Avg_TravelTime_Build', 0)
@@ -861,7 +700,7 @@ def traveltime_benefit(final_trend_df):
                 # Assign value to (NonHOV Peak) for induced travel time benefit
                 TruckinducedPeakTTBenefit = travel_time_benefit_induced
 
-        elif vehicle == 'Ramp' and period == 'Peak':
+        if vehicle == 'Ramp' and period == 'Peak':
             if RADataAvail == "Y":
                 travel_time_benefit_existing = (
                     (avg_tt_nobuild - avg_tt_build) * min(annual_trips_nobuild, annual_trips_build)
@@ -882,7 +721,7 @@ def traveltime_benefit(final_trend_df):
             else:
                 travel_time_benefit_induced = 0
 
-        elif vehicle == 'Arterial' and period == 'Peak':
+        if vehicle == 'Arterial' and period == 'Peak':
             if RADataAvail == "Y":
                 travel_time_benefit_existing = (
                     (avg_tt_nobuild - avg_tt_build) * min(annual_trips_nobuild, annual_trips_build)
@@ -904,7 +743,7 @@ def traveltime_benefit(final_trend_df):
                 travel_time_benefit_induced = (NonHOVinducedPeakTTBenefit + WeavinginducedPeakTTBenefit + TruckinducedPeakTTBenefit) * TMSAdj.get(TMSLookup, {}).get('Benefit', 1)
 
         # NonPeak NonHOV
-        elif vehicle == 'NonHOV' and period == 'NonPeak':
+        if vehicle == 'NonHOV' and period == 'NonPeak':
             if ProjType in ['Truck Only Lane', 'Bypass', 'HOV-2 to HOV-3 Conv', 'HOT Lane Conversion', 'On-Ramp Widening', 'Ramp Metering', 'Ramp Metering Signal Coord', 'Incident Management', 'Traveler Information']:
                 travel_time_benefit_existing = (
                     annual_trips_nobuild * avg_tt_nobuild - annual_trips_build * avg_tt_build
@@ -930,40 +769,24 @@ def traveltime_benefit(final_trend_df):
                 # Extract the year from the 'Year' value
                 year = row['Year']
 
-                # Initialize the variable for the induced benefit
-                travel_time_benefit_induced = 0
-
                 if year == 1:
-                    # Calculate the induced benefit for Year 1
-                    travel_time_benefit_induced_Year1 = (
+                    travel_time_benefit_induced = (
                         (avg_tt_nobuild - avg_tt_build) * NNT1Ind * (-0.5 if Induced == "Y" else -1)
                     )
-                    travel_time_benefit_induced = travel_time_benefit_induced_Year1
-
                 elif year == 20:
-                    # Calculate the induced benefit for Year 20
-                    travel_time_benefit_induced_Year20 = (
+                    travel_time_benefit_induced = (
                         (avg_tt_nobuild - avg_tt_build) * NNT20Ind * (-0.5 if Induced == "Y" else -1)
                     )
-                    travel_time_benefit_induced = travel_time_benefit_induced_Year20
-
                 else:
-                    # For years between 2 and 19, interpolate between Year 1 and Year 20 benefits
-                    # Known values for Year 1 and Year 20
-                    travel_time_benefit_induced_known = np.array([travel_time_benefit_induced_Year1, travel_time_benefit_induced_Year20])
+                    # Compute the values needed for interpolation inline
+                    benefit_year1 = (avg_tt_nobuild - avg_tt_build) * NNT1Ind * (-0.5 if Induced == "Y" else -1)
+                    benefit_year20 = (avg_tt_nobuild - avg_tt_build) * NNT20Ind * (-0.5 if Induced == "Y" else -1)
 
-                    # Known years for interpolation
-                    years_known = np.array([1, 20])
-
-                    # Calculate linear interpolation between Year 1 and Year 20 benefits
-                    slope, intercept = np.polyfit(years_known, travel_time_benefit_induced_known, 1)
-
-                    # Now, calculate the interpolated value for the current year
-                    travel_time_benefit_induced = np.polyval([slope, intercept], year)
+                    travel_time_benefit_induced = np.interp(year, [1, 20], [benefit_year1, benefit_year20])
 
 
         # NonPeak Weaving
-        elif vehicle == 'Weaving' and period == 'NonPeak':
+        if vehicle == 'Weaving' and period == 'NonPeak':
             # Check if the project type is one of the special types
             if ProjType in ['Truck Only Lane', 'Bypass', 'HOV-2 to HOV-3 Conv', 'HOT Lane Conversion', 'On-Ramp Widening', 'Ramp Metering', 'Ramp Metering Signal Coord', 'Incident Management', 'Traveler Information']:
                 # Calculate the base benefit for existing conditions
@@ -991,7 +814,7 @@ def traveltime_benefit(final_trend_df):
                 travel_time_benefit_induced = 0
 
         # NonPeak Truck
-        elif vehicle == 'Truck' and period == 'NonPeak':
+        if vehicle == 'Truck' and period == 'NonPeak':
             # Check if the project type is one of the special types
             if ProjType in ['Truck Only Lane', 'Bypass', 'HOV-2 to HOV-3 Conv', 'HOT Lane Conversion', 'On-Ramp Widening', 'Ramp Metering', 'Ramp Metering Signal Coord', 'Incident Management', 'Traveler Information']:
                 # Calculate the base benefit for existing conditions
@@ -1018,9 +841,6 @@ def traveltime_benefit(final_trend_df):
             elif ProjType in ['HOV-2 to HOV-3 Conv', 'HOT Lane Conversion']:
                 # Extract the year from the 'Year' value
                 year = row['Year']
-
-                # Initialize the variable for the induced benefit
-                travel_time_benefit_induced = 0
 
                 if year == 1:
                     # Calculate the induced benefit for Year 1
@@ -1058,29 +878,6 @@ def traveltime_benefit(final_trend_df):
     # Return the updated DataFrame with benefits columns
     return final_trend_df
 
-# Call the function    
-final_trend_df = traveltime_benefit(final_trend_df)
-
-def on_traveltime_benefit_widget_change(change):
-    global final_trend_df 
-    final_trend_df = traveltime_benefit(final_trend_df)
-
-widget_triggers_traveltime_benefit =[
-    projectinfo_widgets.subcategory_dropdown,
-    projectinfo_widgets.percent_induced_trip_widget,
-    modelinputs_widgets.PNT1Ind_widget,
-    modelinputs_widgets.PNT20Ind_widget,
-    modelinputs_widgets.RADataAvail_widget,
-]
-    
-
-# Attach observe function to each widget
-for widget in widget_triggers_traveltime_benefit:
-    widget.observe(on_traveltime_benefit_widget_change, names='value')
-    
-    
-
-################################ Constant Dollars Column #####################################
 
 def add_dollar_calculated_column(final_trend_df):
     # Access the values from the params and projectinfo_widgets objects
@@ -1110,25 +907,8 @@ def add_dollar_calculated_column(final_trend_df):
     
     return final_trend_df  # Return the modified DataFrame
 
-# Call the function and store the modified DataFrame
-final_trend_df = add_dollar_calculated_column(final_trend_df)
-
-def add_dollarcalculated_widget_change(change):
-    global final_trend_df 
-    final_trend_df = add_dollar_calculated_column(final_trend_df)
 
 
-widget_triggers_constantdollars =[
-    projectinfo_widgets.subcategory_dropdown,
-    projectinfo_widgets.construct_widget
-]
-    
-
-for widget in widget_triggers_constantdollars:
-    widget.observe(add_dollarcalculated_widget_change, names='value')
-
-
-################################ Present Dollars Column #####################################    
 
 def add_discounted_value_column(df, value_column_name, output_column_name):
     Construct = projectinfo_widgets.construct_widget.value
@@ -1143,164 +923,197 @@ def add_discounted_value_column(df, value_column_name, output_column_name):
     df[output_column_name] = df.apply(calculate_discounted_value, axis=1)
     return df
 
-final_trend_df = add_discounted_value_column(final_trend_df, value_column_name='Constant Dollar', output_column_name='Present Value')
+ 
 
-# Display the updated DataFrame with travel time benefits
-# display(final_trend_df) 
+sum_by_year = None 
 
-def add_discountedvalue_widget_change(change):
-    global final_trend_df
-    # Pass value_column_name and output_column_name when calling the function
-    final_trend_df = add_discounted_value_column(final_trend_df, value_column_name='Constant Dollar', output_column_name='Present Value')
-
-
-widget_triggers_presentvalue =[
-    projectinfo_widgets.construct_widget
-]
-    
-
-for widget in widget_triggers_presentvalue:
-    widget.observe(add_discountedvalue_widget_change, names='value')
-    
-
-
-
-################################ Final Display Function #####################################
-def display_grouped_tables(final_trend_df):
-    if final_trend_df is None:
-        print("Nothing to display.")
-        return
-
-    # Custom order for Peak and NonPeak groups
-    peak_order = ["Peak_HOV", "Peak_NonHOV", "Peak_Weaving", "Peak_Truck", "Peak_Ramp", "Peak_Arterial"]
-    nonpeak_order = ["NonPeak_NonHOV", "NonPeak_Weaving", "NonPeak_Arterial"]
-
-    # Combine the two lists to define custom sorting order
-    custom_order = peak_order + nonpeak_order
-
-    # Sort the groups based on the custom order
-    sorted_groups = sorted(final_trend_df['Group'].unique(), key=lambda x: custom_order.index(x) if x in custom_order else len(custom_order))
-
-    for group_name in sorted_groups:
-        # Filter the dataframe for each group
-        group_df = final_trend_df[final_trend_df['Group'] == group_name]
-
-        # Ensure Year 1 and Year 20 are at the top
-        year_1_and_20 = group_df[group_df['Year'].isin([1, 20])]
-        rest_of_years = group_df[~group_df['Year'].isin([1, 20])]
-
-        # Sort the remaining years
-        rest_of_years = rest_of_years.sort_values(by='Year')
-
-        # Concatenate Year 1, Year 20 with the sorted remaining years
-        group_df_sorted = pd.concat([year_1_and_20, rest_of_years])
-
-        print(f"--- {group_name} ---")
-        
-        # Reorder to put Year at the beginning
-        cols = ['Year'] + [col for col in group_df_sorted.columns if col not in ['Year', 'Period', 'Vehicle', 'Group', 'Combination']]
-        group_df_sorted = group_df_sorted[cols]
-                
-        # Display the group DataFrame
-        display(group_df_sorted)  # Changed to display group_df_sorted, as that's the sorted dataframe.
-        print("\n")
-
-    
-    
-# display_grouped_tables(final_trend_df)
-     
-
-############################################## Summary Table ##############################################
 def sum_present_value_by_year(final_trend_df):
-    # Group by the 'Year' column and sum the 'Present Value' for each year
+    global sum_by_year
+    # Group by 'Year' and sum 'Present Value'
     sum_by_year = final_trend_df.groupby('Year')['Present Value'].sum().reset_index()
-    
-    # Rename the column for clarity
     sum_by_year = sum_by_year.rename(columns={'Present Value': 'Total Present Value'})
     
-    # Add a total row
+    # Calculate total
     total_value = sum_by_year['Total Present Value'].sum()
-    total_row = pd.DataFrame([{'Year': 'Total Travel Time Benefits', 'Total Present Value': total_value}])
     
-    # Append the total row
+    # Add total row
+    total_row = pd.DataFrame([{
+        'Year': 'Total Travel Time Benefits',
+        'Total Present Value': total_value
+    }])
     sum_by_year = pd.concat([sum_by_year, total_row], ignore_index=True)
     
-    return sum_by_year
-
-sum_by_year_df = sum_present_value_by_year(final_trend_df)
+    return sum_by_year, total_value
 
 
 
-# def add_constant_dollars_column(df, value_column_name, output_column_name):
-#     Construct = projectinfo_widgets.construct_widget.value
-#     DiscRate = params.discount_rate
-    
-#     def calculate_constant_dollars(row):
-#         value = row[value_column_name]
-#         year = row['Year']
-#         constant_value = value * ((1 + DiscRate) ** (year + Construct - 1))
-#         return constant_value
-
-#     df[output_column_name] = df.apply(calculate_constant_dollars, axis=1)
-#     return df
-
-
-
-# widget_triggers_constantdollars =[
-#     projectinfo_widgets.construct_widget
-# ]
     
 
-# for widget in widget_triggers_presentvalue:
-#     widget.observe(add_constant_dollars_column, names='value')
 
-# sum_by_year_df = add_constant_dollars_column(sum_by_year_df, value_column_name='Total Present Value', output_column_name='Constant Dollars')
+def get_grouped_highway_results(final_trend_df):
 
-# display(sum_by_year_df)
+    # Create 'Group' column if not already present
+    final_trend_df['Group'] = final_trend_df['Group'].astype(str)  # ensure string for sorting
+
+    # Define custom order for Group sorting
+    group_order = [
+        'Peak_HOV', 'Peak_NonHOV', 'Peak_Weaving', 'Peak_Truck',
+        'Peak_Ramp', 'Peak_Arterial', 'NonPeak_NonHOV', 'NonPeak_Weaving', 'NonPeak_Truck'
+    ]
+
+    # Convert to categorical for sorting
+    final_trend_df['Group'] = pd.Categorical(final_trend_df['Group'], categories=group_order, ordered=True)
+
+    # Sort DataFrame by 'Group' and optionally 'Year' for readability
+    final_trend_df.sort_values(by=['Group', 'Year'], inplace=True)
+
+    # Display grouped results
+    grouped = final_trend_df.groupby('Group')
+
+    for group_name, group_df in grouped:
+        print(f"\n--- Group: {group_name} ---")
+        print(group_df)
+        
+
+    return final_trend_df
 
 
-############################################## Summary Table ##############################################
 
-total_benefit_value = sum_by_year_df[sum_by_year_df['Year'] == 'Total Travel Time Benefits']['Total Present Value'].values[0]
+def calculate_benefit_cost_ratio(change, sum_by_year):
+    total_cost = total_cost_widget.value
 
-def calculate_benefit_cost_ratio(sum_by_year_df, total_cost):
-    # Extract Total Travel Time Benefits (from the last row)
-    total_benefit = sum_by_year_df[sum_by_year_df['Year'] == 'Total Travel Time Benefits']['Total Present Value'].values[0]
+    # Try to extract Total Travel Time Benefits
+    try:
+        total_benefit = sum_by_year.loc[
+            sum_by_year['Year'] == 'Total Travel Time Benefits',
+            'Total Present Value'
+        ].values[0]
+    except IndexError:
+        total_benefit = 0
+
+    # Compute and assign BCR
+    BCR_widget.value = total_benefit / total_cost if total_cost != 0 else float('inf')
+
+
+# Observing widget changes and passing sum_by_year
+total_cost_widget.observe(lambda change: calculate_benefit_cost_ratio(change, sum_by_year), names='value')
+total_benefit_widget.observe(lambda change: calculate_benefit_cost_ratio(change, sum_by_year), names='value')
+
+
+
+
+def main(change=None):
+    df_combined = calculate_combined_average(AnnualFactor)
+    final_trend_df = generate_trends_from_dataframe(df_combined, variable_names)
+    final_trend_df = calculate_person_trips_highway(final_trend_df)
+    final_trend_df = calculate_average_travel_time(final_trend_df)
+    final_trend_df = traveltime_benefit(final_trend_df)
+    final_trend_df = add_dollar_calculated_column(final_trend_df)
+    final_trend_df = add_discounted_value_column(final_trend_df, value_column_name='Constant Dollar', output_column_name='Present Value')
+    get_grouped_highway_results(final_trend_df)
+    sum_by_year, total_value = sum_present_value_by_year(final_trend_df)
+    total_benefit_widget.value = total_value
+    calculate_benefit_cost_ratio(None, sum_by_year)
     
-    # Calculate Benefit-Cost Ratio
-    BCR = total_benefit / total_cost if total_cost != 0 else float('inf')
     
-    return BCR
+main(change=None)    
 
-# Create the widget to display Total Benefit (read-only)
-total_benefit_widget = widgets.FloatText(
-    value=total_benefit_value,
-    description='Total Benefit ($):',
-    disabled=True
-)
+# List of all widgets (both for volumes and speeds)
+widget_triggers = [
+    modelinputs_widgets.PHV1NB_widget,
+    modelinputs_widgets.PHV1B_widget,
+    modelinputs_widgets.PHV20NB_widget,
+    modelinputs_widgets.PHV20B_widget,
+    modelinputs_widgets.PNV1NB_widget,
+    modelinputs_widgets.PNV1B_widget,
+    modelinputs_widgets.PNV20NB_widget,
+    modelinputs_widgets.PNV20B_widget,
+    modelinputs_widgets.PWV1NB_widget,
+    modelinputs_widgets.PWV1B_widget,
+    modelinputs_widgets.PWV20NB_widget,
+    modelinputs_widgets.PWV20B_widget,
+    modelinputs_widgets.PTV1NB_widget,
+    modelinputs_widgets.PTV1B_widget,
+    modelinputs_widgets.PTV20NB_widget,
+    modelinputs_widgets.PTV20B_widget,
+    modelinputs_widgets.PRV1NB_widget,
+    modelinputs_widgets.PRV1B_widget,
+    modelinputs_widgets.PRV20NB_widget,
+    modelinputs_widgets.PRV20B_widget,
+    modelinputs_widgets.PAV1NB_widget,
+    modelinputs_widgets.PAV1B_widget,
+    modelinputs_widgets.PAV20NB_widget,
+    modelinputs_widgets.PAV20B_widget,
+    modelinputs_widgets.NNV1NB_widget,
+    modelinputs_widgets.NNV1B_widget,
+    modelinputs_widgets.NNV20NB_widget,
+    modelinputs_widgets.NNV20B_widget,
+    modelinputs_widgets.NWV1NB_widget,
+    modelinputs_widgets.NWV1B_widget,
+    modelinputs_widgets.NWV20NB_widget,
+    modelinputs_widgets.NWV20B_widget,
+    modelinputs_widgets.NTV1NB_widget,
+    modelinputs_widgets.NTV1B_widget,
+    modelinputs_widgets.NTV20NB_widget,
+    modelinputs_widgets.NTV20B_widget,
+    modelinputs_widgets.PHS1NB_widget,
+    modelinputs_widgets.PHS1B_widget,
+    modelinputs_widgets.PHS20NB_widget,
+    modelinputs_widgets.PHS20B_widget,
+    modelinputs_widgets.PNS1NB_widget,
+    modelinputs_widgets.PNS1B_widget,
+    modelinputs_widgets.PNS20NB_widget,
+    modelinputs_widgets.PNS20B_widget,
+    modelinputs_widgets.PWS1NB_widget,
+    modelinputs_widgets.PWS1B_widget,
+    modelinputs_widgets.PWS20NB_widget,
+    modelinputs_widgets.PWS20B_widget,
+    modelinputs_widgets.PTS1NB_widget,
+    modelinputs_widgets.PTS1B_widget,
+    modelinputs_widgets.PTS20NB_widget,
+    modelinputs_widgets.PTS20B_widget,
+    modelinputs_widgets.PRS1NB_widget,
+    modelinputs_widgets.PRS1B_widget,
+    modelinputs_widgets.PRS20NB_widget,
+    modelinputs_widgets.PRS20B_widget,
+    modelinputs_widgets.PAS1NB_widget,
+    modelinputs_widgets.PAS1B_widget,
+    modelinputs_widgets.PAS20NB_widget,
+    modelinputs_widgets.PAS20B_widget,
+    modelinputs_widgets.NNS1NB_widget,
+    modelinputs_widgets.NNS1B_widget,
+    modelinputs_widgets.NNS20NB_widget,
+    modelinputs_widgets.NNS20B_widget,
+    modelinputs_widgets.NWS1NB_widget,
+    modelinputs_widgets.NWS1B_widget,
+    modelinputs_widgets.NWS20NB_widget,
+    modelinputs_widgets.NWS20B_widget,
+    modelinputs_widgets.NTS1NB_widget,
+    modelinputs_widgets.NTS1B_widget,
+    modelinputs_widgets.NTS20NB_widget,
+    modelinputs_widgets.NTS20B_widget,
+    projectinfo_widgets.subcategory_dropdown,
+    projectinfo_widgets.AVOHovNB_widget,
+    projectinfo_widgets.AVOHovB_widget,
+    projectinfo_widgets.AVO_traffic_P_no_build_widget,
+    projectinfo_widgets.AVO_traffic_P_build_widget,
+    projectinfo_widgets.AVO_traffic_NP_no_build_widget,
+    projectinfo_widgets.AVO_traffic_NP_build_widget,
+    projectinfo_widgets.impacted_length_no_build_widget,
+    projectinfo_widgets.percent_induced_trip_widget,
+    modelinputs_widgets.PNT1Ind_widget,
+    modelinputs_widgets.PNT20Ind_widget,
+    modelinputs_widgets.RADataAvail_widget,
+    projectinfo_widgets.construct_widget,
+    projectinfo_widgets.impacted_length_no_build_widget,
+    projectinfo_widgets.impacted_length_build_widget,
+    modelinputs_widgets.SegmentR_widget,
+    modelinputs_widgets.SegmentA_widget,
+    projectinfo_widgets.GateTime1_widget
+]
 
-# Create the input widget for Total Cost
-total_cost_widget = widgets.FloatText(
-    value=1000000,
-    description='Total Cost ($):',
-    disabled=False
-)
+# Attach the observer to all widgets in the combined list
+for widget in widget_triggers:
+    widget.observe(main, names='value')
 
-# Create the output area
-output = widgets.Output()
 
-# Define the function to update the output
-def update_bcr(total_cost):
-    with output:
-        output.clear_output()  # Clear previous output
-        BCR = calculate_benefit_cost_ratio(sum_by_year_df, total_cost)
-        display(HTML(f"<h2><strong>BCR = {BCR:.2f}</strong></h2>"))
-
-# Set up the interactive behavior
-widgets.interactive(update_bcr, total_cost=total_cost_widget)
-
-# Display everything together
-display(widgets.VBox([total_benefit_widget, total_cost_widget, output]))
-
-# Trigger initial display
-update_bcr(total_cost_widget.value)
