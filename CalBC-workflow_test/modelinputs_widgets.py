@@ -524,7 +524,7 @@ def create_new_widgets():
         style={'description_width': 'initial'}
     )
 
-    PNS1NB_widget = widgets.IntText(
+    PNS1NB_widget = widgets.FloatText(
         value=nonhov_speed_year1peak_nobuild_modelcalc_widget.value,
         description="Non-HOV Speed (Used for Proj Evaluation):",
         disabled=True,
@@ -674,7 +674,7 @@ def create_new_widgets():
         style={'description_width': 'initial'}
     )
 
-    PHS1NB_widget = widgets.IntText(
+    PHS1NB_widget = widgets.FloatText(
         value=hov_speed_year1peak_nobuild_modelcalc_widget.value,
         description="HOV Speed (Used for Proj Evaluation):",
         disabled=True,
@@ -800,7 +800,7 @@ def create_new_widgets():
         style={'description_width': 'initial'}
     )
 
-    PWS1NB_widget = widgets.IntText(
+    PWS1NB_widget = widgets.FloatText(
         value=weave_speed_year1peak_nobuild_modelcalc_widget.value,
         description="Weaving Speed (Used for Proj Evaluation):",
         disabled=True,
@@ -909,8 +909,8 @@ def create_new_widgets():
     
     ###################################################################    
     # Truck Speed widgets 
-    truck_speed_year1peak_nobuild_modelcalc_widget = widgets.IntText(
-        value=0,
+    truck_speed_year1peak_nobuild_modelcalc_widget = widgets.FloatText(
+        value=0.0,
         description="Truck Speed (Calculated by Model):",
         disabled=True,
         layout=common_layout,
@@ -925,7 +925,7 @@ def create_new_widgets():
         style={'description_width': 'initial'}
     )
 
-    PTS1NB_widget = widgets.IntText(
+    PTS1NB_widget = widgets.FloatText(
         value=truck_speed_year1peak_nobuild_modelcalc_widget.value,
         description="Truck Speed (Used for Proj Evaluation):",
         disabled=True,
@@ -1299,7 +1299,7 @@ def create_new_widgets():
     )
     
     # Non-HOV Speed Volume (Used for Project Evaluation)
-    NNS1NB_widget = widgets.IntText(
+    NNS1NB_widget = widgets.FloatText(
         value=nonhov_speed_year1nonpeak_modelcalc_widget.value,  # Set initially to the calculated value
         description="Non-HOV Speed (Used for Proj Evaluation):",
         disabled=True,  # Make it read-only
@@ -1428,7 +1428,7 @@ def create_new_widgets():
     
     # Weaving Non Peak Speed widgets 
     weave_speed_year1nonpeak_modelcalc_widget = widgets.FloatText(
-        value=0,  # Set initial value to 0 or any other valid integer
+        value=0.0,  # Set initial value to 0 or any other valid integer
         description="Weaving Speed (Calculated by Model):",
         disabled=True,  # Make it read-only so the user cannot modify the value
         layout=common_layout,
@@ -1444,7 +1444,7 @@ def create_new_widgets():
     )
 
     # Non-HOV Speed Volume (Used for Project Evaluation)
-    NWS1NB_widget = widgets.IntText(
+    NWS1NB_widget = widgets.FloatText(
         value=weave_speed_year1nonpeak_modelcalc_widget.value,  # Set initially to the calculated value
         description="Weaving Speed (Used for Proj Evaluation):",
         disabled=True,  # Make it read-only
@@ -1534,8 +1534,8 @@ def create_new_widgets():
 
     ###################################################################
     # Truck Non Peak Speed widgets 
-    truck_speed_year1nonpeak_modelcalc_widget = widgets.IntText(
-        value=0,  # Set initial value to 0 or any other valid integer
+    truck_speed_year1nonpeak_modelcalc_widget = widgets.FloatText(
+        value=0.0,  # Set initial value to 0 or any other valid integer
         description="Truck Speed (Calculated by Model):",
         disabled=True,  # Make it read-only so the user cannot modify the value
         layout=common_layout,
@@ -1551,7 +1551,7 @@ def create_new_widgets():
     )
 
     # Truck Speed Volume (Used for Project Evaluation)
-    NTS1NB_widget = widgets.IntText(
+    NTS1NB_widget = widgets.FloatText(
         value=truck_speed_year1nonpeak_modelcalc_widget.value,  # Set initially to the calculated value
         description="Truck Speed (Used for Proj Evaluation):",
         disabled=True,  # Make it read-only
@@ -2102,7 +2102,7 @@ def create_new_widgets():
     )
 
     # Non-HOV Speed Volume (Used for Project Evaluation)
-    PNS20NB_widget = widgets.IntText(
+    PNS20NB_widget = widgets.FloatText(
         value=nonhov_speed_year20peak_modelcalc_widget.value,  # Set initially to the calculated value
         description="Non-HOV Speed (Used for Proj Evaluation):",
         disabled=True,  # Make it read-only
@@ -2249,8 +2249,8 @@ def create_new_widgets():
     
     ###################################################################        
      # HOV Speed widgets for Year 20
-    hov_speed_year20peak_modelcalc_widget = widgets.IntText(
-        value=0,
+    hov_speed_year20peak_modelcalc_widget = widgets.FloatText(
+        value=0.0,
         description="HOV Speed (Calculated by Model):",
         disabled=True,
         layout=common_layout,
@@ -2265,7 +2265,7 @@ def create_new_widgets():
         style={'description_width': 'initial'}
     )
 
-    PHS20NB_widget = widgets.IntText(
+    PHS20NB_widget = widgets.FloatText(
         value=hov_speed_year20peak_modelcalc_widget.value,
         description="HOV Speed (Used for Proj Evaluation):",
         disabled=True,
@@ -2312,7 +2312,7 @@ def create_new_widgets():
         PHV20NB = PHV20NB_widget.value
 
         if PHV20NB == 0:
-            hov_speed = 55
+            hov_speed = 55.0
 
         elif HOVLanesNB == 0:
             hov_speed = PNS20NB_widget.value
@@ -2381,7 +2381,7 @@ def create_new_widgets():
     ###################################################################    
     # Weaving Speed widgets 
     weave_speed_year20peak_modelcalc_widget = widgets.FloatText(
-        value=0,  # Set initial value to 0 or any other valid integer
+        value=0.0,  # Set initial value to 0 or any other valid integer
         description="Weaving Speed (Calculated by Model):",
         disabled=True,  # Make it read-only so the user cannot modify the value
         layout=common_layout,
@@ -2397,7 +2397,7 @@ def create_new_widgets():
     )
 
     # Non-HOV Speed Volume (Used for Project Evaluation)
-    PWS20NB_widget = widgets.IntText(
+    PWS20NB_widget = widgets.FloatText(
         value=weave_speed_year20peak_modelcalc_widget.value,  # Set initially to the calculated value
         description="Weaving Speed (Used for Proj Evaluation):",
         disabled=True,  # Make it read-only
@@ -2432,7 +2432,7 @@ def create_new_widgets():
 
         # Check if the value of PWV20NB is 0, return 55 if true
         if PWV20NB == 0:
-            Year20PeakWeaveSpeed = 55
+            Year20PeakWeaveSpeed = 55.0
         else:
             # Check if the project type is Auxiliary Lane or Off-Ramp Widening
             if ProjType in ["Auxiliary Lane", "Off-Ramp Widening"]:
@@ -2499,8 +2499,8 @@ def create_new_widgets():
 
     ###################################################################
     # Truck Speed widgets 
-    truck_speed_year20peak_modelcalc_widget = widgets.IntText(
-        value=0,  # Set initial value to 0 or any other valid integer
+    truck_speed_year20peak_modelcalc_widget = widgets.FloatText(
+        value=0.0,  # Set initial value to 0 or any other valid integer
         description="Truck Speed (Calculated by Model):",
         disabled=True,  # Make it read-only so the user cannot modify the value
         layout=common_layout,
@@ -2516,7 +2516,7 @@ def create_new_widgets():
     )
 
     # Non-HOV Speed Volume (Used for Project Evaluation)
-    PTS20NB_widget = widgets.IntText(
+    PTS20NB_widget = widgets.FloatText(
         value=truck_speed_year20peak_modelcalc_widget.value,  # Set initially to the calculated value
         description="Truck Speed (Used for Proj Evaluation):",
         disabled=True,  # Make it read-only
@@ -2547,7 +2547,7 @@ def create_new_widgets():
 
         # Check if PTV20NB is 0
         if PTV20NB == 0:
-            truck_speed = 55
+            truck_speed = 55.0
         else:
             base_speed = PWS20NB if ProjType in ["Auxiliary Lane", "Off-Ramp Widening"] else PNS20NB
 
@@ -2903,8 +2903,8 @@ def create_new_widgets():
     ###################################################
 
     # Non-HOV Speed Year 20 Non-Peak widgets
-    nonhov_speed_year20nonpeak_modelcalc_widget = widgets.IntText(
-        value=0,
+    nonhov_speed_year20nonpeak_modelcalc_widget = widgets.FloatText(
+        value=0.0,
         description="Non-HOV Speed (Calculated by Model):",
         disabled=True,
         layout=common_layout,
@@ -2920,7 +2920,7 @@ def create_new_widgets():
     )
 
     # Evaluation Widget
-    NNS20NB_widget = widgets.IntText(
+    NNS20NB_widget = widgets.FloatText(
         value=nonhov_speed_year20nonpeak_modelcalc_widget.value,
         description="Non-HOV Speed (Used for Proj Evaluation):",
         disabled=True,
@@ -2974,7 +2974,7 @@ def create_new_widgets():
             total_volume = NNV20NB_widget.value + NWV20NB_widget.value + NTV20NB_widget.value
 
             if total_volume == 0:
-                speed = 55
+                speed = 55.0
             else:
                 # Queuing check for adjustment
                 queuing_adjustment = 1
@@ -3057,7 +3057,7 @@ def create_new_widgets():
     ###################################################
     # Weaving Speed Year 20 Non-Peak widgets
     weave_speed_year20nonpeak_modelcalc_widget = widgets.FloatText(
-        value=0,
+        value=0.0,
         description="Weaving Speed (Calculated by Model):",
         disabled=True,
         layout=common_layout,
@@ -3161,7 +3161,7 @@ def create_new_widgets():
   ###################################################   
     # Truck Speed Year 20 Non-Peak widgets
     truck_speed_year20nonpeak_modelcalc_widget = widgets.FloatText(
-        value=0,
+        value=0.0,
         description="Truck Speed (Calculated by Model):",
         disabled=True,
         layout=common_layout,
@@ -3207,7 +3207,7 @@ def create_new_widgets():
         if ProjType == "Hwy-Rail Grade Crossing":
             speed = IdleSpeed
         elif NTV20NB == 0:
-            speed = 55
+            speed = 55.0
         else:
             # Formula for truck speed calculation
             if ProjType in ["Auxiliary Lane", "Off-Ramp Widening"]:
@@ -3667,7 +3667,7 @@ def create_new_widgets():
    #######################################################################
     # Non-HOV Speed (Calculated by Model)
     nonhov_speed_year1peak_build_modelcalc_widget = widgets.FloatText(
-        value=0,  # Initial value
+        value=0.0,  # Initial value
         description="Non-HOV Speed (Calculated by Model):",
         disabled=True,  # Read-only
         layout=common_layout,
@@ -3725,7 +3725,7 @@ def create_new_widgets():
         total_volume = PHV1B + PNV1B + PWV1B + PTV1B
 
         if total_volume == 0:
-            NonHOVSpeed = 55
+            NonHOVSpeed = 55.0
         else:
             # Capacity parameters
             GenAlphaB = roadway_capacity_non_HOV["Non-HOV Lanes"]["Build"]["GenAlphaB"]
@@ -3808,7 +3808,7 @@ def create_new_widgets():
 
     # Widget for HOV Speed (Calculated by Model)
     hov_speed_year1peak_build_modelcalc_widget = widgets.FloatText(
-        value=0,
+        value=0.0,
         description="HOV Speed (Calculated by Model):",
         disabled=True,
         layout=common_layout,
@@ -3925,7 +3925,7 @@ def create_new_widgets():
    #######################################################################
 
     weaving_speed_year1peak_build_modelcalc_widget = widgets.FloatText(
-        value=0,
+        value=0.0,
         description="Weaving Speed (Calculated by Model):",
         disabled=True,
         layout=common_layout,
@@ -3973,7 +3973,7 @@ def create_new_widgets():
         PNS1B = PNS1B_widget.value
 
         if PWV1B == 0:
-            weave_speed = 55
+            weave_speed = 55.0
         elif ProjType == "Auxiliary Lane":
             exp_component = math.exp((PWV1B + PTV1B) / NumDirections / PeakLngthNB / 1000)
             ramp_factor = 1083 if ProjType == "Off-Ramp Widening" else SegmentB * 5280
@@ -4032,7 +4032,7 @@ def create_new_widgets():
     
    #######################################################################    
     truck_speed_year1peak_build_modelcalc_widget = widgets.FloatText(
-        value=0,
+        value=0.0,
         description="Truck Speed (Calculated by Model):",
         disabled=True,
         layout=common_layout,
@@ -4075,7 +4075,7 @@ def create_new_widgets():
         PNS1B = PNS1B_widget.value
 
         if PTV1B == 0:
-            truck_speed = 55
+            truck_speed = 55.0
         else:
             # Find the closest IRI key
             closest_iri_key = min(SpeedPavAdj.keys(), key=lambda x: abs(x - IRI1B))
@@ -4441,7 +4441,7 @@ def create_new_widgets():
 
     # Model-calculated Non-HOV Speed (Non-Peak)
     nonhov_speed_year1nonpeak_build_modelcalc_widget = widgets.FloatText(
-        value=0,
+        value=0.0,
         description="Non-HOV Speed (Calculated by Model):",
         disabled=True,
         layout=common_layout,
@@ -4498,7 +4498,7 @@ def create_new_widgets():
         if ProjType == "Hwy-Rail Grade Crossing":
             NonHOVSpeed = FFSpeedB
         elif total_volume == 0:
-            NonHOVSpeed = 55
+            NonHOVSpeed = 55.0
         else:
             GenAlphaB = roadway_capacity_non_HOV["Non-HOV Lanes"]["Build"]["GenAlphaB"]
             GenBetaB = roadway_capacity_non_HOV["Non-HOV Lanes"]["Build"]["GenBetaB"]
@@ -4569,7 +4569,7 @@ def create_new_widgets():
     # Weaving Speed Year 1 Non-Peak Build Widgets
 
     weaving_speed_year1nonpeak_build_modelcalc_widget = widgets.FloatText(
-        value=0,
+        value=0.0,
         description="Weaving Speed (Calculated by Model):",
         disabled=True,
         layout=common_layout,
@@ -4615,7 +4615,7 @@ def create_new_widgets():
         NNS1B = NNS1B_widget.value
 
         if NWV1B == 0:
-            weave_speed = 55
+            weave_speed = 55.0
         elif ProjType == "Auxiliary Lane":
             # Calculate exponential component for base speed adjustment
             exp_component = math.exp((NWV1B + NTV1B) / NumDirections / (24 - PeakLngthNB) / 1000)
@@ -4683,7 +4683,7 @@ def create_new_widgets():
     # Truck Speed Year 1 Non-Peak Build Widgets
 
     truck_speed_year1nonpeak_build_modelcalc_widget = widgets.FloatText(
-        value=0,
+        value=0.0,
         description="Truck Speed (Calculated by Model):",
         disabled=True,
         layout=common_layout,
@@ -4729,7 +4729,7 @@ def create_new_widgets():
         if ProjType == "Hwy-Rail Grade Crossing":
             truck_speed = FFSpeedB
         elif NTV1B == 0:
-            truck_speed = 55  # Default speed when there is no truck volume
+            truck_speed = 55.0  # Default speed when there is no truck volume
         else:
             # For other project types, calculate the truck speed based on provided formulas
             if ProjType == "Auxiliary Lane":
@@ -5244,7 +5244,7 @@ def create_new_widgets():
     
     # Non-HOV Speed widgets for Year 20 Peak Build
     nonhov_speed_year20peak_build_modelcalc_widget = widgets.FloatText(
-        value=0,  # Set initial value to 0 or any other valid integer
+        value=0.0,  # Set initial value to 0 or any other valid integer
         description="Non-HOV Speed (Calculated by Model):",
         disabled=True,  # Make it read-only so the user cannot modify the value
         layout=common_layout,
@@ -5260,7 +5260,7 @@ def create_new_widgets():
     )
 
     # Non-HOV Speed Volume (Used for Project Evaluation)
-    PNS20B_widget = widgets.IntText(
+    PNS20B_widget = widgets.FloatText(
         value=nonhov_speed_year20peak_build_modelcalc_widget.value,  # Set initially to the calculated value
         description="Non-HOV Speed (Used for Proj Evaluation):",
         disabled=True,  # Make it read-only
@@ -5309,7 +5309,7 @@ def create_new_widgets():
         total_volume = sum(volumes)
 
         if total_volume == 0:
-            nonhov_speed = 55
+            nonhov_speed = 55.0
         else:
             cap = params.roadway_capacity_non_HOV["Non-HOV Lanes"]["Build"]
             GenAlphaB = cap["GenAlphaB"]
@@ -5405,7 +5405,7 @@ def create_new_widgets():
      ####################################################################################################### 
     # HOV Speed widgets for Year 20 Peak Build
     hov_speed_year20peak_build_modelcalc_widget = widgets.FloatText(
-        value=0,  # Set initial value to 0 or any other valid integer
+        value=0.0,  # Set initial value to 0 or any other valid integer
         description="HOV Speed (Calculated by Model):",
         disabled=True,  # Make it read-only so the user cannot modify the value
         layout=common_layout,
@@ -5421,7 +5421,7 @@ def create_new_widgets():
     )
 
     # HOV Speed Volume (Used for Project Evaluation)
-    PHS20B_widget = widgets.IntText(
+    PHS20B_widget = widgets.FloatText(
         value=hov_speed_year20peak_build_modelcalc_widget.value,  # Set initially to the calculated value
         description="HOV Speed (Used for Proj Evaluation):",
         disabled=True,  # Make it read-only
@@ -5462,7 +5462,7 @@ def create_new_widgets():
         
         # === HOV speed calculation ===
         if PHV20B == 0:
-            hov_speed = 55  # If PHV20B is zero, use 55 miles/h
+            hov_speed = 55.0  # If PHV20B is zero, use 55 miles/h
         elif HOVLanesB == 0:
             hov_speed = PNS20B  # If no HOV lanes, use PNS20B
         else:
@@ -5519,7 +5519,7 @@ def create_new_widgets():
     
     # Widgets for Build Speed Calculation
     weave_speed_year20peak_build_modelcalc_widget = widgets.FloatText(
-        value=0,  # Set initial value to 0 or any other valid integer
+        value=0.0,  # Set initial value to 0 or any other valid integer
         description="Weaving Speed (Calculated by Model):",
         disabled=True,  # Make it read-only
         layout=common_layout,
@@ -5535,7 +5535,7 @@ def create_new_widgets():
     )
 
     # Non-HOV Speed Volume (Used for Project Evaluation) for Build
-    PWS20B_widget = widgets.IntText(
+    PWS20B_widget = widgets.FloatText(
         value=weave_speed_year20peak_build_modelcalc_widget.value,  # Set initially to the calculated value
         description="Weaving Speed (Used for Proj Evaluation):",
         disabled=True,  # Make it read-only
@@ -5569,7 +5569,7 @@ def create_new_widgets():
         IRI20B = projectinfo_widgets.iri_forecast_year_build_widget.value
 
         if PWV20B == 0:
-            Year20PeakBuildWeaveSpeed = 55
+            Year20PeakBuildWeaveSpeed = 55.0
 
         elif ProjType == "Auxiliary Lane":
             # Compute exponential part
@@ -5637,7 +5637,7 @@ def create_new_widgets():
     
     # Widgets for Build Truck Speed Calculation
     truck_speed_year20peak_build_modelcalc_widget = widgets.FloatText(
-        value=0,  # Set initial value to 0 or any other valid integer
+        value=0.0,  # Set initial value to 0 or any other valid integer
         description="Truck Speed (Calculated by Model):",
         disabled=True,  # Make it read-only
         layout=common_layout,
@@ -5653,7 +5653,7 @@ def create_new_widgets():
     )
 
     # Non-HOV Speed Volume (Used for Project Evaluation) for Build
-    PTS20B_widget = widgets.IntText(
+    PTS20B_widget = widgets.FloatText(
         value=truck_speed_year20peak_build_modelcalc_widget.value,  # Set initially to the calculated value
         description="Truck Speed (Used for Proj Evaluation):",
         disabled=True,  # Make it read-only
@@ -5683,7 +5683,7 @@ def create_new_widgets():
         TruckSpeed = projectinfo_widgets.truck_speed_widget.value
 
         if PTV20B == 0:
-            truck_speed_year20peak_build_modelcalc_widget.value = 55
+            truck_speed_year20peak_build_modelcalc_widget.value = 55.0
             return
 
         # Lookup adjustment values from SpeedPavAdj
@@ -6093,7 +6093,7 @@ def create_new_widgets():
      #######################################################################################################  
     # Non-HOV Speed widgets for Year 20 Non-Peak Build
     nonhov_speed_year20nonpeak_build_modelcalc_widget = widgets.FloatText(
-        value=0,  # Set initial value to 0 or any other valid integer
+        value=0.0,  # Set initial value to 0 or any other valid integer
         description="Non-HOV Speed (Calculated by Model):",
         disabled=True,  # Make it read-only so the user cannot modify the value
         layout=common_layout,
@@ -6109,7 +6109,7 @@ def create_new_widgets():
     )
 
     # Non-HOV Speed Volume (Used for Project Evaluation)
-    NNS20B_widget = widgets.IntText(
+    NNS20B_widget = widgets.FloatText(
         value=nonhov_speed_year20nonpeak_build_modelcalc_widget.value,  # Set initially to the calculated value
         description="Non-HOV Speed (Used for Proj Evaluation):",
         disabled=True,  # Make it read-only
@@ -6164,7 +6164,7 @@ def create_new_widgets():
             nonhov_speed = FFSpeedB  # No calculation needed
         else:
             if sum_all == 0:
-                nonhov_speed = 55  # Default value
+                nonhov_speed = 55.0  # Default value
             else:
                 volume_term = sum_all / ((GenLanesB + HOVLanesB) * GenLaneCapB * (24 - PeakLngthNB))
 
@@ -6243,7 +6243,7 @@ def create_new_widgets():
      #######################################################################################################     
     # Widgets for Non-Peak Weaving Speed Calculation (Non-Peak Build)
     weave_speed_year20nonpeak_build_modelcalc_widget = widgets.FloatText(
-        value=0,  # Set initial value to 0 or any other valid integer
+        value=0.0,  # Set initial value to 0 or any other valid integer
         description="Weaving Speed (Calculated by Model):",
         disabled=True,  # Make it read-only
         layout=common_layout,
@@ -6259,7 +6259,7 @@ def create_new_widgets():
     )
 
     # Non-HOV Speed Volume (Used for Project Evaluation) for Non-Peak Build
-    NWS20B_widget = widgets.IntText(
+    NWS20B_widget = widgets.FloatText(
         value=weave_speed_year20nonpeak_build_modelcalc_widget.value,  # Set initially to the calculated value
         description="Weaving Speed (Used for Proj Evaluation):",
         disabled=True,  # Make it read-only
@@ -6294,7 +6294,7 @@ def create_new_widgets():
 
         if NWV20B == 0:
             # If NWV20B is zero, use the default value of 55
-            Year20NonPeakBuildWeaveSpeed = 55
+            Year20NonPeakBuildWeaveSpeed = 55.0
         elif ProjType == "Auxiliary Lane":
             # Auxiliary Lane formula
             exponent_part = math.exp((NWV20B + NTV20B) / NumDirections / (24 - PeakLngthNB) / 1000)
@@ -6364,7 +6364,7 @@ def create_new_widgets():
         
     # Widgets for Non-Peak Truck Speed Calculation
     truck_speed_year20nonpeak_build_modelcalc_widget = widgets.FloatText(
-        value=0,  # Set initial value to 0 or any other valid integer
+        value=0.0,  # Set initial value to 0 or any other valid integer
         description="Truck Speed (Calculated by Model):",
         disabled=True,  # Make it read-only
         layout=common_layout,
@@ -6380,7 +6380,7 @@ def create_new_widgets():
     )
 
     # Non-HOV Speed Volume (Used for Project Evaluation) for Build
-    NTS20B_widget = widgets.IntText(
+    NTS20B_widget = widgets.FloatText(
         value=truck_speed_year20nonpeak_build_modelcalc_widget.value,  # Set initially to the calculated value
         description="Truck Speed (Used for Proj Evaluation):",
         disabled=True,  # Make it read-only
@@ -6418,7 +6418,7 @@ def create_new_widgets():
 
         # If NTV20B is 0, set the speed to 55
         if NTV20B == 0:
-            truck_speed_year20nonpeak_build_modelcalc_widget.value = 55
+            truck_speed_year20nonpeak_build_modelcalc_widget.value = 55.0
             return
 
         # Lookup adjustment values from SpeedPavAdj
