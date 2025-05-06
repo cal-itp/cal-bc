@@ -36,6 +36,7 @@ total_cost_widget = widgets.FloatText(
     value=1000000,
     description='Total Cost ($):',
     layout = common_layout,
+    style={'description_width': 'initial'},
     disabled=False
 )
 
@@ -43,6 +44,7 @@ total_benefit_widget = widgets.FloatText(
     value=0,
     description='Total Benefit ($):',
     layout = common_layout,
+    style={'description_width': 'initial'},
     disabled=False
 )
 
@@ -51,6 +53,7 @@ BCR_widget = widgets.FloatText(
     value=0.0,
     description='Benefit-Cost Ratio:',
     layout = common_layout,
+    style={'description_width': 'initial'},
     disabled=True
 )
 
@@ -363,7 +366,7 @@ def calculate_average_travel_time(final_trend_df):
     GateTime1 = projectinfo_widgets.GateTime1_widget.value
 
     def safe_divide(numerator, denominator):
-        return "#DIV/0!" if denominator == 0 else round(numerator / denominator, 2)
+        return "#DIV/0!" if denominator == 0 else numerator / denominator
 
     # Initialize empty columns
     final_trend_df['Avg_TravelTime_NoBuild'] = None
@@ -1010,7 +1013,6 @@ def main(change=None):
     final_trend_df = traveltime_benefit(final_trend_df)
     final_trend_df = add_dollar_calculated_column(final_trend_df)
     final_trend_df = add_discounted_value_column(final_trend_df, value_column_name='Constant Dollar', output_column_name='Present Value')
-    get_grouped_highway_results(final_trend_df)
     sum_by_year, total_value = sum_present_value_by_year(final_trend_df)
     total_benefit_widget.value = total_value
     calculate_benefit_cost_ratio(None, sum_by_year)
