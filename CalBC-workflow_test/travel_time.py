@@ -4,11 +4,27 @@ import ipywidgets as widgets
 from ipywidgets import interact
 from IPython.display import display, clear_output, HTML
 
+
+pd.set_option('display.max_columns', None)  
+pd.set_option('display.width', None)
+pd.set_option('display.expand_frame_repr', False)
+pd.set_option('display.float_format', '{:.2f}'.format)
+
+
+
+
 from parameters import parameters
 params = parameters()
 
 import projectinfo_widgets
 import modelinputs_widgets
+
+common_layout = widgets.Layout(
+    width='450px', 
+    background_color='#CCFFCC',  # Background color for all widgets
+    padding='5px',
+    border='2px solid gray'  # Border color and thickness
+)
 
 
 # Getting values used in all the functions 
@@ -19,6 +35,14 @@ variable_names = ['Avg_Vol_NoBuild', 'Avg_Vol_Build', 'Avg_Speed_NoBuild', 'Avg_
 total_cost_widget = widgets.FloatText(
     value=1000000,
     description='Total Cost ($):',
+    layout = common_layout,
+    disabled=False
+)
+
+total_benefit_widget = widgets.FloatText(
+    value=0,
+    description='Total Benefit ($):',
+    layout = common_layout,
     disabled=False
 )
 
@@ -26,12 +50,13 @@ total_cost_widget = widgets.FloatText(
 BCR_widget = widgets.FloatText(
     value=0.0,
     description='Benefit-Cost Ratio:',
+    layout = common_layout,
     disabled=True
 )
 
 
 # Display everything together
-display(widgets.VBox([total_cost_widget, BCR_widget]))
+display(widgets.VBox([total_cost_widget, total_benefit_widget, BCR_widget]))
 
 
         
@@ -149,7 +174,7 @@ def calculate_combined_average(AnnualFactor):
                     # For speed calculation
                     speed_key = f"{period[:1]}{vehicle[:1]}S{year_part}{state_part}"
                     speed_value = speed_dict.get(speed_key, 0) or 0
-                    avg_speed = speed_value * AnnualFactor
+                    avg_speed = round(speed_value, 1)
 
                     if state == 'NoBuild':
                         avg_vol_nobuild = avg_vol
@@ -911,10 +936,12 @@ def add_discounted_value_column(df, value_column_name, output_column_name):
     df[output_column_name] = df.apply(calculate_discounted_value, axis=1)
     return df
 
+ 
 
-
+sum_by_year = None 
 
 def sum_present_value_by_year(final_trend_df):
+    global sum_by_year
     # Group by 'Year' and sum 'Present Value'
     sum_by_year = final_trend_df.groupby('Year')['Present Value'].sum().reset_index()
     sum_by_year = sum_by_year.rename(columns={'Present Value': 'Total Present Value'})
@@ -933,11 +960,40 @@ def sum_present_value_by_year(final_trend_df):
 
 
 
-
-
-def calculate_benefit_cost_ratio(sum_by_year):
-    total_cost = total_cost_widget.value
     
+
+
+def get_grouped_highway_results(final_trend_df):
+
+    # Create 'Group' column if not already present
+    final_trend_df['Group'] = final_trend_df['Group'].astype(str)  # ensure string for sorting
+
+    # Define custom order for Group sorting
+    group_order = [
+        'Peak_HOV', 'Peak_NonHOV', 'Peak_Weaving', 'Peak_Truck',
+        'Peak_Ramp', 'Peak_Arterial', 'NonPeak_NonHOV', 'NonPeak_Weaving', 'NonPeak_Truck'
+    ]
+
+    # Convert to categorical for sorting
+    final_trend_df['Group'] = pd.Categorical(final_trend_df['Group'], categories=group_order, ordered=True)
+
+    # Sort DataFrame by 'Group' and optionally 'Year' for readability
+    final_trend_df.sort_values(by=['Group', 'Year'], inplace=True)
+
+    # Display grouped results
+    grouped = final_trend_df.groupby('Group')
+
+    for group_name, group_df in grouped:
+        print(f"\n--- Group: {group_name} ---")
+        print(group_df)
+        
+
+    return final_trend_df
+
+
+
+def calculate_benefit_cost_ratio(change, sum_by_year):
+    total_cost = total_cost_widget.value
 
     # Try to extract Total Travel Time Benefits
     try:
@@ -951,10 +1007,15 @@ def calculate_benefit_cost_ratio(sum_by_year):
     # Compute and assign BCR
     BCR_widget.value = total_benefit / total_cost if total_cost != 0 else float('inf')
 
-    return BCR_widget.value
+
+# Observing widget changes and passing sum_by_year
+total_cost_widget.observe(lambda change: calculate_benefit_cost_ratio(change, sum_by_year), names='value')
+total_benefit_widget.observe(lambda change: calculate_benefit_cost_ratio(change, sum_by_year), names='value')
 
 
-def main():
+
+
+def main(change=None):
     df_combined = calculate_combined_average(AnnualFactor)
     final_trend_df = generate_trends_from_dataframe(df_combined, variable_names)
     final_trend_df = calculate_person_trips_highway(final_trend_df)
@@ -962,13 +1023,13 @@ def main():
     final_trend_df = traveltime_benefit(final_trend_df)
     final_trend_df = add_dollar_calculated_column(final_trend_df)
     final_trend_df = add_discounted_value_column(final_trend_df, value_column_name='Constant Dollar', output_column_name='Present Value')
+    get_grouped_highway_results(final_trend_df)
     sum_by_year, total_value = sum_present_value_by_year(final_trend_df)
-    display(sum_by_year)
-    print("Total Travel Time Benefit ($):", total_value)
-    BCR = calculate_benefit_cost_ratio(sum_by_year)
+    total_benefit_widget.value = total_value
+    calculate_benefit_cost_ratio(None, sum_by_year)
     
     
-main()    
+main(change=None)    
 
 # List of all widgets (both for volumes and speeds)
 widget_triggers = [
