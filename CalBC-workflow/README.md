@@ -99,7 +99,7 @@ Steps:
 - Run Voila with the command: `"path to voila.exe" Running Widgets.ipynb`.
     - Replace `path to voila.exe` with the actual path. By default, `voila.exe` is typically located in:
       `C:\Users\{Your_s_number}\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\Scripts`. Replace `{Your_s_number}` with your actual s-number.
-<img src="https://github.com/cal-itp/cal-bc/tree/main/CalBC-workflow/Voila_execution.PNG" alt="Alt text" width="600" height="400">
+- Screenshot of the Voila-generated URL on localhost. <img src="https://github.com/cal-itp/cal-bc/blob/main/CalBC-workflow/Voila_execution.PNG" width="600" height="400">
 
 
 ## Data Dependency Tree

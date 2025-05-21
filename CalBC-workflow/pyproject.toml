@@ -1,0 +1,12 @@
+[project]
+name = "CalBC-workflow"
+description = "The CalBC Workflow creates a Python-based tool for Benefit-Cost Analysis (BCA) of transportation projects. This tool provides an interactive interface to input key project data using dynamic widgets and calculates various metrics such as travel time benefits, vehicle operating costs, accident costs, emission costs, and more. The interface replicates the structure of the California Benefit-Cost Analysis (CalBC) Excel model, offering a seamless transition from a static spreadsheet to an intuitive web application. The tool uses ipywidgets for dynamic input, performs calculations, and visualizes results, with a Benefit-Cost Ratio (BCR) calculation. The application can be deployed as an interactive web interface using Voila."
+readme = "README.md"
+dependencies = [
+    "pandas",        
+    "numpy",        
+    "ipywidgets",    
+    "jupyterlab",    
+    "voila",        
+    "IPython",       
+]
