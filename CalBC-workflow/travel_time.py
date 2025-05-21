@@ -31,35 +31,17 @@ common_layout = widgets.Layout(
 AnnualFactor = params.AnnualFactor
 variable_names = ['Avg_Vol_NoBuild', 'Avg_Vol_Build', 'Avg_Speed_NoBuild', 'Avg_Speed_Build']
 
-# Create the input widget for Total Cost
-total_cost_widget = widgets.FloatText(
-    value=1000000,
-    description='Total Cost ($):',
-    layout = common_layout,
-    style={'description_width': 'initial'},
-    disabled=False
-)
 
-total_benefit_widget = widgets.FloatText(
+total_tt_benefit_widget = widgets.FloatText(
     value=0,
-    description='Total Benefit ($):',
+    description='Total Travel Time Benefit ($):',
     layout = common_layout,
     style={'description_width': 'initial'},
     disabled=False
 )
-
-# Create the input widget for Total Cost
-BCR_widget = widgets.FloatText(
-    value=0.0,
-    description='Benefit-Cost Ratio:',
-    layout = common_layout,
-    style={'description_width': 'initial'},
-    disabled=True
-)
-
 
 # Display everything together
-display(widgets.VBox([total_cost_widget, total_benefit_widget, BCR_widget]))
+display(total_tt_benefit_widget)
 
 
         
@@ -950,9 +932,6 @@ def sum_present_value_by_year(final_trend_df):
 
 
 
-    
-
-
 def get_grouped_highway_results(final_trend_df):
 
     # Create 'Group' column if not already present
@@ -982,29 +961,6 @@ def get_grouped_highway_results(final_trend_df):
 
 
 
-def calculate_benefit_cost_ratio(change, sum_by_year):
-    total_cost = total_cost_widget.value
-
-    # Try to extract Total Travel Time Benefits
-    try:
-        total_benefit = sum_by_year.loc[
-            sum_by_year['Year'] == 'Total Travel Time Benefits',
-            'Total Present Value'
-        ].values[0]
-    except IndexError:
-        total_benefit = 0
-
-    # Compute and assign BCR
-    BCR_widget.value = total_benefit / total_cost if total_cost != 0 else float('inf')
-
-
-# Observing widget changes and passing sum_by_year
-total_cost_widget.observe(lambda change: calculate_benefit_cost_ratio(change, sum_by_year), names='value')
-total_benefit_widget.observe(lambda change: calculate_benefit_cost_ratio(change, sum_by_year), names='value')
-
-
-
-
 def main(change=None):
     df_combined = calculate_combined_average(AnnualFactor)
     final_trend_df = generate_trends_from_dataframe(df_combined, variable_names)
@@ -1014,8 +970,8 @@ def main(change=None):
     final_trend_df = add_dollar_calculated_column(final_trend_df)
     final_trend_df = add_discounted_value_column(final_trend_df, value_column_name='Constant Dollar', output_column_name='Present Value')
     sum_by_year, total_value = sum_present_value_by_year(final_trend_df)
-    total_benefit_widget.value = total_value
-    calculate_benefit_cost_ratio(None, sum_by_year)
+    total_tt_benefit_widget.value = total_value
+    # calculate_benefit_cost_ratio(None, sum_by_year)
     
     
 main(change=None)    
