@@ -40,15 +40,15 @@ To translate the CalBC Excel model into an interactive widget-based interface, f
     - If a cell contains a formula, replicate its logic in Python using standard functions like if, and, or, etc.
     - Dependencies differ by sheet:
                 In `projectinfo_widgets.py`, most calculated fields rely on constants from `parameters.py` and values from widgets created within the same sheet.
-                In `modelinputs_widgets.py`, calculations may depend on a combination of: `Constants` from `parameters.py`, `Inputs` from `projectinfo_widgets.py` or widgets defined in the same Model Inputs section
+                In `modelinputs_widgets.py`, calculations may depend on a combination of: `Constants` from `parameters.py`, `Inputs` from `projectinfo_widgets.py` or widgets defined in the same Model Inputs section.
     - Carefully map out which variables a formula depends on using Excel’s `Name Manager` `(Formulas > Name Manager)` or trace precedents within the sheet.
     
 4. Use `.observe()` to Dynamically Update Calculated Fields
     - If your widget’s value is calculated based on others, use `.observe()` to set up reactive behavior.
 
 5. Group Related Widgets with HBox or VBox
-    - After creating individual widgets, use HBox to group widgets that should appear in the same row/section.
-    - VBox is used at the end to define the vertical layout and control the order in which groups of widgets are displayed on the interface.
+    - After creating individual widgets, use `HBox` to group widgets that should appear in the same row/section.
+    - `VBox` is used at the end to define the vertical layout and control the order in which groups of widgets are displayed on the interface.
     
 6. Update `widgets_helper.py`
 In this step, we define descriptive information that is used to label and explain the various input fields and widgets across the user interface. This information ensures that the labels, tooltips, and help texts are consistent and informative.
@@ -77,22 +77,22 @@ Steps:
 - Create a function that calculates the `Average Volume` and `Average Speed` for Year 1 and Year 20 based on values from the imported modules (`modelinputs_widgets`). This should use a volume_dict and speed_dict to map the required values for each scenario (e.g., PHV1NB, PNV1B, etc.).Example Function : `{travel_time.py calculate_combined_average()}`. Note: Safety metric doesn't use `Average Speed`. 
 - Once the values for Year 1 and Year 20 are calculated, create a separate function to interpolate the values for the intermediate years (e.g., Year 2 to Year 19). You can use linear interpolation here to fill in the values between Year 1 and Year 20. Example function: `{travel_time.py calculate_trend_for_variables()}`
 - Continue developing functions for the remaining intermediate columns to calculate highway travel time benefits. Then, apply the same approach to calculate transit benefits. Finally, calculate the overall travel time benefits by summing the highway and transit benefits.
-- Create the main function to execute all necessary steps for calculating the travel time benefits, and set the widget value to the computed metric benefit value, ensuring that the total value is displayed in the widget created earlier. Example function: `{travel_time.py main()}`
+- Create the main function to execute all necessary steps for calculating the travel time benefits, and set the widget value to the computed metric benefit value, ensuring that the total value is displayed in the widget created earlier. Example function: `{travel_time.py main()}`.
 - Create a list of all relevant widgets (both for volumes and speeds), and attach an observer to each widget to trigger the main function whenever the widget value changes.
 
 
 ## Add Metric Benefits to BCA calculation
-- Now that we have the metric benefit value, import the corresponding metric benefit widget into `BCA.py` and add it to the `benefit_widgets` list. {Line 16 and Line 60}
+- Now that we have the metric benefit value, import the corresponding metric benefit widget into `BCA.py` and add it to the `benefit_widgets` list. {Line 16 and Line 60}.
 
 
-## Run `Running Widgets.ipynb`
+## Run Running Widgets.ipynb
 - Open `Running Widgets.ipynb`.
 - Start by restarting the kernel to clear any previous variables or imports, ensuring you begin with a clean environment.
 - Import any additional metrics or widgets you've created in the notebook (e.g., safety, emissions, etc.), ensuring all necessary components are ready for execution.
 - Run all cells to initialize the widgets and calculations. Once completed, the notebook is ready to be launched in `Voila` for interactive use.
 
 
-## Execute `Voila`
+## Execute Voila
 `Voila` is a tool that allows you to turn Jupyter Notebooks into interactive web applications, removing code cells and only displaying the output and widgets to the user. It enables a user-friendly interface where inputs can be modified and results updated dynamically. As of now Voila can only be run from your local machine's terminal, as JupyterHub does not support this feature. 
 - To get started, install `Voila` by running `pip install voila` in your terminal.
 - Navigate to the folder containing `Running Widgets.ipynb` by using the `cd (change directory)` command in your terminal.
@@ -101,6 +101,37 @@ Steps:
       `C:\Users\{Your_s_number}\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\Scripts`. Replace `{Your_s_number}` with your actual s-number.
 
 
+
+## Data Dependency Tree
+```
+parameters.py
+    ├── Contains USDOT BCA guidelines values
+    ├── Contains other data like data from Bureau of Labor Statistics, Caltrans etc.
+    
+projectinfo_widgets.py
+    ├── Uses: Constants from Parameters.py
+    └── Uses Own Widgets values
+    
+modelinputs_widgets.py
+    ├── Uses: Constants from Parameters.py
+    ├── Uses: Widgets values from projectinfo_widgets.py
+    └── Own Widgets values
+    
+travel_time.py
+    ├── Uses: Parameters.py
+    ├── Uses: Widgets values from projectinfo_widgets.py
+    ├── Uses: Widgets values from modelinputs_widgets.py
+    └── Uses Own Calculated Values
+    
+BCA.py
+    ├── Uses: travel_time.py
+    
+Running Widgets.ipynb
+    ├── Displays : Widgets from projectinfo_widgets.py
+    ├── Displays : Widgets from modelinputs_widgets.py
+    ├── Displays : Widgets from travel_time.py
+    ├── Displays : Widgets from BCA.py    
+```
 
 
 
