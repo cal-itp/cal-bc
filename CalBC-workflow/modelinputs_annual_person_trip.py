@@ -3,6 +3,8 @@
 # name for total trips: Is it for nonpeak only? Should we add nonpeak into the names?
 ################################################################################
 ""
+### Year 1 Peak ###
+######################################### HOV Trips #######################################
     HOVtrips_year1_nobuild_peak_widget = widgets.IntText(
         value=0,
         description="HOV Annual Person Trips (No Build):",
@@ -21,7 +23,34 @@
     
     # Combine the widgets into layout for display 
     Annual_person_trips_year1_peak_HOV_widgets = widgets.HBox([HOVtrips_year1_nobuild_peak_widget, HOVtrips_year1_build_peak_widget])
-##########################################################################################
+########### function to update HOV Trips No Build ###############
+def update_annualpersontrip_yr1_peak_HOVtrips_nobuild(change):
+    PeakLngthNB = projectinfo_widgets.peak_period_widget.value
+    HOVvolNB = projectinfo_widgets.HOV_lane_nobuild_widget.value
+    AVOHovNB = projectinfo_widgets.AVOHovNB_widget.value
+    AnnualFactor = params.AnnualFactor
+    annualpersontrip_yr1_peak_HOVtrips_nobuild = PeakLngthNB*HOVvolNB*AVOHovNB*AnnualFactor
+    HOVtrips_year1_nobuild_peak_widget.value = annualpersontrip_yr1_peak_HOVtrips_nobuild
+######### observe and update value to changes in user-modified value #########
+projectinfo_widgets.peak_period_widget.observe(update_annualpersontrip_yr1_peak_HOVtrips_nobuild, names='value')
+projectinfo_widgets.HOV_lane_nobuild_widget.observe(update_annualpersontrip_yr1_peak_HOVtrips_nobuild, names='value')
+projectinfo_widgets.AVOHovNB_widget.observe(update_annualpersontrip_yr1_peak_HOVtrips_nobuild, names='value')
+
+########### function to update HOV Trips Build ###############
+def update_annualpersontrip_yr1_peak_HOVtrips_build(change):
+    PeakLngthNB = projectinfo_widgets.peak_period_widget.value
+    HOVvolB = projectinfo_widgets.HOV_lane_build_widget.value
+    AVOHovB = projectinfo_widgets.AVOHovB_widget.value
+    AnnualFactor = params.AnnualFactor
+    annualpersontrip_yr1_peak_HOVtrips_build = PeakLngthNB*HOVvolB*AVOHovB*AnnualFactor
+    HOVtrips_year1_build_peak_widget.value = annual_persontrip_year1_peak_HOVtrips_build
+############# observe and update value to changes in user-modified value #################
+projectinfo_widgets.peak_period_widget.observe(update_annualpersontrip_yr1_peak_HOVtrips_build, names='value')
+projectinfo_widgets.HOV_lane_build_widget.observe(update_annualpersontrip_yr1_peak_HOVtrips_build, names='value')
+projectinfo_widgets.AVOHovB_widget.observe(update_annualpersontrip_yr1_peak_HOVtrips_build, names='value')
+
+### Year 1 Peak ###
+########################################## NonHOV Trips ################################################
     NonHOVtrips_year1_nobuild_peak_widget = widgets.IntText(
         value=0,
         description="Non-HOV Annual Person Trips (No Build):",
@@ -48,7 +77,9 @@
     
     # Combine the widgets into layout for display 
     Annual_person_trips_year1_peak_NonHOV_widgets = widgets.HBox([NonHOVtrips_year1_nobuild_peak_widget, NonHOVtrips_year1_build_peak_widget, PNT1Ind_widget])
-######################################################################################
+
+### Year 1 Peak ###
+######################################### Truck Trips #############################################
     TruckTrips_year1_nobuild_peak_widget = widgets.IntText(
         value=0,
         description="Truck Annual Trips (No Build):",
@@ -78,6 +109,10 @@
 ################################################################################################
 # add nonpeak to names of widgets
 ################################################################################################
+
+### Year 1 NonPeak ###
+########################################## NonHOV Trips ################################################
+########################################################################################################
     NonHOVtrips_year1_nobuild_nonpeak_widget = widgets.IntText(
         value=0,
         description="Non-HOV Annual Person Trips (No Build):",
@@ -104,7 +139,9 @@
     
     # Combine the widgets into layout for display 
     Annual_person_trips_year1_nonpeak_nonHOV_widgets = widgets.HBox([NonHOVtrips_year1_nobuild_widget, NonHOVtrips_year1_build_widget, NNT1Ind_widget])
-####################################################################################
+    
+### Year 1 NonPeak ###
+########################################## Truck Trips ################################################
     TruckTrips_year1_nobuild_nonpeak_widget = widgets.IntText(
         value=0,
         description="Truck Annual Trips (No Build):",
@@ -131,6 +168,8 @@
     
     # Combine the widgets into layout for display 
     Annual_person_trips_year1_nonpeak_Truck_widgets = widgets.HBox([TruckTrips_year1_nobuild_widget, TruckTrips_year1_build_widget, NTT1Ind_widget])
+
+### Year 1 Total Trips ###
 ######################################################################################
 ######################################################################################
     TotalTrips_year1_nobuild_widget = widgets.IntText(
@@ -163,6 +202,9 @@
 ##########################################################################################
 ##########################################################################################
 ##########################################################################################
+
+### Year 20 Peak ###
+######################################### HOV Trips #######################################
     HOVtrips_year20_nobuild_peak_widget = widgets.IntText(
         value=0,
         description="HOV Annual Person Trips (No Build):",
@@ -181,7 +223,9 @@
 
     # Combine the widgets into layout for display 
     Annual_person_trips_year20_peak_HOV_widgets = widgets.HBox([HOVtrips_year20_nobuild_peak_widget, HOVtrips_year20_build_peak_widget])
-#############################################################################################
+    
+### Year 20 Peak ###
+######################################### NonHOV Trips #######################################
     NonHOVtrips_year20_nobuild_peak_widget = widgets.IntText(
         value=0,
         description="Non-HOV Annual Person Trips (No Build):",
@@ -208,7 +252,9 @@
 
     # Combine the widgets into layout for display 
     Annual_person_trips_year20_peak_NonHOV_widgets = widgets.HBox([NonHOVtrips_year20_nobuild_peak_widget, NonHOVtrips_year20_build_peak_widget, PNT20Ind_widget])
-###############################################################################################
+
+### Year 20 Peak ###
+######################################### Truck Trips #######################################
     TruckTrips_year20_nobuild_peak_widget = widgets.IntText(
         value=0,
         description="Truck Annual Trips (No Build):",
@@ -235,7 +281,9 @@
 
     # Combine the widgets into layout for display 
     Annual_person_trips_year20_peak_Truck_widgets = widgets.HBox([TruckTrips_year20_nobuild_peak_widget, TruckTrips_year20_build_peak_widget, PTT20Ind_widget])
-#################################################################################################
+    
+### Year 20 NonPeak ###
+######################################### NonHOV Trips #######################################
 #################################################################################################
     NonHOVtrips_year20_nobuild_nonpeak_widget = widgets.IntText(
         value=0,
@@ -263,7 +311,9 @@
 
     # Combine the widgets into layout for display 
     Annual_person_trips_year20_nonpeak_nonHOV_widgets = widgets.HBox([NonHOVtrips_year20_nobuild_widget, NonHOVtrips_year20_build_widget, NNT20Ind_widget])
-###########################################################################################
+    
+### Year 20 nonPeak ###
+######################################### Truck Trips #######################################
     TruckTrips_year20_nobuild_nonpeak_widget = widgets.IntText(
         value=0,
         description="Truck Annual Trips (No Build):",
@@ -290,6 +340,8 @@
 
     # Combine the widgets into layout for display 
     Annual_person_trips_year20_nonpeak_Truck_widgets = widgets.HBox([TruckTrips_year20_nobuild_widget, TruckTrips_year20_build_widget, NTT20Ind_widget])
+
+### Year 20 Total Trips ###
 ######################################################################################################
 ######################################################################################################
     TotalTrips_year20_nobuild_widget = widgets.IntText(
@@ -320,11 +372,12 @@
     Annual_person_trips_year20_nonpeak_TotalTrips_widgets = widgets.HBox([TotalTrips_year20_nobuild_widget, TotalTrips_year20_build_widget, TotalTrips_year20_induced_widget])
 
     
-    
-    
-    
-    
-    
+#########################################################
+#########################################################
+#########################################################
+#########################################################
+#########################################################
+
     
     
     
