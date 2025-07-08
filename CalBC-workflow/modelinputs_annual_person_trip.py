@@ -44,6 +44,7 @@ def update_annualpersontrip_yr1_peak_HOVtrips_build(change):
     AnnualFactor = params.AnnualFactor
     annualpersontrip_yr1_peak_HOVtrips_build = PeakLngthNB*HOVvolB*AVOHovB*AnnualFactor
     HOVtrips_year1_build_peak_widget.value = annual_persontrip_year1_peak_HOVtrips_build
+    
 ############# observe and update value to changes in user-modified value #################
 projectinfo_widgets.peak_period_widget.observe(update_annualpersontrip_yr1_peak_HOVtrips_build, names='value')
 projectinfo_widgets.HOV_lane_build_widget.observe(update_annualpersontrip_yr1_peak_HOVtrips_build, names='value')
@@ -77,6 +78,46 @@ projectinfo_widgets.AVOHovB_widget.observe(update_annualpersontrip_yr1_peak_HOVt
     
     # Combine the widgets into layout for display 
     Annual_person_trips_year1_peak_NonHOV_widgets = widgets.HBox([NonHOVtrips_year1_nobuild_peak_widget, NonHOVtrips_year1_build_peak_widget, PNT1Ind_widget])
+########### function to update Non-HOV Trips No Build ###############
+def update_annualpersontrip_yr1_peak_NonHOVtrips_nobuild(change):
+    ProjType = projectinfo_widgets.subcategory_dropdown.value
+    PerPeakADT = params.per_peak_adt
+    ADT1NB = projectinfo_widgets.adt_base_year_no_build_widget.value
+    PerTruckNB =  projectinfo_widgets.percent_trucks_nobuild_widget.value
+    PeakLngthNB = projectinfo_widgets.peak_period_widget.value
+    HOVvolNB = projectinfo_widgets.HOV_lane_nobuild_widget.value
+    RampVolP =  projectinfo_widgets.hourly_ramp_volume_peak_widget.value
+    AVOPeakNB = projectinfo_widgets.AVO_traffic_P_no_build_widget.value
+    AnnualFactor = params.AnnualFactor
+    if ProjType == "Auxiliary Lane":
+                x = RampVolP*PeakLngthNB
+            else:
+                x = 0
+    annualpersontrip_yr1_peak_NonHOVtrips_nobuild = (PerPeakADT*ADT1NB*(1-PerTruckNB)-PeakLngthNB*HOVvolNB+x)*AVOPeakNB*AnnualFactor
+    NonHOVtrips_year1_nobuild_peak_widget.value = annualpersontrip_yr1_peak_NonHOVtrips_nobuild
+######### observe and update value to changes in user-modified value #########
+projectinfo_widgets.projectinfo_widgets.subcategory_dropdown.observe(update_annualpersontrip_yr1_peak_NonHOVtrips_nobuild, names='value')
+projectinfo_widgets.adt_base_year_no_build_widget.observe(update_annualpersontrip_yr1_peak_NonHOVtrips_nobuild, names='value')
+projectinfo_widgets.percent_trucks_nobuild_widget.observe(update_annualpersontrip_yr1_peak_NonHOVtrips_nobuild, names='value')
+projectinfo_widgets.peak_period_widget.observe(update_annualpersontrip_yr1_peak_NonHOVtrips_nobuild, names='value')
+projectinfo_widgets.HOV_lane_nobuild_widget.observe(update_annualpersontrip_yr1_peak_NonHOVtrips_nobuild, names='value')
+projectinfo_widgets.hourly_ramp_volume_peak_widget.observe(update_annualpersontrip_yr1_peak_NonHOVtrips_nobuild, names='value')
+projectinfo_widgets.AVO_traffic_P_no_build_widget.observe(update_annualpersontrip_yr1_peak_NonHOVtrips_nobuild, names='value')
+
+########### function to update Non-HOV Trips Build ###############
+def update_annualpersontrip_yr1_peak_NONHOVtrips_build(change):
+    PeakLngthNB = projectinfo_widgets.peak_period_widget.value
+    HOVvolB = projectinfo_widgets.HOV_lane_build_widget.value
+    AVOHovB = projectinfo_widgets.AVOHovB_widget.value
+    AnnualFactor = params.AnnualFactor
+    annualpersontrip_yr1_peak_HOVtrips_build = PeakLngthNB*HOVvolB*AVOHovB*AnnualFactor
+    HOVtrips_year1_build_peak_widget.value = annual_persontrip_year1_peak_HOVtrips_build
+    
+############# observe and update value to changes in user-modified value #################
+projectinfo_widgets.peak_period_widget.observe(update_annualpersontrip_yr1_peak_HOVtrips_build, names='value')
+projectinfo_widgets.HOV_lane_build_widget.observe(update_annualpersontrip_yr1_peak_HOVtrips_build, names='value')
+projectinfo_widgets.AVOHovB_widget.observe(update_annualpersontrip_yr1_peak_HOVtrips_build, names='value')
+
 
 ### Year 1 Peak ###
 ######################################### Truck Trips #############################################
