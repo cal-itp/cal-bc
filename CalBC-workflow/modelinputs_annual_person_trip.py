@@ -96,7 +96,7 @@ def update_annualpersontrip_yr1_peak_NonHOVtrips_nobuild(change):
     annualpersontrip_yr1_peak_NonHOVtrips_nobuild = (PerPeakADT*ADT1NB*(1-PerTruckNB)-PeakLngthNB*HOVvolNB+x)*AVOPeakNB*AnnualFactor
     NonHOVtrips_year1_nobuild_peak_widget.value = annualpersontrip_yr1_peak_NonHOVtrips_nobuild
 ######### observe and update value to changes in user-modified value #########
-projectinfo_widgets.projectinfo_widgets.subcategory_dropdown.observe(update_annualpersontrip_yr1_peak_NonHOVtrips_nobuild, names='value')
+projectinfo_widgets.subcategory_dropdown.observe(update_annualpersontrip_yr1_peak_NonHOVtrips_nobuild, names='value')
 projectinfo_widgets.adt_base_year_no_build_widget.observe(update_annualpersontrip_yr1_peak_NonHOVtrips_nobuild, names='value')
 projectinfo_widgets.percent_trucks_nobuild_widget.observe(update_annualpersontrip_yr1_peak_NonHOVtrips_nobuild, names='value')
 projectinfo_widgets.peak_period_widget.observe(update_annualpersontrip_yr1_peak_NonHOVtrips_nobuild, names='value')
@@ -105,19 +105,30 @@ projectinfo_widgets.hourly_ramp_volume_peak_widget.observe(update_annualpersontr
 projectinfo_widgets.AVO_traffic_P_no_build_widget.observe(update_annualpersontrip_yr1_peak_NonHOVtrips_nobuild, names='value')
 
 ########### function to update Non-HOV Trips Build ###############
-def update_annualpersontrip_yr1_peak_NONHOVtrips_build(change):
+def update_annualpersontrip_yr1_peak_NonHOVtrips_build(change):
+    ProjType = projectinfo_widgets.subcategory_dropdown.value
+    PerPeakADT = params.per_peak_adt
+    ADT1B = projectinfo_widgets.adt_base_year_build_widget.value
+    PerTruckB = projectinfo_widgets.percent_trucks_build_widget.value
     PeakLngthNB = projectinfo_widgets.peak_period_widget.value
     HOVvolB = projectinfo_widgets.HOV_lane_build_widget.value
-    AVOHovB = projectinfo_widgets.AVOHovB_widget.value
+    RampVolP =  projectinfo_widgets.hourly_ramp_volume_peak_widget.value
+    AVOPeakB = projectinfo_widgets.AVO_traffic_P_build_widget.value
     AnnualFactor = params.AnnualFactor
-    annualpersontrip_yr1_peak_HOVtrips_build = PeakLngthNB*HOVvolB*AVOHovB*AnnualFactor
-    HOVtrips_year1_build_peak_widget.value = annual_persontrip_year1_peak_HOVtrips_build
-    
-############# observe and update value to changes in user-modified value #################
-projectinfo_widgets.peak_period_widget.observe(update_annualpersontrip_yr1_peak_HOVtrips_build, names='value')
-projectinfo_widgets.HOV_lane_build_widget.observe(update_annualpersontrip_yr1_peak_HOVtrips_build, names='value')
-projectinfo_widgets.AVOHovB_widget.observe(update_annualpersontrip_yr1_peak_HOVtrips_build, names='value')
-
+    if ProjType == "Auxiliary Lane":
+                x = RampVolP*PeakLngthNB
+            else:
+                x = 0
+    annualpersontrip_yr1_peak_NonHOVtrips_build = (PerPeakADT*ADT1B*(1-PerTruckB)-PeakLngthNB*HOVvolB+x)*AVOPeakB*AnnualFactor
+    NonHOVtrips_year1_build_peak_widget.value = annualpersontrip_yr1_peak_NonHOVtrips_build
+######### observe and update value to changes in user-modified value #########
+projectinfo_widgets.subcategory_dropdown.observe(update_annualpersontrip_yr1_peak_NonHOVtrips_build, names='value')
+projectinfo_widgets.adt_base_year_build_widget.observe(update_annualpersontrip_yr1_peak_NonHOVtrips_build, names='value')
+projectinfo_widgets.percent_trucks_build_widget.observe(update_annualpersontrip_yr1_peak_NonHOVtrips_build, names='value')
+projectinfo_widgets.peak_period_widget.observe(update_annualpersontrip_yr1_peak_NonHOVtrips_build, names='value')
+projectinfo_widgets.HOV_lane_build_widget.observe(update_annualpersontrip_yr1_peak_NonHOVtrips_build, names='value')
+projectinfo_widgets.hourly_ramp_volume_peak_widget.observe(update_annualpersontrip_yr1_peak_NonHOVtrips_build, names='value')
+projectinfo_widgets.AVO_traffic_P_build_widget.observe(update_annualpersontrip_yr1_peak_NonHOVtrips_build, names='value')
 
 ### Year 1 Peak ###
 ######################################### Truck Trips #############################################
@@ -653,9 +664,6 @@ projectinfo_widgets.AVOHovB_widget.observe(update_annualpersontrip_yr1_peak_HOVt
 
     
     display(all_sections)
-    
-    
-    
     
     
     
