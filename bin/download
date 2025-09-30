@@ -1,0 +1,6 @@
+#!/bin/sh
+
+SKETCH_FILENAME=cal-bc-8-1-sketch-a11y.xlsm
+SKETCH_URL=https://dot.ca.gov/-/media/dot-media/programs/transportation-planning/documents/new-state-planning/transportation-economics/cal-bc/2023-cal-bc/2023-non-federal-model
+
+curl -o $SKETCH_FILENAME "${SKETCH_URL}/${SKETCH_FILENAME}"
