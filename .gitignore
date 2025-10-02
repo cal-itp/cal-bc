@@ -120,7 +120,6 @@ ipython_config.py
 # PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
 __pypackages__/
 
-<<<<<<< Updated upstream
 # Celery stuff
 celerybeat-schedule
 celerybeat.pid
@@ -152,6 +151,9 @@ venv.bak/
 .dmypy.json
 dmypy.json
 
+# ruff
+.ruff_cache/
+
 # Pyre type checker
 .pyre/
 
@@ -170,8 +172,7 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
-=======
+
 ~$*
 /*.json
 /*.xls*
->>>>>>> Stashed changes

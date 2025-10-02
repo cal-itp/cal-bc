@@ -1,12 +1,11 @@
 import logging
 import pytest
 import openpyxl
-import os
 
 from xlcalculator import Evaluator, Model, ModelCompiler
-from calbc import functions
 
 logging.basicConfig(level=logging.DEBUG)
+
 
 class CellValueWriter:
     def __init__(self, workbook: openpyxl.Workbook) -> None:
@@ -15,12 +14,16 @@ class CellValueWriter:
     def write(self, cell_address: str, new_value: any) -> None:
         if cell_address in self.workbook.defined_names:
             reference = self.workbook.defined_names[cell_address]
-            destinations = [(sheet, value.replace("$", "")) for (sheet, value) in reference.destinations]
+            destinations = [
+                (sheet, value.replace("$", ""))
+                for (sheet, value) in reference.destinations
+            ]
             sheet, cell = destinations[0]
         else:
             sheet, cell = cell_address.split("!")
 
         self.workbook[sheet][cell].value = new_value
+
 
 class TestCalculation:
     @pytest.fixture

@@ -7,13 +7,28 @@ jobs:
     name: Run tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v5
-      - uses: abatilo/actions-poetry@v3
-      - uses: actions/cache@v3
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          path: ~/.cache/pypoetry/virtualenvs
-          key: poetry-cache-${{ runner.os }}
-      - run: bin/download
-      - run: poetry install
-      - run: poetry run pytest
+          python-version-file: .python-version
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: 0.8.22
+          enable-cache: true
+
+      - name: Download cal-bc files
+        run: bin/download
+
+      - name: Install the project
+        run: uv sync --locked --all-extras --dev
+
+      - name: Check format
+        uses: astral-sh/ruff-action@v3
+
+      - name: Run tests
+        run: uv run pytest tests

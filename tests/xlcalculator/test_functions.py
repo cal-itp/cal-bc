@@ -1,6 +1,6 @@
 import pytest
 
-from calbc.functions import TREND
+from cal_bc.functions import TREND
 from xlcalculator.xlfunctions.xl import func_xltypes
 
 
@@ -21,7 +21,7 @@ class TestFunctions:
         self,
         known_ys: func_xltypes.Array,
         known_xs: func_xltypes.Array,
-        new_xs: func_xltypes.Array
+        new_xs: func_xltypes.Array,
     ) -> None:
         trend = TREND(known_xs, known_ys, new_xs)
         assert isinstance(trend, func_xltypes.Array)
@@ -31,7 +31,7 @@ class TestFunctions:
         self,
         known_ys: func_xltypes.Array,
         known_xs: func_xltypes.Array,
-        new_xs: func_xltypes.Array
+        new_xs: func_xltypes.Array,
     ) -> None:
         trend = TREND(known_xs, known_ys, 3.0)
         assert isinstance(trend, float)
