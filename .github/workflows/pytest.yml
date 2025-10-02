@@ -1,0 +1,14 @@
+name: Pytest
+
+on: [push]
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+      - uses: abatilo/actions-poetry@v3
+      - run: poetry install
+      - run: poetry run pytest
