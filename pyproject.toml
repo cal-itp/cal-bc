@@ -8,6 +8,7 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "xlcalculator @ git+https://github.com/cal-itp/xlcalculator@mov/caltrans-calculations"
 ]
 
 [tool.poetry]
@@ -16,7 +17,6 @@ packages = [{include = "calbc", from = "src"}]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.1"
-xlcalculator = {path = "../xlcalculator", develop = true}
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
