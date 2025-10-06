@@ -1,6 +1,6 @@
 import openpyxl
 from xlcalculator import Evaluator, ModelCompiler, Model
-import cal_bc_calculator.functions # noqa: F401
+import cal_bc_calculator.functions  # noqa: F401
 
 
 class CellValueWriter:

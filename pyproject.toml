@@ -5,7 +5,10 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "django>=5.2.7",
     "platformdirs>=4.4.0",
+    "pytest-django>=4.11.1",
+    "pytest-playwright>=0.7.1",
     "tqdm>=4.67.1",
     "typer>=0.19.2",
     "xlcalculator",
@@ -22,3 +25,6 @@ dev = [
 
 [tool.uv]
 package = true
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "cal_bc.settings"
