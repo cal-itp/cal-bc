@@ -5,6 +5,9 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "platformdirs>=4.4.0",
+    "tqdm>=4.67.1",
+    "typer>=0.19.2",
     "xlcalculator",
 ]
 
