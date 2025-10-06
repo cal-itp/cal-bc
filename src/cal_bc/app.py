@@ -2,8 +2,7 @@ import os
 import typer
 
 from platformdirs import user_cache_dir
-from typing import List, Optional
-from typing_extensions import Annotated
+from typing_extensions import Annotated, List
 
 from cal_bc.calculator import Calculator
 from cal_bc.downloader import Downloader, VERSIONS

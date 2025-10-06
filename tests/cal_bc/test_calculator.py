@@ -3,7 +3,7 @@ import logging
 import pathlib
 import pytest
 
-from xlcalculator import Evaluator, Model, ModelCompiler
+from xlcalculator import Evaluator
 
 from cal_bc.calculator import Calculator
 from cal_bc.downloader import Downloader
@@ -92,8 +92,6 @@ class TestCalculation:
             "1) Project Information!Y19": 10_000,
             "1) Project Information!Y20": 10_000,
             "1) Project Information!Z24": 10,
-            "1) Project Information!Z25": 10,
-            "1) Project Information!Z26": 10,
             "1) Project Information!Z25": 10,
             "1) Project Information!Z26": 10,
             "1) Project Information!Z27": 10,

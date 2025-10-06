@@ -1,6 +1,6 @@
 import openpyxl
-from xlcalculator import Evaluator, Model, ModelCompiler
-import cal_bc.functions
+from xlcalculator import Evaluator, ModelCompiler, Model
+import cal_bc.functions # noqa: F401
 
 
 class CellValueWriter:
@@ -43,5 +43,7 @@ class Calculator:
 
     def compile(self) -> Evaluator:
         compiler = ModelCompiler()
-        model = compiler.read_and_parse_archive(self.input_filename, build_code=True)
+        model: Model = compiler.read_and_parse_archive(
+            self.input_filename, build_code=True
+        )
         return Evaluator(model)
