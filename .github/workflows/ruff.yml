@@ -1,10 +1,10 @@
-name: Pytest
+name: Ruff
 
 on: [push]
 
 jobs:
-  test:
-    name: Run tests
+  lint:
+    name: Run linter
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -21,11 +21,5 @@ jobs:
           version: 0.8.22
           enable-cache: true
 
-      - name: Download cal-bc files
-        run: bin/download
-
-      - name: Install the project
-        run: uv sync --locked --all-extras --dev
-
-      - name: Run tests
-        run: uv run pytest tests
+      - name: Check format
+        uses: astral-sh/ruff-action@v3
