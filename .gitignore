@@ -179,3 +179,7 @@ cython_debug/
 # Excel files
 ~$*
 /*.xls*
+
+# Django Tailwind CLI
+src/.django_tailwind_cli
+tailwind.css

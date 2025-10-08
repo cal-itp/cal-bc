@@ -38,7 +38,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_tailwind_cli",
 ]
+
+STATICFILES_DIRS = [BASE_DIR / "assets"]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

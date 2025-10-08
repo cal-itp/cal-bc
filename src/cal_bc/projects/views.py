@@ -2,6 +2,6 @@ from django.http import HttpResponse
 from django.shortcuts import render
 
 
-def index(request) -> HttpResponse:
+def landings_index(request) -> HttpResponse:
     context = {}
-    return render(request, "projects/index.html", context)
+    return render(request, "landings/index.html", context)
