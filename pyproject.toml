@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "dj-svg>=0.3.1",
     "django>=5.2.7",
     "django-tailwind-cli>=4.4.2",
     "grafana-django-saml2-auth>=3.20.0",

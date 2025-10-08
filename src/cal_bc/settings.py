@@ -46,9 +46,12 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_tailwind_cli",
     "django_saml2_auth",
+    "dj_svg",
 ]
 
 STATICFILES_DIRS = [BASE_DIR / "assets"]
+
+SVG_DIRS = [BASE_DIR / "assets"]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
