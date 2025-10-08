@@ -16,9 +16,13 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
+import django_saml2_auth.views
 
 urlpatterns = [
+    re_path(r"^sso/", include("django_saml2_auth.urls")),
+    re_path(r"^admin/login/$", django_saml2_auth.views.signin),
+    re_path(r"^accounts/login/$", django_saml2_auth.views.signin),
     path("admin/", admin.site.urls),
-    path("", include("cal_bc.projects.urls")),
+    path("", include("cal_bc.projects.urls"), name="landing"),
 ]

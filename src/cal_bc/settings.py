@@ -1,3 +1,9 @@
+import os
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
 """
 Django settings for cal_bc project.
 
@@ -39,6 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_tailwind_cli",
+    "django_saml2_auth",
 ]
 
 STATICFILES_DIRS = [BASE_DIR / "assets"]
@@ -126,3 +133,9 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 TEST_RUNNER = "pytest_django.runner.TestRunner"
+
+SAML2_AUTH = {
+    "METADATA_AUTO_CONF_URL": os.getenv("SAML2_AUTH__METADATA_AUTO_CONF_URL"),
+    "ENTITY_ID": os.getenv("SAML2_AUTH__ENTITY_ID"),
+    "AUTHN_REQUESTS_SIGNED": False,
+}
