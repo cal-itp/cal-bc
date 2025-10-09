@@ -21,9 +21,6 @@ jobs:
           version: 0.8.22
           enable-cache: true
 
-      - name: Download cal-bc files
-        run: bin/download
-
       - name: Install the project
         run: uv sync --locked --all-extras --dev
 
