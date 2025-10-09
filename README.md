@@ -42,6 +42,27 @@ $ uv run manage.py runserver
 Now, visit the server at [http://localhost:8000](http://localhost:8000).
 
 
+### Running tests
+
+In order to run tests, you will need to ensure that [Playwright](https://playwright.dev) is installed:
+
+```bash
+$ uv run playwright install
+```
+
+Now, run the tests:
+
+```bash
+$ uv run manage.py test
+```
+
+> Note: you can run only the web application tests using:
+>
+> ```bash
+> $ uv run manage.py test tests/cal_bc
+> ```
+
+
 ## License
 
 This tool is licensed under the terms of the GNU Affero General Public License.
