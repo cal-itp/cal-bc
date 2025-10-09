@@ -16,6 +16,8 @@ class TestProjects(StaticLiveServerTestCase):
     def test_projects(self):
         self.page.goto(f"{self.live_server_url}/")
         self.page.wait_for_selector("text=Cal B/C")
-        self.page.click("text=Sign in with Microsoft")
-        assert self.page.is_visible("text=Logout")
+        self.page.get_by_role("link", name="Sign in with Microsoft").click()
+        self.page.wait_for_selector("text=Projects")
+        self.page.get_by_role("button", name="Sign out").click()
+        assert self.page.get_by_role("link", name="Sign in with Microsoft")
         self.page.close()

@@ -1,6 +1,7 @@
 import os
 
 from dotenv import load_dotenv
+from pathlib import Path
 
 load_dotenv()
 
@@ -16,7 +17,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_tailwind_cli",
-    "django_saml2_auth",
+    "azure_auth",
     "dj_svg",
 ]
 
@@ -137,11 +137,21 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 TEST_RUNNER = "pytest_django.runner.TestRunner"
 
-SAML2_AUTH = {
-    "METADATA_AUTO_CONF_URL": os.getenv("SAML2_AUTH__METADATA_AUTO_CONF_URL"),
-    "ENTITY_ID": os.getenv("SAML2_AUTH__ENTITY_ID"),
-    "AUTHN_REQUESTS_SIGNED": False,
-    "WANT_ASSERTIONS_SIGNED": True,
-    "WANT_RESPONSES_SIGNED": True,
-    "DEBUG": True,
+AZURE_AUTH = {
+    "CLIENT_ID": os.getenv("AZURE_AUTH__CLIENT_ID"),
+    "CLIENT_TYPE": "confidential_client", # Optional, pick "public_client" or "confidential_client" (default)
+    "CLIENT_SECRET": os.getenv("AZURE_AUTH__CLIENT_SECRET"), # optional for public clients
+    # REDIRECT_URI must be set to one of
+    # - an absolute URI starting with "http" or "https", e. g. https://<domain>/azure_auth/callback
+    # - a relative URI starting with "/", e. g. /azure_auth/callback
+    # - a call to reverse_lazy, e. g. reverse_lazy("azure_auth:callback")
+    "REDIRECT_URI": "/azure_auth/callback",
+    "SCOPES": ["User.Read"],
+    "PROMPT": "select_account",  # Optional, one of "login", "consent", "select_account", "none" (default)
+    "AUTHORITY": f"https://login.microsoftonline.com/{os.getenv('AZURE_AUTH__DIRECTORY_ID')}",   # Or https://login.microsoftonline.com/common if multi-tenant
+    "USERNAME_ATTRIBUTE": "mail",   # The AAD attribute or ID token claim you want to use as the value for the user model `USERNAME_FIELD`
 }
+LOGIN_URL = "/azure_auth/login"
+LOGIN_REDIRECT_URL = "/projects"    # Or any other endpoint
+
+AUTHENTICATION_BACKENDS = ("azure_auth.backends.AzureBackend",)

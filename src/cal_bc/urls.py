@@ -17,12 +17,14 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import include, path, re_path
-import django_saml2_auth.views
+from django.contrib.auth.views import LogoutView
+import azure_auth.views
 
 urlpatterns = [
-    re_path(r"^sso/", include("django_saml2_auth.urls")),
-    re_path(r"^admin/login/$", django_saml2_auth.views.signin),
-    re_path(r"^accounts/login/$", django_saml2_auth.views.signin),
+    path("azure_auth/", include("azure_auth.urls"), name="azure_auth"),
+    re_path(r'^accounts/login/$', azure_auth.views.azure_auth_login),
+    re_path(r'^accounts/logout/$', LogoutView.as_view(next_page="/"), name="logout"),
+    re_path(r'^admin/login/$', azure_auth.views.azure_auth_login),
     path("admin/", admin.site.urls),
     path("", include("cal_bc.projects.urls"), name="landing"),
 ]
