@@ -1,6 +1,6 @@
 import pytest
 
-from cal_bc.functions import TREND
+from cal_bc_calculator.functions import TREND
 from xlcalculator.xlfunctions.xl import func_xltypes
 
 
