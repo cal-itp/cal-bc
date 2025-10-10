@@ -182,7 +182,7 @@ cython_debug/
 
 # Django Tailwind CLI
 src/.django_tailwind_cli
-tailwind.css
+tailwind.min.css
 
 # Certificate and key
 *.cert

@@ -53,6 +53,9 @@ STATICFILES_DIRS = [BASE_DIR / "assets"]
 
 SVG_DIRS = [BASE_DIR / "assets"]
 
+TAILWIND_CLI_DIST_CSS = "css/tailwind.min.css"
+TAILWIND_CLI_SRC_CSS = BASE_DIR / "styles" / "main.css"
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
