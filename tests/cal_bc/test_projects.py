@@ -10,8 +10,17 @@ class TestProjects(StaticLiveServerTestCase):
         self.page = page
         user = User.objects.create_user(username="caltrans")
         self.client.force_login(user)
-        cookie = self.client.cookies['sessionid']
-        self.page.context.add_cookies([{'name': 'sessionid', 'value': cookie.value, 'secure': False, 'url': self.live_server_url}])
+        cookie = self.client.cookies["sessionid"]
+        self.page.context.add_cookies(
+            [
+                {
+                    "name": "sessionid",
+                    "value": cookie.value,
+                    "secure": False,
+                    "url": self.live_server_url,
+                }
+            ]
+        )
 
     def test_projects(self):
         self.page.goto(f"{self.live_server_url}/")
