@@ -142,8 +142,10 @@ TEST_RUNNER = "pytest_django.runner.TestRunner"
 
 AZURE_AUTH = {
     "CLIENT_ID": os.getenv("AZURE_AUTH__CLIENT_ID"),
-    "CLIENT_TYPE": "confidential_client", # Optional, pick "public_client" or "confidential_client" (default)
-    "CLIENT_SECRET": os.getenv("AZURE_AUTH__CLIENT_SECRET"), # optional for public clients
+    "CLIENT_TYPE": "confidential_client",  # Optional, pick "public_client" or "confidential_client" (default)
+    "CLIENT_SECRET": os.getenv(
+        "AZURE_AUTH__CLIENT_SECRET"
+    ),  # optional for public clients
     # REDIRECT_URI must be set to one of
     # - an absolute URI starting with "http" or "https", e. g. https://<domain>/azure_auth/callback
     # - a relative URI starting with "/", e. g. /azure_auth/callback
@@ -151,10 +153,10 @@ AZURE_AUTH = {
     "REDIRECT_URI": "/azure_auth/callback",
     "SCOPES": ["User.Read"],
     "PROMPT": "select_account",  # Optional, one of "login", "consent", "select_account", "none" (default)
-    "AUTHORITY": f"https://login.microsoftonline.com/{os.getenv('AZURE_AUTH__DIRECTORY_ID')}",   # Or https://login.microsoftonline.com/common if multi-tenant
-    "USERNAME_ATTRIBUTE": "mail",   # The AAD attribute or ID token claim you want to use as the value for the user model `USERNAME_FIELD`
+    "AUTHORITY": f"https://login.microsoftonline.com/{os.getenv('AZURE_AUTH__DIRECTORY_ID')}",  # Or https://login.microsoftonline.com/common if multi-tenant
+    "USERNAME_ATTRIBUTE": "mail",  # The AAD attribute or ID token claim you want to use as the value for the user model `USERNAME_FIELD`
 }
 LOGIN_URL = "/azure_auth/login"
-LOGIN_REDIRECT_URL = "/projects"    # Or any other endpoint
+LOGIN_REDIRECT_URL = "/projects"  # Or any other endpoint
 
 AUTHENTICATION_BACKENDS = ("azure_auth.backends.AzureBackend",)
