@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "django_tailwind_cli",
     "azure_auth",
     "dj_svg",
+    "widget_tweaks",
 ]
 
 STATICFILES_DIRS = [BASE_DIR / "assets"]
