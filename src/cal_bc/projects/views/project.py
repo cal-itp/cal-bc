@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
 from cal_bc.projects.models.project import Project
 from cal_bc.projects.forms.project import ProjectForm
 
@@ -14,4 +14,11 @@ class ProjectListView(LoginRequiredMixin, ListView):
 class ProjectNewView(LoginRequiredMixin, CreateView):
     template_name = "projects/new.html"
     form_class = ProjectForm
+    success_url = "/projects/"
+
+
+class ProjectEditView(LoginRequiredMixin, UpdateView):
+    template_name = "projects/edit.html"
+    form_class = ProjectForm
+    model = Project
     success_url = "/projects/"

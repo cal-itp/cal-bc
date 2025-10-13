@@ -1,7 +1,7 @@
 from django.urls import path
 from django.views.generic import TemplateView
 
-from .views.project import ProjectListView, ProjectNewView
+from .views.project import ProjectListView, ProjectNewView, ProjectEditView
 
 urlpatterns = [
     path(
@@ -9,4 +9,5 @@ urlpatterns = [
     ),
     path("projects/", ProjectListView.as_view(), name="projects"),
     path("projects/new", ProjectNewView.as_view(), name="new_project"),
+    path("projects/<int:pk>/edit", ProjectEditView.as_view(), name="edit_project"),
 ]
