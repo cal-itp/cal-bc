@@ -15,6 +15,8 @@ class TestProjectsViews:
         dom = parse_html(response.content)
         assert query_by_text(dom, "Projects")
         assert query_by_text(dom, "New Project")
+        page = query_by_text(dom, "Projects", exact=False)
+        assert page.to_have_text_content("Showing1of1pages", exact=False)
 
     def test_with_projects_new(self, client, user):
         client.force_login(user)

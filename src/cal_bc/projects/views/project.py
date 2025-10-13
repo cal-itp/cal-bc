@@ -6,6 +6,7 @@ from cal_bc.projects.forms.project import ProjectForm
 
 
 class ProjectListView(LoginRequiredMixin, ListView):
+    paginate_by = 10
     template_name = "projects/index.html"
     model = Project
 
