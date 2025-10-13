@@ -1,0 +1,14 @@
+<nav class="bg-gray-800 dark:bg-gray-800/50 text-white">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex h-16 items-center justify-between">
+            <div>
+                <a href="{% url 'projects' %}">
+                    <h1 class="text-xl font-bold tracking-tight">Cal B/C</h1>
+                </a>
+            </div>
+            <div>
+                {% include "_user_menu.html" %}
+            </div>
+        </div>
+    </div>
+</nav>
