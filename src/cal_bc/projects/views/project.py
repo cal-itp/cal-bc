@@ -14,11 +14,11 @@ class ProjectListView(LoginRequiredMixin, ListView):
 class ProjectNewView(LoginRequiredMixin, CreateView):
     template_name = "projects/new.html"
     form_class = ProjectForm
-    success_url = "/projects/"
+    success_url = "/projects"
 
 
 class ProjectEditView(LoginRequiredMixin, UpdateView):
     template_name = "projects/edit.html"
     form_class = ProjectForm
     model = Project
-    success_url = "/projects/"
+    success_url = "/projects"
