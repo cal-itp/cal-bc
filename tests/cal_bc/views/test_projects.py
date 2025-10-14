@@ -41,3 +41,11 @@ class TestProjectsViews:
         assert query_by_text(dom, "Edit Project")
         assert project_name.element.attrs["value"] == "Geary Boulevard MUNI Train"
         assert query_by_text(dom, "Save Project")
+
+    def test_with_project_show(self, client, user, project):
+        client.force_login(user)
+        response = client.get(f"/projects/{project.pk}/show")
+        assert response.status_code == 200
+        dom = parse_html(response.content)
+        assert query_by_text(dom, "Geary Boulevard MUNI Train")
+        assert query_by_text(dom, "Edit Project")
