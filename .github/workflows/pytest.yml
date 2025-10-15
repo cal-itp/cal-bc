@@ -21,11 +21,13 @@ jobs:
           version: 0.8.22
           enable-cache: true
 
-      - name: Download cal-bc files
-        run: bin/download
-
       - name: Install the project
         run: uv sync --locked --all-extras --dev
 
+      - name: Install Playwright
+        run: uv run playwright install
+
       - name: Run tests
-        run: uv run pytest tests
+        env:
+            SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        run: uv run manage.py test
