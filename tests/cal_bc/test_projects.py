@@ -28,7 +28,15 @@ class TestProjects(StaticLiveServerTestCase):
         self.page.get_by_role("link", name="Sign in with Microsoft").click()
         self.page.wait_for_selector("text=Projects")
         self.page.get_by_role("link", name="New Project").click()
-        self.page.get_by_label("Project name").fill("Geary Boulevard Light Rail")
+        self.page.get_by_label("Project Name").fill("Geary Boulevard Light Rail")
+        self.page.get_by_label("District").select_option(
+            "District 4 - Bay Area / Oakland"
+        )
+        self.page.get_by_label("Project Type").select_option("Light Rail (LRT)")
+        self.page.get_by_label("Project Location").select_option("Northern California")
+        self.page.get_by_label("Length of Construction Period").fill("3")
+        self.page.get_by_label("One- or Two-Way Data").select_option("Two-Way")
+        self.page.get_by_label("Length of Peak Period(s) (up to 24 hrs)").fill("3")
         self.page.get_by_role("button", name="Save Project").click()
         self.page.wait_for_selector("text=Geary Boulevard Light Rail")
         self.page.get_by_role("button", name="Sign out caltrans").click()
