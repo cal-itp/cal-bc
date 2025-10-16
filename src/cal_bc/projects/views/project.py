@@ -27,7 +27,9 @@ class ProjectEditView(LoginRequiredMixin, UpdateView):
         return reverse_lazy("project", kwargs={"pk": self.object.pk})
 
 
-class ProjectDetailView(LoginRequiredMixin, DetailView):
+class ProjectDetailView(LoginRequiredMixin, UpdateView):
     template_name = "projects/show.html"
-    form_class = ProjectForm
     model = Project
+
+    def get_form(self, form_class=None):
+        return ProjectForm(instance=self.object, disable_fields=True)
