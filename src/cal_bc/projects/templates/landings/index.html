@@ -1,4 +1,4 @@
-{% extends "landings_base.html" %}
+{% extends "base.html" %}
 {% load static %}
 {% load svg %}
 {% block main %}
@@ -7,7 +7,7 @@
     <div class="mx-auto w-full max-w-sm lg:w-96">
       <div>
 
-        <img src="{% static 'landings/caltrans_dds.svg' %}" class="h-20 w-auto" alt="Caltrans"/>
+        <img src="{% static 'landings/caltrans.svg' %}" class="h-20 w-auto" alt="Caltrans"/>
         <h2 class="mt-8 text-2xl font-bold leading-9 tracking-tight text-gray-900">Sign in to Cal B/C</h2>
       </div>
 
@@ -24,7 +24,7 @@
     </div>
   </div>
   <div class="relative hidden w-0 flex-1 lg:block">
-    <img src="{% static 'landings/watt_train.jpg' %}" class="absolute inset-0 h-full w-full object-cover"/>
+    <img src="{% static 'landings/watt-train.jpg' %}" class="absolute inset-0 h-full w-full object-cover"/>
   </div>
 </main>
 {% endblock %}

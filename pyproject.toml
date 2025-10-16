@@ -9,8 +9,9 @@ dependencies = [
     "django>=5.2.7",
     "django-azure-auth>=2.4.0",
     "django-tailwind-cli>=4.4.2",
-    "django-widget-tweaks>=1.5.0",
     "platformdirs>=4.4.0",
+    "pytest-django>=4.11.1",
+    "pytest-playwright>=0.7.1",
     "python-dotenv>=1.1.1",
     "tqdm>=4.67.1",
     "typer>=0.19.2",
@@ -23,10 +24,7 @@ xlcalculator = { git = "https://github.com/cal-itp/xlcalculator", branch = "mov/
 [dependency-groups]
 dev = [
     "pytest>=8.4.2",
-    "pytest-django>=4.11.1",
-    "pytest-playwright>=0.7.1",
     "ruff>=0.13.2",
-    "unbrowsed>=0.1.0a22",
 ]
 
 [tool.uv]

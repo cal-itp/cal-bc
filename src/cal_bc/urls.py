@@ -22,8 +22,9 @@ import azure_auth.views
 
 urlpatterns = [
     path("azure_auth/", include("azure_auth.urls"), name="azure_auth"),
-    re_path(r"^accounts/logout/$", LogoutView.as_view(next_page="/"), name="logout"),
-    re_path(r"^admin/login/$", azure_auth.views.azure_auth_login),
+    re_path(r'^accounts/login/$', azure_auth.views.azure_auth_login),
+    re_path(r'^accounts/logout/$', LogoutView.as_view(next_page="/"), name="logout"),
+    re_path(r'^admin/login/$', azure_auth.views.azure_auth_login),
     path("admin/", admin.site.urls),
     path("", include("cal_bc.projects.urls"), name="landing"),
 ]

@@ -63,23 +63,6 @@ $ uv run manage.py test
 > ```
 
 
-### Administering the site locally
-
-In order to access the admin site at [http://localhost:8000/admin](http://localhost:8000/admin), you need to create a superuser for your DOT login:
-
-```bash
-$ uv run manage.py createsuperuser
-Username (leave blank to use 'yourname'): Your.Name@dot.ca.gov
-Email address: Your.Name@dot.ca.gov
-Password: ********
-Password (again): ********
-```
-
-Now, when you visit the admin site, you can log in with your DOT account as usual.
-
-> Note: if you forget to add your user before this point, the Azure Entra ID login package will automatically add a user and disallow access. You will need to either manually make your user a superuser or delete your user account.
-
-
 ## License
 
 This tool is licensed under the terms of the GNU Affero General Public License.
