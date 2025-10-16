@@ -1,131 +1,20 @@
 @import "tailwindcss";
+@import "./typography";
 
 @theme {
   --font-sans: "Public Sans", sans-serif;
-}
+  --color-primary-01: #162933;
+  --color-primary-02: #00b2a9;
+  --color-primary-03: #b1e4e3;
+  --color-primary-04: #ffb81c;
+  --color-primary-05: #4b4f54;
+  --color-primary-06: #d9d9d6;
 
-@font-face {
-  font-family: 'Public Sans';
-  font-weight: 100;
-  font-style: normal;
-  src: url("/static/fonts/PublicSans-Thin.woff2");
-}
-
-@font-face {
-  font-family: 'Public Sans';
-  font-weight: 100;
-  font-style: italic;
-  src: url("/static/fonts/PublicSans-ThinItalic.woff2");
-}
-
-@font-face {
-  font-family: 'Public Sans';
-  font-weight: 200;
-  font-style: normal;
-  src: url("/static/fonts/PublicSans-ExtraLight.woff2");
-}
-
-@font-face {
-  font-family: 'Public Sans';
-  font-weight: 200;
-  font-style: italic;
-  src: url("/static/fonts/PublicSans-ExtraLightItalic.woff2");
-}
-
-@font-face {
-  font-family: 'Public Sans';
-  font-weight: 300;
-  font-style: normal;
-  src: url("/static/fonts/PublicSans-Light.woff2");
-}
-
-@font-face {
-  font-family: 'Public Sans';
-  font-weight: 300;
-  font-style: italic;
-  src: url("/static/fonts/PublicSans-LightItalic.woff2");
-}
-
-@font-face {
-  font-family: 'Public Sans';
-  font-weight: 400;
-  font-style: normal;
-  src: url("/static/fonts/PublicSans-Regular.woff2");
-}
-
-@font-face {
-  font-family: 'Public Sans';
-  font-weight: 400;
-  font-style: italic;
-  src: url("/static/fonts/PublicSans-Italic.woff2");
-}
-
-@font-face {
-  font-family: 'Public Sans';
-  font-weight: 500;
-  font-style: normal;
-  src: url("/static/fonts/PublicSans-Medium.woff2");
-}
-
-@font-face {
-  font-family: 'Public Sans';
-  font-weight: 500;
-  font-style: italic;
-  src: url("/static/fonts/PublicSans-MediumItalic.woff2");
-}
-
-@font-face {
-  font-family: 'Public Sans';
-  font-weight: 600;
-  font-style: normal;
-  src: url("/static/fonts/PublicSans-SemiBold.woff2");
-}
-
-@font-face {
-  font-family: 'Public Sans';
-  font-weight: 600;
-  font-style: italic;
-  src: url("/static/fonts/PublicSans-SemiBoldItalic.woff2");
-}
-
-@font-face {
-  font-family: 'Public Sans';
-  font-weight: 700;
-  font-style: normal;
-  src: url("/static/fonts/PublicSans-Bold.woff2");
-}
-
-@font-face {
-  font-family: 'Public Sans';
-  font-weight: 700;
-  font-style: italic;
-  src: url("/static/fonts/PublicSans-BoldItalic.woff2");
-}
-
-@font-face {
-  font-family: 'Public Sans';
-  font-weight: 800;
-  font-style: normal;
-  src: url("/static/fonts/PublicSans-ExtraBold.woff2");
-}
-
-@font-face {
-  font-family: 'Public Sans';
-  font-weight: 800;
-  font-style: italic;
-  src: url("/static/fonts/PublicSans-ExtraBoldItalic.woff2");
-}
-
-@font-face {
-  font-family: 'Public Sans';
-  font-weight: 900;
-  font-style: normal;
-  src: url("/static/fonts/PublicSans-Black.woff2");
-}
-
-@font-face {
-  font-family: 'Public Sans';
-  font-weight: 900;
-  font-style: italic;
-  src: url("/static/fonts/PublicSans-BlackItalic.woff2");
+  --color-dds-green-100: #e5f7f6;
+  --color-dds-green-200: #ccf0ee;
+  --color-dds-green-300: #80d9d4;
+  --color-dds-green-400: #40c5bf;
+  --color-dds-green-500: #00b2a9;
+  --color-dds-green-600: #008675;
+  --color-dds-green-700: #006747;
 }
