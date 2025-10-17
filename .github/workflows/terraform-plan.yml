@@ -4,8 +4,8 @@ on:
   pull_request:
     paths:
       - 'iac/**'
-      - 'website/**'
-      - 'templates/**'
+      - 'src/**'
+      - '.github/workflows/terraform-plan.yml'
 
 env:
   SERVICE_ACCOUNT: 'github-actions-service-account@cal-itp-data-infra-staging.iam.gserviceaccount.com'
