@@ -187,3 +187,11 @@ tailwind.min.css
 # Certificate and key
 *.cert
 *.key
+
+# Terraform
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
