@@ -17,6 +17,16 @@ dependencies = [
     "xlcalculator",
 ]
 
+[project.scripts]
+cal-bc = "cal_bc:main"
+
+[build-system]
+requires = ["uv_build>=0.8.22,<0.9.0"]
+build-backend = "uv_build"
+
+[tool.uv]
+package = true
+
 [tool.uv.sources]
 xlcalculator = { git = "https://github.com/cal-itp/xlcalculator", branch = "mov/caltrans-calculations" }
 
@@ -28,9 +38,6 @@ dev = [
     "ruff>=0.13.2",
     "unbrowsed>=0.1.0a22",
 ]
-
-[tool.uv]
-package = true
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "cal_bc.settings"
