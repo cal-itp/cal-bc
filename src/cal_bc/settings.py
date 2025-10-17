@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 import io
+import importlib
 import os
 from pathlib import Path
 from urllib.parse import urlparse
@@ -84,6 +85,10 @@ INSTALLED_APPS = [
     "dj_svg",
     "widget_tweaks",
 ]
+
+if importlib.util.find_spec("django_extensions"):
+    INSTALLED_APPS += ["django_extensions"]
+
 
 STATICFILES_DIRS = [BASE_DIR / "assets"]
 

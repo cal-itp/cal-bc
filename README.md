@@ -32,9 +32,10 @@ In one terminal tab, start the Tailwind build process:
 $ uv run manage.py tailwind watch
 ```
 
-In another terminal tab, run migrations and start the server:
+In another terminal tab, create the database, run migrations, and start the server:
 
 ```bash
+$ uv run manage.py sqlcreate | uv run manage.py dbshell
 $ uv run manage.py migrate
 $ uv run manage.py runserver
 ```

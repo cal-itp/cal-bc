@@ -13,6 +13,7 @@ dependencies = [
     "django-widget-tweaks>=1.5.0",
     "google-cloud-secret-manager>=2.25.0",
     "platformdirs>=4.4.0",
+    "psycopg2-binary>=2.9.11",
     "tqdm>=4.67.1",
     "typer>=0.19.2",
     "xlcalculator",
@@ -33,6 +34,7 @@ xlcalculator = { git = "https://github.com/cal-itp/xlcalculator", branch = "mov/
 
 [dependency-groups]
 dev = [
+    "django-extensions>=4.1",
     "pytest>=8.4.2",
     "pytest-django>=4.11.1",
     "pytest-playwright>=0.7.1",
