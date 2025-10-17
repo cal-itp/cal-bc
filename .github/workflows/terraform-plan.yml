@@ -9,7 +9,7 @@ on:
 
 env:
   SERVICE_ACCOUNT: 'github-actions-service-account@cal-itp-data-infra-staging.iam.gserviceaccount.com'
-  WORKLOAD_IDENTITY_PROVIDER: 'projects/1005246706141/locations/global/workloadIdentityPools/github-actions/providers/reports'
+  WORKLOAD_IDENTITY_PROVIDER: 'projects/473674835135/locations/global/workloadIdentityPools/github-actions/providers/cal-bc'
   PROJECT_ID: 'cal-itp-data-infra-staging'
 
 jobs:
@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Authenticate Google Service Account
         uses: google-github-actions/auth@v2
