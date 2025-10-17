@@ -1,8 +1,19 @@
 from django.urls import path
+from django.views.generic import TemplateView
 
-from . import views
+from .views.project import (
+    ProjectListView,
+    ProjectNewView,
+    ProjectEditView,
+    ProjectDetailView,
+)
 
 urlpatterns = [
-    path("", views.landings_index, name="landings"),
-    path("projects/", views.projects_index, name="projects"),
+    path(
+        "", TemplateView.as_view(template_name="landings/index.html"), name="landings"
+    ),
+    path("projects/", ProjectListView.as_view(), name="projects"),
+    path("projects/new", ProjectNewView.as_view(), name="project_new"),
+    path("projects/<int:pk>/edit", ProjectEditView.as_view(), name="project_edit"),
+    path("projects/<int:pk>/show", ProjectDetailView.as_view(), name="project"),
 ]
