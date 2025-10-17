@@ -65,7 +65,9 @@ RUN --mount=type=cache,target=/root/.cache \
 
 # Install Tailwind CLI
 RUN --mount=type=cache,target=/root/.cache \
-    uv run manage.py tailwind build
+    SECRET_KEY=temporary \
+    DATABASE_URL=sqlite:///src/db.sqlite3 \
+    uv run --no-sync manage.py tailwind build
 
 # Make entrypoint executable
 RUN chmod +x /app/bin/entrypoint.sh
