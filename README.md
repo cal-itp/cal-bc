@@ -32,10 +32,17 @@ In one terminal tab, start the Tailwind build process:
 $ uv run manage.py tailwind watch
 ```
 
-In another terminal tab, create the database, run migrations, and start the server:
+In another terminal tab, set your Google Cloud project and login: 
 
 ```bash
-$ uv run manage.py sqlcreate | uv run manage.py dbshell
+$ gcloud config set project cal-itp-data-infra-staging # you will want to unset this later with `gcloud config unset project`
+$ gcloud auth application-default login --login-config=iac/login.json --quiet
+```
+
+Create the database, run migrations, and start the server:
+
+```bash
+$ uv run manage.py sqlcreate | psql
 $ uv run manage.py migrate
 $ uv run manage.py runserver
 ```
