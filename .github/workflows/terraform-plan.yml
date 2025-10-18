@@ -3,9 +3,18 @@ name: Terraform Plan
 on:
   pull_request:
     paths:
+      - 'bin/**'
       - 'iac/**'
       - 'src/**'
+      - '.dockerignore'
+      - '.gcloudignore'
       - '.github/workflows/terraform-plan.yml'
+      - '.python-version'
+      - 'Dockerfile'
+      - 'main.py'
+      - 'manage.py'
+      - 'pyproject.toml'
+      - 'uv.lock'
 
 env:
   SERVICE_ACCOUNT: 'github-actions-service-account@cal-itp-data-infra-staging.iam.gserviceaccount.com'

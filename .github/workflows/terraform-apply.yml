@@ -5,9 +5,18 @@ on:
     branches:
       - 'main'
     paths:
+      - 'bin/**'
       - 'iac/**'
       - 'src/**'
-      - '.github/workflows/terraform-apply.yml'
+      - '.dockerignore'
+      - '.gcloudignore'
+      - '.github/workflows/terraform-plan.yml'
+      - '.python-version'
+      - 'Dockerfile'
+      - 'main.py'
+      - 'manage.py'
+      - 'pyproject.toml'
+      - 'uv.lock'
 
 env:
   SERVICE_ACCOUNT: 'github-actions-service-account@cal-itp-data-infra-staging.iam.gserviceaccount.com'
