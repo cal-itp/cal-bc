@@ -6,7 +6,7 @@ module "cloud-run" {
   project_id            = "cal-itp-data-infra-staging"
   location              = "us-west2"
   image                 = "ghcr.io/cal-itp/cal-bc/cal-bc:development"
-  service_account_email = data.terraform_remote_state.iam.outputs.google_service_account_composer-service-account_email
+  service_account_email = data.terraform_remote_state.iam.outputs.google_service_account_cal-bc-service-account_email
 
   env_vars = [
     {
