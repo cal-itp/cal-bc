@@ -1,7 +1,11 @@
 resource "google_secret_manager_secret" "cal-bc-staging-secret-key" {
   secret_id = "cal-bc-staging-secret-key"
   replication {
-    auto {}
+    user_managed {
+      replicas {
+        location = "us-west2"
+      }
+    }
   }
 }
 
@@ -13,7 +17,11 @@ resource "google_secret_manager_secret_version" "cal-bc-staging-secret-key" {
 resource "google_secret_manager_secret" "cal-bc-staging-database-url" {
   secret_id = "cal-bc-staging-database-url"
   replication {
-    auto {}
+    user_managed {
+      replicas {
+        location = "us-west2"
+      }
+    }
   }
 }
 
