@@ -1,0 +1,31 @@
+resource "google_secret_manager_secret" "cal-bc-staging-secret-key" {
+  secret_id = "cal-bc-staging-secret-key"
+  replication {
+    user_managed {
+      replicas {
+        location = "us-west2"
+      }
+    }
+  }
+}
+
+resource "google_secret_manager_secret_version" "cal-bc-staging-secret-key" {
+  secret         = google_secret_manager_secret.cal-bc-staging-secret-key.name
+  secret_data_wo = random_password.cal-bc-staging-secret-key.result
+}
+
+resource "google_secret_manager_secret" "cal-bc-staging-database-url" {
+  secret_id = "cal-bc-staging-database-url"
+  replication {
+    user_managed {
+      replicas {
+        location = "us-west2"
+      }
+    }
+  }
+}
+
+resource "google_secret_manager_secret_version" "cal-bc-staging-database-url" {
+  secret         = google_secret_manager_secret.cal-bc-staging-database-url.name
+  secret_data_wo = "postgres://${google_sql_user.cal-bc-staging.name}:${random_password.cal-bc-staging-database.result}@//cloudsql/${google_sql_database_instance.cal-bc-staging.project}:${google_sql_database_instance.cal-bc-staging.region}:${google_sql_database_instance.cal-bc-staging.name}/${google_sql_database.cal-bc-staging.name}"
+}

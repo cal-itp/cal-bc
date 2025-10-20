@@ -1,20 +1,61 @@
-module "cloud-run" {
-  source  = "GoogleCloudPlatform/cloud-run/google"
-  version = "~> 0.21"
+resource "google_cloud_run_v2_service" "cal-bc-staging" {
+  name                = "cal-bc-staging"
+  location            = "us-west2"
+  deletion_protection = false
+  ingress             = "INGRESS_TRAFFIC_ALL"
 
-  service_name = "cal-bc-staging"
-  project_id   = "cal-itp-data-infra-staging"
-  location     = "us-west2"
-  image        = "ghcr.io/cal-itp/cal-bc/cal-bc:development"
+  template {
+    service_account = data.terraform_remote_state.iam.outputs.google_service_account_cal-bc-service-account_email
 
-  env_vars = [
-    {
-      name  = "SECRET_KEY",
-      value = random_password.cal-bc-staging-secret-key.result
-    },
-    {
-      name  = "DATABASE_URL",
-      value = "postgres://${google_sql_user.cal-bc-staging.name}:${random_password.cal-bc-staging-database.result}@//cloudsql/${google_sql_database_instance.cal-bc-staging.project}:${google_sql_database_instance.cal-bc-staging.region}:${google_sql_database_instance.cal-bc-staging.name}/${google_sql_database.cal-bc-staging.name}"
+    volumes {
+      name = "cloudsql"
+      cloud_sql_instance {
+        instances = [google_sql_database_instance.cal-bc-staging.connection_name]
+      }
     }
-  ]
+
+    containers {
+      image = "us-west2-docker.pkg.dev/cal-itp-data-infra-staging/ghcr/cal-itp/cal-bc/cal-bc:development"
+      ports {
+        container_port = 8000
+      }
+
+      volume_mounts {
+        name       = "cloudsql"
+        mount_path = "/cloudsql"
+      }
+
+      env {
+        name = "SECRET_KEY"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.cal-bc-staging-secret-key.secret_id
+            version = "latest"
+          }
+        }
+      }
+
+      env {
+        name = "DATABASE_URL"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.cal-bc-staging-database-url.secret_id
+            version = "latest"
+          }
+        }
+      }
+    }
+  }
+
+  traffic {
+    type    = "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST"
+    percent = 100
+  }
+}
+
+resource "google_cloud_run_service_iam_binding" "cal-bc-staging" {
+  location = google_cloud_run_v2_service.cal-bc-staging.location
+  service  = google_cloud_run_v2_service.cal-bc-staging.name
+  role     = "roles/run.invoker"
+  members  = ["allUsers"]
 }
