@@ -5,7 +5,8 @@ from platformdirs import user_cache_dir
 from typing_extensions import Annotated, List
 
 from .calculator import Calculator
-from .downloader import Downloader, VERSIONS
+from .downloader import Downloader
+from .versions import VERSIONS
 
 app = typer.Typer()
 

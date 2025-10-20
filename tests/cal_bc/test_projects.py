@@ -3,11 +3,18 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from playwright.sync_api import Page
 from django.contrib.auth.models import User
 
+from cal_bc.projects.models.model import Model
+from cal_bc_calculator.versions import VERSIONS
+
 
 class TestProjects(StaticLiveServerTestCase):
     @pytest.fixture(autouse=True)
     def setup(self, page: Page):
         self.page = page
+        model = Model.objects.create(
+            name=VERSIONS["cal-bc-8-1-sketch"]["name"],
+            url=VERSIONS["cal-bc-8-1-sketch"]["url"],
+        )
         user = User.objects.create_user(username="caltrans")
         self.client.force_login(user)
         cookie = self.client.cookies["sessionid"]
@@ -32,12 +39,15 @@ class TestProjects(StaticLiveServerTestCase):
         self.page.get_by_label("District").select_option(
             "District 4 - Bay Area / Oakland"
         )
+        self.page.get_by_label("Model").select_option("Cal-B/C Sketch v8.1")
+        self.page.get_by_role("button", name="Save Project").click()
+        self.page.wait_for_selector("text=Section 1A")
         self.page.get_by_label("Project Type").select_option("Light Rail (LRT)")
         self.page.get_by_label("Project Location").select_option("Northern California")
         self.page.get_by_label("Length of Construction Period").fill("3")
         self.page.get_by_label("One- or Two-Way Data").select_option("Two-Way")
         self.page.get_by_label("Length of Peak Period(s) (up to 24 hrs)").fill("3")
-        self.page.get_by_role("button", name="Save Project").click()
+        self.page.get_by_role("button", name="Save Section").click()
         self.page.wait_for_selector("text=Geary Boulevard Light Rail")
         self.page.get_by_role("button", name="Sign out caltrans").click()
         assert self.page.get_by_role("link", name="Sign in with Microsoft")
