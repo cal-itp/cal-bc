@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-import io
 import importlib
 import os
 from pathlib import Path
@@ -18,14 +17,10 @@ from urllib.parse import urlparse
 
 import environ
 import google.auth
-from google.cloud import secretmanager
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-env = environ.Env(DEBUG=(bool, True))
-env_file = os.path.join(BASE_DIR / "..", ".env")
 
 # Attempt to load the Project ID into the environment, safely failing on error.
 try:
@@ -33,21 +28,11 @@ try:
 except google.auth.exceptions.DefaultCredentialsError:
     pass
 
+# Use a local secret file, if provided
+env = environ.Env(DEBUG=(bool, True))
+env_file = os.path.join(BASE_DIR / "..", ".env")
 if os.path.isfile(env_file):
-    # Use a local secret file, if provided
-
     env.read_env(env_file)
-elif os.environ.get("GOOGLE_CLOUD_PROJECT", None):
-    # Pull secrets from Secret Manager
-    project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
-
-    client = secretmanager.SecretManagerServiceClient()
-    settings_name = os.environ.get("SETTINGS_NAME", "django_settings")
-    name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
-    payload = client.access_secret_version(name=name).payload.data.decode("UTF-8")
-
-    env.read_env(io.StringIO(payload))
-
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env("SECRET_KEY")
