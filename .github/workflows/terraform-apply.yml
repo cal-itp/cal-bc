@@ -25,7 +25,7 @@ env:
 
 jobs:
   plan:
-    name: Apply
+    name: Staging
     runs-on: ubuntu-latest
 
     permissions:
