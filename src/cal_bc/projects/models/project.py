@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext as _
+from cal_bc.projects.models.model_version import ModelVersion
 
 
 class Project(models.Model):
@@ -94,6 +95,9 @@ class Project(models.Model):
         choices=DataDirection, default=DataDirection.TWO_WAY
     )
     peak_periods_length = models.IntegerField(default=5)
+    model_version = models.ForeignKey(
+        ModelVersion, null=False, on_delete=models.CASCADE
+    )
 
     def __str__(self):
         return self.name

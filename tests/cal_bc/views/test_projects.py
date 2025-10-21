@@ -1,4 +1,6 @@
+from django.test.client import Client
 from django.contrib.auth.models import User
+from cal_bc.projects.models.model_version import ModelVersion
 from cal_bc.projects.models.project import Project
 from unbrowsed import parse_html, query_by_text, query_by_label_text
 import pytest
@@ -10,16 +12,21 @@ class TestProjectsViews:
         return django_user_model.objects.create_user(username="caltrans")
 
     @pytest.fixture
-    def project(self) -> Project:
+    def model_version(self) -> ModelVersion:
+        return ModelVersion.objects.create(name="Testing", version="1")
+
+    @pytest.fixture
+    def project(self, model_version: ModelVersion) -> Project:
         return Project.objects.create(
             name="Monterey LRT",
+            model_version=model_version,
             district=Project.District.FIVE,
             type=Project.RailTransitCapacityType.LIGHT_RAIL,
             location=Project.Location.NO_CAL,
             construction_period_length=4,
         )
 
-    def test_with_projects_index(self, client, user):
+    def test_with_projects_index(self, client: Client, user: User):
         client.force_login(user)
         response = client.get("/projects/")
         assert response.status_code == 200
@@ -29,13 +36,14 @@ class TestProjectsViews:
         page = query_by_text(dom, "Projects", exact=False)
         assert page.to_have_text_content("Showing1of1pages", exact=False)
 
-    def test_with_project_new(self, client, user):
+    def test_with_project_new(self, client: Client, user: User):
         client.force_login(user)
         response = client.get("/projects/new")
         assert response.status_code == 200
         dom = parse_html(response.content)
         assert query_by_text(dom, "Project Data")
         assert query_by_label_text(dom, "Project Name")
+        assert query_by_label_text(dom, "Model Version")
         assert query_by_label_text(dom, "District")
         assert query_by_label_text(dom, "Project Type")
         assert query_by_label_text(dom, "Project Location")
@@ -44,7 +52,13 @@ class TestProjectsViews:
         assert query_by_label_text(dom, "Length of Peak Period(s) (up to 24 hrs)")
         assert query_by_text(dom, "Save Project")
 
-    def test_with_project_edit(self, client, user, project):
+    def test_with_project_edit(
+        self,
+        client: Client,
+        user: User,
+        project: Project,
+        model_version: ModelVersion,
+    ) -> None:
         client.force_login(user)
         response = client.get(f"/projects/{project.pk}/edit")
         assert response.status_code == 200
@@ -52,6 +66,7 @@ class TestProjectsViews:
         assert query_by_text(dom, "Project Data")
 
         project_name = query_by_label_text(dom, "Project Name")
+        model_version_select = query_by_label_text(dom, "Model Version")
         district = query_by_label_text(dom, "District")
         project_type = query_by_label_text(dom, "Project Type")
         project_location = query_by_label_text(dom, "Project Location")
@@ -62,6 +77,9 @@ class TestProjectsViews:
         )
         assert project_name.element.attrs["value"] == "Monterey LRT"
         assert district.element.select("[value='5'][selected]").any_matches
+        assert model_version_select.element.select(
+            f"[value='{model_version.pk}'][selected]"
+        ).any_matches
         assert project_type.element.select("[value='light_rail'][selected]").any_matches
         assert project_location.element.select("[value='2'][selected]").any_matches
         assert construction_length.element.attrs["value"] == "4"
@@ -70,7 +88,13 @@ class TestProjectsViews:
 
         assert query_by_text(dom, "Save Project")
 
-    def test_with_project_show(self, client, user, project):
+    def test_with_project_show(
+        self,
+        client: Client,
+        user: User,
+        project: Project,
+        model_version: ModelVersion,
+    ):
         client.force_login(user)
         response = client.get(f"/projects/{project.pk}/show")
         assert response.status_code == 200
@@ -78,6 +102,7 @@ class TestProjectsViews:
         assert query_by_text(dom, "Project Data")
 
         project_name = query_by_label_text(dom, "Project Name")
+        model_version_select = query_by_label_text(dom, "Model Version")
         district = query_by_label_text(dom, "District")
         project_type = query_by_label_text(dom, "Project Type")
         project_location = query_by_label_text(dom, "Project Location")
@@ -88,6 +113,9 @@ class TestProjectsViews:
         )
         assert project_name.element.attrs["value"] == "Monterey LRT"
         assert project_name.element.select("[disabled]").any_matches
+        assert model_version_select.element.select(
+            f"[value='{model_version.pk}'][selected]"
+        ).any_matches
         assert district.element.select("[value='5'][selected]").any_matches
         assert district.element.select("[disabled]").any_matches
         assert project_type.element.select("[value='light_rail'][selected]").any_matches

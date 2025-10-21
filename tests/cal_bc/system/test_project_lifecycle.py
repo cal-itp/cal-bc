@@ -3,8 +3,10 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from playwright.sync_api import Page
 from django.contrib.auth.models import User
 
+from cal_bc.projects.models.model_version import ModelVersion
 
-class TestProjects(StaticLiveServerTestCase):
+
+class TestProjectLifecycle(StaticLiveServerTestCase):
     @pytest.fixture(autouse=True)
     def setup(self, page: Page):
         self.page = page
@@ -21,6 +23,7 @@ class TestProjects(StaticLiveServerTestCase):
                 }
             ]
         )
+        ModelVersion.objects.create(name="Cal-B/C Sketch", version="8.1")
 
     def test_projects(self):
         self.page.goto(f"{self.live_server_url}/")
@@ -29,6 +32,7 @@ class TestProjects(StaticLiveServerTestCase):
         self.page.wait_for_selector("text=Projects")
         self.page.get_by_role("link", name="New Project").click()
         self.page.get_by_label("Project Name").fill("Geary Boulevard Light Rail")
+        self.page.get_by_label("Model Version").select_option("Cal-B/C Sketch v8.1")
         self.page.get_by_label("District").select_option(
             "District 4 - Bay Area / Oakland"
         )
@@ -39,6 +43,7 @@ class TestProjects(StaticLiveServerTestCase):
         self.page.get_by_label("Length of Peak Period(s) (up to 24 hrs)").fill("3")
         self.page.get_by_role("button", name="Save Project").click()
         self.page.wait_for_selector("text=Geary Boulevard Light Rail")
+        self.page.wait_for_selector("text=Cal-B/C Sketch v8.1")
         self.page.get_by_role("button", name="Sign out caltrans").click()
         assert self.page.get_by_role("link", name="Sign in with Microsoft")
         self.page.close()
