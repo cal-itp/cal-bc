@@ -74,3 +74,19 @@ resource "google_secret_manager_secret" "cal-bc-staging-azure-auth-directory-id"
 resource "google_secret_manager_secret_version" "cal-bc-staging-azure-auth-directory-id" {
   secret = google_secret_manager_secret.cal-bc-staging-azure-auth-directory-id.name
 }
+
+resource "google_secret_manager_secret" "cal-bc-staging-cloudrun-service-urls" {
+  secret_id = "cal-bc-staging-cloudrun-service-urls"
+  replication {
+    user_managed {
+      replicas {
+        location = "us-west2"
+      }
+    }
+  }
+}
+
+resource "google_secret_manager_secret_version" "cal-bc-staging-cloudrun-service-urls" {
+  secret      = google_secret_manager_secret.cal-bc-staging-cloudrun-service-urls.name
+  secret_data = join(",", concat(google_cloud_run_v2_service.cal-bc-staging.urls, ["https://${local.domain}"]))
+}

@@ -9,6 +9,10 @@ resource "google_cloud_run_v2_service" "cal-bc-staging" {
     percent = 100
   }
 
+  scaling {
+    min_instance_count = 1
+  }
+
   template {
     service_account = data.terraform_remote_state.iam.outputs.google_service_account_cal-bc-service-account_email
 
@@ -79,6 +83,16 @@ resource "google_cloud_run_v2_service" "cal-bc-staging" {
           }
         }
       }
+
+      env {
+        name = "CLOUDRUN_SERVICE_URLS"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.cal-bc-staging-cloudrun-service-urls.secret_id
+            version = "latest"
+          }
+        }
+      }
     }
   }
 }
@@ -111,7 +125,7 @@ module "lb-http" {
   project = "cal-itp-data-infra-staging"
 
   ssl                             = true
-  managed_ssl_certificate_domains = ["cal-bc-staging.dds.dot.ca.gov"]
+  managed_ssl_certificate_domains = [local.domain]
   https_redirect                  = true
 
   address        = google_compute_global_address.cal-bc-staging.address
