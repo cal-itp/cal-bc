@@ -29,3 +29,48 @@ resource "google_secret_manager_secret_version" "cal-bc-staging-database-url" {
   secret         = google_secret_manager_secret.cal-bc-staging-database-url.name
   secret_data_wo = "postgres://${google_sql_user.cal-bc-staging.name}:${random_password.cal-bc-staging-database.result}@//cloudsql/${google_sql_database_instance.cal-bc-staging.project}:${google_sql_database_instance.cal-bc-staging.region}:${google_sql_database_instance.cal-bc-staging.name}/${google_sql_database.cal-bc-staging.name}"
 }
+
+resource "google_secret_manager_secret" "cal-bc-staging-azure-auth-client-id" {
+  secret_id = "cal-bc-staging-azure-auth-client-id"
+  replication {
+    user_managed {
+      replicas {
+        location = "us-west2"
+      }
+    }
+  }
+}
+
+resource "google_secret_manager_secret_version" "cal-bc-staging-azure-auth-client-id" {
+  secret = google_secret_manager_secret.cal-bc-staging-azure-auth-client-id.name
+}
+
+resource "google_secret_manager_secret" "cal-bc-staging-azure-auth-client-secret" {
+  secret_id = "cal-bc-staging-azure-auth-client-secret"
+  replication {
+    user_managed {
+      replicas {
+        location = "us-west2"
+      }
+    }
+  }
+}
+
+resource "google_secret_manager_secret_version" "cal-bc-staging-azure-auth-client-secret" {
+  secret = google_secret_manager_secret.cal-bc-staging-azure-auth-client-secret.name
+}
+
+resource "google_secret_manager_secret" "cal-bc-staging-azure-auth-directory-id" {
+  secret_id = "cal-bc-staging-azure-auth-directory-id"
+  replication {
+    user_managed {
+      replicas {
+        location = "us-west2"
+      }
+    }
+  }
+}
+
+resource "google_secret_manager_secret_version" "cal-bc-staging-azure-auth-directory-id" {
+  secret = google_secret_manager_secret.cal-bc-staging-azure-auth-directory-id.name
+}
