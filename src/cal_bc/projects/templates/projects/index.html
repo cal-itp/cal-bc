@@ -3,6 +3,7 @@
 {% block main %}
 <div class="min-h-full">
     {% include "_header_nav.html" %}
+
     <header class="relative bg-primary-01 shadow dark:shadow-none dark:after:pointer-events-none dark:after:absolute dark:after:inset-x-0 dark:after:inset-y-0 dark:after:border-y dark:after:border-white/10">
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             <div class="sm:flex sm:items-center">
@@ -26,6 +27,7 @@
                                 <thead class="bg-gray-50 dark:bg-gray-800/75">
                                     <tr>
                                         <th scope="col" class="py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-gray-900 sm:pl-6 dark:text-gray-200">Project Name</th>
+                                        <th scope="col" class="py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-gray-900 sm:pl-6 dark:text-gray-200">Model Version</th>
                                         <th scope="col" class="py-3.5 pr-4 pl-3 sm:pr-6">
                                             <span class="sr-only">Edit</span>
                                         </th>
@@ -35,7 +37,9 @@
                                 {% for project in object_list %}
                                     <tr>
                                         <td class="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6 dark:text-white">{{ project }}</td>
-                                        <td class="py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-6">
+                                        <td class="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6 dark:text-white">{{ project.model_version }}</td>
+                                        <td class="py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap space-x-4 sm:pr-6">
+                                            <a href="{% url 'project' project.id %}" class="text-dds-green-600 hover:text-teal-900 dark:text-dds-green-400 dark:hover:text-dds-green-300">Show</a>
                                             <a href="{% url 'project_edit' project.id %}" class="text-dds-green-600 hover:text-teal-900 dark:text-dds-green-400 dark:hover:text-dds-green-300">Edit</a>
                                         </td>
                                     </tr>

@@ -87,6 +87,6 @@ resource "google_secret_manager_secret" "cal-bc-staging-cloudrun-service-urls" {
 }
 
 resource "google_secret_manager_secret_version" "cal-bc-staging-cloudrun-service-urls" {
-  secret      = google_secret_manager_secret.cal-bc-staging-cloudrun-service-urls.name
-  secret_data = join(",", concat(google_cloud_run_v2_service.cal-bc-staging.urls, ["https://${local.domain}"]))
+  secret         = google_secret_manager_secret.cal-bc-staging-cloudrun-service-urls.name
+  secret_data_wo = join(",", concat(google_cloud_run_v2_service.cal-bc-staging.urls, ["https://${local.domain}"]))
 }

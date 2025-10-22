@@ -15,6 +15,7 @@ class ProjectForm(ModelForm):
         model = Project
         fields = [
             "name",
+            "model_version",
             "district",
             "type",
             "location",
@@ -25,6 +26,7 @@ class ProjectForm(ModelForm):
 
         labels = {
             "name": _("Project Name"),
+            "model_version": _("Model Version"),
             "type": _("Project Type"),
             "location": _("Project Location"),
             "construction_period_length": _("Length of Construction Period"),

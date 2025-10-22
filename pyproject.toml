@@ -8,6 +8,7 @@ dependencies = [
     "dj-svg>=0.3.1",
     "django>=5.2.7",
     "django-azure-auth>=2.4.0",
+    "django-downloadview>=2.4.0",
     "django-environ>=0.12.0",
     "django-tailwind-cli>=4.4.2",
     "django-widget-tweaks>=1.5.0",
@@ -38,9 +39,11 @@ dev = [
     "pytest>=8.4.2",
     "pytest-django>=4.11.1",
     "pytest-playwright>=0.7.1",
+    "pytest-recording>=0.13.4",
     "ruff>=0.13.2",
     "unbrowsed>=0.1.0a22",
 ]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "cal_bc.settings"
+env_files = ".env"
