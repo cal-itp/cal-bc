@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     "django_tailwind_cli",
     "azure_auth",
     "dj_svg",
+    "django_htmx",
     "widget_tweaks",
 ]
 
@@ -91,6 +92,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",
 ]
 
 ROOT_URLCONF = "cal_bc.urls"

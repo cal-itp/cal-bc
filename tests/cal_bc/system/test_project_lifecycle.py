@@ -53,6 +53,8 @@ class TestProjectLifecycle(StaticLiveServerTestCase):
         self.page.get_by_role("button", name="Save Project").click()
         self.page.wait_for_selector("text=Cal-B/C Sketch v8.1")
         self.page.get_by_role("link", name="Show").click()
+        self.page.wait_for_selector("text=Life-Cycle Costs")
+        self.page.wait_for_selector("text=$136.6")
         with self.page.expect_download() as download_info:
             self.page.get_by_role("link", name="Download").click()
         download = download_info.value
