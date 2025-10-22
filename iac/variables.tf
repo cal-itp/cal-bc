@@ -16,3 +16,7 @@ resource "random_password" "cal-bc-staging-database" {
   special = false
   length  = 32
 }
+
+locals {
+  domain = "cal-bc-staging.dds.dot.ca.gov"
+}

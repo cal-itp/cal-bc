@@ -14,6 +14,7 @@ import importlib
 import os
 from pathlib import Path
 from urllib.parse import urlparse
+from django.urls import reverse_lazy
 
 import environ
 import google.auth
@@ -38,7 +39,7 @@ if os.path.isfile(env_file):
 SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env("DEBUG")
+DEBUG = env("DEBUG", default=False)
 
 # SECURITY WARNING: It's recommended that you use this when
 # running in production. The URLs will be known once you first deploy
@@ -118,7 +119,7 @@ WSGI_APPLICATION = "cal_bc.wsgi.application"
 DATABASES = {"default": env.db()}
 
 # If the flag as been set, configure to use proxy
-if os.getenv("USE_CLOUD_SQL_AUTH_PROXY", None):
+if env("USE_CLOUD_SQL_AUTH_PROXY", default=None):
     DATABASES["default"]["HOST"] = "127.0.0.1"
     DATABASES["default"]["PORT"] = 5432
 
@@ -168,19 +169,17 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 TEST_RUNNER = "pytest_django.runner.TestRunner"
 
 AZURE_AUTH = {
-    "CLIENT_ID": os.getenv("AZURE_AUTH__CLIENT_ID"),
+    "CLIENT_ID": env("AZURE_AUTH__CLIENT_ID", default=None),
     "CLIENT_TYPE": "confidential_client",  # Optional, pick "public_client" or "confidential_client" (default)
-    "CLIENT_SECRET": os.getenv(
-        "AZURE_AUTH__CLIENT_SECRET"
-    ),  # optional for public clients
+    "CLIENT_SECRET": env("AZURE_AUTH__CLIENT_SECRET", default=None),  # optional for public clients
     # REDIRECT_URI must be set to one of
     # - an absolute URI starting with "http" or "https", e. g. https://<domain>/azure_auth/callback
     # - a relative URI starting with "/", e. g. /azure_auth/callback
     # - a call to reverse_lazy, e. g. reverse_lazy("azure_auth:callback")
-    "REDIRECT_URI": "/azure_auth/callback",
+    "REDIRECT_URI": reverse_lazy("azure_auth:callback"),
     "SCOPES": ["User.Read"],
     "PROMPT": "select_account",  # Optional, one of "login", "consent", "select_account", "none" (default)
-    "AUTHORITY": f"https://login.microsoftonline.com/{os.getenv('AZURE_AUTH__DIRECTORY_ID')}",  # Or https://login.microsoftonline.com/common if multi-tenant
+    "AUTHORITY": f"https://login.microsoftonline.com/{env('AZURE_AUTH__DIRECTORY_ID', default=None)}",  # Or https://login.microsoftonline.com/common if multi-tenant
     "USERNAME_ATTRIBUTE": "mail",  # The AAD attribute or ID token claim you want to use as the value for the user model `USERNAME_FIELD`
 }
 LOGIN_URL = "/azure_auth/login"
