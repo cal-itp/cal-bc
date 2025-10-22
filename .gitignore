@@ -180,9 +180,10 @@ cython_debug/
 ~$*
 /*.xls*
 
-# Django Tailwind CLI
+# Django Tailwind CLI and assets
 src/.django_tailwind_cli
 tailwind.min.css
+src/static/
 
 # Certificate and key
 *.cert
