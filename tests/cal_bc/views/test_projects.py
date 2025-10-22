@@ -32,6 +32,7 @@ class TestProjectsViews:
             type=Project.RailTransitCapacityType.LIGHT_RAIL,
             location=Project.Location.NO_CAL,
             construction_period_length=4,
+            peak_periods_length=5,
         )
 
     def test_with_projects_index(self, client: Client, user: User):
@@ -88,7 +89,9 @@ class TestProjectsViews:
         assert model_version_select.element.select(
             f"[value='{model_version.pk}'][selected]"
         ).any_matches
-        assert project_type.element.select("[value='light_rail'][selected]").any_matches
+        assert project_type.element.select(
+            "[value='    Light-Rail (LRT)'][selected]"
+        ).any_matches
         assert project_location.element.select("[value='2'][selected]").any_matches
         assert construction_length.element.attrs["value"] == "4"
         assert data_direction.element.select("[value='2'][selected]").any_matches
@@ -126,7 +129,9 @@ class TestProjectsViews:
         ).any_matches
         assert district.element.select("[value='5'][selected]").any_matches
         assert district.element.select("[disabled]").any_matches
-        assert project_type.element.select("[value='light_rail'][selected]").any_matches
+        assert project_type.element.select(
+            "[value='    Light-Rail (LRT)'][selected]"
+        ).any_matches
         assert project_type.element.select("[disabled]").any_matches
         assert project_location.element.select("[value='2'][selected]").any_matches
         assert project_location.element.select("[disabled]").any_matches
@@ -151,4 +156,11 @@ class TestProjectsViews:
         assert response.status_code == 200
         with BytesIO(b"".join(response.streaming_content)) as buffer:
             evaluator = Calculator(buffer).compile()
-        assert round(evaluator.evaluate("3) Results!H13"), 2) == 136.65
+        assert evaluator.evaluate("1) Project Information!E2") == 5
+        assert evaluator.evaluate("ProjName") == "Monterey LRT"
+        assert evaluator.evaluate("ProjType") == "    Light-Rail (LRT)"
+        assert evaluator.evaluate("ProjLoc") == 2
+        assert evaluator.evaluate("Construct") == 4
+        assert evaluator.evaluate("NumDirections") == 2
+        assert evaluator.evaluate("PeakLngthNB") == 5
+        assert round(evaluator.evaluate("3) Results!H13"), 2) == 136.66
