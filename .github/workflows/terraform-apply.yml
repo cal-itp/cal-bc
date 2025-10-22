@@ -54,3 +54,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           path: iac/
+          variables: |
+            image_tag = "${{ github.sha }}"
