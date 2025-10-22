@@ -54,10 +54,13 @@ class ProjectDownloadView(VirtualDownloadView):
         calculator.write(
             {
                 # 1) Project Information
-                "ProjName": "Testing Project",
-                "ProjType": "    HOV Lane Addition",
-                "ProjLoc": 1,
-                "Construct": 6,
+                "ProjName": project.name,
+                "1) Project Information!E2": project.district,
+                "ProjType": project.type,
+                "ProjLoc": project.location,
+                "Construct": project.construction_period_length,
+                "NumDirections": project.data_direction,
+                "PeakLngthNB": project.peak_periods_length,
                 # Highway design and traffic data
                 "GenLanesNB": 2,
                 "GenLanesB": 2,
@@ -149,4 +152,4 @@ class ProjectDownloadView(VirtualDownloadView):
             calculator.save(buffer)
             buffer.seek(0)
             content = buffer.read()
-        return ContentFile(content, name="cal-bc-scratch-8-1.xlsm")
+        return ContentFile(content, name="cal-bc-sketch-8-1.xlsm")

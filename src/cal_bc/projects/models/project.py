@@ -19,54 +19,54 @@ class Project(models.Model):
         TWELVE = 12, _("District 12 - Orange County")
 
     class HighwayCapacityType(models.TextChoices):
-        GENERAL_HIGHWAY = "general_highway", _("General Highway")
-        HOV_LANE_ADDITION = "hov_lane_addition", _("HOV Lane Addition")
-        HOT_LANE_ADDITION = "hot_lane_addition", _("HOT Lane Addition")
-        PASSING_LANE = "passing_lane", _("Passing Lane")
-        INTERSECTION = "intersection", _("Intersection")
-        TRUCK_ONLY_LANE = "truck_only_lane", _("Truck Only Lane")
-        BYPASS = "bypass", _("Bypass")
-        QUEUING = "queuing", _("Queuing")
-        PAVEMENT = "pavement", _("Pavement")
+        GENERAL_HIGHWAY = "    General Highway", _("General Highway")
+        HOV_LANE_ADDITION = "    HOV Lane Addition", _("HOV Lane Addition")
+        HOT_LANE_ADDITION = "    HOT Lane Addition", _("HOT Lane Addition")
+        PASSING_LANE = "    Passing Lane", _("Passing Lane")
+        INTERSECTION = "    Intersection", _("Intersection")
+        TRUCK_ONLY_LANE = "    Truck Only Lane", _("Truck Only Lane")
+        BYPASS = "    Bypass", _("Bypass")
+        QUEUING = "    Queuing", _("Queuing")
+        PAVEMENT = "    Pavement", _("Pavement")
 
     class RailTransitCapacityType(models.TextChoices):
-        PASSENGER_RAIL = "passenger_rail", _("Passenger Rail")
-        LIGHT_RAIL = "light_rail", _("Light Rail (LRT)")
+        PASSENGER_RAIL = "    Passenger Rail", _("Passenger Rail")
+        LIGHT_RAIL = "    Light-Rail (LRT)", _("Light Rail (LRT)")
         HIGHWAY_RAIL_GRADE_CROSSING = (
-            "highway_rail_grade_crossing",
+            "    Highway-Rail Grade Crossing",
             _("Highway-Rail Grade Crossing"),
         )
 
     class HighwayOperationalType(models.TextChoices):
-        AUXILIARY_LANE = "auxiliary_lane", _("Auxiliary Lane")
-        FREEWAY_CONNECTOR = "freeway_connector", _("Freeway Connector")
-        HOV_CONNECTOR = "hov_connector", _("HOV Connector")
-        HOV_DROP_RAMP = "hov_drop_ramp", _("HOV Drop Ramp")
-        OFF_RAMP_WIDENING = "off_ramp_widening", _("Off-Ramp Widening")
-        ON_RAMP_WIDENING = "on_ramp_widening", _("On-Ramp Widening")
-        HOT_LANE_CONVERSION = "hot_lane_conversion", _("Hot Lane Conversion")
+        AUXILIARY_LANE = "    Auxiliary Lane", _("Auxiliary Lane")
+        FREEWAY_CONNECTOR = "    Freeway Connector", _("Freeway Connector")
+        HOV_CONNECTOR = "    HOV Connector", _("HOV Connector")
+        HOV_DROP_RAMP = "    HOV Drop Ramp", _("HOV Drop Ramp")
+        OFF_RAMP_WIDENING = "    Off-Ramp Widening", _("Off-Ramp Widening")
+        ON_RAMP_WIDENING = "    On-Ramp Widening", _("On-Ramp Widening")
+        HOT_LANE_CONVERSION = "    Hot Lane Conversion", _("Hot Lane Conversion")
 
     class TransportationManagmentSystemsType(models.TextChoices):
-        RAMP_METERING = "ramp_metering", _("Ramp Metering")
+        RAMP_METERING = "    Ramp Metering", _("Ramp Metering")
         RAMP_METERING_SIGNAL_COORDINATION = (
-            "ramp_metering_signal_coordination",
+            "    Ramp Metering Signal Coordination",
             _("Ramp Metering Signal Coordination"),
         )
-        INCIDENT_MANAGEMENT = "incident_management", _("Incident Management")
-        TRAVELER_INFORMATION = "traveler_information", _("Traveler Information")
+        INCIDENT_MANAGEMENT = "    Incident Management", _("Incident Management")
+        TRAVELER_INFORMATION = "    Traveler Information", _("Traveler Information")
         ARTERIAL_SIGNAL_MANAGEMENT = (
-            "arterial_signal_management",
+            "    Arterial Signal Management",
             _("Arterial Signal Management"),
         )
         TRANSIT_VEHICLE_LOCATION = (
-            "transit_vehicle_location",
+            "    Transit Vehicle Location (AVL)",
             _("Transit Vehicle Location (AVL)"),
         )
         TRANSIT_VEHICLE_SIGNAL_PRIORITY = (
-            "transit_vehicle_signal_priority",
+            "    Transit Vehicle Signal Priority",
             _("Transit Vehicle Signal Priority"),
         )
-        BUS_RAPID_TRANSIT = "bus_rapid_transit", _("Bus Rapid Transit (BRT)")
+        BUS_RAPID_TRANSIT = "    Bus Rapid Transit (BRT)", _("Bus Rapid Transit (BRT)")
 
     TYPE_CHOICES = {
         _("Highway Capacity Expansion"): HighwayCapacityType,
