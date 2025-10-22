@@ -171,7 +171,9 @@ TEST_RUNNER = "pytest_django.runner.TestRunner"
 AZURE_AUTH = {
     "CLIENT_ID": env("AZURE_AUTH__CLIENT_ID", default=None),
     "CLIENT_TYPE": "confidential_client",  # Optional, pick "public_client" or "confidential_client" (default)
-    "CLIENT_SECRET": env("AZURE_AUTH__CLIENT_SECRET", default=None),  # optional for public clients
+    "CLIENT_SECRET": env(
+        "AZURE_AUTH__CLIENT_SECRET", default=None
+    ),  # optional for public clients
     # REDIRECT_URI must be set to one of
     # - an absolute URI starting with "http" or "https", e. g. https://<domain>/azure_auth/callback
     # - a relative URI starting with "/", e. g. /azure_auth/callback

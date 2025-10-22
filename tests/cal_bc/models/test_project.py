@@ -7,7 +7,11 @@ from cal_bc.projects.models.project import Project
 class TestProject:
     @pytest.fixture
     def model_version(self) -> ModelVersion:
-        return ModelVersion.objects.create(name="Testing", version="1")
+        return ModelVersion.objects.create(
+            name="Testing",
+            version="1",
+            url="https://example.com",
+        )
 
     def test_string_representation(self, model_version: ModelVersion) -> None:
         project = Project.objects.create(

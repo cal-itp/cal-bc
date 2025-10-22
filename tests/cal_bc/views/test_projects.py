@@ -1,9 +1,13 @@
-from django.test.client import Client
-from django.contrib.auth.models import User
+import pytest
+
 from cal_bc.projects.models.model_version import ModelVersion
 from cal_bc.projects.models.project import Project
+from cal_bc_calculator.calculator import Calculator
+from django.contrib.auth.models import User
+from django.test.client import Client
+from django.urls import reverse_lazy
+from io import BytesIO
 from unbrowsed import parse_html, query_by_text, query_by_label_text
-import pytest
 
 
 class TestProjectsViews:
@@ -13,7 +17,11 @@ class TestProjectsViews:
 
     @pytest.fixture
     def model_version(self) -> ModelVersion:
-        return ModelVersion.objects.create(name="Testing", version="1")
+        return ModelVersion.objects.create(
+            name="Testing",
+            version="1",
+            url="https://dot.ca.gov/-/media/dot-media/programs/transportation-planning/documents/new-state-planning/transportation-economics/cal-bc/2023-cal-bc/2023-non-federal-model/cal-bc-8-1-sketch-a11y.xlsm",
+        )
 
     @pytest.fixture
     def project(self, model_version: ModelVersion) -> Project:
@@ -28,7 +36,7 @@ class TestProjectsViews:
 
     def test_with_projects_index(self, client: Client, user: User):
         client.force_login(user)
-        response = client.get("/projects/")
+        response = client.get(reverse_lazy("projects"))
         assert response.status_code == 200
         dom = parse_html(response.content)
         assert query_by_text(dom, "Projects")
@@ -38,7 +46,7 @@ class TestProjectsViews:
 
     def test_with_project_new(self, client: Client, user: User):
         client.force_login(user)
-        response = client.get("/projects/new")
+        response = client.get(reverse_lazy("project_new"))
         assert response.status_code == 200
         dom = parse_html(response.content)
         assert query_by_text(dom, "Project Data")
@@ -60,7 +68,7 @@ class TestProjectsViews:
         model_version: ModelVersion,
     ) -> None:
         client.force_login(user)
-        response = client.get(f"/projects/{project.pk}/edit")
+        response = client.get(reverse_lazy("project_edit", kwargs={"pk": project.pk}))
         assert response.status_code == 200
         dom = parse_html(response.content)
         assert query_by_text(dom, "Project Data")
@@ -96,7 +104,7 @@ class TestProjectsViews:
         model_version: ModelVersion,
     ):
         client.force_login(user)
-        response = client.get(f"/projects/{project.pk}/show")
+        response = client.get(reverse_lazy("project", kwargs={"pk": project.pk}))
         assert response.status_code == 200
         dom = parse_html(response.content)
         assert query_by_text(dom, "Project Data")
@@ -129,4 +137,18 @@ class TestProjectsViews:
         assert peak_period.element.attrs["value"] == "5"
         assert peak_period.element.select("[disabled]").any_matches
 
+        assert query_by_text(dom, "Download")
         assert query_by_text(dom, "Edit Project")
+
+    @pytest.mark.vcr
+    def test_get_project_download(
+        self, client: Client, user: User, project: Project
+    ) -> None:
+        client.force_login(user)
+        response = client.get(
+            reverse_lazy("project_download", kwargs={"pk": project.pk})
+        )
+        assert response.status_code == 200
+        with BytesIO(b"".join(response.streaming_content)) as buffer:
+            evaluator = Calculator(buffer).compile()
+        assert round(evaluator.evaluate("3) Results!H13"), 2) == 136.65

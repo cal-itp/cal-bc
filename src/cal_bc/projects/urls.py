@@ -6,6 +6,7 @@ from .views.project import (
     ProjectNewView,
     ProjectEditView,
     ProjectDetailView,
+    ProjectDownloadView,
 )
 
 urlpatterns = [
@@ -15,5 +16,10 @@ urlpatterns = [
     path("projects/", ProjectListView.as_view(), name="projects"),
     path("projects/new", ProjectNewView.as_view(), name="project_new"),
     path("projects/<int:pk>/edit", ProjectEditView.as_view(), name="project_edit"),
-    path("projects/<int:pk>/show", ProjectDetailView.as_view(), name="project"),
+    path("projects/<int:pk>/", ProjectDetailView.as_view(), name="project"),
+    path(
+        "projects/<int:pk>/download/",
+        ProjectDownloadView.as_view(),
+        name="project_download",
+    ),
 ]

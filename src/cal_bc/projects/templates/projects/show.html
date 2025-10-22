@@ -2,6 +2,21 @@
 {% block main %}
 <div class="min-h-full">
     {% include "_header_nav.html" %}
+
+    <header class="relative bg-primary-01 shadow dark:shadow-none dark:after:pointer-events-none dark:after:absolute dark:after:inset-x-0 dark:after:inset-y-0 dark:after:border-y dark:after:border-white/10">
+        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+            <div class="sm:flex sm:items-center">
+                <div class="sm:flex-auto">
+                    <h2 class="text-4xl font-bold tracking-tight text-gray-900 text-white">Project Data</h2>
+                </div>
+                <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none sm:space-x-2">
+                    <a href="{% url 'project_download' project.pk %}" class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:bg-white/10 dark:text-white dark:shadow-none dark:inset-ring-white/5 dark:hover:bg-white/20">Download</a>
+                    <a href="{% url 'project_edit' project.pk %}" class="rounded-md bg-dds-green-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-dds-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dds-green-600 dark:shadow-none dark:focus-visible:outline-dds-green-500">Edit Project</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
     {% include "projects/_form.html" with editable=False %}
 </div>
 {% endblock %}

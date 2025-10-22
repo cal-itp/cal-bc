@@ -8,5 +8,6 @@ class TestModelVersion:
         model_version = ModelVersion.objects.create(
             name="Cal-B/C Sketch",
             version="8.1",
+            url="https://example.com",
         )
         assert str(model_version) == "Cal-B/C Sketch v8.1"
