@@ -4,20 +4,20 @@
 <div class="min-h-full">
     {% include "_header_nav.html" %}
 
-    <header class="relative bg-primary-01 shadow dark:shadow-none dark:after:pointer-events-none dark:after:absolute dark:after:inset-x-0 dark:after:inset-y-0 dark:after:border-y dark:after:border-white/10">
+    <header class="relative bg-teal-950 shadow dark:shadow-none dark:after:pointer-events-none dark:after:absolute dark:after:inset-x-0 dark:after:inset-y-0 dark:after:border-y dark:after:border-white/10">
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             <div class="sm:flex sm:items-center">
                 <div class="sm:flex-auto">
                     <h2 class="text-4xl font-bold tracking-tight text-gray-900 text-white">Projects</h2>
                 </div>
                 <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-                    <a href="{% url 'project_new' %}" class="block rounded-md bg-dds-green-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-dds-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dds-green-600 dark:shadow-none dark:focus-visible:outline-dds-green-500">New Project</a>
+                    <a href="{% url 'project_new' %}" class="block rounded-md bg-dds-teal-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-dds-teal-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dds-teal-600 dark:shadow-none dark:focus-visible:outline-dds-teal-500">New Project</a>
                 </div>
             </div>
         </div>
     </header>
 
-    <main class="min-h-full bg-white text-black dark:text-white dark:bg-gray-900">
+    <main class="min-h-full text-black dark:text-white dark:bg-gray-900">
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             <div class="mt-8 flow-root">
                 <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -39,8 +39,8 @@
                                         <td class="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6 dark:text-white">{{ project }}</td>
                                         <td class="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6 dark:text-white">{{ project.model_version }}</td>
                                         <td class="py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap space-x-4 sm:pr-6">
-                                            <a href="{% url 'project' project.id %}" class="text-dds-green-600 hover:text-teal-900 dark:text-dds-green-400 dark:hover:text-dds-green-300">Show</a>
-                                            <a href="{% url 'project_edit' project.id %}" class="text-dds-green-600 hover:text-teal-900 dark:text-dds-green-400 dark:hover:text-dds-green-300">Edit</a>
+                                            <a href="{% url 'project' project.id %}" class="text-dds-teal-600 hover:text-teal-900 dark:text-dds-teal-400 dark:hover:text-dds-teal-300">Show</a>
+                                            <a href="{% url 'project_edit' project.id %}" class="text-dds-teal-600 hover:text-teal-900 dark:text-dds-teal-400 dark:hover:text-dds-teal-300">Edit</a>
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -50,7 +50,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-6 sm:px-6 dark:border-white/10 dark:bg-transparent">
+            <div class="flex items-center justify-between border-t border-gray-200 px-4 py-6 sm:px-6 dark:border-white/10 dark:bg-transparent">
                 <div class="flex flex-1 justify-between sm:hidden">
                     {% if page_obj.has_previous %}
                         <a href="?page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-white/10 dark:bg-white/5 dark:text-gray-200 dark:hover:bg-white/10">Previous</a>
@@ -95,7 +95,7 @@
                                     <span class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 inset-ring inset-ring-gray-300 focus:outline-offset-0 dark:text-gray-400 dark:inset-ring-gray-700">...</span>
                                 {% else %}
                                     {% if page_obj.number == number %}
-                                        <span aria-current="page" class="relative z-10 inline-flex items-center bg-dds-green-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dds-green-600 dark:bg-dds-green-500 dark:focus-visible:outline-dds-green-500">{{ number }}</span>
+                                        <span aria-current="page" class="relative z-10 inline-flex items-center bg-dds-teal-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dds-teal-600 dark:bg-dds-teal-500 dark:focus-visible:outline-dds-teal-500">{{ number }}</span>
                                     {% else %}
                                         <a href="?page={{ number }}" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 inset-ring inset-ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 dark:text-gray-200 dark:inset-ring-gray-700 dark:hover:bg-white/5">{{ number }}</a>
                                     {% endif %}
