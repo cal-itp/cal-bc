@@ -10,6 +10,7 @@ dependencies = [
     "django-azure-auth>=2.4.0",
     "django-downloadview>=2.4.0",
     "django-environ>=0.12.0",
+    "django-htmx>=1.26.0",
     "django-tailwind-cli>=4.4.2",
     "django-widget-tweaks>=1.5.0",
     "google-auth>=2.41.1",

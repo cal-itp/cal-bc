@@ -7,6 +7,7 @@ from .views.project import (
     ProjectEditView,
     ProjectDetailView,
     ProjectDownloadView,
+    project_benefit,
 )
 
 urlpatterns = [
@@ -16,6 +17,7 @@ urlpatterns = [
     path("projects/", ProjectListView.as_view(), name="projects"),
     path("projects/new", ProjectNewView.as_view(), name="project_new"),
     path("projects/<int:pk>/edit", ProjectEditView.as_view(), name="project_edit"),
+    path("projects/<int:pk>/benefit/", project_benefit, name="project_benefit"),
     path("projects/<int:pk>/", ProjectDetailView.as_view(), name="project"),
     path(
         "projects/<int:pk>/download/",

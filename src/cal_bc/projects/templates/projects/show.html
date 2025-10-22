@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static widget_tweaks %}
 {% block main %}
 <div class="min-h-full">
     {% include "_header_nav.html" %}
@@ -17,6 +18,49 @@
         </div>
     </header>
 
-    {% include "projects/_form.html" with editable=False %}
+<main class="min-h-full">
+    <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <form method="post">
+            {% csrf_token %}
+            <div class="space-y-12">
+                <div class="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3 dark:border-white/10">
+                        <div class="grid order-1 md:order-2">
+                            <div class="h-fit border border-dds-teal-200 dark:border-teal-950 rounded-sm p-8 pt-6 bg-dds-teal-100 dark:bg-dds-teal-700 dark:text-white">
+                                <h3 class="mb-4 text-lg uppercase font-bold text-dds-teal-600 dark:text-dds-teal-500">Results</h3>
+                                <div aria-hidden="true"
+                                     class="w-full border-t mb-5 border-dds-teal-600 dark:border-dds-teal-500"></div>
+                                <h4 class="mb-4 text-2xl font-semibold">Life-Cycle Costs</h4>
+                                <p hx-get="{% url 'project_benefit' project.pk %}" hx-trigger="load">
+                                  Calculating ...
+                                </p>
+                            </div>
+                        </div>
+                    <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2 order-2 md:order-1">
+                        <div class="sm:col-span-4">
+                            <h2 class="text-base/7 font-semibold text-gray-900 dark:text-white">General Information</h2>
+                            <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Configure project analysis settings.</p>
+                        </div>
+                        {% for field in form %}
+                            <div class="sm:col-span-4">
+                                <label for="{{ field.id_for_label }}" class="block text-sm/6 font-medium text-gray-900 dark:text-white">{{ field.label }}</label>
+                                <div class="mt-2 flex items-center">
+                                    {{ field | add_class:"block w-fit rounded-md bg-white mr-3 px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500 dark:focus:outline-indigo-500" }}
+                                    {% if field.help_text %}
+                                        <p class="help text-sm/6 text-gray-900 dark:text-white" id="{{ field.auto_id }}_helptext">
+                                            {{ field.help_text|safe }}
+                                        </p>
+                                    {% endif %}
+                                </div>
+                                {% for error in field.errors %}
+                                    <span class="text-red-600">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
 </div>
 {% endblock %}
