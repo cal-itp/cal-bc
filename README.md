@@ -5,7 +5,8 @@ This tool calculates values based on Cal-B/C workbooks. It also provides automat
 
 ## Installation
 
-> Note: All commands below should be run inside this directory.
+> [!NOTE]
+> All commands below should be run inside this directory.
 
 This application requires `uv` to be installed. This can be installed using [asdf](https://asdf-vm.com):
 
@@ -17,34 +18,47 @@ $ asdf install
 Install dependencies using `uv`:
 
 ```bash
-$ uv install
+$ uv sync
 ```
 
-Copy `.env.example` to `.env`, fill in the secret values in the `.env` file:
+Copy `.env.example` to `.env` and fill in the secret values in the `.env` file:
 
 ```bash
 $ cp .env.example .env
 ```
 
-In one terminal tab, start the Tailwind build process:
-
-```bash
-$ uv run manage.py tailwind watch
-```
-
-In another terminal tab, set your Google Cloud project and login: 
+Set your Google Cloud project and login:
 
 ```bash
 $ gcloud config set project cal-itp-data-infra-staging # you will want to unset this later with `gcloud config unset project`
 $ gcloud auth application-default login --login-config=iac/login.json --quiet
 ```
 
-Create the database, run migrations, and start the server:
+Create the database and run migrations:
 
 ```bash
 $ uv run manage.py sqlcreate | psql
 $ uv run manage.py migrate
-$ uv run manage.py runserver
+```
+
+> [!NOTE]
+> If you don't have postgresql, run `brew install postgresql` or visit https://www.postgresql.org/ for more information.
+>
+> If you run into the error `database "database_name" does not exist`, you may need to create it manually running `createdb <database_name>`.
+>
+> To check if your database was created, run `psql -l`.
+
+Create static files and tart the server:
+
+```bash
+$ uv run manage.py collectstatic
+```
+
+In another terminal tab, start the Tailwind build process:
+
+```bash
+$ uv run manage.py tailwind build
+$ uv run manage.py tailwind watch
 ```
 
 Now, visit the server at [http://localhost:8000](http://localhost:8000).
@@ -64,7 +78,8 @@ Now, run the tests:
 $ uv run manage.py test
 ```
 
-> Note: you can run only the web application tests using:
+> [!NOTE]
+> You can run only the web application tests using:
 >
 > ```bash
 > $ uv run manage.py test tests/cal_bc
@@ -85,7 +100,8 @@ Password (again): ********
 
 Now, when you visit the admin site, you can log in with your DOT account as usual.
 
-> Note: if you forget to add your user before this point, the Azure Entra ID login package will automatically add a user and disallow access. You will need to either manually make your user a superuser or delete your user account.
+> [!NOTE]
+> If you forget to add your user before this point, the Azure Entra ID login package will automatically add a user and disallow access. You will need to either manually make your user a superuser or delete your user account.
 
 
 ## License
