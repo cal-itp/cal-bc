@@ -48,17 +48,18 @@ $ uv run manage.py migrate
 >
 > To check if your database was created, run `psql -l`.
 
-Create static files and tart the server:
-
-```bash
-$ uv run manage.py collectstatic
-```
-
 In another terminal tab, start the Tailwind build process:
 
 ```bash
 $ uv run manage.py tailwind build
 $ uv run manage.py tailwind watch
+```
+
+Then, collect all the static files and start the Django server:
+
+```bash
+$ uv run manage.py collectstatic
+$ uv run manage.py runserver
 ```
 
 Now, visit the server at [http://localhost:8000](http://localhost:8000).
@@ -84,6 +85,15 @@ $ uv run manage.py test
 > ```bash
 > $ uv run manage.py test tests/cal_bc
 > ```
+
+
+### Linting
+
+This project uses [ruff](https://astral.sh/ruff) to lint code. To run linting and apply fixes:
+
+```bash
+$ uv run ruff check --fix
+```
 
 
 ### Administering the site locally

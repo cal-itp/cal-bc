@@ -28,6 +28,15 @@ urlpatterns = [
     re_path(r"^accounts/logout/$", LogoutView.as_view(next_page="/"), name="logout"),
     re_path(r"^admin/login/$", azure_auth.views.azure_auth_login),
     path("admin/", admin.site.urls),
-    path("", include("cal_bc.projects.urls"), name="landing"),
+    path("", include("cal_bc.landings.urls")),
+    path("projects/", include("cal_bc.projects.urls")),
+    path("models/", include("cal_bc.models.urls")),
     re_path(r"^static/(?P<path>.*)$", serve, {"document_root": settings.STATIC_ROOT}),
 ]
+
+if not settings.TESTING:
+    from debug_toolbar.toolbar import debug_toolbar_urls
+
+    urlpatterns = [
+        *urlpatterns,
+    ] + debug_toolbar_urls()

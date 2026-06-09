@@ -1,40 +1,33 @@
-from django.forms import ModelForm
-from cal_bc.projects.models.project import Project
+from django.forms import ModelForm, ChoiceField, CharField, HiddenInput
+from cal_bc.projects.models.project import Value
 from django.utils.translation import gettext as _
 
-
-class ProjectForm(ModelForm):
-    def __init__(self, disable_fields=False, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        if disable_fields:
-            for field in self.fields:
-                self.fields[field].disabled = True
-
+class ValueForm(ModelForm):
     class Meta:
-        model = Project
-        fields = [
-            "name",
-            "model_version",
-            "district",
-            "type",
-            "location",
-            "construction_period_length",
-            "data_direction",
-            "peak_periods_length",
-        ]
+        model = Value
+        fields = ['value', 'field']
 
         labels = {
-            "name": _("Project Name"),
-            "model_version": _("Model Version"),
-            "type": _("Project Type"),
-            "location": _("Project Location"),
-            "construction_period_length": _("Length of Construction Period"),
-            "data_direction": _("One- or Two-Way Data"),
-            "peak_periods_length": _("Length of Peak Period(s) (up to 24 hrs)"),
+            "value": _("Value"),
+            "field": _("Field"),
         }
 
-        help_texts = {
-            "construction_period_length": _("years"),
-            "peak_periods_length": _("hours"),
+        widgets = {
+            "field": HiddenInput(),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'initial' in kwargs:
+            field = kwargs['initial']['field']
+        if 'instance' in kwargs:
+            field = kwargs['instance'].field
+        values = field.value_set.all()
+        if len(values):
+            self.fields['value'] = ChoiceField(
+                required=True,
+                choices=[(None, "---"), *[(v.value, v.name) for v in values]]
+            )
+        else:
+            self.fields['value'] = CharField(required=True)
+        self.fields['value'].label = field.name

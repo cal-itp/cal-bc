@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 import importlib
 import os
+import sys
 from pathlib import Path
 from urllib.parse import urlparse
 from django.urls import reverse_lazy
@@ -60,6 +61,8 @@ else:
 
 INSTALLED_APPS = [
     "cal_bc.projects.apps.ProjectsConfig",
+    "cal_bc.models.apps.ModelsConfig",
+    "cal_bc.landings.apps.LandingsConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -71,6 +74,8 @@ INSTALLED_APPS = [
     "dj_svg",
     "django_htmx",
     "widget_tweaks",
+    "nested_admin",
+    "extra_views",
 ]
 
 if importlib.util.find_spec("django_extensions"):
@@ -191,3 +196,19 @@ LOGIN_URL = "/azure_auth/login"
 LOGIN_REDIRECT_URL = "/projects"  # Or any other endpoint
 
 AUTHENTICATION_BACKENDS = ("azure_auth.backends.AzureBackend",)
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
+TESTING = "test" in sys.argv or "PYTEST_VERSION" in os.environ
+
+if not TESTING:
+    INSTALLED_APPS = [
+        *INSTALLED_APPS,
+        "debug_toolbar",
+    ]
+    MIDDLEWARE = [
+        "debug_toolbar.middleware.DebugToolbarMiddleware",
+        *MIDDLEWARE,
+    ]
