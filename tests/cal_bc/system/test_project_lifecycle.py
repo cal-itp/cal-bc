@@ -98,4 +98,5 @@ class TestProjectLifecycle(StaticLiveServerTestCase):
             "District 4 - Bay Area / Oakland"
         )
         self.page.get_by_role("button", name="Save Project").click()
+        self.page.wait_for_selector("text=Project successfully saved!")
         self.page.close()

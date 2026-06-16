@@ -1,8 +1,9 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404
-from extra_views import InlineFormSetView
+from extra_views import InlineFormSetView, FormSetSuccessMessageMixin
 from django.forms import BaseInlineFormSet
+from django.contrib.messages import constants as messages
 
 from cal_bc.models.models.model import Subsection, Field
 from cal_bc.projects.models.project import Project, Value
@@ -16,7 +17,7 @@ class SortedValueInlineFormSet(BaseInlineFormSet):
         return iter([field_id_forms[pk[0]] for pk in sorted_field_ids])
 
 
-class ProjectEditView(LoginRequiredMixin, InlineFormSetView):
+class ProjectEditView(LoginRequiredMixin, FormSetSuccessMessageMixin, InlineFormSetView):
     model = Project
     inline_model = Value
     form_class = ValueForm
@@ -24,6 +25,7 @@ class ProjectEditView(LoginRequiredMixin, InlineFormSetView):
     prefix = 'value'
     factory_kwargs = {"can_delete": False}
     template_name = 'projects/edit.html'
+    success_message = 'Project successfully saved!'
 
     def get_object(self):
         project = get_object_or_404(Project, pk=self.kwargs["project_pk"])
