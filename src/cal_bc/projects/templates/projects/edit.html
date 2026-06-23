@@ -2,10 +2,10 @@
 {% block main %}
 {% load svg %}
 {% include "_statewide_header.html" %}
-<div class="min-h-full">
+<div class="min-h-full bg-gray-100">
     {% include "_header_nav.html" %}
-    <header class="relative bg-gray-900 shadow dark:shadow-none dark:after:pointer-events-none dark:after:absolute dark:after:inset-x-0 dark:after:inset-y-0 dark:after:border-y dark:after:border-white/10">
-        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+    <header class="relative">
+        <div class="mx-auto max-w-7xl px-6 py-6 lg:px-8">
             {% if messages %}
             <div class="bg-dds-teal-100 border-l-4 border-dds-teal-700 rounded text-dds-teal-900 shadow-md min-w-md float-top float-right" role="alert">
                 <div class="flex items-center p-2">
@@ -22,9 +22,10 @@
                 </div>
             </div>
             {% endif %}
-            <h2 class="text-4xl font-bold tracking-tight text-gray-900 text-white">Project Data</h2>
+            <h2 class="text-4xl font-bold tracking-tight text-dds-teal-950">1A. Project Data</h2>
         </div>
     </header>
     {% include "projects/_form.html" with title="Edit Project" %}
 </div>
+{% include "_footer.html" %}
 {% endblock %}
