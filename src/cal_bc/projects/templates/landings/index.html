@@ -2,30 +2,154 @@
 {% load static %}
 {% load svg %}
 {% block main %}
-{% include "_statewide_header.html" %}
-<main class="flex min-h-full bg-white">
-  <div class="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
-    <div class="mx-auto w-full max-w-sm lg:w-96">
-      <div>
 
-        <img src="{% static 'landings/caltrans_dds.svg' %}" class="h-20 w-auto" alt="Caltrans"/>
-        <h2 class="mt-8 text-2xl font-bold leading-9 tracking-tight text-gray-900">Sign in to Cal B/C</h2>
-      </div>
+<header class="absolute inset-x-0 top-0 z-50">
+    {% include "_statewide_header.html" %}
 
-      <div class="mt-10">
-        <div class="mt-10">
-          <div class="mt-6 grid grid-cols-1 gap-4">
-            <a href="{% url 'projects' %}" class="flex w-full items-center justify-center gap-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:ring-transparent">
-              {% svg 'landings/microsoft' class="h-5 w-5" %}
-              <span class="text-sm font-semibold leading-6">Sign in with Microsoft</span>
-            </a>
-          </div>
+    <div class="inset-x-0 top-0 z-50 border-b-1 border-gray-500 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="px-6 py-3 lg:max-w-2xl lg:pr-0 lg:pl-8">
+            <nav aria-label="Global" class="flex items-center space-x-5">
+                <div class="pr-4 border-r-1 border-gray-500 border-dashed">
+                    {% svg 'shared/cal_bc_logo' class="h-8" %}
+                </div>
+                <a href="https://dot.ca.gov" class="m-1.5 p-1.5">
+                    <span class="sr-only">California Department of Transportation</span>
+                    {% svg 'shared/caltrans_logo' alt="Caltrans" class="h-8 w-auto dark:hidden" %}
+                </a>
+                <span class="m-1.5 p-1.5">
+          <span class="sr-only">Data and Digital Services</span>
+          {% svg 'shared/dds_logo' alt="DDS" class="h-8 w-auto dark:hidden" %}
+        </span>
+            </nav>
         </div>
-      </div>
     </div>
-  </div>
-  <div class="relative hidden w-0 flex-1 lg:block">
-    <img src="{% static 'landings/watt_train.jpg' %}" class="absolute inset-0 h-full w-full object-cover"/>
-  </div>
+</header>
+<main class="bg-dds-teal-950">
+    <div class="relative">
+        <div class="mx-auto max-w-7xl">
+            <div class="relative z-10 pt-14 lg:w-full lg:max-w-3xl">
+                <div class="relative px-6 py-32 sm:py-40 lg:px-8 lg:py-75 lg:pb-25 lg:pr-0">
+                    <div class="mx-auto max-w-2xl lg:mx-0">
+                        <p class="text-3xl font-semibold tracking-tight text-pretty text-white sm:text-4xl">Evaluate
+                            economic
+                            benefits and costs</p>
+                        <p class="text-3xl font-semibold tracking-tight text-pretty text-dds-teal-200 sm:text-4xl">for
+                            General Highways.</p>
+                        <p class="mt-10 text-base font-light text-pretty text-dds-teal-100 sm:text-lg">The California
+                            Life-Cycle
+                            Benefit-Cost Analysis Tool (Cal-B/C) calculates its life-cycle costs and benefits, net
+                            present value,
+                            benefit/cost ratio, internal rate of return, payback period as well as annual benefits.</p>
+                        <p class="mt-6 text-base font-light text-pretty text-dds-teal-100 sm:text-lg">Results support
+                            funding decisions
+                            and prioritization for transportation investments statewide.</p>
+                        <a href="{% url 'projects' %}"
+                           class="inline-flex items-center justify-center gap-3 rounded-md bg-white mt-6 px-6 py-3 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:ring-transparent">
+                            {% svg 'landings/microsoft' class="h-7 w-7" %}
+                            <span class="text-base font-bold leading-6">Sign in with Microsoft</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hidden lg:block lg:absolute lg:inset-y-0 lg:right-0 lg:w-4/5 lg:bg-dds-teal-950 lg:mask-l-from-30% lg:mask-l-to-90%">
+            <img src="{% static 'landings/hero.jpg' %}" alt="background"
+                 class="object-cover lg:aspect-auto lg:size-full"/>
+        </div>
+    </div>
+
+    <div class="bg-white py-2 sm:py-6 dark:bg-gray-900">
+        <div class="mx-auto max-w-7xl px-6 lg:px-8">
+            <div class="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
+                <div class="mt-10 grid max-w-xl grid-cols-1 gap-14 text-base/7 text-gray-700 lg:max-w-none lg:grid-cols-2 dark:text-gray-300">
+                    <div class="grid gap-3 content-start text-lg">
+                        <h2 class="mt-2 text-2xl font-semibold tracking-tight text-pretty text-dds-teal-700 sm:text-3xl dark:text-white">
+                            Cal-B/C Tool Overview</h2>
+                        <p>Cal-B/C is continuously updated to ensure that it aligns with current transportation benefit
+                            - cost
+                            findings
+                            and practices.</p>
+                        <p>Cal-B/C consists of five different tools, tailored to the type of project you are
+                            analzing:</p>
+                        <ul class="list-disc list-outside ml-5 ms-2 grid gap-2">
+                            <li><span class="font-bold">Cal-B/C Sketch:</span> Helps you do a BCA to assess highway and
+                                transit projects with very
+                                little data.
+                            </li>
+                            <li><span class="font-bold">Cal-B/C Corridor:</span> A post processor that uses data from
+                                travel demand or microsimulation
+                                models to analyze
+                            </li>
+                            projects.
+                            <li><span class="font-bold">Cal-B/C AT:</span> Tailored to active transportation projects
+                                that involve cycling or walking.
+                            </li>
+                            <li><span class="font-bold">Cal-B/C PnR:</span> Assess park and ride projects that may
+                                involve carpools, buses, or commuter
+                                rail.
+                            </li>
+                            <li><span class="font-bold">Cal-B/C IF:</span> Assess intermodal freight facilities.</li>
+                        </ul>
+                        <p>Caltrans continuously updates these tools to ensure they have the latest economic parameters
+                            and align
+                            with
+                            best practices.</p>
+                        <p>The California Transportation Commission endorses Cal-B/C tools for grant applications and
+                            local
+                            partnership
+                            program applications.</p>
+                        <p>The Cal-B/C models are periodically modified to comply with benefit - cost guidance from
+                            USDOT, so it can
+                            be
+                            used for federal grant applications.</p>
+                        <p>Cal-B/C Sketch supports evaluation of 29 project types in 4 main categories, and its results
+                            can be
+                            combined
+                            with results from other Cal-B/C tools. However, it <span
+                                    class="font-bold italic">cannot</span> evaluate these project types:</p>
+                        <ul class="list-disc list-outside ml-5 ms-2 grid gap-2">
+                            <li>Interchange, local roads, and roundabouts</li>
+                            <li>Active Transportation</li>
+                            <li>Park and Ride Facilities</li>
+                            <li>Intermodal Freight Facilities</li>
+                        </ul>
+                        <p>Cal-B/C Corridor should be used for the project types above, and is also recommended when
+                            travel demand
+                            model (TDM) or micro-simulation model data is available.</p>
+                    </div>
+                    <div class="grid gap-3 content-start text-lg">
+                        <h2 class="mt-2 text-2xl font-semibold tracking-tight text-pretty text-dds-teal-700 sm:text-3xl dark:text-white">
+                            Analysis Process Stages</h2>
+                        <h3 class="mt-4 text-2xl font-semibold tracking-tight text-pretty dark:text-white">Section 1: Project Information</h3>
+                        <ul class="grid gap-3">
+                            <li><span class="font-bold">1A -</span> Project Data</li>
+                            <li><span class="font-bold">1B -</span> Highway Design and Traffic Data</li>
+                            <li><span class="font-bold">1C -</span> Highway Crash Data</li>
+                            <li><span class="font-bold">1D -</span> Rail and Transit Data</li>
+                            <li><span class="font-bold">1E -</span> Project Costs</li>
+                        </ul>
+                        <h3 class="mt-4 text-2xl font-semibold tracking-tight text-pretty dark:text-white">Section 2: Model Inputs</h3>
+                        <p>Use the steps below to adjust estimated speeds, volumes, crash rates, and travel time
+                            reliability
+                            standard deviations, and to check trip counts for projects affecting vehicle occupancy.</p>
+                        <ul class="grid gap-3">
+                            <li><span class="font-bold">2A -</span> Highway Speed and Volume Inputs</li>
+                            <li><span class="font-bold">2B -</span> Highway Crash Rates</li>
+                            <li><span class="font-bold">2C -</span> Ramp and Arterial Inputs</li>
+                            <li><span class="font-bold">2D -</span> Annual Person-Trips</li>
+                            <li><span class="font-bold">2E -</span> Travel Time Reliability</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
+
+<footer class="bg-gray-200 dark:bg-gray-900">
+    <div class="mx-auto max-w-7xl px-6 py-4 md:flex md:items-center md:justify-between lg:px-8">
+        <p class="mt-8 text-center font-semibold text-sm/6 text-gray-600 md:order-1 md:mt-0 dark:text-gray-400">California Department of Transportation <span class="px-1">•</span> Office of Transportation Economics <span class="px-1">•</span> Transportation Planning Division</p>
+    </div>
+</footer>
 {% endblock %}

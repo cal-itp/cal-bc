@@ -36,7 +36,7 @@ class TestProjectLifecycle(StaticLiveServerTestCase):
 
     def test_projects(self):
         self.page.goto(f"{self.live_server_url}/")
-        self.page.wait_for_selector("text=Cal B/C")
+        self.page.wait_for_selector("text=Cal-B/C Tool Overview")
         self.page.get_by_role("link", name="Sign in with Microsoft").click()
         self.page.wait_for_selector("text=Projects")
         self.page.get_by_role("link", name="New Project").click()
