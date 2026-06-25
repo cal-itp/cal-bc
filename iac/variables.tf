@@ -20,3 +20,9 @@ resource "random_password" "cal-bc-staging-database" {
 locals {
   domain = "cal-bc-staging.dds.dot.ca.gov"
 }
+
+variable "image_tag" {
+  type        = string
+  description = "The tag used for image deployment"
+  default     = "latest"
+}

@@ -2,10 +2,6 @@ name: Docker image
 
 on: [push]
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
-
 jobs:
   build:
     name: Build image
@@ -20,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Login to GitHub Repository
         uses: docker/login-action@v3
@@ -33,6 +29,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: ghcr.io/${{ github.repository }}/cal-bc:${{ github.ref == 'refs/heads/main' && 'latest' || 'development' }}
-          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/cal-bc:${{ github.ref == 'refs/heads/main' && 'latest' || 'development' }}
+          tags: ghcr.io/${{ github.repository }}/cal-bc:${{ github.sha }}
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/cal-bc:${{ github.sha }}
           cache-to: type=inline
