@@ -3,7 +3,6 @@ from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404
 from extra_views import InlineFormSetView, FormSetSuccessMessageMixin
 from django.forms import BaseInlineFormSet
-from django.contrib.messages import constants as messages
 
 from cal_bc.models.models.model import Subsection, Field
 from cal_bc.projects.models.project import Project, Value

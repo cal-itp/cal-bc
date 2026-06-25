@@ -68,9 +68,21 @@ class TestProjectsViews:
         response = client.get(reverse_lazy("projects"))
         assert response.status_code == 200
         dom = parse_html(response.content)
-        assert query_by_text(dom, "Projects")
-        assert query_by_text(dom, "New Project")
-        page = query_by_text(dom, "Projects", exact=False)
+        assert query_by_text(dom, "My Cal B/C Analyses")
+        assert query_by_text(dom, "New analysis")
+        assert query_by_text(dom, "0 analyses")
+        assert query_by_text(dom, "No analyses yet")
+        assert query_by_text(dom, "Create analysis")
+
+    def test_index_with_projects(self, client: Client, user: User, project: Project):
+        client.force_login(user)
+        response = client.get(reverse_lazy("projects"))
+        assert response.status_code == 200
+        dom = parse_html(response.content)
+        assert query_by_text(dom, "My Cal B/C Analyses")
+        assert query_by_text(dom, "New analysis")
+        assert query_by_text(dom, "1 analyses")
+        page = query_by_text(dom, "My Cal B/C Analyses", exact=False)
         assert page.to_have_text_content("Showing1of1pages", exact=False)
 
     def test_edit(

@@ -89,14 +89,14 @@ class TestProjectLifecycle(StaticLiveServerTestCase):
         self.page.goto(f"{self.live_server_url}/")
         self.page.wait_for_selector("text=Cal-B/C Tool Overview")
         self.page.get_by_role("link", name="Sign in with Microsoft").click()
-        self.page.wait_for_selector("text=Projects")
-        self.page.get_by_role("link", name="New Project").click()
+        self.page.wait_for_selector("text=My Cal B/C Analyses")
+        self.page.get_by_role("link", name="New analysis").click()
         self.page.get_by_role("button", name="Cal-B/C Sketch v8.1").click()
         self.page.get_by_label("Project Name").fill("Geary Boulevard Light Rail")
         self.page.get_by_label("State").select_option("California")
         self.page.get_by_label("District").select_option(
             "District 4 - Bay Area / Oakland"
         )
-        self.page.get_by_role("button", name="Save Project").click()
+        self.page.get_by_role("button", name="Save draft").click()
         self.page.wait_for_selector("text=Project successfully saved!")
         self.page.close()
