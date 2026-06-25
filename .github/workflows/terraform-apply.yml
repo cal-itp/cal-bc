@@ -48,6 +48,18 @@ jobs:
       - name: Setup GCloud utilities
         uses: google-github-actions/setup-gcloud@v2
 
+      - name: Terraform Apply Cloud Run
+        uses: dflook/terraform-apply@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          path: iac/
+          auto_approve: true
+          variables: |
+            image_tag = "${{ github.ref == 'refs/heads/main' && github.sha || github.event.pull_request.head.sha }}"
+          target: |
+            google_cloud_run_v2_service.cal-bc-staging
+
       - name: Terraform Apply
         uses: dflook/terraform-apply@v2
         env:
@@ -55,4 +67,4 @@ jobs:
         with:
           path: iac/
           variables: |
-            image_tag = "${{ github.sha }}"
+            image_tag = "${{ github.ref == 'refs/heads/main' && github.sha || github.event.pull_request.head.sha }}"
