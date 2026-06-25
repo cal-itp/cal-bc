@@ -63,3 +63,5 @@ jobs:
         with:
           add_github_comment: changes-only
           path: iac/
+          variables: |
+            image_tag = "${{ github.sha }}"

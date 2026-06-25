@@ -7,6 +7,10 @@ data "terraform_remote_state" "iam" {
   }
 }
 
+variable "image_tag" {
+  type = string
+}
+
 resource "random_password" "cal-bc-staging-secret-key" {
   special = false
   length  = 50
