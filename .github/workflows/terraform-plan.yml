@@ -64,4 +64,4 @@ jobs:
           add_github_comment: changes-only
           path: iac/
           variables: |
-            image_tag = "${{ github.sha }}"
+            image_tag = "${{ github.ref == 'refs/heads/main' && github.sha || github.event.pull_request.head.sha }}"
