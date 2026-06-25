@@ -12,7 +12,7 @@
             <div class="sm:flex sm:items-center">
                 <div class="sm:flex-auto space-y-2">
                     <h2 class="mt-4 text-4xl font-bold tracking-tight text-dds-teal-950">My Cal B/C Analyses</h2>
-                    <p class="text-base font-light text-pretty text-gray-700"># analyses across 1 model</p>
+                    <p class="text-base font-light text-pretty text-gray-700">{{ page_obj.paginator.count }} analyses</p>
                 </div>
                 <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
                     <a href="{% url 'models' %}" class="flex items-center gap-2 rounded-md bg-dds-teal-600 px-3 py-2 text-md font-medium text-white hover:bg-dds-teal-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dds-teal-600">
@@ -27,37 +27,31 @@
     </header>
 
     <main class="min-h-full">
-        <div class="mx-auto max-w-7xl py-6 px-6 lg:px-8">
-            <div class="mt-8 flow-root">
-                <div class="overflow-x-auto">
-
-                    <div class="inline-block min-w-full py-2 align-middle">
-                        <div class="overflow-hidden">
-                            <table class="relative min-w-full">
-                                <thead>
-                                    <tr>
-                                        <th scope="col" class="py-2 px-3 pl-4 text-left text-xs font-semibold text-gray-800 sm:pl-6">Project Name</th>
-                                        <th scope="col" class="py-2 pr-3 pl-4 text-left text-xs font-semibold text-gray-800 sm:pl-6">Model</th>
-                                        <th scope="col" class="py-2 pr-4 pl-3 sm:pr-6">
-                                            <span class="sr-only">Edit</span>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white ">
-                                {% for project in object_list %}
-                                    <tr class="border-gray-100 border-y-2">
-                                        <td class="rounded-l-md py-4 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6">{{ project }}</td>
-                                        <td class="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6">{{ project.version }}</td>
-                                        <td class="rounded-r-md py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-6">
-                                            <a href="{% url 'project_edit' project.id %}" class="text-dds-teal-600 hover:text-teal-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dds-teal-600">Edit</a>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+        <div class="mx-auto max-w-7xl py-6 px-6 lg:px-8 flow-root overflow-x-auto">
+        {% if object_list %}
+            <div class="inline-block min-w-full py-2 align-middle overflow-hidden">
+                <table class="relative min-w-full">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="py-2 px-3 pl-4 text-left text-xs font-semibold text-gray-800 sm:pl-6">Project Name</th>
+                            <th scope="col" class="py-2 pr-3 pl-4 text-left text-xs font-semibold text-gray-800 sm:pl-6">Model</th>
+                            <th scope="col" class="py-2 pr-4 pl-3 sm:pr-6">
+                                <span class="sr-only">Edit</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white">
+                        {% for project in object_list %}
+                        <tr class="border-gray-100 border-y-2">
+                            <td class="rounded-l-md py-4 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6">{{ project }}</td>
+                            <td class="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6">{{ project.version }}</td>
+                            <td class="rounded-r-md py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-6">
+                                <a href="{% url 'project_edit' project.id %}" class="text-dds-teal-600 hover:text-teal-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dds-teal-600">Edit</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
 
             <div class="flex items-center justify-between py-6 px-6 lg:px-8">
@@ -130,6 +124,21 @@
                     </div>
                 </div>
             </div>
+        {% else %}
+            <div class="rounded-md bg-white mx-auto max-w-7xl space-y-2 py-8 px-6 lg:px-8">
+                <p class="pt-8 text-xl font-bold text-gray-900 text-center ">No analyses yet</p>
+                <p class="text-sm text-gray-700 text-center">Create your first Cal B/C analysis by completing the 2-section data entry process.</p>
+                <p class="text-sm text-gray-700 text-center">California state averages are pre-populated where available.</p>
+                <div class="pt-4 pb-8 flex items-center justify-center">
+                    <a href="{% url 'models' %}" class="flex items-center gap-2 rounded-md bg-dds-teal-600 px-3 py-2 text-md font-medium text-white hover:bg-dds-teal-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dds-teal-600">
+                        <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
+                          <path d="M7.06575 9.34075H1.1375C0.818333 9.34075 0.548917 9.231 0.32925 9.0115C0.10975 8.79183 0 8.52242 0 8.20325C0 7.88408 0.10975 7.61467 0.32925 7.395C0.548917 7.1755 0.818333 7.06575 1.1375 7.06575H7.06575V1.1375C7.06575 0.818333 7.1755 0.548916 7.395 0.32925C7.61467 0.10975 7.88408 0 8.20325 0C8.52242 0 8.79183 0.10975 9.0115 0.32925C9.231 0.548916 9.34075 0.818333 9.34075 1.1375V7.06575H15.269C15.5882 7.06575 15.8576 7.1755 16.0773 7.395C16.2968 7.61467 16.4065 7.88408 16.4065 8.20325C16.4065 8.52242 16.2968 8.79183 16.0773 9.0115C15.8576 9.231 15.5882 9.34075 15.269 9.34075H9.34075V15.269C9.34075 15.5882 9.231 15.8576 9.0115 16.0773C8.79183 16.2968 8.52242 16.4065 8.20325 16.4065C7.88408 16.4065 7.61467 16.2968 7.395 16.0773C7.1755 15.8576 7.06575 15.5882 7.06575 15.269V9.34075Z" fill="white"/>
+                        </svg>
+                        <span>Create analysis</span>
+                    </a>
+                </div>
+            </div>
+        {% endif %}
         </div>
     </main>
 </div>
