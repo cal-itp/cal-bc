@@ -1,11 +1,21 @@
 {% load svg %}
-<nav class="h-20 bg-linear-to-r from-dds-teal-700 to-dds-teal-500 text-white">
-    <div class="mx-auto max-w-7xl pt-2 px-4 sm:px-6 lg:px-8">
+<nav class="h-20 bg-dds-teal-950 text-white">
+    <div aria-label="Logos" class="mx-auto max-w-7xl pt-2 px-4 sm:px-6 lg:px-8">
         <div class="flex h-16 items-center justify-between">
-            <div>
-                <a href="{% url 'projects' %}">
-                    {% svg 'projects/cal_bc' class="h-8" %}
+            <div class="flex items-center space-x-5">
+                <div class="pr-4 border-r-1 border-gray-500 border-dashed">
+                    <a href="{% url 'projects' %}">
+                        {% svg 'projects/cal_bc' class="h-8" %}
+                    </a>
+                </div>
+                <a href="https://dot.ca.gov" class="m-1.5 p-1.5">
+                    <span class="sr-only">California Department of Transportation</span>
+                    {% svg 'shared/caltrans_logo' alt="Caltrans" class="h-8 w-auto" %}
                 </a>
+                <span class="m-1.5 p-1.5">
+                    <span class="sr-only">Data and Digital Services</span>
+                        {% svg 'shared/dds_logo' alt="DDS" class="h-8 w-auto" %}
+                </span>
             </div>
             <div>
                 {% include "_user_menu.html" %}

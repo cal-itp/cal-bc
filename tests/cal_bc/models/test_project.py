@@ -1,21 +1,66 @@
 import pytest
-from cal_bc.projects.models.model_version import ModelVersion
-from cal_bc.projects.models.project import Project
+from cal_bc.models.models.model import Model, Version, Section, Subsection, Group, Row, Field
+from cal_bc.projects.models.project import Project, Value
+from django.contrib.auth.models import User
 
 
 @pytest.mark.django_db
 class TestProject:
     @pytest.fixture
-    def model_version(self) -> ModelVersion:
-        return ModelVersion.objects.create(
+    def user(self, django_user_model) -> User:
+        return django_user_model.objects.create_user(username="caltrans")
+
+    @pytest.fixture
+    def model(self) -> Model:
+        return Model.objects.create(
             name="Testing",
-            version="1",
+        )
+
+    @pytest.fixture
+    def version(self, model: Model) -> Version:
+        return Version.objects.create(
+            model=model,
+            name="1",
             url="https://example.com",
         )
 
-    def test_string_representation(self, model_version: ModelVersion) -> None:
-        project = Project.objects.create(
-            model_version=model_version,
-            name="Geary Boulevard MUNI Train",
+    @pytest.fixture
+    def project(self, user: User, version: Version) -> Project:
+        return Project.objects.create(
+            version=version,
+            user=user,
         )
-        assert str(project) == "Geary Boulevard MUNI Train"
+
+    @pytest.fixture
+    def section(self, version: Version) -> Section:
+        return Section.objects.create(version=version, name="Info", code="1")
+
+    @pytest.fixture
+    def subsection(self, section: Section) -> Subsection:
+        return Subsection.objects.create(section=section, name="Data", code="A")
+
+    @pytest.fixture
+    def group(self, subsection: Subsection) -> Group:
+        return Group.objects.create(subsection=subsection, name="General")
+
+    @pytest.fixture
+    def row(self, group: Group) -> Row:
+        return Row.objects.create(group=group)
+
+    @pytest.fixture
+    def field(self, row: Row) -> Field:
+        return Field.objects.create(
+            row=row,
+            name="Project Name"
+        )
+
+    def test_default_name(self, project: Project) -> None:
+        assert str(project) == "New Project"
+
+    def test_named_by_field(self, project: Project, field: Field) -> None:
+        Value.objects.create(
+            project=project,
+            field=field,
+            value="Trails to Rails"
+        )
+        assert str(project) == "Trails to Rails"

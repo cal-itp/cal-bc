@@ -1,13 +1,14 @@
 import pytest
 
-from cal_bc.projects.models.model_version import ModelVersion
-from cal_bc.projects.models.project import Project
+from cal_bc.models.models.model import Model, Version
+from cal_bc.projects.models.project import Project, Value as ProjectValue
+from cal_bc.models.models.model import Section, Subsection, Group, Row, Field
 from cal_bc_calculator.calculator import Calculator
 from django.contrib.auth.models import User
 from django.test.client import Client
 from django.urls import reverse_lazy
 from io import BytesIO
-from unbrowsed import parse_html, query_by_text, query_by_label_text
+from unbrowsed import parse_html, query_by_text, query_by_role
 
 
 class TestProjectsViews:
@@ -16,139 +17,117 @@ class TestProjectsViews:
         return django_user_model.objects.create_user(username="caltrans")
 
     @pytest.fixture
-    def model_version(self) -> ModelVersion:
-        return ModelVersion.objects.create(
+    def model(self) -> Model:
+        return Model.objects.create(
             name="Testing",
-            version="1",
+        )
+
+    @pytest.fixture
+    def version(self, model: Model) -> Version:
+        return Version.objects.create(
+            model=model,
+            name="1",
             url="https://dot.ca.gov/-/media/dot-media/programs/transportation-planning/documents/new-state-planning/transportation-economics/cal-bc/2023-cal-bc/2023-non-federal-model/cal-bc-8-1-sketch-a11y.xlsm",
         )
 
     @pytest.fixture
-    def project(self, model_version: ModelVersion) -> Project:
+    def project(self, version: Version, user: User) -> Project:
         return Project.objects.create(
-            name="Monterey LRT",
-            model_version=model_version,
-            district=Project.District.FIVE,
-            type=Project.RailTransitCapacityType.LIGHT_RAIL,
-            location=Project.Location.NO_CAL,
-            construction_period_length=4,
-            peak_periods_length=5,
+            version=version,
+            user=user,
         )
 
-    def test_with_projects_index(self, client: Client, user: User):
+    @pytest.fixture
+    def section(self, version: Version) -> Section:
+        return Section.objects.create(version=version, name="Project Info", code="1")
+
+    @pytest.fixture
+    def subsection(self, section: Section) -> Subsection:
+        return Subsection.objects.create(section=section, name="Project Data", code="A")
+
+    @pytest.fixture
+    def group(self, subsection: Subsection) -> Group:
+        return Group.objects.create(subsection=subsection, name="General Information")
+
+    @pytest.fixture
+    def row(self, group: Group) -> Row:
+        return Row.objects.create(group=group)
+
+    @pytest.fixture
+    def name_field(self, row: Row) -> Field:
+        return Field.objects.create(row=row, cell="ProjName", name="Project Name")
+
+    @pytest.fixture
+    def district_field(self, row: Row) -> Field:
+        field = Field.objects.create(row=row, cell="ProjLoc", name="District")
+        field.value_set.create(name="District 1", value="1")
+        return field
+
+    def test_index(self, client: Client, user: User):
         client.force_login(user)
         response = client.get(reverse_lazy("projects"))
         assert response.status_code == 200
         dom = parse_html(response.content)
-        assert query_by_text(dom, "Projects")
-        assert query_by_text(dom, "New Project")
-        page = query_by_text(dom, "Projects", exact=False)
-        assert page.to_have_text_content("Showing1of1pages", exact=False)
+        assert query_by_text(dom, "My Cal B/C Analyses")
+        assert query_by_text(dom, "New analysis")
+        assert query_by_text(dom, "0 analyses")
+        assert query_by_text(dom, "No analyses yet")
+        assert query_by_text(dom, "Create analysis")
 
-    def test_with_project_new(self, client: Client, user: User):
+    def test_index_with_projects(self, client: Client, user: User, project: Project):
         client.force_login(user)
-        response = client.get(reverse_lazy("project_new"))
+        response = client.get(reverse_lazy("projects"))
         assert response.status_code == 200
         dom = parse_html(response.content)
-        assert query_by_text(dom, "Project Data")
-        assert query_by_label_text(dom, "Project Name")
-        assert query_by_label_text(dom, "Model Version")
-        assert query_by_label_text(dom, "District")
-        assert query_by_label_text(dom, "Project Type")
-        assert query_by_label_text(dom, "Project Location")
-        assert query_by_label_text(dom, "Length of Construction Period")
-        assert query_by_label_text(dom, "One- or Two-Way Data")
-        assert query_by_label_text(dom, "Length of Peak Period(s) (up to 24 hrs)")
-        assert query_by_text(dom, "Save Project")
+        assert query_by_text(dom, "My Cal B/C Analyses")
+        assert query_by_text(dom, "New analysis")
+        assert query_by_text(dom, "1 analyses")
+        page = query_by_text(dom, "My Cal B/C Analyses", exact=False)
+        assert page.to_have_text_content("Showing1of1pages", exact=False)
 
-    def test_with_project_edit(
+    def test_edit(
         self,
         client: Client,
         user: User,
         project: Project,
-        model_version: ModelVersion,
+        version: Version,
+        subsection: Subsection
     ) -> None:
         client.force_login(user)
         response = client.get(reverse_lazy("project_edit", kwargs={"pk": project.pk}))
-        assert response.status_code == 200
-        dom = parse_html(response.content)
-        assert query_by_text(dom, "Project Data")
+        assert response.status_code == 302
+        assert response.url == reverse_lazy("project_subsection_edit", kwargs={"project_pk": project.pk, "pk": subsection.pk})
 
-        project_name = query_by_label_text(dom, "Project Name")
-        model_version_select = query_by_label_text(dom, "Model Version")
-        district = query_by_label_text(dom, "District")
-        project_type = query_by_label_text(dom, "Project Type")
-        project_location = query_by_label_text(dom, "Project Location")
-        construction_length = query_by_label_text(dom, "Length of Construction Period")
-        data_direction = query_by_label_text(dom, "One- or Two-Way Data")
-        peak_period = query_by_label_text(
-            dom, "Length of Peak Period(s) (up to 24 hrs)"
-        )
-        assert project_name.element.attrs["value"] == "Monterey LRT"
-        assert district.element.select("[value='5'][selected]").any_matches
-        assert model_version_select.element.select(
-            f"[value='{model_version.pk}'][selected]"
-        ).any_matches
-        assert project_type.element.select(
-            "[value='    Light-Rail (LRT)'][selected]"
-        ).any_matches
-        assert project_location.element.select("[value='2'][selected]").any_matches
-        assert construction_length.element.attrs["value"] == "4"
-        assert data_direction.element.select("[value='2'][selected]").any_matches
-        assert peak_period.element.attrs["value"] == "5"
-
-        assert query_by_text(dom, "Save Project")
-
-    def test_with_project_show(
+    def test_subsection_edit(
         self,
         client: Client,
         user: User,
         project: Project,
-        model_version: ModelVersion,
+        version: Version,
+        subsection: Subsection,
+        name_field: Field,
+        district_field: Field
     ):
         client.force_login(user)
-        response = client.get(reverse_lazy("project", kwargs={"pk": project.pk}))
+        response = client.get(reverse_lazy("project_subsection_edit", kwargs={"project_pk": project.pk, "pk": subsection.pk}))
         assert response.status_code == 200
         dom = parse_html(response.content)
         assert query_by_text(dom, "Project Data")
+        assert query_by_text(dom, "General Information")
 
-        project_name = query_by_label_text(dom, "Project Name")
-        model_version_select = query_by_label_text(dom, "Model Version")
-        district = query_by_label_text(dom, "District")
-        project_type = query_by_label_text(dom, "Project Type")
-        project_location = query_by_label_text(dom, "Project Location")
-        construction_length = query_by_label_text(dom, "Length of Construction Period")
-        data_direction = query_by_label_text(dom, "One- or Two-Way Data")
-        peak_period = query_by_label_text(
-            dom, "Length of Peak Period(s) (up to 24 hrs)"
-        )
-        assert project_name.element.attrs["value"] == "Monterey LRT"
-        assert project_name.element.select("[disabled]").any_matches
-        assert model_version_select.element.select(
-            f"[value='{model_version.pk}'][selected]"
-        ).any_matches
-        assert district.element.select("[value='5'][selected]").any_matches
-        assert district.element.select("[disabled]").any_matches
-        assert project_type.element.select(
-            "[value='    Light-Rail (LRT)'][selected]"
-        ).any_matches
-        assert project_type.element.select("[disabled]").any_matches
-        assert project_location.element.select("[value='2'][selected]").any_matches
-        assert project_location.element.select("[disabled]").any_matches
-        assert construction_length.element.attrs["value"] == "4"
-        assert construction_length.element.select("[disabled]").any_matches
-        assert data_direction.element.select("[value='2'][selected]").any_matches
-        assert data_direction.element.select("[disabled]").any_matches
-        assert peak_period.element.attrs["value"] == "5"
-        assert peak_period.element.select("[disabled]").any_matches
-
-        assert query_by_text(dom, "Download")
-        assert query_by_text(dom, "Edit Project")
+        assert query_by_role(dom, "textbox", name="Project Name")
+        assert query_by_role(dom, "combobox", name="District")
 
     @pytest.mark.vcr
     def test_get_project_download(
-        self, client: Client, user: User, project: Project
+        self, client: Client, user: User, project: Project,
+        name_field: Field
     ) -> None:
+        ProjectValue.objects.create(
+            project=project,
+            field=name_field,
+            value="Monterey LRT"
+        )
         client.force_login(user)
         response = client.get(
             reverse_lazy("project_download", kwargs={"pk": project.pk})
@@ -156,11 +135,4 @@ class TestProjectsViews:
         assert response.status_code == 200
         with BytesIO(b"".join(response.streaming_content)) as buffer:
             evaluator = Calculator(buffer).compile()
-        assert evaluator.evaluate("1) Project Information!E2") == 5
         assert evaluator.evaluate("ProjName") == "Monterey LRT"
-        assert evaluator.evaluate("ProjType") == "    Light-Rail (LRT)"
-        assert evaluator.evaluate("ProjLoc") == 2
-        assert evaluator.evaluate("Construct") == 4
-        assert evaluator.evaluate("NumDirections") == 2
-        assert evaluator.evaluate("PeakLngthNB") == 5
-        assert round(evaluator.evaluate("3) Results!H13"), 2) == 136.66
