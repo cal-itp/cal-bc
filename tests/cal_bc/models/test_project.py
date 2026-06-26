@@ -37,7 +37,7 @@ class TestProject:
 
     @pytest.fixture
     def subsection(self, section: Section) -> Subsection:
-        return Subsection.objects.create(section=section, name="Data", code="A")
+        return Subsection.objects.create(section=section, name="Data", code="A", description="Some description")
 
     @pytest.fixture
     def group(self, subsection: Subsection) -> Group:
@@ -64,3 +64,6 @@ class TestProject:
             value="Trails to Rails"
         )
         assert str(project) == "Trails to Rails"
+
+    def test_subsection_description(self, project: Project, subsection: Subsection) -> None:
+        assert str(subsection.description) == "Some description"
