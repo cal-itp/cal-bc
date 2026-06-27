@@ -45,7 +45,7 @@ class Subsection(models.Model):
     section = models.ForeignKey(Section, null=False, on_delete=models.CASCADE)
     name = models.CharField(null=False, blank=False)
     code = models.CharField(null=False, blank=False, db_index=True)
-    description = models.CharField(null=True, blank=False)
+    description = models.CharField(null=True, blank=True)
 
     def __str__(self):
         return f"{str(self.section.version)} § {self.section.code}{self.code} {self.name}"
