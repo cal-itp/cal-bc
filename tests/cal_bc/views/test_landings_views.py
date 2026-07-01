@@ -1,7 +1,7 @@
 from unbrowsed import parse_html, query_by_text
 
 
-class TestLandingsViews:
+class TestLandingViews:
     def test_with_landings_index(self, client):
         response = client.get("/")
         assert response.status_code == 200
