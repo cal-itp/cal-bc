@@ -9,7 +9,6 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('models', '0009_create_value'),
         ('projects', '0002_create_project'),
     ]
 

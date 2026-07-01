@@ -6,7 +6,7 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from playwright.sync_api import Page
 
 
-class TestProjectLifecycle(StaticLiveServerTestCase):
+class TestModelAdmin(StaticLiveServerTestCase):
     @pytest.fixture(autouse=True)
     def setup(self, page: Page, tmp_path: Path):
         self.page = page
