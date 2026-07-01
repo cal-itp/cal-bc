@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from unbrowsed import parse_html, query_by_text
 
 
-class TestModelsViews:
+class TestModelViews:
     @pytest.fixture
     def user(self, django_user_model) -> User:
         return django_user_model.objects.create_user(username="caltrans")
