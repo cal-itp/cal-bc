@@ -40,7 +40,7 @@
                                                 <label for="{{ field.id_for_label }}" class="block text-lg font-medium text-gray-900">{{ field.label }}</label>
                                                 <div class="mt-2 flex items-center">
                                                     {% if field.widget_type == 'select' %}
-                                                        <div class="mt-2 grid grid-cols-1">
+                                                        <div class="mt-2 grid grid-cols-1 mr-3">
                                                             {{ field | add_class:"col-start-1 row-start-1 w-full appearance-none rounded-xs bg-white mr-3 pl-5 pr-12 py-3 text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600" }}
                                                             {% svg "projects/chevron_down" class="pointer-events-none col-start-1 row-start-1 mr-4 size-6 self-center justify-self-end text-gray-500" %}
                                                         </div>
