@@ -41,7 +41,7 @@ class TestProject:
 
     @pytest.fixture
     def group(self, subsection: Subsection) -> Group:
-        return Group.objects.create(subsection=subsection, name="General")
+        return Group.objects.create(subsection=subsection, name="General", description="General description")
 
     @pytest.fixture
     def row(self, group: Group) -> Row:
@@ -67,3 +67,6 @@ class TestProject:
 
     def test_subsection_description(self, project: Project, subsection: Subsection) -> None:
         assert str(subsection.description) == "Some description"
+
+    def test_group_description(self, project: Project, group: Group) -> None:
+        assert str(group.description) == "General description"

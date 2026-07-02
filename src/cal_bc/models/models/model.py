@@ -57,6 +57,7 @@ class Group(models.Model):
 
     subsection = models.ForeignKey(Subsection, null=False, on_delete=models.CASCADE)
     name = models.CharField(null=False, blank=False)
+    description = models.CharField(null=True, blank=True)
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
 
     def __str__(self):
