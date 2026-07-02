@@ -22,7 +22,10 @@
                 </div>
             </div>
             {% endif %}
-            <h2 class="text-4xl font-bold tracking-tight text-dds-teal-950">1A. Project Data</h2>
+            <h2 class="text-4xl font-bold tracking-tight text-dds-teal-950">{{ subsection.section.code }}{{ subsection.code }}. {{ subsection.name }}</h2>
+            {% if subsection.description %}
+                <p class="mt-1 text-lg/8 font-light text-gray-700">{{ subsection.description }}</p>
+            {% endif %}
         </div>
     </header>
     {% include "projects/_form.html" with title="Edit Project" %}

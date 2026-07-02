@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import Http404
 from django.urls import reverse_lazy
 from django.views.generic import ListView
 from django.views.generic.base import RedirectView
@@ -19,5 +20,10 @@ class ProjectEditRedirectView(LoginRequiredMixin, RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         project = get_object_or_404(Project, pk=kwargs["pk"])
-        subsection = get_object_or_404(Subsection, section_id__in=Section.objects.filter(version_id=project.version))
+
+        try:
+            subsection = Subsection.objects.filter(section_id__in=Section.objects.filter(version_id=project.version)).first()
+        except IndexError:
+            raise Http404("No Subsection matches the given query.")
+
         return reverse_lazy("project_subsection_edit", kwargs={"project_pk": project.id, "pk": subsection.id})
