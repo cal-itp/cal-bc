@@ -37,6 +37,14 @@ class Section(models.Model):
     def __str__(self):
         return f"{str(self.version)} § {self.code} {self.name}"
 
+    @property
+    def next_section(self):
+        return self.version.section_set.filter(code__gt=self.code).first()
+
+    @property
+    def previous_section(self):
+        return self.version.section_set.filter(code__lt=self.code).last()
+
 
 class Subsection(models.Model):
     class Meta:
@@ -50,6 +58,20 @@ class Subsection(models.Model):
     def __str__(self):
         return f"{str(self.section.version)} § {self.section.code}{self.code} {self.name}"
 
+    @property
+    def next_subsection(self):
+        query = self.section.subsection_set.filter(code__gt=self.code)
+        if not query.exists() and self.section.next_section:
+            query = self.section.next_section.subsection_set
+        return query.first()
+
+    @property
+    def previous_subsection(self):
+        query = self.section.subsection_set.filter(code__lt=self.code)
+        if not query.exists() and self.section.previous_section:
+            query = self.section.previous_section.subsection_set
+        return query.last()
+
 
 class Group(models.Model):
     class Meta:
@@ -62,6 +84,14 @@ class Group(models.Model):
 
     def __str__(self):
         return f"{str(self.subsection.section.version)} § {self.subsection.section.code}{self.subsection.code} {self.name}"
+
+    @property
+    def table_row_set(self):
+        return Row.objects.filter(id__in=self.row_set.filter(field__column__column_group__in=self.columngroup_set.all()).all())
+
+    @property
+    def non_table_row_set(self):
+        return Row.objects.filter(id__in=self.row_set.exclude(field__column__column_group__in=self.columngroup_set.all()).all())
 
 
 class Row(models.Model):

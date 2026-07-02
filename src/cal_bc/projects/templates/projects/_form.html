@@ -1,5 +1,4 @@
-{% load static widget_tweaks %}
-{% load svg %}
+{% load static widget_tweaks svg %}
 <main class="min-h-full">
     <div class="mx-auto max-w-7xl px-6 py-6 lg:px-8">
         <form method="post">
@@ -17,6 +16,115 @@
                             <p class="mb-4">All fields in this step are required.</p>
                             <p>Click on any field to see specific help and guidance for that input. </p>
                         </div>
+                    </div>
+
+                    <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2 order-2 md:order-1">
+                        <div class="sm:col-span-4">
+                            <h2 class="text-4xl font-bold tracking-tight text-dds-teal-950">{{ subsection.section.code }}{{ subsection.code }}. {{ subsection.name }}</h2>
+                            {% if subsection.description %}
+                                <p class="mt-1 text-lg/8 font-light text-gray-700">{{ subsection.description }}</p>
+                            {% endif %}
+                        </div>
+
+                        {% for group in subsection.group_set.all %}
+                            <div class="sm:col-span-4">
+                                <h3 class="text-base/7 font-semibold text-gray-900">{{ group.name }}</h3>
+                            </div>
+
+                            {% for row in group.non_table_row_set.all %}
+                                <div class="sm:col-span-4 flex text-sm">
+                                    {% for form in formset %}
+                                        <div>
+                                            {% if form.initial.field.row == row or form.instance.field.row == row %}
+                                                {{ form.id }}
+                                                {{ form.field }}
+                                                {% for field in form.visible_fields %}
+                                                    <label for="{{ field.id_for_label }}" class="block text-sm/6 font-medium text-gray-900">{{ field.label }}</label>
+                                                    <div class="mt-2 flex items-center">
+                                                        {{ field | add_class:"block w-fit rounded-md bg-white mr-3 px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 sm:text-sm/6" }}
+                                                        {% if field.help_text %}
+                                                            <p class="help text-sm/6 text-gray-900" id="{{ field.auto_id }}_helptext">
+                                                                {{ field.help_text | safe }}
+                                                            </p>
+                                                        {% endif %}
+                                                    </div>
+                                                    {% for error in field.errors %}
+                                                        <p class="text-red-600">{{ error }}</p>
+                                                    {% endfor %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+
+                            {% if group.table_row_set.count > 0 %}
+                                <div class="sm:col-span-4">
+                                    <table class="relative min-w-full">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" class="py-3.5 pr-3 pl-4 text-smsm:pl-0"></th>
+                                                {% for column_group in group.columngroup_set.all %}
+                                                    {% if column_group.name != "" %}
+                                                        <th scope="col" colspan="{{ column_group.column_set.count }}" class="py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-gray-900 border-b border-gray-900/10 sm:pl-0">{{ column_group.name }}</th>
+                                                    {% else %}
+                                                        <th scope="col" colspan="{{ column_group.column_set.count }}" class="py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-gray-900 sm:pl-0">{{ column_group.name }}</th>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </tr>
+                                            <tr>
+                                                <th scope="col" class="py-3.5 pr-3 pl-4 text-smsm:pl-0"></th>
+                                                {% for column_group in group.columngroup_set.all %}
+                                                    {% for column in column_group.column_set.all %}
+                                                        <th scope="col" class="py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-gray-900 sm:pl-0">{{ column.name }}</th>
+                                                    {% endfor %}
+                                                {% endfor %}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                            {% endif %}
+
+                            {% for row in group.table_row_set.all %}
+                                <tr>
+                                    <th scope="row" class="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-0">{{ row.name }}</th>
+                                    {% for column_group in group.columngroup_set.all %}
+                                        {% for column in column_group.column_set.all %}
+                                            <td class="px-3 py-4 text-sm whitespace-nowrap text-gray-500">
+                                                {% for form in formset %}
+                                                    {% if form.initial.field and form.initial.field.fieldcolumn.column == column and form.initial.field.row == row %}
+                                                        {{ form.id }}
+                                                        {{ form.field }}
+                                                        {% for field in form.visible_fields %}
+                                                            <label for="{{ field.id_for_label }}" class="sr-only block text-sm/6 font-medium text-gray-900">{{ field.label }}</label>
+                                                            {{ field | add_class:"block w-fit rounded-md bg-white mr-3 px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 sm:text-sm/6" }}
+                                                            {% for error in field.errors %}
+                                                                <p class="text-red-600">{{ error }}</p>
+                                                            {% endfor %}
+                                                        {% endfor %}
+                                                    {% elif form.instance.field and form.instance.field.fieldcolumn.column == column and form.instance.field.row == row %}
+                                                        {{ form.id }}
+                                                        {{ form.field }}
+                                                        {% for field in form.visible_fields %}
+                                                            <label for="{{ field.id_for_label }}" class="sr-only block text-sm/6 font-medium text-gray-900">{{ field.label }}</label>
+                                                            {{ field | add_class:"block w-fit rounded-md bg-white mr-3 px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 sm:text-sm/6" }}
+                                                            {% for error in field.errors %}
+                                                                <p class="text-red-600">{{ error }}</p>
+                                                            {% endfor %}
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </td>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+
+                            {% if group.table_row_set.count > 0 %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
                     </div>
                 </div>
 
@@ -67,7 +175,13 @@
             </div>
 
             <div class="mt-6 flex items-center justify-end gap-x-6">
-                <button type="submit" class="rounded-md bg-dds-teal-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-dds-teal-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dds-teal-600">Save draft</button>
+                {% if subsection.previous_subsection %}
+                    <button type="submit" name="step" value="previous" class="rounded-md bg-dds-teal-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-dds-teal-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dds-teal-600">Back to {{ subsection.previous_subsection }}</button>
+                {% endif %}
+                <button type="submit" name="step" value="current" class="rounded-md bg-dds-teal-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-dds-teal-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dds-teal-600">Save draft</button>
+                {% if subsection.next_subsection %}
+                    <button type="submit" name="step" value="next" class="rounded-md bg-dds-teal-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-dds-teal-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dds-teal-600">Continue to {{ subsection.next_subsection }}</button>
+                {% endif %}
             </div>
         </form>
     </div>
