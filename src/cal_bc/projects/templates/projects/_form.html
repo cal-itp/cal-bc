@@ -24,7 +24,9 @@
                 <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2 order-2 md:order-1">
                         <div class="sm:col-span-4">
                             <h3 class="text-3xl font-semibold text-gray-900">{{ group.name }}</h3>
-                            <p class="mt-1 font-light text-lg/8  text-gray-700">Group description.</p>
+                            {% if group.description %}
+                                <p class="mt-1 font-light text-lg/8  text-gray-700">{{ group.description }}</p>
+                            {% endif %}
                         </div>
                         {% for row in group.row_set.all %}
                             <div class="sm:col-span-4 flex items-end">

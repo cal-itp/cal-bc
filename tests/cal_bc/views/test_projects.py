@@ -47,7 +47,7 @@ class TestProjectsViews:
 
     @pytest.fixture
     def group(self, subsection: Subsection) -> Group:
-        return Group.objects.create(subsection=subsection, name="General Information")
+        return Group.objects.create(subsection=subsection, name="General Information", description="General Information description")
 
     @pytest.fixture
     def row(self, group: Group) -> Row:
@@ -115,6 +115,7 @@ class TestProjectsViews:
         assert query_by_text(dom, "1A. Project Data")
         assert query_by_text(dom, "Project Data description")
         assert query_by_text(dom, "General Information")
+        assert query_by_text(dom, "General Information description")
 
         assert query_by_role(dom, "textbox", name="Project Name")
         assert query_by_role(dom, "combobox", name="District")
