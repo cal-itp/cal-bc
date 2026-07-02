@@ -27,7 +27,7 @@ class TestModels:
         )
 
     @pytest.fixture(autouse=True)
-    def section(self, version: Version) -> Section:
+    def section_1(self, version: Version) -> Section:
         return Section.objects.create(
             version=version,
             code="1",
@@ -35,17 +35,41 @@ class TestModels:
         )
 
     @pytest.fixture(autouse=True)
-    def subsection(self, section: Section) -> Subsection:
+    def section_2(self, version: Version) -> Section:
+        return Section.objects.create(
+            version=version,
+            code="2",
+            name="Configuration"
+        )
+
+    @pytest.fixture(autouse=True)
+    def subsection_1_a(self, section_1: Section) -> Subsection:
         return Subsection.objects.create(
-            section=section,
+            section=section_1,
             code="A",
             name="Project Data"
         )
 
     @pytest.fixture(autouse=True)
-    def group(self, subsection: Subsection) -> Group:
+    def subsection_1_b(self, section_1: Section) -> Subsection:
+        return Subsection.objects.create(
+            section=section_1,
+            code="B",
+            name="Highway Information"
+        )
+
+    @pytest.fixture(autouse=True)
+    def subsection_2_a(self, section_2: Section) -> Subsection:
+        return Subsection.objects.create(
+            section=section_2,
+            code="A",
+            name="General Settings"
+        )
+
+    @pytest.fixture(autouse=True)
+    def group(self, subsection_1_a: Subsection) -> Group:
         return Group.objects.create(
-            subsection=subsection,
+            subsection=subsection_1_a,
             name="General Information",
             position=1
         )
@@ -83,11 +107,41 @@ class TestModels:
     def test_version_string_representation(self, version: Version):
         assert str(version) == "Cal-B/C Sketch v8.1"
 
-    def test_section_string_representation(self, section: Section):
-        assert str(section) == "Cal-B/C Sketch v8.1 § 1 Project Information"
+    def test_section_string_representation(self, section_1: Section):
+        assert str(section_1) == "Cal-B/C Sketch v8.1 § 1 Project Information"
 
-    def test_subsection_string_representation(self, subsection: Subsection):
-        assert str(subsection) == "Cal-B/C Sketch v8.1 § 1A Project Data"
+    def test_next_section(self, section_1: Section, section_2: Section):
+        assert section_1.next_section == section_2
+
+    def test_null_next_section(self, section_2: Section):
+        assert section_2.next_section is None
+
+    def test_previous_section(self, section_1: Section, section_2: Section):
+        assert section_2.previous_section == section_1
+
+    def test_null_previous_section(self, section_1: Section):
+        assert section_1.previous_section is None
+
+    def test_subsection_string_representation(self, subsection_1_a: Subsection):
+        assert str(subsection_1_a) == "Cal-B/C Sketch v8.1 § 1A Project Data"
+
+    def test_next_subsection(self, subsection_1_a: Subsection, subsection_1_b: Subsection):
+        assert subsection_1_a.next_subsection == subsection_1_b
+
+    def test_null_next_subsection(self, subsection_2_a: Subsection):
+        assert subsection_2_a.next_subsection is None
+
+    def test_previous_subsection(self, subsection_1_a: Subsection, subsection_1_b: Subsection):
+        assert subsection_1_b.previous_subsection == subsection_1_a
+
+    def test_null_previous_subsection(self, subsection_1_a: Subsection, subsection_1_b: Subsection):
+        assert subsection_1_a.previous_subsection is None
+
+    def test_next_section_subsection(self, subsection_1_b: Subsection, subsection_2_a: Subsection):
+        assert subsection_1_b.next_subsection == subsection_2_a
+
+    def test_previous_section_subsection(self, subsection_1_b: Subsection, subsection_2_a: Subsection):
+        assert subsection_2_a.previous_subsection == subsection_1_b
 
     def test_group_string_representation(self, group: Group):
         assert str(group) == "Cal-B/C Sketch v8.1 § 1A General Information"
