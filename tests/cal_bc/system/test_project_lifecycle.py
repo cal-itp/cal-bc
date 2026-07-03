@@ -99,4 +99,8 @@ class TestProjectLifecycle(StaticLiveServerTestCase):
         )
         self.page.get_by_role("button", name="Save draft").click()
         self.page.wait_for_selector("text=Project successfully saved!")
+        self.page.wait_for_selector("text=Project successfully saved!")
+        self.page.get_by_role("button", name="User").click()
+        self.page.wait_for_selector("text=Sign out").click()
+        self.page.wait_for_selector("text=Sign in with Microsoft")
         self.page.close()
