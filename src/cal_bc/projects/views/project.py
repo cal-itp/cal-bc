@@ -14,6 +14,12 @@ class ProjectListView(LoginRequiredMixin, ListView):
     template_name = "projects/index.html"
     model = Project
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        page = context['page_obj']
+        context['elided_page_range'] = page.paginator.get_elided_page_range(page.number, on_each_side=1, on_ends=1)
+        return context
+
 
 class ProjectEditRedirectView(LoginRequiredMixin, RedirectView):
     permanent = False
