@@ -10,7 +10,7 @@ from unbrowsed import parse_html, query_by_text
 class TestModelViews:
     @pytest.fixture
     def user(self, django_user_model) -> User:
-        return django_user_model.objects.create_user(username="caltrans")
+        return django_user_model.objects.create_user(username="caltrans", first_name="John", last_name="Luis")
 
     @pytest.fixture
     def model(self) -> Model:
@@ -34,4 +34,5 @@ class TestModelViews:
         response = client.get(reverse_lazy("models"))
         assert response.status_code == 200
         dom = parse_html(response.content)
+        assert query_by_text(dom, "Welcome, John")
         assert query_by_text(dom, "Testing v1")
