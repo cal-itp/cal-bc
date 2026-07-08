@@ -16,11 +16,12 @@
         </div>
     </header>
 
-    {% for model in object_list %}
+    {% for model in model_list %}
     <div class="mx-auto max-w-7xl py-6 px-6 lg:px-8">
         <ul role="list" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {% with model.latest_version as version %}
+            {% if version %}
             <li class="divide-y divide-gray-200 border border-gray-200 rounded-lg bg-white p-6 hover:border-dds-teal-600">
-                {% with model.latest_version as version %}
                 <form method="post" action="{% url 'model_project_new' model.id version.id %}">
                     {% csrf_token %}
                     <button type="submit">
@@ -40,8 +41,9 @@
                         </div>
                     </button>
                 </form>
-                {% endwith %}
             </li>
+            {% endif %}
+            {% endwith %}
         </ul>
     </div>
     {% endfor %}
