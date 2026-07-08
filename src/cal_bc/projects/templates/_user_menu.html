@@ -4,11 +4,13 @@
     <button class="relative flex rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
       <span class="absolute -inset-1.5"></span>
       <span class="sr-only">Open user menu</span>
-      <div class="h-11 w-11 font-bold text-dds-teal-950 rounded-full bg-yellow-500 flex items-center text-2xl justify-center font-mono">{{ user.get_short_name|make_list|first }}</div>
+      <div class="h-11 w-11 font-bold text-dds-teal-950 rounded-full bg-yellow-500 flex items-center text-2xl justify-center font-mono">{{ user.get_username|make_list|first }}</div>
     </button>
 
     <el-menu anchor="bottom end" popover class="text-lg w-75 py-4 border-1 border-gray-200 origin-top-right rounded-lg bg-white shadow-lg outline outline-black/5 transition transition-discrete [--anchor-gap:--spacing(2)] data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in">
-      <div class="block px-4 text-gray-700 font-bold focus:bg-gray-100 focus:outline-hidden">{{ user.get_full_name }}</div>
+      {% if user.get_full_name %}
+        <div class="block px-4 text-gray-700 font-bold focus:bg-gray-100 focus:outline-hidden">{{ user.get_full_name }}</div>
+      {% endif %}
       <div href="#" class="text-block border-b-1 border-gray-200 mb-0 px-4 pb-4 text-gray-700 focus:bg-gray-100 focus:outline-hidden">{{ user.get_username }}</div>
       <form method="post" action="{% url 'logout' %}">
         {% csrf_token %}
