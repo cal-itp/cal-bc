@@ -93,6 +93,10 @@ class Group(models.Model):
     def non_table_row_set(self):
         return Row.objects.filter(id__in=self.row_set.exclude(field__column__column_group__in=self.columngroup_set.all()).all())
 
+    @property
+    def nonempty_column_group_set(self):
+        return self.columngroup_set.exclude(name="").all()
+
 
 class Row(models.Model):
     class Meta:

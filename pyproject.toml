@@ -3,10 +3,10 @@ name = "cal-bc"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "dj-svg>=0.3.1",
-    "django>=5.2.7",
+    "django>=6.0.7",
     "django-azure-auth>=2.4.0",
     "django-debug-toolbar>=6.3.0",
     "django-downloadview>=2.4.0",

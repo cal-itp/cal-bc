@@ -24,7 +24,11 @@
             {% endif %}
         </div>
     </header>
-    {% include "projects/_form.html" with title="Edit Project" %}
+    <main class="min-h-full">
+        <div class="mx-auto max-w-7xl px-6 py-6 lg:px-8">
+            {% include "projects/_form.html" with title="Edit Project" %}
+        </div>
+    </main>
 </div>
 {% include "_footer.html" %}
 {% endblock %}

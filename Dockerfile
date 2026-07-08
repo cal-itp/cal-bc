@@ -1,5 +1,5 @@
 # Stage 1: Base build stage
-FROM python:3.11-slim AS builder
+FROM python:3.12-slim AS builder
 
  # Install uv
 COPY --from=ghcr.io/astral-sh/uv:0.9.3 /uv /uvx /bin/
@@ -37,7 +37,7 @@ RUN --mount=type=cache,target=/root/.cache \
     --compile-bytecode
 
 # Stage 2: Production stage
-FROM python:3.11-slim
+FROM python:3.12-slim
 
  # Install uv
 COPY --from=ghcr.io/astral-sh/uv:0.9.3 /uv /uvx /bin/
