@@ -1,5 +1,5 @@
 from django.db import models
-from cal_bc.models.models.model import Version, Field, Row, Group, Subsection, Section
+from cal_bc.models.models.model import Version, Field
 from django.contrib.auth.models import User
 
 
@@ -13,18 +13,8 @@ class Project(models.Model):
 
     def name_value(self):
         return self.value_set.filter(
-            field_id__in=Field.objects.filter(
-                name="Project Name",
-                row_id__in=Row.objects.filter(
-                    group_id__in=Group.objects.filter(
-                        subsection_id__in=Subsection.objects.filter(
-                            section_id__in=Section.objects.filter(
-                                version_id=self.version_id
-                            ).all()
-                        ).all()
-                    ).all()
-                ).all()
-            ).all()
+            field__name="Project Name",
+            field__row__group__subsection__section__version=self.version
         ).first()
 
     def __str__(self) -> str:
@@ -37,6 +27,6 @@ class Value(models.Model):
         Project, null=False, db_index=True, on_delete=models.CASCADE
     )
     field = models.ForeignKey(
-        Field, null=False, db_index=True, related_name="project_value_set", on_delete=models.CASCADE
+        Field, null=False, db_index=True, related_name="project_value", on_delete=models.CASCADE
     )
     value = models.CharField(null=False)

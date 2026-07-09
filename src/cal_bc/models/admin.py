@@ -1,7 +1,7 @@
 from django.contrib import admin
 import nested_admin
 
-from cal_bc.models.models.model import Model, Version, Section, Subsection, Group, Row, Field, Value
+from cal_bc.models.models.model import Model, Version, Section, Subsection, Group, Row, Field, FieldColumn, Value, ColumnGroup, Column
 
 class ValueInline(nested_admin.SortableHiddenMixin, nested_admin.NestedTabularInline):
     model = Value
@@ -10,12 +10,29 @@ class ValueInline(nested_admin.SortableHiddenMixin, nested_admin.NestedTabularIn
         return 0
 
 
-class FieldInline(nested_admin.SortableHiddenMixin, nested_admin.NestedStackedInline):
-    model = Field
-    inlines = [ValueInline]
+class FieldColumnInline(nested_admin.NestedTabularInline):
+    model = Field.column.through
 
     def get_extra(self, request, obj=None, **kwargs):
-        if obj is not None and obj.id is not None and obj.field_set.count():
+        if obj is not None and obj.pk is not None and FieldColumn.objects.filter(field_id=obj.pk).count():
+            return 0
+        else:
+            return 1
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "column":
+            kwargs["queryset"] = Column.objects.filter(
+                column_group__group=request.resolver_match.kwargs['object_id']
+            )
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+class FieldInline(nested_admin.SortableHiddenMixin, nested_admin.NestedStackedInline):
+    model = Field
+    inlines = [FieldColumnInline, ValueInline]
+
+    def get_extra(self, request, obj=None, **kwargs):
+        if obj is not None and obj.pk is not None and obj.field_set.count():
             return 0
         else:
             return 1
@@ -26,7 +43,27 @@ class RowInline(nested_admin.SortableHiddenMixin, nested_admin.NestedStackedInli
     inlines = [FieldInline]
 
     def get_extra(self, request, obj=None, **kwargs):
-        if obj is not None and obj.id is not None and obj.row_set.count():
+        if obj is not None and obj.pk is not None and obj.row_set.count():
+            return 0
+        else:
+            return 1
+
+class ColumnInline(nested_admin.SortableHiddenMixin, nested_admin.NestedTabularInline):
+    model = Column
+
+    def get_extra(self, request, obj=None, **kwargs):
+        if obj is not None and obj.pk is not None and obj.column_set.count():
+            return 0
+        else:
+            return 1
+
+
+class ColumnGroupInline(nested_admin.SortableHiddenMixin, nested_admin.NestedTabularInline):
+    model = ColumnGroup
+    inlines = [ColumnInline]
+
+    def get_extra(self, request, obj=None, **kwargs):
+        if obj is not None and obj.pk is not None and obj.columngroup_set.count():
             return 0
         else:
             return 1
@@ -35,7 +72,7 @@ class RowInline(nested_admin.SortableHiddenMixin, nested_admin.NestedStackedInli
 @admin.register(Group)
 class GroupAdmin(nested_admin.NestedModelAdmin):
     model = Group
-    inlines = [RowInline]
+    inlines = [RowInline, ColumnGroupInline]
     exclude = ["position"]
 
 
@@ -44,7 +81,7 @@ class GroupInline(nested_admin.SortableHiddenMixin, nested_admin.NestedTabularIn
     show_change_link = True
 
     def get_extra(self, request, obj=None, **kwargs):
-        if obj is not None and obj.id is not None and obj.group_set.count():
+        if obj is not None and obj.pk is not None and obj.group_set.count():
             return 0
         else:
             return 1
@@ -55,7 +92,7 @@ class SubsectionInline(nested_admin.NestedStackedInline):
     inlines = [GroupInline]
 
     def get_extra(self, request, obj=None, **kwargs):
-        if obj is not None and obj.id is not None and obj.subsection_set.count():
+        if obj is not None and obj.pk is not None and obj.subsection_set.count():
             return 0
         else:
             return 1
@@ -66,7 +103,7 @@ class SectionInline(nested_admin.NestedStackedInline):
     inlines = [SubsectionInline]
 
     def get_extra(self, request, obj=None, **kwargs):
-        if obj is not None and obj.id is not None and obj.section_set.count():
+        if obj is not None and obj.pk is not None and obj.section_set.count():
             return 0
         else:
             return 1
