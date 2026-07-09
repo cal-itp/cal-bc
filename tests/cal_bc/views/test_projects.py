@@ -83,7 +83,7 @@ class TestProjectsViews:
         assert query_by_text(dom, "New analysis")
         assert query_by_text(dom, "1 analyses")
         page = query_by_text(dom, "My Cal B/C Analyses", exact=False)
-        assert page.to_have_text_content("Showing1of1pages", exact=False)
+        assert page.to_have_text_content("1to1of1projects", exact=False)
 
     def test_edit(
         self,

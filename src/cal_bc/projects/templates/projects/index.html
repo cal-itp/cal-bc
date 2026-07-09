@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static i18n %}
+{% load svg %}
 {% block main %}
 {% include "_statewide_header.html" %}
 
@@ -16,10 +17,7 @@
                 </div>
                 <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
                     <a href="{% url 'models' %}" class="flex items-center gap-2 rounded-md bg-dds-teal-600 px-3 py-2 text-md font-medium text-white hover:bg-dds-teal-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dds-teal-600">
-                        <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
-                          <path d="M7.06575 9.34075H1.1375C0.818333 9.34075 0.548917 9.231 0.32925 9.0115C0.10975 8.79183 0 8.52242 0 8.20325C0 7.88408 0.10975 7.61467 0.32925 7.395C0.548917 7.1755 0.818333 7.06575 1.1375 7.06575H7.06575V1.1375C7.06575 0.818333 7.1755 0.548916 7.395 0.32925C7.61467 0.10975 7.88408 0 8.20325 0C8.52242 0 8.79183 0.10975 9.0115 0.32925C9.231 0.548916 9.34075 0.818333 9.34075 1.1375V7.06575H15.269C15.5882 7.06575 15.8576 7.1755 16.0773 7.395C16.2968 7.61467 16.4065 7.88408 16.4065 8.20325C16.4065 8.52242 16.2968 8.79183 16.0773 9.0115C15.8576 9.231 15.5882 9.34075 15.269 9.34075H9.34075V15.269C9.34075 15.5882 9.231 15.8576 9.0115 16.0773C8.79183 16.2968 8.52242 16.4065 8.20325 16.4065C7.88408 16.4065 7.61467 16.2968 7.395 16.0773C7.1755 15.8576 7.06575 15.5882 7.06575 15.269V9.34075Z" fill="white"/>
-                        </svg>
-                        <span>New analysis</span>
+                        {% svg 'projects/plus' %}<span>New analysis</span>
                     </a>
                 </div>
             </div>
@@ -55,69 +53,62 @@
             </div>
 
             <div class="flex items-center justify-between py-6 px-6 lg:px-8">
-                <div class="flex flex-1 justify-between sm:hidden">
-                    {% if page_obj.has_previous %}
-                        <a href="?page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center rounded-md border border-dds-teal-600 bg-gray-50 px-4 py-2 text-sm font-medium text-dds-teal-600 hover:border-dds-teal-500 hover:bg-dds-teal-500 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dds-teal-600">Previous</a>
-                    {% else %}
-                        <span class="relative inline-flex items-center rounded-md border border-dds-teal-600 bg-gray-50 px-4 py-2 text-sm font-medium text-dds-teal-600 opacity-50 cursor-not-allowed">Previous</span>
-                    {% endif %}
-                    {% if page_obj.has_next %}
-                        <a href="?page={{ page_obj.next_page_number }}" class="relative inline-flex items-center rounded-md border border-dds-teal-600 bg-gray-50 px-4 py-2 text-sm font-medium text-dds-teal-600 hover:border-dds-teal-500 hover:bg-dds-teal-500 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dds-teal-600">Next</a>
-                    {% else %}
-                        <span class="relative inline-flex items-center rounded-md border border-dds-teal-600 bg-gray-50 px-4 py-2 text-sm font-medium text-dds-teal-600 opacity-50 cursor-not-allowed">Next</span>
-                    {% endif %}
+                <div>
+                    <p class="text-xs text-gray-700">
+                        <span class="font-medium">{{ page_obj.start_index }}</span>
+                        to
+                        <span class="font-medium">{{ page_obj.end_index }}</span>
+                        of
+                        <span class="font-medium">{{ page_obj.paginator.count }}</span>
+                        projects
+                    </p>
                 </div>
-                <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                    <div>
-                        <p class="text-xs text-gray-700">
-                            Showing
-                            <span class="font-medium">{{ page_obj.number }}</span>
-                            of
-                            <span class="font-medium">{{ page_obj.paginator.num_pages }}</span>
-                            pages
-                        </p>
+                <div>
+                    <div class="flex flex-1 items-center justify-between space-x-2 md:hidden">
+                        {% if page_obj.has_previous %}
+                            <a href="?page={{ page_obj.previous_page_number }}" class="relative w-24 px-4 py-2 inline-flex items-center justify-center text-dds-teal-600 border-2 border-dds-teal-600 rounded-md shadow hover:shadow-inner hover:bg-gray-200 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Previous</a>
+                        {% else %}
+                            <span class="relative w-24 px-4 py-2 inline-flex items-center justify-center text-gray-300 border-2 border-gray-300 rounded-md cursor-not-allowed">Previous</span>
+                        {% endif %}
+                        {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}" class="relative w-24 px-4 py-2 inline-flex items-center justify-center text-dds-teal-600 border-2 border-dds-teal-600 rounded-md shadow hover:shadow-inner hover:bg-gray-200 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Next</a>
+                        {% else %}
+                            <span class="relative w-24 px-4 py-2 inline-flex items-center justify-center text-gray-300 border-2 border-gray-300 rounded-md cursor-not-allowed">Next</span>
+                        {% endif %}
                     </div>
-                    <div>
-                        <nav aria-label="Pagination" class="isolate inline-flex border border-dds-teal-600 rounded-md text-dds-teal-600 -space-x-px">
+                    <div class="hidden md:flex md:flex-1 md:items-center md:justify-between">
+                        <nav aria-label="Pagination" class="isolate inline-flex space-x-2">
                             {% if page_obj.has_previous %}
-                                <a href="?page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center px-2 py-2 rounded-l-md hover:bg-dds-teal-500 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-dds-teal-600">
-                                    <span class="sr-only">Previous</span>
-                                    <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="size-5">
-                                        <path d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" fill-rule="evenodd" />
-                                    </svg>
-                                </a>
+                            <a href="?page={{ page_obj.previous_page_number }}" class="relative size-8 inline-flex items-center justify-center text-dds-teal-600 border-2 border-dds-teal-600 rounded-md shadow hover:shadow-inner hover:bg-gray-200 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+                                <span class="sr-only">Previous</span>
+                                {% svg 'projects/chevron_left' %}
+                            </a>
                             {% else %}
-                                <span class="relative inline-flex items-center px-2 py-2 rounded-l-md opacity-50 cursor-not-allowed">
+                                <span class="relative size-8 inline-flex items-center justify-center text-gray-300 border-2 border-gray-300 rounded-md cursor-not-allowed">
                                     <span class="sr-only">Previous</span>
-                                    <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="size-5">
-                                        <path d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" fill-rule="evenodd" />
-                                    </svg>
+                                    {% svg 'projects/chevron_left' %}
                                 </span>
                             {% endif %}
-                            {% for number in page_obj.paginator.page_range %}
-                                {% if number == "..." %}
-                                    <span class="relative inline-flex items-center px-4 py-2 text-sm font-semibold">...</span>
+                            {% for number in elided_page_range %}
+                                {% if number == page_obj.paginator.ELLIPSIS %}
+                                    <span class="relative size-8 inline-flex items-center justify-center text-sm pt-2 text-gray-900">...</span>
                                 {% else %}
                                     {% if page_obj.number == number %}
-                                        <span aria-current="page" class="relative z-10 inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-dds-teal-600">{{ number }}</span>
+                                        <span aria-current="page" class="relative z-10 size-8 inline-flex items-center justify-center text-sm text-white border-2 border-dds-teal-600 rounded-md shadow bg-dds-teal-600">{{ number }}</span>
                                     {% else %}
-                                        <a href="?page={{ number }}" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold hover:bg-dds-teal-500 hover:text-white focus:z-20 focus:outline-offset-0 focus-visible:outline-dds-teal-600">{{ number }}</a>
+                                        <a href="?page={{ number }}" class="relative size-8 inline-flex items-center justify-center text-sm text-dds-teal-600 border-2 border-dds-teal-600 rounded-md shadow hover:shadow-inner hover:bg-gray-200 focus:ring-offset-2 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">{{ number }}</a>
                                     {% endif %}
                                 {% endif %}
                             {% endfor %}
                             {% if page_obj.has_next %}
-                                <a href="?page={{ page_obj.next_page_number }}" class="relative inline-flex items-center px-2 py-2 rounded-r-md hover:bg-dds-teal-500 hover:text-white focus-visible:outline-offset-0 focus-visible:outline-dds-teal-600">
+                                <a href="?page={{ page_obj.next_page_number }}" class="relative size-8 inline-flex items-center justify-center text-dds-teal-600 border-2 border-dds-teal-600 rounded-md shadow hover:shadow-inner hover:bg-gray-200 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
                                     <span class="sr-only">Next</span>
-                                    <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="size-5">
-                                        <path d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" fill-rule="evenodd" />
-                                    </svg>
+                                    {% svg 'projects/chevron_right' %}
                                 </a>
                             {% else %}
-                                <span class="relative inline-flex items-center px-2 py-2 rounded-r-md opacity-50 cursor-not-allowed">
+                                <span class="relative size-8 inline-flex items-center justify-center text-gray-300 border-2 border-gray-300 rounded-md cursor-not-allowed">
                                     <span class="sr-only">Next</span>
-                                    <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="size-5">
-                                        <path d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" fill-rule="evenodd" />
-                                    </svg>
+                                    {% svg 'projects/chevron_right' %}
                                 </span>
                             {% endif %}
                         </nav>
@@ -131,10 +122,7 @@
                 <p class="text-sm text-gray-700 text-center">California state averages are pre-populated where available.</p>
                 <div class="pt-4 pb-8 flex items-center justify-center">
                     <a href="{% url 'models' %}" class="flex items-center gap-2 rounded-md bg-dds-teal-600 px-3 py-2 text-md font-medium text-white hover:bg-dds-teal-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dds-teal-600">
-                        <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
-                          <path d="M7.06575 9.34075H1.1375C0.818333 9.34075 0.548917 9.231 0.32925 9.0115C0.10975 8.79183 0 8.52242 0 8.20325C0 7.88408 0.10975 7.61467 0.32925 7.395C0.548917 7.1755 0.818333 7.06575 1.1375 7.06575H7.06575V1.1375C7.06575 0.818333 7.1755 0.548916 7.395 0.32925C7.61467 0.10975 7.88408 0 8.20325 0C8.52242 0 8.79183 0.10975 9.0115 0.32925C9.231 0.548916 9.34075 0.818333 9.34075 1.1375V7.06575H15.269C15.5882 7.06575 15.8576 7.1755 16.0773 7.395C16.2968 7.61467 16.4065 7.88408 16.4065 8.20325C16.4065 8.52242 16.2968 8.79183 16.0773 9.0115C15.8576 9.231 15.5882 9.34075 15.269 9.34075H9.34075V15.269C9.34075 15.5882 9.231 15.8576 9.0115 16.0773C8.79183 16.2968 8.52242 16.4065 8.20325 16.4065C7.88408 16.4065 7.61467 16.2968 7.395 16.0773C7.1755 15.8576 7.06575 15.5882 7.06575 15.269V9.34075Z" fill="white"/>
-                        </svg>
-                        <span>Create analysis</span>
+                        {% svg 'projects/plus' %}<span>Create analysis</span>
                     </a>
                 </div>
             </div>

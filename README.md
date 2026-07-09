@@ -113,6 +113,11 @@ Now, when you visit the admin site, you can log in with your DOT account as usua
 > [!NOTE]
 > If you forget to add your user before this point, the Azure Entra ID login package will automatically add a user and disallow access. You will need to either manually make your user a superuser or delete your user account.
 
+To access or make changes to your local database, run:
+
+```bash
+$ uv run manage.py dbshell
+```
 
 ## License
 
