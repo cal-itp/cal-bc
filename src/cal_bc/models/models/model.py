@@ -11,8 +11,8 @@ class Model(models.Model):
         return self.name
 
     def latest_version(self):
-        return list(self.version_set.all())[-1]
-
+        versions = list(self.version_set.all())
+        return versions[-1] if len(versions) > 0 else None
 
 class Version(models.Model):
     class Meta:

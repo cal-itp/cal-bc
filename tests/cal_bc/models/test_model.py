@@ -4,13 +4,13 @@ from cal_bc.models.models.model import Model, Version, Section, Subsection, Grou
 
 @pytest.mark.django_db
 class TestModels:
-    @pytest.fixture(autouse=True)
+    @pytest.fixture()
     def model(self) -> Model:
         return Model.objects.create(
             name="Cal-B/C Sketch",
         )
 
-    @pytest.fixture(autouse=True)
+    @pytest.fixture()
     def version(self, model: Model) -> Version:
         return Version.objects.create(
             model=model,
@@ -18,7 +18,7 @@ class TestModels:
             url="https://example.com",
         )
 
-    @pytest.fixture(autouse=True)
+    @pytest.fixture()
     def earlier_version(self, model: Model) -> Version:
         return Version.objects.create(
             model=model,
@@ -26,7 +26,7 @@ class TestModels:
             url="https://example.com",
         )
 
-    @pytest.fixture(autouse=True)
+    @pytest.fixture()
     def section(self, version: Version) -> Section:
         return Section.objects.create(
             version=version,
@@ -34,7 +34,7 @@ class TestModels:
             name="Project Information"
         )
 
-    @pytest.fixture(autouse=True)
+    @pytest.fixture()
     def subsection(self, section: Section) -> Subsection:
         return Subsection.objects.create(
             section=section,
@@ -42,7 +42,7 @@ class TestModels:
             name="Project Data"
         )
 
-    @pytest.fixture(autouse=True)
+    @pytest.fixture()
     def group(self, subsection: Subsection) -> Group:
         return Group.objects.create(
             subsection=subsection,
@@ -50,14 +50,14 @@ class TestModels:
             position=1
         )
 
-    @pytest.fixture(autouse=True)
+    @pytest.fixture()
     def row(self, group: Group) -> Row:
         return Row.objects.create(
             group=group,
             position=1
         )
 
-    @pytest.fixture(autouse=True)
+    @pytest.fixture()
     def field(self, row: Row) -> Field:
         return Field.objects.create(
             row=row,
@@ -65,7 +65,7 @@ class TestModels:
             position=1
         )
 
-    @pytest.fixture(autouse=True)
+    @pytest.fixture()
     def value(self, field: Field) -> Value:
         return Value.objects.create(
             field=field,
@@ -79,6 +79,9 @@ class TestModels:
 
     def test_model_latest_version(self, model: Model, version: Version):
         assert model.latest_version() == version
+
+    def test_model_latest_version_no_versions(self, model: Model):
+        assert model.latest_version() is None
 
     def test_version_string_representation(self, version: Version):
         assert str(version) == "Cal-B/C Sketch v8.1"
