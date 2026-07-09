@@ -37,6 +37,14 @@ class Section(models.Model):
     def __str__(self):
         return f"{str(self.version)} § {self.code} {self.name}"
 
+    @property
+    def next_section(self):
+        return self.version.section_set.filter(code__gt=self.code).first()
+
+    @property
+    def previous_section(self):
+        return self.version.section_set.filter(code__lt=self.code).last()
+
 
 class Subsection(models.Model):
     class Meta:
@@ -49,6 +57,20 @@ class Subsection(models.Model):
 
     def __str__(self):
         return f"{str(self.section.version)} § {self.section.code}{self.code} {self.name}"
+
+    @property
+    def next_subsection(self):
+        query = self.section.subsection_set.filter(code__gt=self.code)
+        if not query.exists() and self.section.next_section:
+            query = self.section.next_section.subsection_set
+        return query.first()
+
+    @property
+    def previous_subsection(self):
+        query = self.section.subsection_set.filter(code__lt=self.code)
+        if not query.exists() and self.section.previous_section:
+            query = self.section.previous_section.subsection_set
+        return query.last()
 
 
 class Group(models.Model):
@@ -63,16 +85,61 @@ class Group(models.Model):
     def __str__(self):
         return f"{str(self.subsection.section.version)} § {self.subsection.section.code}{self.subsection.code} {self.name}"
 
+    @property
+    def table_row_set(self):
+        return Row.objects.filter(id__in=self.row_set.filter(field__column__column_group__in=self.columngroup_set.all()).all())
+
+    @property
+    def non_table_row_set(self):
+        return Row.objects.filter(id__in=self.row_set.exclude(field__column__column_group__in=self.columngroup_set.all()).all())
+
+    @property
+    def nonempty_column_group_set(self):
+        return self.columngroup_set.exclude(name="").all()
+
 
 class Row(models.Model):
     class Meta:
         ordering = ['position']
 
     group = models.ForeignKey(Group, null=False, on_delete=models.CASCADE)
+    name = models.CharField(blank=True)
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
 
     def __str__(self):
         return f"{str(self.group.subsection.section.version)} § {self.group.subsection.section.code}{self.group.subsection.code} Row {self.position}"
+
+
+class ColumnGroup(models.Model):
+    class Meta:
+        ordering = ['position']
+
+    group = models.ForeignKey(Group, null=False, on_delete=models.CASCADE)
+    name = models.CharField(blank=True)
+    position = models.PositiveIntegerField(default=0, null=False, db_index=True)
+
+    def __str__(self):
+        return f"{str(self.group)} {self.name}"
+
+
+class Column(models.Model):
+    class Meta:
+        ordering = ['position']
+
+    column_group = models.ForeignKey(ColumnGroup, null=False, on_delete=models.CASCADE)
+    name = models.CharField(null=False, blank=False)
+    position = models.PositiveIntegerField(default=0, null=False, db_index=True)
+
+    def __str__(self):
+        return f"{str(self.column_group)} {self.name}"
+
+
+class FieldColumn(models.Model):
+    field = models.OneToOneField("Field", on_delete=models.CASCADE)
+    column = models.ForeignKey("Column", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.column)
 
 
 class Field(models.Model):
@@ -80,6 +147,7 @@ class Field(models.Model):
         ordering = ['position']
 
     row = models.ForeignKey(Row, null=False, on_delete=models.CASCADE)
+    column = models.ManyToManyField(Column, through="FieldColumn")
     name = models.CharField(null=False, blank=False)
     cell = models.CharField(null=False)
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)

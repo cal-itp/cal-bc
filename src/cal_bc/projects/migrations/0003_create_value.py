@@ -9,7 +9,6 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('models', '0009_create_value'),
         ('projects', '0002_create_project'),
     ]
 
@@ -19,7 +18,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('value', models.CharField()),
-                ('field', models.ForeignKey(null=False, db_index=True, on_delete=django.db.models.deletion.CASCADE, related_name='project_value_set', to='models.field')),
+                ('field', models.ForeignKey(null=False, db_index=True, on_delete=django.db.models.deletion.CASCADE, related_name='project_value', to='models.field')),
                 ('project', models.ForeignKey(null=False, db_index=True, on_delete=django.db.models.deletion.CASCADE, to='projects.project')),
             ],
         ),

@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from unbrowsed import parse_html, query_by_text
 
 
-class TestModelsViews:
+class TestModelViews:
     @pytest.fixture
     def user(self, django_user_model) -> User:
         return django_user_model.objects.create_user(username="caltrans")
@@ -34,5 +34,4 @@ class TestModelsViews:
         response = client.get(reverse_lazy("models"))
         assert response.status_code == 200
         dom = parse_html(response.content)
-        print(response.content)
-        assert query_by_text(dom, "Testing v1",)
+        assert query_by_text(dom, "Testing v1")

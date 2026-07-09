@@ -25,9 +25,8 @@ class ValueForm(ModelForm):
         values = field.value_set.all()
         if len(values):
             self.fields['value'] = ChoiceField(
-                required=True,
                 choices=[(None, ""), *[(v.value, v.name) for v in values]]
             )
         else:
-            self.fields['value'] = CharField(required=True)
+            self.fields['value'] = CharField()
         self.fields['value'].label = field.name
