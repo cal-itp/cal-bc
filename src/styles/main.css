@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./typography";
+@source inline("grid-cols-{1..15}");
 
 @theme {
   --font-sans: "Public Sans", sans-serif;
