@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static i18n %}
+{% load svg %}
 {% block main %}
 {% include "_statewide_header.html" %}
 
@@ -16,10 +17,7 @@
                 </div>
                 <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
                     <a href="{% url 'models' %}" class="flex items-center gap-2 rounded-md bg-dds-teal-600 px-3 py-2 text-md font-medium text-white hover:bg-dds-teal-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dds-teal-600">
-                        <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
-                          <path d="M7.06575 9.34075H1.1375C0.818333 9.34075 0.548917 9.231 0.32925 9.0115C0.10975 8.79183 0 8.52242 0 8.20325C0 7.88408 0.10975 7.61467 0.32925 7.395C0.548917 7.1755 0.818333 7.06575 1.1375 7.06575H7.06575V1.1375C7.06575 0.818333 7.1755 0.548916 7.395 0.32925C7.61467 0.10975 7.88408 0 8.20325 0C8.52242 0 8.79183 0.10975 9.0115 0.32925C9.231 0.548916 9.34075 0.818333 9.34075 1.1375V7.06575H15.269C15.5882 7.06575 15.8576 7.1755 16.0773 7.395C16.2968 7.61467 16.4065 7.88408 16.4065 8.20325C16.4065 8.52242 16.2968 8.79183 16.0773 9.0115C15.8576 9.231 15.5882 9.34075 15.269 9.34075H9.34075V15.269C9.34075 15.5882 9.231 15.8576 9.0115 16.0773C8.79183 16.2968 8.52242 16.4065 8.20325 16.4065C7.88408 16.4065 7.61467 16.2968 7.395 16.0773C7.1755 15.8576 7.06575 15.5882 7.06575 15.269V9.34075Z" fill="white"/>
-                        </svg>
-                        <span>New analysis</span>
+                        {% svg 'projects/plus' %}<span>New analysis</span>
                     </a>
                 </div>
             </div>
@@ -83,16 +81,12 @@
                             {% if page_obj.has_previous %}
                             <a href="?page={{ page_obj.previous_page_number }}" class="relative size-8 inline-flex items-center justify-center text-dds-teal-600 border-2 border-dds-teal-600 rounded-md shadow hover:shadow-inner hover:bg-gray-200 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
                                 <span class="sr-only">Previous</span>
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                    <path d="M6.33398 7.99999L11.1702 12.8362C11.3528 13.0188 11.442 13.2345 11.4378 13.4833C11.4336 13.7321 11.3388 13.9492 11.1535 14.1345C10.9709 14.317 10.7553 14.4083 10.5065 14.4083C10.2577 14.4083 10.042 14.317 9.85932 14.1345L4.78582 9.07749C4.63393 8.9256 4.52065 8.75571 4.44598 8.56782C4.37132 8.37982 4.33398 8.19054 4.33398 7.99999C4.33398 7.80943 4.37132 7.62015 4.44598 7.43215C4.52065 7.24426 4.63393 7.07437 4.78582 6.92249L9.85932 1.85282C10.042 1.67026 10.2598 1.58043 10.5128 1.58332C10.7658 1.58621 10.9849 1.68026 11.1702 1.86549C11.3528 2.04815 11.4442 2.26454 11.4442 2.51465C11.4442 2.76476 11.3528 2.98115 11.1702 3.16382L6.33398 7.99999Z" fill="currentColor"/>
-                                </svg>
+                                {% svg 'projects/chevron_left' %}
                             </a>
                             {% else %}
                                 <span class="relative size-8 inline-flex items-center justify-center text-gray-300 border-2 border-gray-300 rounded-md cursor-not-allowed">
                                     <span class="sr-only">Previous</span>
-                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                        <path d="M6.33398 7.99999L11.1702 12.8362C11.3528 13.0188 11.442 13.2345 11.4378 13.4833C11.4336 13.7321 11.3388 13.9492 11.1535 14.1345C10.9709 14.317 10.7553 14.4083 10.5065 14.4083C10.2577 14.4083 10.042 14.317 9.85932 14.1345L4.78582 9.07749C4.63393 8.9256 4.52065 8.75571 4.44598 8.56782C4.37132 8.37982 4.33398 8.19054 4.33398 7.99999C4.33398 7.80943 4.37132 7.62015 4.44598 7.43215C4.52065 7.24426 4.63393 7.07437 4.78582 6.92249L9.85932 1.85282C10.042 1.67026 10.2598 1.58043 10.5128 1.58332C10.7658 1.58621 10.9849 1.68026 11.1702 1.86549C11.3528 2.04815 11.4442 2.26454 11.4442 2.51465C11.4442 2.76476 11.3528 2.98115 11.1702 3.16382L6.33398 7.99999Z" fill="currentColor"/>
-                                    </svg>
+                                    {% svg 'projects/chevron_left' %}
                                 </span>
                             {% endif %}
                             {% for number in elided_page_range %}
@@ -109,16 +103,12 @@
                             {% if page_obj.has_next %}
                                 <a href="?page={{ page_obj.next_page_number }}" class="relative size-8 inline-flex items-center justify-center text-dds-teal-600 border-2 border-dds-teal-600 rounded-md shadow hover:shadow-inner hover:bg-gray-200 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
                                     <span class="sr-only">Next</span>
-                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                        <path d="M9.67038 7.99999L4.83405 12.8362C4.65149 13.0188 4.56233 13.2367 4.56655 13.4897C4.57077 13.7427 4.66416 13.9605 4.84672 14.1432C5.02938 14.3257 5.24788 14.417 5.50222 14.417C5.75655 14.417 5.97505 14.3257 6.15772 14.1432L11.2145 9.07749C11.3664 8.9256 11.4797 8.75571 11.5544 8.56782C11.629 8.37983 11.6664 8.19055 11.6664 7.99999C11.6664 7.80944 11.629 7.62016 11.5544 7.43216C11.4797 7.24427 11.3664 7.07438 11.2145 6.92249L6.14505 1.85282C5.96238 1.67027 5.74666 1.58177 5.49788 1.58732C5.24911 1.59288 5.03338 1.68694 4.85072 1.86949C4.66816 2.05216 4.57688 2.27066 4.57688 2.52499C4.57688 2.77932 4.66816 2.99782 4.85072 3.18049L9.67038 7.99999Z" fill="currentColor"/>
-                                    </svg>
+                                    {% svg 'projects/chevron_right' %}
                                 </a>
                             {% else %}
                                 <span class="relative size-8 inline-flex items-center justify-center text-gray-300 border-2 border-gray-300 rounded-md cursor-not-allowed">
                                     <span class="sr-only">Next</span>
-                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                        <path d="M9.67038 7.99999L4.83405 12.8362C4.65149 13.0188 4.56233 13.2367 4.56655 13.4897C4.57077 13.7427 4.66416 13.9605 4.84672 14.1432C5.02938 14.3257 5.24788 14.417 5.50222 14.417C5.75655 14.417 5.97505 14.3257 6.15772 14.1432L11.2145 9.07749C11.3664 8.9256 11.4797 8.75571 11.5544 8.56782C11.629 8.37983 11.6664 8.19055 11.6664 7.99999C11.6664 7.80944 11.629 7.62016 11.5544 7.43216C11.4797 7.24427 11.3664 7.07438 11.2145 6.92249L6.14505 1.85282C5.96238 1.67027 5.74666 1.58177 5.49788 1.58732C5.24911 1.59288 5.03338 1.68694 4.85072 1.86949C4.66816 2.05216 4.57688 2.27066 4.57688 2.52499C4.57688 2.77932 4.66816 2.99782 4.85072 3.18049L9.67038 7.99999Z" fill="currentColor"/>
-                                    </svg>
+                                    {% svg 'projects/chevron_right' %}
                                 </span>
                             {% endif %}
                         </nav>
@@ -132,10 +122,7 @@
                 <p class="text-sm text-gray-700 text-center">California state averages are pre-populated where available.</p>
                 <div class="pt-4 pb-8 flex items-center justify-center">
                     <a href="{% url 'models' %}" class="flex items-center gap-2 rounded-md bg-dds-teal-600 px-3 py-2 text-md font-medium text-white hover:bg-dds-teal-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dds-teal-600">
-                        <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
-                          <path d="M7.06575 9.34075H1.1375C0.818333 9.34075 0.548917 9.231 0.32925 9.0115C0.10975 8.79183 0 8.52242 0 8.20325C0 7.88408 0.10975 7.61467 0.32925 7.395C0.548917 7.1755 0.818333 7.06575 1.1375 7.06575H7.06575V1.1375C7.06575 0.818333 7.1755 0.548916 7.395 0.32925C7.61467 0.10975 7.88408 0 8.20325 0C8.52242 0 8.79183 0.10975 9.0115 0.32925C9.231 0.548916 9.34075 0.818333 9.34075 1.1375V7.06575H15.269C15.5882 7.06575 15.8576 7.1755 16.0773 7.395C16.2968 7.61467 16.4065 7.88408 16.4065 8.20325C16.4065 8.52242 16.2968 8.79183 16.0773 9.0115C15.8576 9.231 15.5882 9.34075 15.269 9.34075H9.34075V15.269C9.34075 15.5882 9.231 15.8576 9.0115 16.0773C8.79183 16.2968 8.52242 16.4065 8.20325 16.4065C7.88408 16.4065 7.61467 16.2968 7.395 16.0773C7.1755 15.8576 7.06575 15.5882 7.06575 15.269V9.34075Z" fill="white"/>
-                        </svg>
-                        <span>Create analysis</span>
+                        {% svg 'projects/plus' %}<span>Create analysis</span>
                     </a>
                 </div>
             </div>
