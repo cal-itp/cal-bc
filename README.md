@@ -134,6 +134,12 @@ To access or make changes to your local database, run:
 $ uv run manage.py dbshell
 ```
 
+To reset your local database, run:
+
+```bash
+$ uv run manage.py reset_db
+```
+
 ## License
 
 This tool is licensed under the terms of the GNU Affero General Public License.
