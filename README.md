@@ -96,6 +96,21 @@ $ uv run ruff check --fix
 ```
 
 
+### Managing Django in Cloud Run
+
+To run `manage.py` commands on the deployed Cloud Run instance, use the [cal-bc-staging-manage](https://console.cloud.google/run/jobs/details/us-west2/cal-bc-staging-manage) Cloud Run Job.
+
+For example, if you want to migrate the `models` app back to a specific migration, you would locally run:
+```bash
+$ uv run manage.py migrate models 0013_subsection_description
+```
+
+The Cloud Run Jobs equivalent using `cal-bc-staging-manage` is:
+```bash
+$ gcloud run jobs execute cal-bc-staging-manage --args migrate,models,0013_subsection_description --wait
+```
+
+
 ### Administering the site locally
 
 In order to access the admin site at [http://localhost:8000/admin](http://localhost:8000/admin), you need to create a superuser for your DOT login:
