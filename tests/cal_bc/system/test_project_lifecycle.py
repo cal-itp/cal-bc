@@ -1,3 +1,4 @@
+from playwright.sync_api import expect
 from pathlib import Path
 import pytest
 
@@ -52,7 +53,11 @@ class TestProjectLifecycle(StaticLiveServerTestCase):
         )
         row_1 = Row.objects.create(
             group=group,
-            position=1
+            position=1,
+            guide="""
+                # Project Name
+                Enter a name for your project.
+            """
         )
         Field.objects.create(
             row=row_1,
@@ -87,18 +92,20 @@ class TestProjectLifecycle(StaticLiveServerTestCase):
 
     def test_projects(self):
         self.page.goto(f"{self.live_server_url}/")
-        self.page.wait_for_selector("text=My Cal B/C Analyses")
+        expect(self.page.locator("body")).to_contain_text("My Cal B/C Analyses")
         self.page.get_by_role("link", name="New analysis").click()
         self.page.get_by_role("button", name="Cal-B/C Sketch v8.1").click()
+        self.page.get_by_label("Project Name").click()
+        expect(self.page.locator("body")).to_contain_text("Enter a name for your project")
         self.page.get_by_label("Project Name").fill("Geary Boulevard Light Rail")
         self.page.get_by_label("State").select_option("California")
         self.page.get_by_label("District").select_option(
             "District 4 - Bay Area / Oakland"
         )
         self.page.get_by_role("button", name="Save draft").click()
-        self.page.wait_for_selector("text=Project successfully saved!")
-        self.page.wait_for_selector("text=Project successfully saved!")
+        expect(self.page.locator("body")).to_contain_text("Project successfully saved!")
+        expect(self.page.locator("body")).to_contain_text("Project successfully saved!")
         self.page.get_by_role("button", name="User").click()
-        self.page.wait_for_selector("text=Sign out").click()
-        self.page.wait_for_selector("text=Sign in with Microsoft")
+        self.page.get_by_text("Sign out").click()
+        expect(self.page.locator("body")).to_contain_text("Sign in with Microsoft")
         self.page.close()

@@ -58,6 +58,7 @@ class TestModelAdmin(StaticLiveServerTestCase):
         self.page.get_by_role("link", name="Home").click()
         self.page.locator(".app-models").get_by_role("link", name="Groups", exact=True).click()
         self.page.get_by_role("link", name="Sketch v8.1 § 1A General Information", exact=True).click()
+        self.page.locator(":text('Row: #1') + fieldset").get_by_label("Guide").locator("~ [contenteditable]").fill("Complete this section")
         self.page.locator(":text('Field: #1') + fieldset").get_by_label("Name").nth(0).fill("District")
         self.page.locator(":text('Field: #1') + fieldset").get_by_label("Cell").nth(0).fill("ProjLoc")
         self.page.get_by_role("link", name="Add another Value").click()

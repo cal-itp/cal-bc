@@ -1,4 +1,5 @@
 from django.db import models
+from django_prose_editor.fields import ProseEditorField
 
 
 class Model(models.Model):
@@ -105,6 +106,10 @@ class Row(models.Model):
     group = models.ForeignKey(Group, null=False, on_delete=models.CASCADE)
     name = models.CharField(blank=True)
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
+    guide = ProseEditorField(
+        null=True, blank=True, sanitize=True,
+        extensions={"Bold": True, "Italic": True, "Heading": {"levels": [1, 2, 3]}, "BulletList": True, "ListItem": True,},
+    )
 
     def __str__(self):
         return f"{str(self.group.subsection.section.version)} § {self.group.subsection.section.code}{self.group.subsection.code} Row {self.position}"

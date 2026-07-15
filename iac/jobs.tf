@@ -6,7 +6,7 @@ resource "google_cloud_run_v2_job" "cal-bc-staging-manage" {
   template {
     template {
       service_account = data.terraform_remote_state.iam.outputs.google_service_account_cal-bc-service-account_email
-      max_retries = 0
+      max_retries     = 0
 
       volumes {
         name = "cloudsql"
