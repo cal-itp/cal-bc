@@ -32,6 +32,10 @@
                         <tr>
                             <th scope="col" class="py-2 px-3 pl-4 text-left text-xs font-semibold text-gray-800 sm:pl-6">Project Name</th>
                             <th scope="col" class="py-2 pr-3 pl-4 text-left text-xs font-semibold text-gray-800 sm:pl-6">Model</th>
+                            <th scope="col" class="py-2 pr-3 pl-4 text-left text-xs font-semibold text-gray-800 flex items-center sm:pl-6">
+                                <span class="text-gray-800">Last Edited</span>
+                                {% svg 'projects/arrow_down' alt="desc_sort" class="text-dds-teal-600 h-4 w-4 ml-1" %}
+                            </th>
                             <th scope="col" class="py-2 pr-4 pl-3 text-left text-xs font-semibold text-gray-800 sm:pr-6">Actions</th>
                         </tr>
                     </thead>
@@ -40,6 +44,7 @@
                         <tr class="border-gray-100 border-y-2">
                             <td class="rounded-l-md py-4 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6">{{ project }}</td>
                             <td class="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6">{{ project.version }}</td>
+                            <td class="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6">{{ project.updated_at|date:"F j, Y" }}</td>
                             <td class="rounded-r-md py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap text-gray-900 sm:pr-6">
                                 <a href="{% url 'project_edit' project.id %}" class="text-dds-teal-600 hover:text-dds-teal-700 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
                                     <span class="sr-only">Edit</span>
