@@ -55,6 +55,10 @@ class Subsection(models.Model):
     name = models.CharField(null=False, blank=False)
     code = models.CharField(null=False, blank=False, db_index=True)
     description = models.CharField(null=True, blank=True)
+    guide = ProseEditorField(
+        null=True, blank=True, sanitize=True,
+        extensions={"Bold": True, "Italic": True, "Heading": {"levels": [1, 2, 3]}, "BulletList": True, "ListItem": True,},
+    )
 
     def __str__(self):
         return f"{str(self.section.version)} § {self.section.code}{self.code} {self.name}"

@@ -18,10 +18,10 @@
         <label for="{{ field.id_for_label }}" class="sr-only block text-lg font-medium text-gray-900">{{ field.label }}</label>
         <div class="grid grid-cols-1">
             {% if field.widget_type == 'select' %}
-                {% render_field field hx-get=row_url hx-params="none" hx-swap="morph" hx-target="#row-guide" hx-trigger="focus" class="col-start-1 row-start-1 w-full appearance-none rounded-xs bg-white pl-5 pr-12 py-3 text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600" %}
+                {% render_field field hx-get=row_url hx-params="none" hx-swap="morph" hx-target="#guide" hx-trigger="focus" class="col-start-1 row-start-1 w-full appearance-none rounded-xs bg-white pl-5 pr-12 py-3 text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600" %}
                 {% svg "projects/chevron_down" class="pointer-events-none col-start-1 row-start-1 mr-4 size-6 self-center justify-self-end text-gray-500" %}
             {% else %}
-                {% render_field field hx-get=row_url hx-params="none" hx-swap="morph" hx-target="#row-guide" hx-trigger="focus" class="block w-full rounded-xs bg-white px-3 py-3 text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600" %}
+                {% render_field field hx-get=row_url hx-params="none" hx-swap="morph" hx-target="#guide" hx-trigger="focus" class="block w-full rounded-xs bg-white px-3 py-3 text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600" %}
             {% endif %}
         </div>
         {% for error in field.errors %}
@@ -36,16 +36,14 @@
     {{ form.field }}
     {% for field in form.visible_fields %}
         <label for="{{ field.id_for_label }}" class="block text-lg font-medium text-gray-900">{{ field.label }}</label>
-        {% if field.widget_type == 'select' %}
-            <div class="mt-2 grid grid-cols-1">
-                {% render_field field hx-get=row_url hx-params="none" hx-swap="morph" hx-target="#row-guide" hx-trigger="focus" class="col-start-1 row-start-1 appearance-none rounded-xs bg-white pl-5 pr-12 py-3 text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600" %}
+        <div class="grid grid-cols-1">
+            {% if field.widget_type == 'select' %}
+                {% render_field field hx-get=row_url hx-params="none" hx-swap="morph" hx-target="#guide" hx-trigger="focus" class="col-start-1 row-start-1 appearance-none rounded-xs bg-white pl-5 pr-12 py-3 text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600" %}
                 {% svg "projects/chevron_down" class="pointer-events-none col-start-1 row-start-1 mr-4 size-6 self-center justify-self-end text-gray-500" %}
-            </div>
-        {% else %}
-            <div class="mt-2">
-                {% render_field field hx-get=row_url hx-params="none" hx-swap="morph" hx-target="#row-guide" hx-trigger="focus" class="block w-fit rounded-xs bg-white px-3 py-3 text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600" %}
-            </div>
-        {% endif %}
+            {% else %}
+                {% render_field field hx-get=row_url hx-params="none" hx-swap="morph" hx-target="#guide" hx-trigger="focus" class="block w-fit rounded-xs bg-white px-3 py-3 text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600" %}
+            {% endif %}
+        </div>
         {% for error in field.errors %}
             <p class="text-red-600">{{ error }}</p>
         {% endfor %}
@@ -76,7 +74,7 @@
                             {% endspaceless %}">
                                 {% for form in formset %}
                                     {% if form.initial.field.row == row or form.instance.field.row == row %}
-                                    <div class="col-span-1">
+                                    <div class="col-span-1 mt-2">
                                         {% partial form-field %}
                                     </div>
                                     {% endif %}
@@ -137,7 +135,7 @@
                 {% endfor %}
             </section>
             <section class="md:block md:self-start md:sticky md:top-0 md:col-span-3">
-                <aside id="row-guide"></aside>
+                <aside id="guide" hx-get="{% url 'model_version_section_subsection_guide' model_pk=subsection.section.version.model.pk version_pk=subsection.section.version.pk section_pk=subsection.section.pk pk=subsection.pk %}" hx-params="none" hx-swap="morph" hx-trigger="load"></aside>
             </section>
         </section>
     </div>

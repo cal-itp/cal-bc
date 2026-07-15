@@ -61,3 +61,18 @@ class TestModelViews:
         assert response.status_code == 200
         dom = parse_html(response.content)
         assert not query_by_text(dom, "Guide")
+
+    def test_subsection_guide(self, client: Client, model: Model, version: Version, section: Section, subsection: Subsection) -> None:
+        subsection.guide="Good information here"
+        subsection.save()
+        response = client.get(reverse_lazy("model_version_section_subsection_guide", kwargs={"model_pk":model.pk, "version_pk":version.pk, "section_pk":section.pk, "pk":subsection.pk}))
+        assert response.status_code == 200
+        dom = parse_html(response.content)
+        assert query_by_text(dom, "Guide")
+        assert query_by_text(dom, "Good information here")
+
+    def test_subsection_guide_empty(self, client: Client, model: Model, version: Version, section: Section, subsection: Subsection) -> None:
+        response = client.get(reverse_lazy("model_version_section_subsection_guide", kwargs={"model_pk":model.pk, "version_pk":version.pk, "section_pk":section.pk, "pk":subsection.pk}))
+        assert response.status_code == 200
+        dom = parse_html(response.content)
+        assert not query_by_text(dom, "Guide")
