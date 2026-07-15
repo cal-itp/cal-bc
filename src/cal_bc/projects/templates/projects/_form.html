@@ -1,18 +1,5 @@
 {% load static widget_tweaks svg %}
 
-{% partialdef help-box %}
-    <div class="border border-dds-teal-600 rounded-md bg-dds-teal-100">
-        <h3 class="px-6 py-4 text-lg uppercase font-bold text-white rounded-t-md bg-dds-teal-600">Guide</h3>
-        <div aria-hidden="true"
-             class="w-full border-t border-dds-teal-600"></div>
-        <div class="px-6 py-4">
-            <h4 class="mb-4 text-2xl font-semibold">Setup Help</h4>
-            <p class="mb-4">All fields in this step are required.</p>
-            <p>Click on any field to see specific help and guidance for that input. </p>
-        </div>
-    </div>
-{% endpartialdef %}
-
 {% partialdef subsection-header %}
     <h2 class="text-4xl font-bold tracking-tight text-dds-teal-950">{{ subsection.section.code }}{{ subsection.code }}. {{ subsection.name }}</h2>
     {% if subsection.description %}<p class="mt-1 text-lg/8 font-light text-gray-700">{{ subsection.description }}</p>{% endif %}
@@ -24,16 +11,17 @@
 {% endpartialdef %}
 
 {% partialdef table-form-cell %}
+    {% url 'model_version_section_subsection_group_row_guide' model_pk=row.group.subsection.section.version.model.pk version_pk=row.group.subsection.section.version.pk section_pk=row.group.subsection.section.pk subsection_pk=row.group.subsection.pk group_pk=row.group.pk pk=row.pk as row_url %}
     {{ form.id }}
     {{ form.field }}
     {% for field in form.visible_fields %}
         <label for="{{ field.id_for_label }}" class="sr-only block text-lg font-medium text-gray-900">{{ field.label }}</label>
         <div class="grid grid-cols-1">
             {% if field.widget_type == 'select' %}
-                {{ field | add_class:"col-start-1 row-start-1 w-full appearance-none rounded-xs bg-white pl-5 pr-12 py-3 text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600" }}
+                {% render_field field hx-get=row_url hx-params="none" hx-swap="morph" hx-target="#row-guide" hx-trigger="focus" class="col-start-1 row-start-1 w-full appearance-none rounded-xs bg-white pl-5 pr-12 py-3 text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600" %}
                 {% svg "projects/chevron_down" class="pointer-events-none col-start-1 row-start-1 mr-4 size-6 self-center justify-self-end text-gray-500" %}
             {% else %}
-                {{ field | add_class:"block w-full rounded-xs bg-white px-3 py-3 text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600" }}
+                {% render_field field hx-get=row_url hx-params="none" hx-swap="morph" hx-target="#row-guide" hx-trigger="focus" class="block w-full rounded-xs bg-white px-3 py-3 text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600" %}
             {% endif %}
         </div>
         {% for error in field.errors %}
@@ -43,18 +31,19 @@
 {% endpartialdef %}
 
 {% partialdef form-field %}
+    {% url 'model_version_section_subsection_group_row_guide' model_pk=row.group.subsection.section.version.model.pk version_pk=row.group.subsection.section.version.pk section_pk=row.group.subsection.section.pk subsection_pk=row.group.subsection.pk group_pk=row.group.pk pk=row.pk as row_url %}
     {{ form.id }}
     {{ form.field }}
     {% for field in form.visible_fields %}
         <label for="{{ field.id_for_label }}" class="block text-lg font-medium text-gray-900">{{ field.label }}</label>
         {% if field.widget_type == 'select' %}
             <div class="mt-2 grid grid-cols-1">
-                {{ field | add_class:"col-start-1 row-start-1 appearance-none rounded-xs bg-white pl-5 pr-12 py-3 text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600" }}
+                {% render_field field hx-get=row_url hx-params="none" hx-swap="morph" hx-target="#row-guide" hx-trigger="focus" class="col-start-1 row-start-1 appearance-none rounded-xs bg-white pl-5 pr-12 py-3 text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600" %}
                 {% svg "projects/chevron_down" class="pointer-events-none col-start-1 row-start-1 mr-4 size-6 self-center justify-self-end text-gray-500" %}
             </div>
         {% else %}
             <div class="mt-2">
-                {{ field | add_class:"block w-fit rounded-xs bg-white px-3 py-3 text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600" }}
+                {% render_field field hx-get=row_url hx-params="none" hx-swap="morph" hx-target="#row-guide" hx-trigger="focus" class="block w-fit rounded-xs bg-white px-3 py-3 text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600" %}
             </div>
         {% endif %}
         {% for error in field.errors %}
@@ -71,8 +60,8 @@
     {% partial subsection-header %}
 
     <div class="py-6 sm:py-8">
-        <section class="md:grid md:grid-cols-3 md:gap-4">
-            <section class="space-y-4 md:col-span-2">
+        <section class="group md:grid md:grid-cols-7 md:gap-4">
+            <section class="space-y-4 md:col-span-4">
                 {% for group in subsection.group_set.all %}
                     {% partial group-header %}
 
@@ -147,8 +136,8 @@
                     </div>
                 {% endfor %}
             </section>
-            <section>
-                {% partial help-box %}
+            <section class="md:block md:self-start md:sticky md:top-0 md:col-span-3">
+                <aside id="row-guide"></aside>
             </section>
         </section>
     </div>

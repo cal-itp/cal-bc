@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     "widget_tweaks",
     "nested_admin",
     "extra_views",
+    "django_prose_editor",
 ]
 
 if importlib.util.find_spec("django_extensions"):

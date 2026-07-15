@@ -1,9 +1,9 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView
 
-from cal_bc.models.models.model import Model, Version
+from cal_bc.models.models.model import Model, Version, Row
 from cal_bc.projects.models.project import Project
 
 
@@ -27,3 +27,17 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse_lazy("project_edit", kwargs={"pk": self.object.pk})
+
+
+class RowGuideView(LoginRequiredMixin, DetailView):
+    model = Row
+    template_name = "rows/guides/show.html"
+
+    def get_queryset(self, *args, **kwargs):
+        return Row.objects.filter(
+            group_id=self.kwargs["group_pk"],
+            group__subsection_id=self.kwargs["subsection_pk"],
+            group__subsection__section_id=self.kwargs["section_pk"],
+            group__subsection__section__version_id=self.kwargs["version_pk"],
+            group__subsection__section__version__model_id=self.kwargs["model_pk"],
+        )
