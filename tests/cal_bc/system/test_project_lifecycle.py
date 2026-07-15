@@ -45,6 +45,10 @@ class TestProjectLifecycle(StaticLiveServerTestCase):
             section=section,
             name="Project Data",
             code="A",
+            guide="""
+                # Setup Help
+                All fields in this step are required.
+            """
         )
         group = Group.objects.create(
             subsection=subsection,
@@ -95,6 +99,7 @@ class TestProjectLifecycle(StaticLiveServerTestCase):
         expect(self.page.locator("body")).to_contain_text("My Cal B/C Projects")
         self.page.get_by_role("link", name="New project").click()
         self.page.get_by_role("button", name="Cal-B/C Sketch v8.1").click()
+        expect(self.page.locator("body")).to_contain_text("All fields in this step are required")
         self.page.get_by_label("Project Name").click()
         expect(self.page.locator("body")).to_contain_text("Enter a name for your project")
         self.page.get_by_label("Project Name").fill("Geary Boulevard Light Rail")

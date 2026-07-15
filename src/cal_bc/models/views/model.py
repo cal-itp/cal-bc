@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView
 
-from cal_bc.models.models.model import Model, Version, Row
+from cal_bc.models.models.model import Model, Version, Subsection, Row
 from cal_bc.projects.models.project import Project
 
 
@@ -40,4 +40,16 @@ class RowGuideView(LoginRequiredMixin, DetailView):
             group__subsection__section_id=self.kwargs["section_pk"],
             group__subsection__section__version_id=self.kwargs["version_pk"],
             group__subsection__section__version__model_id=self.kwargs["model_pk"],
+        )
+
+
+class SubsectionGuideView(LoginRequiredMixin, DetailView):
+    model = Subsection
+    template_name = "subsections/guides/show.html"
+
+    def get_queryset(self, *args, **kwargs):
+        return Subsection.objects.filter(
+            section_id=self.kwargs["section_pk"],
+            section__version_id=self.kwargs["version_pk"],
+            section__version__model_id=self.kwargs["model_pk"],
         )

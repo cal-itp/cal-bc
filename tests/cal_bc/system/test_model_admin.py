@@ -51,6 +51,7 @@ class TestModelAdmin(StaticLiveServerTestCase):
         self.page.locator(":text('Section: #1') + fieldset").get_by_label("Code").nth(0).fill("1")
         self.page.locator(":text('Subsection: #1') + fieldset").get_by_label("Name").nth(0).fill("Project Data")
         self.page.locator(":text('Subsection: #1') + fieldset").get_by_label("Code").nth(0).fill("A")
+        self.page.locator(":text('Subsection: #1') + fieldset").get_by_label("Guide").locator("~ [contenteditable]").nth(0).fill("Add basic project infomration here")
         self.page.locator(":text('Groups') ~ table tbody tr").nth(0).locator("td").nth(1).locator("input").fill("General Information")
         self.page.get_by_role("button", name="Save", exact=True).click()
         self.page.wait_for_selector("text=The version “Sketch v8.1” was changed successfully")
