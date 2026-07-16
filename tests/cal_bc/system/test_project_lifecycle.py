@@ -92,8 +92,8 @@ class TestProjectLifecycle(StaticLiveServerTestCase):
 
     def test_projects(self):
         self.page.goto(f"{self.live_server_url}/")
-        expect(self.page.locator("body")).to_contain_text("My Cal B/C Analyses")
-        self.page.get_by_role("link", name="New analysis").click()
+        expect(self.page.locator("body")).to_contain_text("My Cal B/C Projects")
+        self.page.get_by_role("link", name="New project").click()
         self.page.get_by_role("button", name="Cal-B/C Sketch v8.1").click()
         self.page.get_by_label("Project Name").click()
         expect(self.page.locator("body")).to_contain_text("Enter a name for your project")
@@ -103,7 +103,6 @@ class TestProjectLifecycle(StaticLiveServerTestCase):
             "District 4 - Bay Area / Oakland"
         )
         self.page.get_by_role("button", name="Save draft").click()
-        expect(self.page.locator("body")).to_contain_text("Project successfully saved!")
         expect(self.page.locator("body")).to_contain_text("Project successfully saved!")
         self.page.get_by_role("button", name="User").click()
         self.page.get_by_text("Sign out").click()
