@@ -11,12 +11,12 @@
             {% if user.get_short_name != "" %}<p class="mt-4 uppercase text-base font-light text-pretty text-dds-teal-700">Welcome, {{user.get_short_name}}</p>{% endif %}
             <div class="sm:flex sm:items-center">
                 <div class="sm:flex-auto space-y-2">
-                    <h2 class="mt-4 text-4xl font-bold tracking-tight text-dds-teal-950">My Cal B/C Analyses</h2>
-                    <p class="text-base font-light text-pretty text-gray-700">{{ page_obj.paginator.count }} analyses</p>
+                    <h2 class="mt-4 text-4xl font-bold tracking-tight text-dds-teal-950">My Cal B/C Projects</h2>
+                    <p class="text-base font-light text-pretty text-gray-700">{{ page_obj.paginator.count }} projects</p>
                 </div>
                 <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
                     <a href="{% url 'models' %}" class="flex items-center gap-2 rounded-md bg-dds-teal-600 px-3 py-2 text-md font-medium text-white shadow hover:shadow-inner hover:text-gray-200 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
-                        {% svg 'projects/plus' %}<span>New analysis</span>
+                        {% svg 'projects/plus' %}<span>New project</span>
                     </a>
                 </div>
             </div>
@@ -122,12 +122,12 @@
             </div>
         {% else %}
             <div class="rounded-md bg-white mx-auto max-w-7xl space-y-2 py-8 px-6 lg:px-8">
-                <p class="pt-8 text-xl font-bold text-gray-900 text-center ">No analyses yet</p>
-                <p class="text-sm text-gray-700 text-center">Create your first Cal B/C analysis by completing the 2-section data entry process.</p>
+                <p class="pt-8 text-xl font-bold text-gray-900 text-center ">No projects yet</p>
+                <p class="text-sm text-gray-700 text-center">Create your first Cal B/C project by completing the 2-section data entry process.</p>
                 <p class="text-sm text-gray-700 text-center">California state averages are pre-populated where available.</p>
                 <div class="pt-4 pb-8 flex items-center justify-center">
                     <a href="{% url 'models' %}" class="flex items-center gap-2 rounded-md bg-dds-teal-600 px-3 py-2 text-md font-medium text-white shadow hover:shadow-inner hover:text-gray-200 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
-                        {% svg 'projects/plus' %}<span>Create analysis</span>
+                        {% svg 'projects/plus' %}<span>Create project</span>
                     </a>
                 </div>
             </div>

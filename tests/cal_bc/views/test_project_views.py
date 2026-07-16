@@ -67,11 +67,11 @@ class TestProjectViews:
         assert response.status_code == 200
         dom = parse_html(response.content)
         assert query_by_text(dom, "Welcome, Maria")
-        assert query_by_text(dom, "My Cal B/C Analyses")
-        assert query_by_text(dom, "New analysis")
-        assert query_by_text(dom, "0 analyses")
-        assert query_by_text(dom, "No analyses yet")
-        assert query_by_text(dom, "Create analysis")
+        assert query_by_text(dom, "My Cal B/C Projects")
+        assert query_by_text(dom, "New project")
+        assert query_by_text(dom, "0 projects")
+        assert query_by_text(dom, "No projects yet")
+        assert query_by_text(dom, "Create project")
 
     def test_index_with_projects(self, client: Client, user: User, project: Project):
         client.force_login(user)
@@ -79,10 +79,9 @@ class TestProjectViews:
         assert response.status_code == 200
         dom = parse_html(response.content)
         assert query_by_text(dom, "Welcome, Maria")
-        assert query_by_text(dom, "My Cal B/C Analyses")
-        assert query_by_text(dom, "New analysis")
-        assert query_by_text(dom, "1 analyses")
-        page = query_by_text(dom, "My Cal B/C Analyses", exact=False)
+        assert query_by_text(dom, "New project")
+        assert query_by_text(dom, "1 projects")
+        page = query_by_text(dom, "My Cal B/C Projects", exact=False)
         assert page.to_have_text_content("1to1of1projects", exact=False)
 
     def test_edit(
