@@ -59,6 +59,7 @@ jobs:
             image_tag = "${{ github.ref == 'refs/heads/main' && github.sha || github.event.pull_request.head.sha }}"
           target: |
             google_cloud_run_v2_service.cal-bc-staging
+            google_cloud_run_v2_job.cal-bc-staging-manage
 
       - name: Terraform Apply
         uses: dflook/terraform-apply@v2
