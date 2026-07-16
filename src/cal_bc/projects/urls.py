@@ -3,6 +3,7 @@ from django.urls import path
 from .views.project import (
     ProjectListView,
     ProjectEditRedirectView,
+    ProjectDeleteView
 )
 from .views.project_benefit import project_benefit
 from .views.project_download import ProjectDownloadView
@@ -14,4 +15,5 @@ urlpatterns = [
     path("<int:project_pk>/subsections/<int:pk>/edit", ProjectEditView.as_view(), name="project_subsection_edit"),
     path("<int:pk>/benefit", project_benefit, name="project_benefit"),
     path("<int:pk>/download", ProjectDownloadView.as_view(), name="project_download"),
+    path("<int:pk>/delete", ProjectDeleteView.as_view(), name="project_delete"),
 ]

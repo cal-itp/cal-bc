@@ -50,6 +50,13 @@
                                     <span class="sr-only">Edit</span>
                                     {% svg 'projects/edit' alt="Edit" class="h-5 w-5" %}
                                 </a>
+                                <form action="{% url 'project_delete' project.id %}" method="POST" class="flex items-center">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-dds-teal-600 hover:text-dds-teal-700 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400" onclick="return confirm('Are you sure you want to delete the {{ project }}?');">
+                                        <span class="sr-only">Delete</span>
+                                        {% svg 'projects/delete' alt="Delete" class="h-5 w-5" %}
+                                    </button>
+                                </form>
                                 <a href="{% url 'project_download' project.id %}" class="text-dds-teal-600 hover:text-dds-teal-700 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
                                     <span class="sr-only">Download</span>
                                     {% svg 'projects/download' alt="Download" class="h-5 w-5" %}
