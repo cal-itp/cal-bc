@@ -45,10 +45,14 @@
                             <td class="rounded-l-md py-4 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6">{{ project }}</td>
                             <td class="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6">{{ project.version }}</td>
                             <td class="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6">{{ project.updated_at|date:"F j, Y" }}</td>
-                            <td class="rounded-r-md py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap text-gray-900 sm:pr-6">
+                            <td class="rounded-r-md py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap text-gray-900 flex items-center space-x-3 sm:pr-6">
                                 <a href="{% url 'project_edit' project.id %}" class="text-dds-teal-600 hover:text-dds-teal-700 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
                                     <span class="sr-only">Edit</span>
                                     {% svg 'projects/edit' alt="Edit" class="h-5 w-5" %}
+                                </a>
+                                <a href="{% url 'project_download' project.id %}" class="text-dds-teal-600 hover:text-dds-teal-700 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+                                    <span class="sr-only">Download</span>
+                                    {% svg 'projects/download' alt="Download" class="h-5 w-5" %}
                                 </a>
                             </td>
                         </tr>
