@@ -24,6 +24,12 @@ class TestProjectViews:
         )
 
     @pytest.fixture
+    def other_user(self, django_user_model) -> User:
+        return django_user_model.objects.create_user(
+            username="take_a_letter", first_name="Letter", last_name="Addressee"
+        )
+
+    @pytest.fixture
     def model(self) -> Model:
         return Model.objects.create(
             name="Testing",
@@ -101,6 +107,18 @@ class TestProjectViews:
         assert query_by_text(dom, "1 projects")
         page = query_by_text(dom, "My Cal B/C Projects", exact=False)
         assert page.to_have_text_content("1to1of1projects", exact=False)
+
+    def test_index_with_other_projects(self, client: Client,other_user: User, project: Project):
+        client.force_login(other_user)
+        response = client.get(reverse_lazy("projects"))
+        assert response.status_code == 200
+        dom = parse_html(response.content)
+        assert query_by_text(dom, "Welcome, Letter")
+        assert query_by_text(dom, "My Cal B/C Projects")
+        assert query_by_text(dom, "New project")
+        assert query_by_text(dom, "0 projects")
+        assert query_by_text(dom, "No projects yet")
+        assert query_by_text(dom, "Create project")
 
     def test_edit(
         self,

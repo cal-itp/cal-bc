@@ -12,6 +12,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="subsection",
             name="description",
-            field=models.CharField(blank=True, null=True),
+            field=models.CharField(blank=True),
         ),
     ]

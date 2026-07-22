@@ -70,12 +70,17 @@ class TestProjectLifecycle(StaticLiveServerTestCase):
             guide="""
                 # Project Name
                 Enter a name for your project.
-            """,
+            """
         )
-        Field.objects.create(row=group_1_row_1, name="Project Name", position=1)
-        group_1_row_2 = Row.objects.create(group=group_1, position=2)
-        state_field = Field.objects.create(row=group_1_row_2, name="State", position=1)
-        Value.objects.create(field=state_field, name="California", position=1)
+        Field.objects.create(
+            row=group_1_row_1,
+            name="Project Name",
+            position=1
+        )
+        group_1_row_2 = Row.objects.create(
+            group=group_1,
+            position=2
+        )
         district_field = Field.objects.create(
             row=group_1_row_2, name="District", position=2
         )
@@ -104,7 +109,6 @@ class TestProjectLifecycle(StaticLiveServerTestCase):
             "Enter a name for your project"
         )
         self.page.get_by_label("Project Name").fill("Geary Boulevard Light Rail")
-        self.page.get_by_label("State").select_option("California")
         self.page.get_by_label("District").select_option(
             "District 4 - Bay Area / Oakland"
         )
@@ -116,12 +120,12 @@ class TestProjectLifecycle(StaticLiveServerTestCase):
         self.page.get_by_role("link", name="Edit").click()
         self.page.get_by_label("Project Name").fill("New Geary Boulevard Light Rail")
         self.page.get_by_role("button", name="Continue to Subsection 1B").click()
-        self.page.get_by_role("button", name="Back to Subsection 1A").click()
         self.page.get_by_role("button", name="Save draft").click()
+        expect(self.page.locator("body")).to_contain_text("This field is required")
+        self.page.get_by_label("Cars per hour").fill("333")
+        self.page.get_by_role("button", name="Back to Subsection 1A").click()
         self.page.get_by_role("button", name="1A - Project Data").click()
         self.page.get_by_role("menuitem", name="1B. Traffic Data").click()
-        self.page.get_by_label("Cars per hour").fill("333")
-        self.page.get_by_role("button", name="Save draft").click()
         self.page.get_by_role("link", name="Projects").click()
         expect(self.page.locator("body")).to_contain_text(
             "New Geary Boulevard Light Rail"

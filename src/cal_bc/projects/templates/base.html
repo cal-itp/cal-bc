@@ -7,7 +7,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     {% tailwind_css %}
-    {% htmx_script %}
+    {% htmx_script version=4 %}
+    <script src="{% static 'scripts/htmx-ext-ws.min.js' %}" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" async type="module"></script>
 </head>
 

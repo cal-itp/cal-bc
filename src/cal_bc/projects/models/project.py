@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.db import models
+from django.db import models, transaction
 
 from cal_bc.models.models.model import Field, Version
 
@@ -45,5 +45,6 @@ class Value(models.Model):
         return f"{self.field!s} {self.value}"
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        self.project.save()
+        with transaction.atomic():
+            super().save(*args, **kwargs)
+            transaction.on_commit(self.project.save)
