@@ -1,6 +1,8 @@
-from django.db import models
+from django.db import models, transaction
+from functools import partial
 from cal_bc.models.models.model import Version, Field
 from django.contrib.auth.models import User
+from cal_bc.tasks import refresh_user_projects
 
 
 class Project(models.Model):
@@ -26,6 +28,12 @@ class Project(models.Model):
         name_value = self.name_value()
         return name_value.value if name_value else "New Project"
 
+    def save(self, *args, **kwargs):
+        print("Project.save")
+        with transaction.atomic():
+            super().save(*args, **kwargs)
+            transaction.on_commit(partial(refresh_user_projects.enqueue, user_pk=self.user_id))
+
 
 class Value(models.Model):
     project = models.ForeignKey(
@@ -39,5 +47,6 @@ class Value(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        self.project.save()
+        with transaction.atomic():
+            super().save(*args, **kwargs)
+            transaction.on_commit(self.project.save)
