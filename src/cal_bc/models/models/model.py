@@ -24,7 +24,7 @@ class Version(models.Model):
     url = models.CharField(null=False, blank=False)
 
     def __str__(self):
-        return f"{str(self.model)} v{self.name}"
+        return f"{self.model!s} v{self.name}"
 
     def has_form_link(self):
         return self.section_set.count() > 0
@@ -39,7 +39,7 @@ class Section(models.Model):
     code = models.CharField(null=False, blank=False, db_index=True)
 
     def __str__(self):
-        return f"{str(self.version)} § {self.code} {self.name}"
+        return f"{self.version!s} § {self.code} {self.name}"
 
     @property
     def next_section(self):
@@ -64,7 +64,7 @@ class Subsection(models.Model):
     )
 
     def __str__(self):
-        return f"{str(self.section.version)} § {self.section.code}{self.code} {self.name}"
+        return f"{self.section.version!s} § {self.section.code}{self.code} {self.name}"
 
     @property
     def next_subsection(self):
@@ -91,7 +91,7 @@ class Group(models.Model):
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
 
     def __str__(self):
-        return f"{str(self.subsection.section.version)} § {self.subsection.section.code}{self.subsection.code} {self.name}"
+        return f"{self.subsection.section.version!s} § {self.subsection.section.code}{self.subsection.code} {self.name}"
 
     @property
     def table_row_set(self):
@@ -119,7 +119,7 @@ class Row(models.Model):
     )
 
     def __str__(self):
-        return f"{str(self.group.subsection.section.version)} § {self.group.subsection.section.code}{self.group.subsection.code} Row {self.position}"
+        return f"{self.group.subsection.section.version!s} § {self.group.subsection.section.code}{self.group.subsection.code} Row {self.position}"
 
 
 class ColumnGroup(models.Model):
@@ -131,7 +131,7 @@ class ColumnGroup(models.Model):
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
 
     def __str__(self):
-        return f"{str(self.group)} {self.name}"
+        return f"{self.group!s} {self.name}"
 
 
 class Column(models.Model):
@@ -143,7 +143,7 @@ class Column(models.Model):
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
 
     def __str__(self):
-        return f"{str(self.column_group)} {self.name}"
+        return f"{self.column_group!s} {self.name}"
 
 
 class FieldColumn(models.Model):
@@ -165,7 +165,7 @@ class Field(models.Model):
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
 
     def __str__(self):
-        return f"{str(self.row.group.subsection.section.version)} § {self.row.group.subsection.section.code}{self.row.group.subsection.code} {self.name}"
+        return f"{self.row.group.subsection.section.version!s} § {self.row.group.subsection.section.code}{self.row.group.subsection.code} {self.name}"
 
 
 class Value(models.Model):
