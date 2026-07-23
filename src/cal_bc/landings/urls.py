@@ -8,13 +8,17 @@ def on_authenticated(authenticated_view, unauthenticated_view):
             return authenticated_view(request, *args, **kwargs)
         else:
             return unauthenticated_view(request, *args, **kwargs)
+
     return switch
+
 
 urlpatterns = [
     path(
-        "", on_authenticated(
+        "",
+        on_authenticated(
             RedirectView.as_view(pattern_name="projects", permanent=False),
-            TemplateView.as_view(template_name="landings/index.html")
-        ), name="landings"
+            TemplateView.as_view(template_name="landings/index.html"),
+        ),
+        name="landings",
     ),
 ]

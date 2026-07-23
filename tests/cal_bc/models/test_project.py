@@ -46,11 +46,15 @@ class TestProject:
 
     @pytest.fixture
     def subsection(self, section: Section) -> Subsection:
-        return Subsection.objects.create(section=section, name="Data", code="A", description="Some description")
+        return Subsection.objects.create(
+            section=section, name="Data", code="A", description="Some description"
+        )
 
     @pytest.fixture
     def group(self, subsection: Subsection) -> Group:
-        return Group.objects.create(subsection=subsection, name="General", description="General description")
+        return Group.objects.create(
+            subsection=subsection, name="General", description="General description"
+        )
 
     @pytest.fixture
     def row(self, group: Group) -> Row:
@@ -58,23 +62,18 @@ class TestProject:
 
     @pytest.fixture
     def field(self, row: Row) -> Field:
-        return Field.objects.create(
-            row=row,
-            name="Project Name"
-        )
+        return Field.objects.create(row=row, name="Project Name")
 
     def test_default_name(self, project: Project) -> None:
         assert str(project) == "New Project"
 
     def test_named_by_field(self, project: Project, field: Field) -> None:
-        Value.objects.create(
-            project=project,
-            field=field,
-            value="Trails to Rails"
-        )
+        Value.objects.create(project=project, field=field, value="Trails to Rails")
         assert str(project) == "Trails to Rails"
 
-    def test_subsection_description(self, project: Project, subsection: Subsection) -> None:
+    def test_subsection_description(
+        self, project: Project, subsection: Subsection
+    ) -> None:
         assert str(subsection.description) == "Some description"
 
     def test_group_description(self, project: Project, group: Group) -> None:

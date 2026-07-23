@@ -77,10 +77,15 @@ class TestProjectSubsectionViews:
         version: Version,
         subsection: Subsection,
         name_field: Field,
-        district_field: Field
+        district_field: Field,
     ):
         client.force_login(user)
-        response = client.get(reverse_lazy("project_subsection_edit", kwargs={"project_pk": project.pk, "pk": subsection.pk}))
+        response = client.get(
+            reverse_lazy(
+                "project_subsection_edit",
+                kwargs={"project_pk": project.pk, "pk": subsection.pk},
+            )
+        )
         assert response.status_code == 200
         dom = parse_html(response.content)
         assert query_by_role(dom, "heading", name="1A. Project Data")
@@ -97,23 +102,29 @@ class TestProjectSubsectionViews:
         version: Version,
         subsection: Subsection,
         name_field: Field,
-        district_field: Field
+        district_field: Field,
     ):
         client.force_login(user)
         response = client.post(
-            reverse_lazy("project_subsection_edit", kwargs={"project_pk": project.pk, "pk": subsection.pk}),
+            reverse_lazy(
+                "project_subsection_edit",
+                kwargs={"project_pk": project.pk, "pk": subsection.pk},
+            ),
             data={
-                'value-0-field': name_field.pk,
-                'value-0-value': 'Testing',
-                'value-1-field': district_field.pk,
-                'value-1-value': '1',
-                'value-TOTAL_FORMS': 2,
-                'value-INITIAL_FORMS': 0,
-            }
+                "value-0-field": name_field.pk,
+                "value-0-value": "Testing",
+                "value-1-field": district_field.pk,
+                "value-1-value": "1",
+                "value-TOTAL_FORMS": 2,
+                "value-INITIAL_FORMS": 0,
+            },
         )
 
         assert response.status_code == 302
-        assert response.url == reverse_lazy("project_subsection_edit", kwargs={"project_pk": project.pk, "pk": subsection.pk})
+        assert response.url == reverse_lazy(
+            "project_subsection_edit",
+            kwargs={"project_pk": project.pk, "pk": subsection.pk},
+        )
 
         assert ProjectValue.objects.filter(field=name_field)[0].value == "Testing"
         assert ProjectValue.objects.filter(field=district_field)[0].value == "1"

@@ -5,21 +5,39 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('models', '0009_create_column'),
+        ("models", "0009_create_column"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Field',
-            options={'ordering': ['position']},
+            name="Field",
+            options={"ordering": ["position"]},
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(null=False)),
-                ('cell', models.CharField(null=False)),
-                ('position', models.PositiveIntegerField(null=False, db_index=True, default=0)),
-                ('row', models.ForeignKey(null=False, db_index=True, on_delete=django.db.models.deletion.CASCADE, to='models.row')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(null=False)),
+                ("cell", models.CharField(null=False)),
+                (
+                    "position",
+                    models.PositiveIntegerField(null=False, db_index=True, default=0),
+                ),
+                (
+                    "row",
+                    models.ForeignKey(
+                        null=False,
+                        db_index=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="models.row",
+                    ),
+                ),
             ],
         ),
     ]

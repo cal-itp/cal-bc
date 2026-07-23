@@ -19,11 +19,19 @@ def get_field(form):
 class SortedValueInlineFormSet(BaseInlineFormSet):
     def __iter__(self):
         field_id_forms = {get_field(f): f for f in self.forms}
-        sorted_field_ids = Field.objects.filter(id__in=field_id_forms.keys()).select_related('row').select_related('row__group').order_by("row__group__position", "row__position", "position").values_list('id')
+        sorted_field_ids = (
+            Field.objects.filter(id__in=field_id_forms.keys())
+            .select_related("row")
+            .select_related("row__group")
+            .order_by("row__group__position", "row__position", "position")
+            .values_list("id")
+        )
         return iter([field_id_forms[pk[0]] for pk in sorted_field_ids])
 
 
-class ProjectEditView(LoginRequiredMixin, FormSetSuccessMessageMixin, InlineFormSetView):
+class ProjectEditView(
+    LoginRequiredMixin, FormSetSuccessMessageMixin, InlineFormSetView
+):
     model = Project
     inline_model = Value
     form_class = ValueForm
@@ -42,11 +50,11 @@ class ProjectEditView(LoginRequiredMixin, FormSetSuccessMessageMixin, InlineForm
         return context
 
     def extra_field_set(self):
-        return Field.objects.filter(
-            row__group__subsection_id=self.kwargs["pk"]
-        ).exclude(
-            project_value__project_id=self.kwargs["project_pk"]
-        ).select_related("row", "row__group")
+        return (
+            Field.objects.filter(row__group__subsection_id=self.kwargs["pk"])
+            .exclude(project_value__project_id=self.kwargs["project_pk"])
+            .select_related("row", "row__group")
+        )
 
     def get_initial(self):
         return [{"field": f} for f in self.extra_field_set().all()]
@@ -55,7 +63,7 @@ class ProjectEditView(LoginRequiredMixin, FormSetSuccessMessageMixin, InlineForm
         kwargs = super().get_formset_kwargs()
         kwargs["queryset"] = Value.objects.filter(
             field__row__group__subsection_id=self.kwargs["pk"],
-            project_id=self.kwargs["project_pk"]
+            project_id=self.kwargs["project_pk"],
         )
         return kwargs
 
@@ -67,8 +75,14 @@ class ProjectEditView(LoginRequiredMixin, FormSetSuccessMessageMixin, InlineForm
     def get_success_url(self):
         project = get_object_or_404(Project, pk=self.kwargs["project_pk"])
         subsection = get_object_or_404(Subsection, pk=self.kwargs["pk"])
-        if self.request.POST.get("step") == "previous" and subsection.previous_subsection:
+        if (
+            self.request.POST.get("step") == "previous"
+            and subsection.previous_subsection
+        ):
             subsection = subsection.previous_subsection
         elif self.request.POST.get("step") == "next" and subsection.next_subsection:
             subsection = subsection.next_subsection
-        return reverse_lazy("project_subsection_edit", kwargs={"project_pk": project.id, "pk": subsection.id})
+        return reverse_lazy(
+            "project_subsection_edit",
+            kwargs={"project_pk": project.id, "pk": subsection.id},
+        )

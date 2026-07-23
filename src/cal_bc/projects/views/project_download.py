@@ -104,6 +104,7 @@ from cal_bc_calculator.calculator import Calculator
 #     "Emissions": "N",
 # }
 
+
 class ProjectDownloadView(LoginRequiredMixin, VirtualDownloadView):
     attachment = True
 

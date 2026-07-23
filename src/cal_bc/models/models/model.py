@@ -4,7 +4,7 @@ from django_prose_editor.fields import ProseEditorField
 
 class Model(models.Model):
     class Meta:
-        ordering = ['name']
+        ordering = ["name"]
 
     name = models.CharField(null=False, blank=False, db_index=True)
 
@@ -15,9 +15,10 @@ class Model(models.Model):
         versions = list(self.version_set.all())
         return versions[-1] if len(versions) > 0 else None
 
+
 class Version(models.Model):
     class Meta:
-        ordering = ['name']
+        ordering = ["name"]
 
     model = models.ForeignKey(Model, null=False, on_delete=models.CASCADE)
     name = models.CharField(null=False, blank=False, db_index=True)
@@ -32,7 +33,7 @@ class Version(models.Model):
 
 class Section(models.Model):
     class Meta:
-        ordering = ['code']
+        ordering = ["code"]
 
     version = models.ForeignKey(Version, null=False, on_delete=models.CASCADE)
     name = models.CharField(null=False, blank=False)
@@ -52,15 +53,23 @@ class Section(models.Model):
 
 class Subsection(models.Model):
     class Meta:
-        ordering = ['code']
+        ordering = ["code"]
 
     section = models.ForeignKey(Section, null=False, on_delete=models.CASCADE)
     name = models.CharField(null=False, blank=False)
     code = models.CharField(null=False, blank=False, db_index=True)
     description = models.CharField(null=True, blank=True)
     guide = ProseEditorField(
-        null=True, blank=True, sanitize=True,
-        extensions={"Bold": True, "Italic": True, "Heading": {"levels": [1, 2, 3]}, "BulletList": True, "ListItem": True,},
+        null=True,
+        blank=True,
+        sanitize=True,
+        extensions={
+            "Bold": True,
+            "Italic": True,
+            "Heading": {"levels": [1, 2, 3]},
+            "BulletList": True,
+            "ListItem": True,
+        },
     )
 
     def __str__(self):
@@ -83,7 +92,7 @@ class Subsection(models.Model):
 
 class Group(models.Model):
     class Meta:
-        ordering = ['position']
+        ordering = ["position"]
 
     subsection = models.ForeignKey(Subsection, null=False, on_delete=models.CASCADE)
     name = models.CharField(null=False, blank=False)
@@ -95,11 +104,19 @@ class Group(models.Model):
 
     @property
     def table_row_set(self):
-        return Row.objects.filter(id__in=self.row_set.filter(field__column__column_group__in=self.columngroup_set.all()).all())
+        return Row.objects.filter(
+            id__in=self.row_set.filter(
+                field__column__column_group__in=self.columngroup_set.all()
+            ).all()
+        )
 
     @property
     def non_table_row_set(self):
-        return Row.objects.filter(id__in=self.row_set.exclude(field__column__column_group__in=self.columngroup_set.all()).all())
+        return Row.objects.filter(
+            id__in=self.row_set.exclude(
+                field__column__column_group__in=self.columngroup_set.all()
+            ).all()
+        )
 
     @property
     def nonempty_column_group_set(self):
@@ -108,14 +125,22 @@ class Group(models.Model):
 
 class Row(models.Model):
     class Meta:
-        ordering = ['position']
+        ordering = ["position"]
 
     group = models.ForeignKey(Group, null=False, on_delete=models.CASCADE)
     name = models.CharField(blank=True)
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
     guide = ProseEditorField(
-        null=True, blank=True, sanitize=True,
-        extensions={"Bold": True, "Italic": True, "Heading": {"levels": [1, 2, 3]}, "BulletList": True, "ListItem": True,},
+        null=True,
+        blank=True,
+        sanitize=True,
+        extensions={
+            "Bold": True,
+            "Italic": True,
+            "Heading": {"levels": [1, 2, 3]},
+            "BulletList": True,
+            "ListItem": True,
+        },
     )
 
     def __str__(self):
@@ -124,7 +149,7 @@ class Row(models.Model):
 
 class ColumnGroup(models.Model):
     class Meta:
-        ordering = ['position']
+        ordering = ["position"]
 
     group = models.ForeignKey(Group, null=False, on_delete=models.CASCADE)
     name = models.CharField(blank=True)
@@ -136,7 +161,7 @@ class ColumnGroup(models.Model):
 
 class Column(models.Model):
     class Meta:
-        ordering = ['position']
+        ordering = ["position"]
 
     column_group = models.ForeignKey(ColumnGroup, null=False, on_delete=models.CASCADE)
     name = models.CharField(null=False, blank=False)
@@ -156,7 +181,7 @@ class FieldColumn(models.Model):
 
 class Field(models.Model):
     class Meta:
-        ordering = ['position']
+        ordering = ["position"]
 
     row = models.ForeignKey(Row, null=False, on_delete=models.CASCADE)
     column = models.ManyToManyField(Column, through="FieldColumn")
@@ -170,7 +195,7 @@ class Field(models.Model):
 
 class Value(models.Model):
     class Meta:
-        ordering = ['position']
+        ordering = ["position"]
 
     field = models.ForeignKey(Field, null=False, on_delete=models.CASCADE)
     name = models.CharField(null=False, blank=False)

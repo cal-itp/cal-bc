@@ -14,7 +14,6 @@ class HtmxHttpRequest(HttpRequest):
     htmx: HtmxDetails
 
 
-
 @require_GET
 def project_benefit(request: HtmxHttpRequest, **kwargs) -> HttpResponse:
     project = Project.objects.get(pk=kwargs["pk"])

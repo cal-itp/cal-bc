@@ -16,8 +16,10 @@ class ProjectListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        page = context['page_obj']
-        context['elided_page_range'] = page.paginator.get_elided_page_range(page.number, on_each_side=1, on_ends=1)
+        page = context["page_obj"]
+        context["elided_page_range"] = page.paginator.get_elided_page_range(
+            page.number, on_each_side=1, on_ends=1
+        )
         return context
 
 
@@ -27,11 +29,17 @@ class ProjectEditRedirectView(LoginRequiredMixin, RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         project = get_object_or_404(Project, pk=kwargs["pk"])
         try:
-            subsection = Subsection.objects.filter(section__version=project.version)[0:1].get()
+            subsection = Subsection.objects.filter(section__version=project.version)[
+                0:1
+            ].get()
         except Subsection.DoesNotExist:
             raise Http404("No Subsection matches the given query.")
-        return reverse_lazy("project_subsection_edit", kwargs={"project_pk": project.pk, "pk": subsection.pk})
+        return reverse_lazy(
+            "project_subsection_edit",
+            kwargs={"project_pk": project.pk, "pk": subsection.pk},
+        )
+
 
 class ProjectDeleteView(LoginRequiredMixin, DeleteView):
     model = Project
-    success_url = reverse_lazy('projects')
+    success_url = reverse_lazy("projects")

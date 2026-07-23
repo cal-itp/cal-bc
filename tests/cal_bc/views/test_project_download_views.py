@@ -67,16 +67,10 @@ class TestProjectDownloadViews:
 
     @pytest.mark.vcr
     def test_get_project_download(
-        self,
-        client: Client,
-        user: User,
-        project: Project,
-        name_field: Field
+        self, client: Client, user: User, project: Project, name_field: Field
     ) -> None:
         ProjectValue.objects.create(
-            project=project,
-            field=name_field,
-            value="Monterey LRT"
+            project=project, field=name_field, value="Monterey LRT"
         )
         client.force_login(user)
         response = client.get(

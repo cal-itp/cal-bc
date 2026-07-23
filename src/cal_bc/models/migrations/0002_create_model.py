@@ -4,20 +4,27 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('models', '0001_initial'),
+        ("models", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Model',
-            options={'ordering': ['name']},
+            name="Model",
+            options={"ordering": ["name"]},
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(null=False, db_index=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(null=False, db_index=True)),
             ],
         )
     ]

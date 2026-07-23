@@ -10,7 +10,9 @@ from cal_bc.models.models.model import Group, Model, Row, Section, Subsection, V
 class TestModelViews:
     @pytest.fixture
     def user(self, django_user_model) -> User:
-        return django_user_model.objects.create_user(username="caltrans", first_name="John", last_name="Luis")
+        return django_user_model.objects.create_user(
+            username="caltrans", first_name="John", last_name="Luis"
+        )
 
     @pytest.fixture
     def model(self) -> Model:
@@ -47,32 +49,108 @@ class TestModelViews:
         assert query_by_text(dom, "Welcome, John")
         assert query_by_text(dom, "Testing v1")
 
-    def test_row_guide(self, client: Client, model: Model, version: Version, section: Section, subsection: Subsection, group: Group, row: Row) -> None:
-        row.guide="Enter some names here"
+    def test_row_guide(
+        self,
+        client: Client,
+        model: Model,
+        version: Version,
+        section: Section,
+        subsection: Subsection,
+        group: Group,
+        row: Row,
+    ) -> None:
+        row.guide = "Enter some names here"
         row.save()
-        response = client.get(reverse_lazy("model_version_section_subsection_group_row_guide", kwargs={"model_pk":model.pk, "version_pk":version.pk, "section_pk":section.pk, "subsection_pk":subsection.pk, "group_pk":group.pk, "pk":row.pk}))
+        response = client.get(
+            reverse_lazy(
+                "model_version_section_subsection_group_row_guide",
+                kwargs={
+                    "model_pk": model.pk,
+                    "version_pk": version.pk,
+                    "section_pk": section.pk,
+                    "subsection_pk": subsection.pk,
+                    "group_pk": group.pk,
+                    "pk": row.pk,
+                },
+            )
+        )
         assert response.status_code == 200
         dom = parse_html(response.content)
         assert query_by_text(dom, "Guide")
         assert query_by_text(dom, "Enter some names here")
 
-    def test_row_guide_empty(self, client: Client, model: Model, version: Version, section: Section, subsection: Subsection, group: Group, row: Row) -> None:
-        response = client.get(reverse_lazy("model_version_section_subsection_group_row_guide", kwargs={"model_pk":model.pk, "version_pk":version.pk, "section_pk":section.pk, "subsection_pk":subsection.pk, "group_pk":group.pk, "pk":row.pk}))
+    def test_row_guide_empty(
+        self,
+        client: Client,
+        model: Model,
+        version: Version,
+        section: Section,
+        subsection: Subsection,
+        group: Group,
+        row: Row,
+    ) -> None:
+        response = client.get(
+            reverse_lazy(
+                "model_version_section_subsection_group_row_guide",
+                kwargs={
+                    "model_pk": model.pk,
+                    "version_pk": version.pk,
+                    "section_pk": section.pk,
+                    "subsection_pk": subsection.pk,
+                    "group_pk": group.pk,
+                    "pk": row.pk,
+                },
+            )
+        )
         assert response.status_code == 200
         dom = parse_html(response.content)
         assert not query_by_text(dom, "Guide")
 
-    def test_subsection_guide(self, client: Client, model: Model, version: Version, section: Section, subsection: Subsection) -> None:
-        subsection.guide="Good information here"
+    def test_subsection_guide(
+        self,
+        client: Client,
+        model: Model,
+        version: Version,
+        section: Section,
+        subsection: Subsection,
+    ) -> None:
+        subsection.guide = "Good information here"
         subsection.save()
-        response = client.get(reverse_lazy("model_version_section_subsection_guide", kwargs={"model_pk":model.pk, "version_pk":version.pk, "section_pk":section.pk, "pk":subsection.pk}))
+        response = client.get(
+            reverse_lazy(
+                "model_version_section_subsection_guide",
+                kwargs={
+                    "model_pk": model.pk,
+                    "version_pk": version.pk,
+                    "section_pk": section.pk,
+                    "pk": subsection.pk,
+                },
+            )
+        )
         assert response.status_code == 200
         dom = parse_html(response.content)
         assert query_by_text(dom, "Guide")
         assert query_by_text(dom, "Good information here")
 
-    def test_subsection_guide_empty(self, client: Client, model: Model, version: Version, section: Section, subsection: Subsection) -> None:
-        response = client.get(reverse_lazy("model_version_section_subsection_guide", kwargs={"model_pk":model.pk, "version_pk":version.pk, "section_pk":section.pk, "pk":subsection.pk}))
+    def test_subsection_guide_empty(
+        self,
+        client: Client,
+        model: Model,
+        version: Version,
+        section: Section,
+        subsection: Subsection,
+    ) -> None:
+        response = client.get(
+            reverse_lazy(
+                "model_version_section_subsection_guide",
+                kwargs={
+                    "model_pk": model.pk,
+                    "version_pk": version.pk,
+                    "section_pk": section.pk,
+                    "pk": subsection.pk,
+                },
+            )
+        )
         assert response.status_code == 200
         dom = parse_html(response.content)
         assert not query_by_text(dom, "Guide")
