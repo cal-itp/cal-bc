@@ -1,8 +1,8 @@
-import os
 import logging
+import os
 import pathlib
-import pytest
 
+import pytest
 from xlcalculator import Evaluator
 
 from cal_bc_calculator.calculator import Calculator

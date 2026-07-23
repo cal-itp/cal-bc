@@ -1,12 +1,20 @@
 import pytest
-
-from cal_bc.models.models.model import Model, Version
-from cal_bc.projects.models.project import Project, Value as ProjectValue
-from cal_bc.models.models.model import Section, Subsection, Group, Row, Field
 from django.contrib.auth.models import User
 from django.test.client import Client
 from django.urls import reverse_lazy
-from unbrowsed import parse_html, query_by_text, query_by_role
+from unbrowsed import parse_html, query_by_role, query_by_text
+
+from cal_bc.models.models.model import (
+    Field,
+    Group,
+    Model,
+    Row,
+    Section,
+    Subsection,
+    Version,
+)
+from cal_bc.projects.models.project import Project
+from cal_bc.projects.models.project import Value as ProjectValue
 
 
 class TestProjectSubsectionViews:

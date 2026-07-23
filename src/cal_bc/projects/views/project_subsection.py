@@ -1,12 +1,12 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404
-from extra_views import InlineFormSetView, FormSetSuccessMessageMixin
 from django.forms import BaseInlineFormSet
+from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
+from extra_views import FormSetSuccessMessageMixin, InlineFormSetView
 
-from cal_bc.models.models.model import Subsection, Field
-from cal_bc.projects.models.project import Project, Value
+from cal_bc.models.models.model import Field, Subsection
 from cal_bc.projects.forms.project import ValueForm
+from cal_bc.projects.models.project import Project, Value
 
 
 def get_field(form):

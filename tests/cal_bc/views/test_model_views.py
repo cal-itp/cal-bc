@@ -1,10 +1,10 @@
 import pytest
-
-from cal_bc.models.models.model import Model, Version, Section, Subsection, Group, Row
 from django.contrib.auth.models import User
 from django.test.client import Client
 from django.urls import reverse_lazy
 from unbrowsed import parse_html, query_by_text
+
+from cal_bc.models.models.model import Group, Model, Row, Section, Subsection, Version
 
 
 class TestModelViews:

@@ -1,10 +1,6 @@
 from django.urls import path
 
-from .views.project import (
-    ProjectListView,
-    ProjectEditRedirectView,
-    ProjectDeleteView
-)
+from .views.project import ProjectDeleteView, ProjectEditRedirectView, ProjectListView
 from .views.project_benefit import project_benefit
 from .views.project_download import ProjectDownloadView
 from .views.project_subsection import ProjectEditView

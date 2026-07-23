@@ -1,12 +1,13 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
-from django.urls import reverse_lazy
-from django.views.generic import ListView, DeleteView
-from django.views.generic.base import RedirectView
 from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
+from django.views.generic import DeleteView, ListView
+from django.views.generic.base import RedirectView
 
-from cal_bc.projects.models.project import Project
 from cal_bc.models.models.model import Subsection
+from cal_bc.projects.models.project import Project
+
 
 class ProjectListView(LoginRequiredMixin, ListView):
     paginate_by = 10

@@ -1,6 +1,6 @@
 from pathlib import Path
-import pytest
 
+import pytest
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from playwright.sync_api import Page

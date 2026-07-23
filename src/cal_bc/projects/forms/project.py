@@ -1,6 +1,8 @@
-from django.forms import ModelForm, ChoiceField, CharField, HiddenInput
-from cal_bc.projects.models.project import Value
+from django.forms import CharField, ChoiceField, HiddenInput, ModelForm
 from django.utils.translation import gettext as _
+
+from cal_bc.projects.models.project import Value
+
 
 class ValueForm(ModelForm):
     class Meta:

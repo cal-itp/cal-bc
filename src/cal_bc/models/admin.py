@@ -1,7 +1,20 @@
-from django.contrib import admin
 import nested_admin
+from django.contrib import admin
 
-from cal_bc.models.models.model import Model, Version, Section, Subsection, Group, Row, Field, FieldColumn, Value, ColumnGroup, Column
+from cal_bc.models.models.model import (
+    Column,
+    ColumnGroup,
+    Field,
+    FieldColumn,
+    Group,
+    Model,
+    Row,
+    Section,
+    Subsection,
+    Value,
+    Version,
+)
+
 
 class ValueInline(nested_admin.SortableHiddenMixin, nested_admin.NestedTabularInline):
     model = Value

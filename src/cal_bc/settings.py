@@ -15,11 +15,10 @@ import os
 import sys
 from pathlib import Path
 from urllib.parse import urlparse
-from django.urls import reverse_lazy
 
 import environ
 import google.auth
-
+from django.urls import reverse_lazy
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

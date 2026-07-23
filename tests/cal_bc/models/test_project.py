@@ -1,7 +1,16 @@
 import pytest
-from cal_bc.models.models.model import Model, Version, Section, Subsection, Group, Row, Field
-from cal_bc.projects.models.project import Project, Value
 from django.contrib.auth.models import User
+
+from cal_bc.models.models.model import (
+    Field,
+    Group,
+    Model,
+    Row,
+    Section,
+    Subsection,
+    Version,
+)
+from cal_bc.projects.models.project import Project, Value
 
 
 @pytest.mark.django_db

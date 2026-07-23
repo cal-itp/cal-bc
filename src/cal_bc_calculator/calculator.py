@@ -1,5 +1,6 @@
 import openpyxl
-from xlcalculator import Evaluator, ModelCompiler, Model
+from xlcalculator import Evaluator, Model, ModelCompiler
+
 import cal_bc_calculator.functions  # noqa: F401
 
 

@@ -1,6 +1,6 @@
-import pytest
 from pathlib import Path
 
+import pytest
 from typer.testing import CliRunner
 
 from cal_bc_calculator.app import app

@@ -1,11 +1,11 @@
 import os
-import typer
 
+import typer
 from platformdirs import user_cache_dir
 from typing_extensions import Annotated, List
 
 from .calculator import Calculator
-from .downloader import Downloader, VERSIONS
+from .downloader import VERSIONS, Downloader
 
 app = typer.Typer()
 

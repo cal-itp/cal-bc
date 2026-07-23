@@ -1,5 +1,4 @@
 from numpy import polyfit, polyval
-
 from xlcalculator.xlfunctions import xl
 from xlcalculator.xlfunctions.xl import func_xltypes
 

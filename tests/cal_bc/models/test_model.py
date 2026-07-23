@@ -1,5 +1,15 @@
 import pytest
-from cal_bc.models.models.model import Model, Version, Section, Subsection, Group, Row, Field, Value
+
+from cal_bc.models.models.model import (
+    Field,
+    Group,
+    Model,
+    Row,
+    Section,
+    Subsection,
+    Value,
+    Version,
+)
 
 
 @pytest.mark.django_db

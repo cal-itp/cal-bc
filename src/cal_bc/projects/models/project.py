@@ -1,6 +1,7 @@
-from django.db import models
-from cal_bc.models.models.model import Version, Field
 from django.contrib.auth.models import User
+from django.db import models
+
+from cal_bc.models.models.model import Field, Version
 
 
 class Project(models.Model):

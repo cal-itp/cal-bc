@@ -1,12 +1,20 @@
-from playwright.sync_api import expect
 from pathlib import Path
-import pytest
 
+import pytest
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from playwright.sync_api import Page
+from playwright.sync_api import Page, expect
 
-from cal_bc.models.models.model import Model, Version, Section, Subsection, Group, Row, Field, Value
+from cal_bc.models.models.model import (
+    Field,
+    Group,
+    Model,
+    Row,
+    Section,
+    Subsection,
+    Value,
+    Version,
+)
 
 
 @pytest.mark.vcr

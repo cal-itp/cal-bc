@@ -1,5 +1,6 @@
 from django.urls import path
-from django.views.generic import TemplateView, RedirectView
+from django.views.generic import RedirectView, TemplateView
+
 
 def on_authenticated(authenticated_view, unauthenticated_view):
     def switch(request, *args, **kwargs):
