@@ -3,96 +3,54 @@ from cal_bc.models.models.model import Model, Version, Section, Subsection, Grou
 
 
 @pytest.mark.django_db
-class TestModels:
+class TestModel:
     @pytest.fixture()
     def model(self) -> Model:
-        return Model.objects.create(
-            name="Cal-B/C Sketch",
-        )
+        return Model.objects.create(name="Cal-B/C Sketch")
 
     @pytest.fixture()
     def version(self, model: Model) -> Version:
-        return Version.objects.create(
-            model=model,
-            name="8.1",
-            url="https://example.com",
-        )
+        return model.version_set.create(name="8.1", url="https://example.com")
 
     @pytest.fixture()
     def earlier_version(self, model: Model) -> Version:
-        return Version.objects.create(
-            model=model,
-            name="8.0",
-            url="https://example.com",
-        )
+        return model.version_set.create(name="8.0", url="https://example.com")
 
     @pytest.fixture()
     def section_1(self, version: Version) -> Section:
-        return Section.objects.create(
-            version=version,
-            code="1",
-            name="Project Information"
-        )
+        return version.section_set.create(code="1", name="Project Information")
 
     @pytest.fixture()
     def section_2(self, version: Version) -> Section:
-        return Section.objects.create(
-            version=version,
-            code="2",
-            name="Configuration"
-        )
+        return version.section_set.create(code="2", name="Configuration")
 
     @pytest.fixture()
     def subsection_1_a(self, section_1: Section) -> Subsection:
-        return Subsection.objects.create(
-            section=section_1,
-            code="A",
-            name="Project Data"
-        )
+        return section_1.subsection_set.create(code="A", name="Project Data")
 
     @pytest.fixture()
     def subsection_1_b(self, section_1: Section) -> Subsection:
-        return Subsection.objects.create(
-            section=section_1,
-            code="B",
-            name="Highway Information"
-        )
+        return section_1.subsection_set.create(code="B", name="Highway Information")
 
     @pytest.fixture()
     def subsection_2_a(self, section_2: Section) -> Subsection:
-        return Subsection.objects.create(
-            section=section_2,
-            code="A",
-            name="General Settings"
-        )
+        return section_2.subsection_set.create(code="A", name="General Settings")
 
     @pytest.fixture()
     def group(self, subsection_1_a: Subsection) -> Group:
-        return Group.objects.create(
-            subsection=subsection_1_a,
-            name="General Information",
-            position=1
-        )
+        return subsection_1_a.group_set.create(name="General Information", position=1)
 
     @pytest.fixture()
     def row(self, group: Group) -> Row:
-        return Row.objects.create(
-            group=group,
-            position=1
-        )
+        return group.row_set.create(position=1)
 
     @pytest.fixture()
     def field(self, row: Row) -> Field:
-        return Field.objects.create(
-            row=row,
-            name="District",
-            position=1
-        )
+        return row.field_set.create(name="District", position=1)
 
     @pytest.fixture()
     def value(self, field: Field) -> Value:
-        return Value.objects.create(
-            field=field,
+        return field.value_set.create(
             name="District 4 - Bay Area",
             value="District 4",
             position=1

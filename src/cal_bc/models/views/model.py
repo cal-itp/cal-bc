@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView
@@ -5,6 +6,7 @@ from django.views.generic.edit import CreateView
 
 from cal_bc.models.models.model import Model, Version, Subsection, Row
 from cal_bc.projects.models.project import Project
+from cal_bc.projects.tasks import refresh_project_fields
 
 
 class ModelListView(LoginRequiredMixin, ListView):
@@ -23,7 +25,10 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         form.instance.version = Version.objects.get(pk=self.kwargs["pk"])
-        return super().form_valid(form)
+        with transaction.atomic():
+            result = super().form_valid(form)
+            refresh_project_fields.enqueue(project_pk=self.object.pk)
+            return result
 
     def get_success_url(self):
         return reverse_lazy("project_edit", kwargs={"pk": self.object.pk})
