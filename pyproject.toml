@@ -40,6 +40,11 @@ xlcalculator = { git = "https://github.com/cal-itp/xlcalculator", branch = "mov/
 
 [tool.ruff.lint]
 ignore = ["RUF012"]
+extend-select = [
+    "DJ",       # flake8-django: Django-specific bugs
+    "I",        # isort
+    "UP",       # pyupgrade
+]
 
 [dependency-groups]
 dev = [

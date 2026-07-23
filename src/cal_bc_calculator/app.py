@@ -1,8 +1,9 @@
+import builtins
 import os
+from typing import Annotated
 
 import typer
 from platformdirs import user_cache_dir
-from typing_extensions import Annotated, List
 
 from .calculator import Calculator
 from .downloader import VERSIONS, Downloader
@@ -27,8 +28,8 @@ def download(
 @app.command()
 def complete(
     input_filename: str,
-    cell: Annotated[List[str], typer.Option()],
-    value: Annotated[List[str], typer.Option()],
+    cell: Annotated[builtins.list[str], typer.Option()],
+    value: Annotated[builtins.list[str], typer.Option()],
 ):
     if len(cell) != len(value):
         print(f"Unequal number of cells ({cell}) and values ({value})")
@@ -45,7 +46,7 @@ def complete(
 @app.command()
 def evaluate(
     input_filename: str,
-    cell: Annotated[List[str], typer.Option()],
+    cell: Annotated[builtins.list[str], typer.Option()],
 ):
     calculator = Calculator(input_filename)
     evaluator = calculator.compile()
