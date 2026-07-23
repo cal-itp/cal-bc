@@ -41,6 +41,14 @@ class TestProject:
         )
 
     @pytest.fixture
+    def value(self, project: Project, field: Field) -> Value:
+        return Value.objects.create(
+            project=project,
+            field=field,
+            value="Point Lobos Train"
+        )
+
+    @pytest.fixture
     def section(self, version: Version) -> Section:
         return Section.objects.create(version=version, name="Info", code="1")
 
@@ -74,7 +82,10 @@ class TestProject:
     def test_subsection_description(
         self, project: Project, subsection: Subsection
     ) -> None:
-        assert str(subsection.description) == "Some description"
+        assert subsection.description == "Some description"
 
     def test_group_description(self, project: Project, group: Group) -> None:
-        assert str(group.description) == "General description"
+        assert group.description == "General description"
+
+    def test_value_string_representation(self, value: Value):
+        assert str(value) == "Testing v1 § 1A Project Name Point Lobos Train"

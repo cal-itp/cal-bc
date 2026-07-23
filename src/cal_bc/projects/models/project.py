@@ -41,6 +41,9 @@ class Value(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self) -> str:
+        return f"{self.field!s} {self.value}"
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.project.save()
