@@ -75,7 +75,7 @@ class TestProjectSubsectionViews:
         response = client.get(reverse_lazy("project_subsection_edit", kwargs={"project_pk": project.pk, "pk": subsection.pk}))
         assert response.status_code == 200
         dom = parse_html(response.content)
-        assert query_by_text(dom, "1A. Project Data")
+        assert query_by_role(dom, "heading", name="1A. Project Data")
         assert query_by_text(dom, "General Information")
 
         assert query_by_role(dom, "textbox", name="Project Name")
