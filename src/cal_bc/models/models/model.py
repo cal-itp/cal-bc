@@ -3,10 +3,10 @@ from django_prose_editor.fields import ProseEditorField
 
 
 class Model(models.Model):
+    name = models.CharField(null=False, blank=False, db_index=True)
+
     class Meta:
         ordering = ["name"]
-
-    name = models.CharField(null=False, blank=False, db_index=True)
 
     def __str__(self):
         return self.name
@@ -17,12 +17,12 @@ class Model(models.Model):
 
 
 class Version(models.Model):
-    class Meta:
-        ordering = ["name"]
-
     model = models.ForeignKey(Model, null=False, on_delete=models.CASCADE)
     name = models.CharField(null=False, blank=False, db_index=True)
     url = models.CharField(null=False, blank=False)
+
+    class Meta:
+        ordering = ["name"]
 
     def __str__(self):
         return f"{self.model!s} v{self.name}"
@@ -32,12 +32,12 @@ class Version(models.Model):
 
 
 class Section(models.Model):
-    class Meta:
-        ordering = ["code"]
-
     version = models.ForeignKey(Version, null=False, on_delete=models.CASCADE)
     name = models.CharField(null=False, blank=False)
     code = models.CharField(null=False, blank=False, db_index=True)
+
+    class Meta:
+        ordering = ["code"]
 
     def __str__(self):
         return f"{self.version!s} § {self.code} {self.name}"
@@ -52,9 +52,6 @@ class Section(models.Model):
 
 
 class Subsection(models.Model):
-    class Meta:
-        ordering = ["code"]
-
     section = models.ForeignKey(Section, null=False, on_delete=models.CASCADE)
     name = models.CharField(null=False, blank=False)
     code = models.CharField(null=False, blank=False, db_index=True)
@@ -71,6 +68,9 @@ class Subsection(models.Model):
             "ListItem": True,
         },
     )
+
+    class Meta:
+        ordering = ["code"]
 
     def __str__(self):
         return f"{self.section.version!s} § {self.section.code}{self.code} {self.name}"
@@ -91,13 +91,13 @@ class Subsection(models.Model):
 
 
 class Group(models.Model):
-    class Meta:
-        ordering = ["position"]
-
     subsection = models.ForeignKey(Subsection, null=False, on_delete=models.CASCADE)
     name = models.CharField(null=False, blank=False)
     description = models.CharField(null=True, blank=True)
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
+
+    class Meta:
+        ordering = ["position"]
 
     def __str__(self):
         return f"{self.subsection.section.version!s} § {self.subsection.section.code}{self.subsection.code} {self.name}"
@@ -124,9 +124,6 @@ class Group(models.Model):
 
 
 class Row(models.Model):
-    class Meta:
-        ordering = ["position"]
-
     group = models.ForeignKey(Group, null=False, on_delete=models.CASCADE)
     name = models.CharField(blank=True)
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
@@ -143,29 +140,33 @@ class Row(models.Model):
         },
     )
 
+    class Meta:
+        ordering = ["position"]
+
     def __str__(self):
         return f"{self.group.subsection.section.version!s} § {self.group.subsection.section.code}{self.group.subsection.code} Row {self.position}"
 
 
 class ColumnGroup(models.Model):
-    class Meta:
-        ordering = ["position"]
-
     group = models.ForeignKey(Group, null=False, on_delete=models.CASCADE)
     name = models.CharField(blank=True)
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
+
+    class Meta:
+        ordering = ["position"]
+
 
     def __str__(self):
         return f"{self.group!s} {self.name}"
 
 
 class Column(models.Model):
-    class Meta:
-        ordering = ["position"]
-
     column_group = models.ForeignKey(ColumnGroup, null=False, on_delete=models.CASCADE)
     name = models.CharField(null=False, blank=False)
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
+
+    class Meta:
+        ordering = ["position"]
 
     def __str__(self):
         return f"{self.column_group!s} {self.name}"
@@ -180,27 +181,27 @@ class FieldColumn(models.Model):
 
 
 class Field(models.Model):
-    class Meta:
-        ordering = ["position"]
-
     row = models.ForeignKey(Row, null=False, on_delete=models.CASCADE)
     column = models.ManyToManyField(Column, through="FieldColumn")
     name = models.CharField(null=False, blank=False)
     cell = models.CharField(null=False)
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
 
+    class Meta:
+        ordering = ["position"]
+
     def __str__(self):
         return f"{self.row.group.subsection.section.version!s} § {self.row.group.subsection.section.code}{self.row.group.subsection.code} {self.name}"
 
 
 class Value(models.Model):
-    class Meta:
-        ordering = ["position"]
-
     field = models.ForeignKey(Field, null=False, on_delete=models.CASCADE)
     name = models.CharField(null=False, blank=False)
     value = models.CharField(null=False, blank=False)
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
+
+    class Meta:
+        ordering = ["position"]
 
     def __str__(self):
         return self.name

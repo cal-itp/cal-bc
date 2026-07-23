@@ -5,9 +5,6 @@ from cal_bc.models.models.model import Field, Version
 
 
 class Project(models.Model):
-    class Meta:
-        ordering = ["-updated_at"]
-
     version = models.ForeignKey(
         Version, null=False, db_index=True, on_delete=models.CASCADE
     )
@@ -15,15 +12,18 @@ class Project(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        ordering = ["-updated_at"]
+
+    def __str__(self) -> str:
+        name_value = self.name_value()
+        return name_value.value if name_value else "New Project"
+
     def name_value(self):
         return self.value_set.filter(
             field__name="Project Name",
             field__row__group__subsection__section__version=self.version,
         ).first()
-
-    def __str__(self) -> str:
-        name_value = self.name_value()
-        return name_value.value if name_value else "New Project"
 
 
 class Value(models.Model):
