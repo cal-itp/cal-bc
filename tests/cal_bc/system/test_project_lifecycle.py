@@ -98,7 +98,7 @@ class TestProjectLifecycle(StaticLiveServerTestCase):
         self.page.goto(f"{self.live_server_url}/")
         expect(self.page.locator("body")).to_contain_text("My Cal B/C Projects")
         self.page.get_by_role("link", name="New project").click()
-        self.page.get_by_role("button", name="Cal-B/C Sketch v8.1").click()
+        self.page.get_by_role("button", name="Start project").click()
         expect(self.page.locator("body")).to_contain_text("All fields in this step are required")
         self.page.get_by_label("Project Name").click()
         expect(self.page.locator("body")).to_contain_text("Enter a name for your project")

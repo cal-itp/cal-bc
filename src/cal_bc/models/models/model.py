@@ -26,6 +26,9 @@ class Version(models.Model):
     def __str__(self):
         return f"{str(self.model)} v{self.name}"
 
+    def has_form_link(self):
+        return self.section_set.count() > 0
+
 
 class Section(models.Model):
     class Meta:
