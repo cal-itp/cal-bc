@@ -58,6 +58,9 @@ class TestProjectLifecycle(StaticLiveServerTestCase):
                 All fields in this step are required.
             """,
         )
+        subsection_2 = Subsection.objects.create(
+            section=section, name="Traffic Data", code="B"
+        )
         group_1 = Group.objects.create(
             subsection=subsection_1, name="General Information", position=1
         )
@@ -81,9 +84,6 @@ class TestProjectLifecycle(StaticLiveServerTestCase):
             name="District 4 - Bay Area / Oakland",
             value="District 4",
             position=1,
-        )
-        subsection_2 = Subsection.objects.create(
-            section=section, name="Traffic Data", code="B"
         )
         group_2 = Group.objects.create(
             subsection=subsection_2, name="Average daily traffic", position=1
@@ -115,6 +115,8 @@ class TestProjectLifecycle(StaticLiveServerTestCase):
         expect(self.page.locator("body")).to_contain_text("Geary Boulevard Light Rail")
         self.page.get_by_role("link", name="Edit").click()
         self.page.get_by_label("Project Name").fill("New Geary Boulevard Light Rail")
+        self.page.get_by_role("button", name="Continue to Subsection 1B").click()
+        self.page.get_by_role("button", name="Back to Subsection 1A").click()
         self.page.get_by_role("button", name="Save draft").click()
         self.page.get_by_role("button", name="1A - Project Data").click()
         self.page.get_by_role("menuitem", name="1B. Traffic Data").click()
