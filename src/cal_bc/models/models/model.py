@@ -28,7 +28,7 @@ class Version(models.Model):
         return f"{self.model!s} v{self.name}"
 
     def has_form_link(self):
-        return self.section_set.count() > 0
+        return Subsection.objects.filter(section__in=self.section_set.all()).exists()
 
 
 class Section(models.Model):

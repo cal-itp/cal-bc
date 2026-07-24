@@ -96,6 +96,12 @@ class TestModels:
     def test_version_string_representation(self, version: Version):
         assert str(version) == "Cal-B/C Sketch v8.1"
 
+    def test_version_has_form_link(self, version: Version, subsection_1_a: Subsection):
+        assert version.has_form_link() is True
+
+    def test_version_has_form_link_false(self, version: Version):
+        assert version.has_form_link() is False
+
     def test_section_string_representation(self, section_1: Section):
         assert str(section_1) == "Cal-B/C Sketch v8.1 § 1 Project Information"
 
