@@ -19,7 +19,7 @@
         <div class="grid grid-cols-1">
             {% if field.widget_type == 'select' %}
                 {% render_field field hx-get=row_url hx-params="none" hx-swap="morph" hx-target="#guide" hx-trigger="focus" class="col-start-1 row-start-1 w-full appearance-none rounded-xs bg-white pl-5 pr-12 py-3 text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600" %}
-                {% svg "projects/chevron_down" class="pointer-events-none col-start-1 row-start-1 mr-4 size-6 self-center justify-self-end text-gray-500" %}
+                {% svg "projects/chevron_down" class="pointer-events-none col-start-1 row-start-1 mr-4 size-6 self-center justify-self-end fill-dds-teal-600" %}
             {% else %}
                 {% render_field field hx-get=row_url hx-params="none" hx-swap="morph" hx-target="#guide" hx-trigger="focus" class="block w-full rounded-xs bg-white px-3 py-3 text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600" %}
             {% endif %}
@@ -39,7 +39,7 @@
         <div class="grid grid-cols-1">
             {% if field.widget_type == 'select' %}
                 {% render_field field hx-get=row_url hx-params="none" hx-swap="morph" hx-target="#guide" hx-trigger="focus" class="col-start-1 row-start-1 appearance-none rounded-xs bg-white pl-5 pr-12 py-3 text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600" %}
-                {% svg "projects/chevron_down" class="pointer-events-none col-start-1 row-start-1 mr-4 size-6 self-center justify-self-end text-gray-500" %}
+                {% svg "projects/chevron_down" class="pointer-events-none col-start-1 row-start-1 mr-4 size-6 self-center justify-self-end fill-dds-teal-600" %}
             {% else %}
                 {% render_field field hx-get=row_url hx-params="none" hx-swap="morph" hx-target="#guide" hx-trigger="focus" class="block w-fit rounded-xs bg-white px-3 py-3 text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600" %}
             {% endif %}

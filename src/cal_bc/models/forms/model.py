@@ -1,6 +1,7 @@
 from django.forms import ModelForm
-from cal_bc.projects.models.project import Project
 from django.utils.translation import gettext as _
+
+from cal_bc.projects.models.project import Project
 
 
 class ProjectForm(ModelForm):

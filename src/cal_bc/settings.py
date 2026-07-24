@@ -15,11 +15,10 @@ import os
 import sys
 from pathlib import Path
 from urllib.parse import urlparse
-from django.urls import reverse_lazy
 
 import environ
 import google.auth
-
+from django.urls import reverse_lazy
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -192,7 +191,7 @@ AZURE_AUTH = {
     "PROMPT": "select_account",  # Optional, one of "login", "consent", "select_account", "none" (default)
     "AUTHORITY": f"https://login.microsoftonline.com/{env('AZURE_AUTH__DIRECTORY_ID', default=None)}",  # Or https://login.microsoftonline.com/common if multi-tenant
     "USERNAME_ATTRIBUTE": "mail",  # The AAD attribute or ID token claim you want to use as the value for the user model `USERNAME_FIELD`
-    "USER_MAPPING_FN": "azure_auth.tests.misc.user_mapping_fn"
+    "USER_MAPPING_FN": "azure_auth.tests.misc.user_mapping_fn",
 }
 LOGIN_URL = "/azure_auth/login"
 LOGIN_REDIRECT_URL = "/projects"  # Or any other endpoint

@@ -5,20 +5,35 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('models', '0004_create_section'),
+        ("models", "0004_create_section"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Subsection',
-            options={'ordering': ['code']},
+            name="Subsection",
+            options={"ordering": ["code"]},
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(null=False)),
-                ('code', models.CharField(null=False, db_index=True)),
-                ('section', models.ForeignKey(null=False, db_index=True, on_delete=django.db.models.deletion.CASCADE, to='models.section')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(null=False)),
+                ("code", models.CharField(null=False, db_index=True)),
+                (
+                    "section",
+                    models.ForeignKey(
+                        null=False,
+                        db_index=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="models.section",
+                    ),
+                ),
             ],
         ),
     ]

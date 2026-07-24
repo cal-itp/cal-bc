@@ -1,18 +1,27 @@
 import pytest
-
-from cal_bc.models.models.model import Model, Version
-from cal_bc.projects.models.project import Project
-from cal_bc.models.models.model import Section, Subsection, Group, Row, Field
 from django.contrib.auth.models import User
 from django.test.client import Client
 from django.urls import reverse_lazy
 from unbrowsed import parse_html, query_by_text
 
+from cal_bc.models.models.model import (
+    Field,
+    Group,
+    Model,
+    Row,
+    Section,
+    Subsection,
+    Version,
+)
+from cal_bc.projects.models.project import Project
+
 
 class TestProjectViews:
     @pytest.fixture
     def user(self, django_user_model) -> User:
-        return django_user_model.objects.create_user(username="caltrans", first_name="Maria", last_name="Mary")
+        return django_user_model.objects.create_user(
+            username="caltrans", first_name="Maria", last_name="Mary"
+        )
 
     @pytest.fixture
     def model(self) -> Model:
@@ -41,11 +50,20 @@ class TestProjectViews:
 
     @pytest.fixture
     def subsection(self, section: Section) -> Subsection:
-        return Subsection.objects.create(section=section, name="Project Data", code="A", description="Project Data description")
+        return Subsection.objects.create(
+            section=section,
+            name="Project Data",
+            code="A",
+            description="Project Data description",
+        )
 
     @pytest.fixture
     def group(self, subsection: Subsection) -> Group:
-        return Group.objects.create(subsection=subsection, name="General Information", description="General Information description")
+        return Group.objects.create(
+            subsection=subsection,
+            name="General Information",
+            description="General Information description",
+        )
 
     @pytest.fixture
     def row(self, group: Group) -> Row:
@@ -91,10 +109,13 @@ class TestProjectViews:
         project: Project,
         version: Version,
         section: Section,
-        subsection: Subsection
+        subsection: Subsection,
     ) -> None:
         client.force_login(user)
         Subsection.objects.create(section=section, name="Highway Design", code="B")
         response = client.get(reverse_lazy("project_edit", kwargs={"pk": project.pk}))
         assert response.status_code == 302
-        assert response.url == reverse_lazy("project_subsection_edit", kwargs={"project_pk": project.pk, "pk": subsection.pk})
+        assert response.url == reverse_lazy(
+            "project_subsection_edit",
+            kwargs={"project_pk": project.pk, "pk": subsection.pk},
+        )

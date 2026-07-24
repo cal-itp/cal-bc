@@ -38,6 +38,14 @@ package = true
 [tool.uv.sources]
 xlcalculator = { git = "https://github.com/cal-itp/xlcalculator", branch = "mov/caltrans-calculations" }
 
+[tool.ruff.lint]
+ignore = ["RUF012"]
+extend-select = [
+    "DJ",       # flake8-django: Django-specific bugs
+    "I",        # isort
+    "UP",       # pyupgrade
+]
+
 [dependency-groups]
 dev = [
     "django-extensions>=4.1",

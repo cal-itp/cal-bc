@@ -1,5 +1,15 @@
 import pytest
-from cal_bc.models.models.model import Model, Version, Section, Subsection, Group, Row, Field, Value
+
+from cal_bc.models.models.model import (
+    Field,
+    Group,
+    Model,
+    Row,
+    Section,
+    Subsection,
+    Value,
+    Version,
+)
 
 
 @pytest.mark.django_db
@@ -29,73 +39,49 @@ class TestModels:
     @pytest.fixture()
     def section_1(self, version: Version) -> Section:
         return Section.objects.create(
-            version=version,
-            code="1",
-            name="Project Information"
+            version=version, code="1", name="Project Information"
         )
 
     @pytest.fixture()
     def section_2(self, version: Version) -> Section:
-        return Section.objects.create(
-            version=version,
-            code="2",
-            name="Configuration"
-        )
+        return Section.objects.create(version=version, code="2", name="Configuration")
 
     @pytest.fixture()
     def subsection_1_a(self, section_1: Section) -> Subsection:
         return Subsection.objects.create(
-            section=section_1,
-            code="A",
-            name="Project Data"
+            section=section_1, code="A", name="Project Data"
         )
 
     @pytest.fixture()
     def subsection_1_b(self, section_1: Section) -> Subsection:
         return Subsection.objects.create(
-            section=section_1,
-            code="B",
-            name="Highway Information"
+            section=section_1, code="B", name="Highway Information"
         )
 
     @pytest.fixture()
     def subsection_2_a(self, section_2: Section) -> Subsection:
         return Subsection.objects.create(
-            section=section_2,
-            code="A",
-            name="General Settings"
+            section=section_2, code="A", name="General Settings"
         )
 
     @pytest.fixture()
     def group(self, subsection_1_a: Subsection) -> Group:
         return Group.objects.create(
-            subsection=subsection_1_a,
-            name="General Information",
-            position=1
+            subsection=subsection_1_a, name="General Information", position=1
         )
 
     @pytest.fixture()
     def row(self, group: Group) -> Row:
-        return Row.objects.create(
-            group=group,
-            position=1
-        )
+        return Row.objects.create(group=group, position=1)
 
     @pytest.fixture()
     def field(self, row: Row) -> Field:
-        return Field.objects.create(
-            row=row,
-            name="District",
-            position=1
-        )
+        return Field.objects.create(row=row, name="District", position=1)
 
     @pytest.fixture()
     def value(self, field: Field) -> Value:
         return Value.objects.create(
-            field=field,
-            name="District 4 - Bay Area",
-            value="District 4",
-            position=1
+            field=field, name="District 4 - Bay Area", value="District 4", position=1
         )
 
     def test_model_string_representation(self, model: Model):
@@ -128,22 +114,32 @@ class TestModels:
     def test_subsection_string_representation(self, subsection_1_a: Subsection):
         assert str(subsection_1_a) == "Cal-B/C Sketch v8.1 § 1A Project Data"
 
-    def test_next_subsection(self, subsection_1_a: Subsection, subsection_1_b: Subsection):
+    def test_next_subsection(
+        self, subsection_1_a: Subsection, subsection_1_b: Subsection
+    ):
         assert subsection_1_a.next_subsection == subsection_1_b
 
     def test_null_next_subsection(self, subsection_2_a: Subsection):
         assert subsection_2_a.next_subsection is None
 
-    def test_previous_subsection(self, subsection_1_a: Subsection, subsection_1_b: Subsection):
+    def test_previous_subsection(
+        self, subsection_1_a: Subsection, subsection_1_b: Subsection
+    ):
         assert subsection_1_b.previous_subsection == subsection_1_a
 
-    def test_null_previous_subsection(self, subsection_1_a: Subsection, subsection_1_b: Subsection):
+    def test_null_previous_subsection(
+        self, subsection_1_a: Subsection, subsection_1_b: Subsection
+    ):
         assert subsection_1_a.previous_subsection is None
 
-    def test_next_section_subsection(self, subsection_1_b: Subsection, subsection_2_a: Subsection):
+    def test_next_section_subsection(
+        self, subsection_1_b: Subsection, subsection_2_a: Subsection
+    ):
         assert subsection_1_b.next_subsection == subsection_2_a
 
-    def test_previous_section_subsection(self, subsection_1_b: Subsection, subsection_2_a: Subsection):
+    def test_previous_section_subsection(
+        self, subsection_1_b: Subsection, subsection_2_a: Subsection
+    ):
         assert subsection_2_a.previous_subsection == subsection_1_b
 
     def test_group_string_representation(self, group: Group):

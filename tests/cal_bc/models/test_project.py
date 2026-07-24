@@ -1,7 +1,16 @@
 import pytest
-from cal_bc.models.models.model import Model, Version, Section, Subsection, Group, Row, Field
-from cal_bc.projects.models.project import Project, Value
 from django.contrib.auth.models import User
+
+from cal_bc.models.models.model import (
+    Field,
+    Group,
+    Model,
+    Row,
+    Section,
+    Subsection,
+    Version,
+)
+from cal_bc.projects.models.project import Project, Value
 
 
 @pytest.mark.django_db
@@ -32,16 +41,28 @@ class TestProject:
         )
 
     @pytest.fixture
+    def value(self, project: Project, field: Field) -> Value:
+        return Value.objects.create(
+            project=project,
+            field=field,
+            value="Point Lobos Train"
+        )
+
+    @pytest.fixture
     def section(self, version: Version) -> Section:
         return Section.objects.create(version=version, name="Info", code="1")
 
     @pytest.fixture
     def subsection(self, section: Section) -> Subsection:
-        return Subsection.objects.create(section=section, name="Data", code="A", description="Some description")
+        return Subsection.objects.create(
+            section=section, name="Data", code="A", description="Some description"
+        )
 
     @pytest.fixture
     def group(self, subsection: Subsection) -> Group:
-        return Group.objects.create(subsection=subsection, name="General", description="General description")
+        return Group.objects.create(
+            subsection=subsection, name="General", description="General description"
+        )
 
     @pytest.fixture
     def row(self, group: Group) -> Row:
@@ -49,24 +70,22 @@ class TestProject:
 
     @pytest.fixture
     def field(self, row: Row) -> Field:
-        return Field.objects.create(
-            row=row,
-            name="Project Name"
-        )
+        return Field.objects.create(row=row, name="Project Name")
 
     def test_default_name(self, project: Project) -> None:
         assert str(project) == "New Project"
 
     def test_named_by_field(self, project: Project, field: Field) -> None:
-        Value.objects.create(
-            project=project,
-            field=field,
-            value="Trails to Rails"
-        )
+        Value.objects.create(project=project, field=field, value="Trails to Rails")
         assert str(project) == "Trails to Rails"
 
-    def test_subsection_description(self, project: Project, subsection: Subsection) -> None:
-        assert str(subsection.description) == "Some description"
+    def test_subsection_description(
+        self, project: Project, subsection: Subsection
+    ) -> None:
+        assert subsection.description == "Some description"
 
     def test_group_description(self, project: Project, group: Group) -> None:
-        assert str(group.description) == "General description"
+        assert group.description == "General description"
+
+    def test_value_string_representation(self, value: Value):
+        assert str(value) == "Testing v1 § 1A Project Name Point Lobos Train"

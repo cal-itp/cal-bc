@@ -9,7 +9,19 @@ from .views.model import (
 
 urlpatterns = [
     path("", ModelListView.as_view(), name="models"),
-    path("<int:model_pk>/versions/<int:version_pk>/sections/<int:section_pk>/subsections/<int:pk>/guide", SubsectionGuideView.as_view(), name="model_version_section_subsection_guide"),
-    path("<int:model_pk>/versions/<int:version_pk>/sections/<int:section_pk>/subsections/<int:subsection_pk>/groups/<int:group_pk>/rows/<int:pk>/guide", RowGuideView.as_view(), name="model_version_section_subsection_group_row_guide"),
-    path("<int:model_pk>/versions/<int:pk>/projects/new", ProjectCreateView.as_view(), name="model_project_new"),
+    path(
+        "<int:model_pk>/versions/<int:version_pk>/sections/<int:section_pk>/subsections/<int:pk>/guide",
+        SubsectionGuideView.as_view(),
+        name="model_version_section_subsection_guide",
+    ),
+    path(
+        "<int:model_pk>/versions/<int:version_pk>/sections/<int:section_pk>/subsections/<int:subsection_pk>/groups/<int:group_pk>/rows/<int:pk>/guide",
+        RowGuideView.as_view(),
+        name="model_version_section_subsection_group_row_guide",
+    ),
+    path(
+        "<int:model_pk>/versions/<int:pk>/projects/new",
+        ProjectCreateView.as_view(),
+        name="model_project_new",
+    ),
 ]

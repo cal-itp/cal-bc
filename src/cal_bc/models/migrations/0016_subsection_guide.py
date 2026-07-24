@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('models', '0015_row_guide'),
+        ("models", "0015_row_guide"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='subsection',
-            name='guide',
+            model_name="subsection",
+            name="guide",
             field=models.TextField(blank=True, null=True),
         ),
     ]

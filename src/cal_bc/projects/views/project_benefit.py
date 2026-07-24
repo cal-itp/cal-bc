@@ -1,5 +1,6 @@
 import io
 import urllib.request
+
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_GET
@@ -11,7 +12,6 @@ from cal_bc_calculator.calculator import Calculator
 
 class HtmxHttpRequest(HttpRequest):
     htmx: HtmxDetails
-
 
 
 @require_GET

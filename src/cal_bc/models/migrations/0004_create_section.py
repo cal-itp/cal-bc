@@ -5,20 +5,35 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('models', '0003_create_version'),
+        ("models", "0003_create_version"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Section',
-            options={'ordering': ['code']},
+            name="Section",
+            options={"ordering": ["code"]},
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(null=False)),
-                ('code', models.CharField(null=False, db_index=True)),
-                ('version', models.ForeignKey(null=False, db_index=True, on_delete=django.db.models.deletion.CASCADE, to='models.version')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(null=False)),
+                ("code", models.CharField(null=False, db_index=True)),
+                (
+                    "version",
+                    models.ForeignKey(
+                        null=False,
+                        db_index=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="models.version",
+                    ),
+                ),
             ],
         ),
     ]

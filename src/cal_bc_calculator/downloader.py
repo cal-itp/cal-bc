@@ -1,7 +1,7 @@
 import os
 import urllib.request
-from tqdm import tqdm
 
+from tqdm import tqdm
 
 VERSIONS = {
     "cal-bc-8-1-sketch": {

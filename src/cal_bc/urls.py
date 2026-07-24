@@ -16,7 +16,6 @@ Including another URLconf
 """
 
 import azure_auth.views
-
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.views import LogoutView

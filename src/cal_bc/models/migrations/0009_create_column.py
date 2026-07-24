@@ -5,20 +5,38 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('models', '0008_create_column_group'),
+        ("models", "0008_create_column_group"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Column',
-            options={'ordering': ['position']},
+            name="Column",
+            options={"ordering": ["position"]},
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(null=False)),
-                ('position', models.PositiveIntegerField(null=False, db_index=True, default=0)),
-                ('column_group', models.ForeignKey(null=False, db_index=True, on_delete=django.db.models.deletion.CASCADE, to='models.columngroup')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(null=False)),
+                (
+                    "position",
+                    models.PositiveIntegerField(null=False, db_index=True, default=0),
+                ),
+                (
+                    "column_group",
+                    models.ForeignKey(
+                        null=False,
+                        db_index=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="models.columngroup",
+                    ),
+                ),
             ],
         ),
     ]

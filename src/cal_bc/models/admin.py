@@ -1,7 +1,20 @@
-from django.contrib import admin
 import nested_admin
+from django.contrib import admin
 
-from cal_bc.models.models.model import Model, Version, Section, Subsection, Group, Row, Field, FieldColumn, Value, ColumnGroup, Column
+from cal_bc.models.models.model import (
+    Column,
+    ColumnGroup,
+    Field,
+    FieldColumn,
+    Group,
+    Model,
+    Row,
+    Section,
+    Subsection,
+    Value,
+    Version,
+)
+
 
 class ValueInline(nested_admin.SortableHiddenMixin, nested_admin.NestedTabularInline):
     model = Value
@@ -14,7 +27,11 @@ class FieldColumnInline(nested_admin.NestedTabularInline):
     model = Field.column.through
 
     def get_extra(self, request, obj=None, **kwargs):
-        if obj is not None and obj.pk is not None and FieldColumn.objects.filter(field_id=obj.pk).count():
+        if (
+            obj is not None
+            and obj.pk is not None
+            and FieldColumn.objects.filter(field_id=obj.pk).count()
+        ):
             return 0
         else:
             return 1
@@ -22,7 +39,7 @@ class FieldColumnInline(nested_admin.NestedTabularInline):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "column":
             kwargs["queryset"] = Column.objects.filter(
-                column_group__group=request.resolver_match.kwargs['object_id']
+                column_group__group=request.resolver_match.kwargs["object_id"]
             )
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -48,6 +65,7 @@ class RowInline(nested_admin.SortableHiddenMixin, nested_admin.NestedStackedInli
         else:
             return 1
 
+
 class ColumnInline(nested_admin.SortableHiddenMixin, nested_admin.NestedTabularInline):
     model = Column
 
@@ -58,7 +76,9 @@ class ColumnInline(nested_admin.SortableHiddenMixin, nested_admin.NestedTabularI
             return 1
 
 
-class ColumnGroupInline(nested_admin.SortableHiddenMixin, nested_admin.NestedTabularInline):
+class ColumnGroupInline(
+    nested_admin.SortableHiddenMixin, nested_admin.NestedTabularInline
+):
     model = ColumnGroup
     inlines = [ColumnInline]
 

@@ -5,23 +5,42 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('models', '0011_create_value'),
+        ("models", "0011_create_value"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='FieldColumn',
+            name="FieldColumn",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('column', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='models.column')),
-                ('field', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='models.field')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "column",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="models.column"
+                    ),
+                ),
+                (
+                    "field",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE, to="models.field"
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='field',
-            name='column',
-            field=models.ManyToManyField(through='models.FieldColumn', to='models.column'),
+            model_name="field",
+            name="column",
+            field=models.ManyToManyField(
+                through="models.FieldColumn", to="models.column"
+            ),
         ),
     ]

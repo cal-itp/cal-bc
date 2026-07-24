@@ -1,7 +1,7 @@
 import pytest
+from xlcalculator.xlfunctions.xl import func_xltypes
 
 from cal_bc_calculator.functions import TREND
-from xlcalculator.xlfunctions.xl import func_xltypes
 
 
 class TestFunctions:

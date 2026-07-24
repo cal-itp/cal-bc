@@ -1,12 +1,12 @@
 import io
 import urllib.request
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.base import ContentFile
 from django_downloadview import VirtualDownloadView
 
 from cal_bc.projects.models.project import Project
 from cal_bc_calculator.calculator import Calculator
-
 
 # {
 #     # 1) Project Information
@@ -103,6 +103,7 @@ from cal_bc_calculator.calculator import Calculator
 #     "VehOp": "N",
 #     "Emissions": "N",
 # }
+
 
 class ProjectDownloadView(LoginRequiredMixin, VirtualDownloadView):
     attachment = True
