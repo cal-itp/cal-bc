@@ -1,4 +1,7 @@
+from functools import partial
+
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
 from django.forms import BaseInlineFormSet
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
@@ -7,6 +10,8 @@ from extra_views import FormSetSuccessMessageMixin, InlineFormSetView
 from cal_bc.models.models.model import Field, Subsection
 from cal_bc.projects.forms.project import ValueForm
 from cal_bc.projects.models.project import Project, Value
+from cal_bc.projects.tasks import refresh_project_fields
+from cal_bc.tasks import refresh_channel
 
 
 def get_field(form):
@@ -71,6 +76,15 @@ class ProjectEditView(
         kwargs = super().get_factory_kwargs()
         kwargs["extra"] = self.extra_field_set().count()
         return kwargs
+
+    def formset_valid(self, formset):
+        project = get_object_or_404(Project, pk=self.kwargs["project_pk"])
+        subsection = get_object_or_404(Subsection, pk=self.kwargs["pk"])
+        with transaction.atomic():
+            transaction.on_commit(partial(refresh_channel.enqueue, channel_name=f"user_{project.user_id}_projects"))
+            transaction.on_commit(partial(refresh_channel.enqueue, channel_name=f"user_{project.user_id}_project_{project.pk}_subsection_{subsection.pk}"))
+            transaction.on_commit(partial(refresh_project_fields.enqueue, project_pk=project.pk))
+            return super().formset_valid(formset)
 
     def get_success_url(self):
         project = get_object_or_404(Project, pk=self.kwargs["project_pk"])

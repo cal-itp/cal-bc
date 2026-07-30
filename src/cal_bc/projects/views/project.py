@@ -14,6 +14,9 @@ class ProjectListView(LoginRequiredMixin, ListView):
     template_name = "projects/index.html"
     model = Project
 
+    def get_queryset(self):
+        return self.request.user.project_set.all()
+
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         page = context["page_obj"]

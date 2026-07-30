@@ -20,6 +20,9 @@ import environ
 import google.auth
 from django.urls import reverse_lazy
 
+# Detect testing mode
+TESTING = "test" in sys.argv or "PYTEST_VERSION" in os.environ
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -59,6 +62,7 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     "cal_bc.projects.apps.ProjectsConfig",
     "cal_bc.models.apps.ModelsConfig",
     "cal_bc.landings.apps.LandingsConfig",
@@ -76,6 +80,9 @@ INSTALLED_APPS = [
     "nested_admin",
     "extra_views",
     "django_prose_editor",
+    "django_tasks",
+    "django_tasks_db",
+    "channels_postgres",
 ]
 
 if importlib.util.find_spec("django_extensions"):
@@ -117,19 +124,30 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "cal_bc.wsgi.application"
+ASGI_APPLICATION = "cal_bc.asgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 # Use django-environ to parse the connection string
-DATABASES = {"default": env.db()}
+DATABASES = {
+    "default": env.db(),
+}
+
+if TESTING:
+    DATABASES["default"]["NAME"] = "cal_bc_test"
 
 # If the flag as been set, configure to use proxy
 if env("USE_CLOUD_SQL_AUTH_PROXY", default=None):
     DATABASES["default"]["HOST"] = "127.0.0.1"
     DATABASES["default"]["PORT"] = 5432
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_postgres.core.PostgresChannelLayer",
+        "CONFIG": DATABASES["default"]
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -168,6 +186,12 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "static"
 
+TASKS = {
+    "default": {
+        "BACKEND": "django_tasks_db.DatabaseBackend",
+        "QUEUES": ("default",)
+    }
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -202,7 +226,22 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
-TESTING = "test" in sys.argv or "PYTEST_VERSION" in os.environ
+if TESTING:
+    TASKS = {
+        "default": {
+            "BACKEND": "django.tasks.backends.immediate.ImmediateBackend",
+        }
+    }
+
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer",
+        }
+    }
+
+    DATABASES["default"]["NAME"] = "cal_bc_test"
+
+DATABASES["channels_postgres"] = DATABASES["default"]
 
 if not TESTING:
     INSTALLED_APPS = [

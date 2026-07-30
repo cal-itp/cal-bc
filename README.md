@@ -62,6 +62,12 @@ $ uv run manage.py collectstatic
 $ uv run manage.py runserver
 ```
 
+Finally, start the Django tasks worker:
+
+```bash
+$ uv run manage.py db_worker
+```
+
 Now, visit the server at [http://localhost:8000](http://localhost:8000).
 
 

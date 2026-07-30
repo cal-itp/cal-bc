@@ -1,5 +1,6 @@
 import pytest
 from django.contrib.auth.models import User
+from django.tasks import TaskResultStatus
 
 from cal_bc.models.models.model import (
     Field,
@@ -10,11 +11,12 @@ from cal_bc.models.models.model import (
     Subsection,
     Version,
 )
-from cal_bc.projects.models.project import Project, Value
+from cal_bc.projects.models.project import Project
+from cal_bc.projects.tasks import refresh_project_fields
 
 
 @pytest.mark.django_db
-class TestProject:
+class TestProjectTasks:
     @pytest.fixture
     def user(self, django_user_model) -> User:
         return django_user_model.objects.create_user(username="caltrans")
@@ -25,19 +27,14 @@ class TestProject:
 
     @pytest.fixture
     def version(self, model: Model) -> Version:
-        return model.version_set.create(name="1", url="https://example.com")
+        return model.version_set.create(
+            name="1",
+            url="https://dot.ca.gov/-/media/dot-media/programs/transportation-planning/documents/new-state-planning/transportation-economics/cal-bc/2023-cal-bc/2023-non-federal-model/cal-bc-8-1-sketch-a11y.xlsm"
+        )
 
     @pytest.fixture
     def project(self, user: User, version: Version) -> Project:
         return version.project_set.create(user=user)
-
-    @pytest.fixture
-    def value(self, project: Project, field: Field) -> Value:
-        return Value.objects.create(
-            project=project,
-            field=field,
-            value="Point Lobos Train"
-        )
 
     @pytest.fixture
     def section(self, version: Version) -> Section:
@@ -57,22 +54,16 @@ class TestProject:
 
     @pytest.fixture
     def field(self, row: Row) -> Field:
-        return row.field_set.create(name="Project Name")
+        return row.field_set.create(name="Project Name", cell="ProjName")
 
-    def test_default_name(self, project: Project) -> None:
-        assert str(project) == "New Project"
+    def test_calculate_project_fields_creates_value(self, project: Project, field: Field) -> None:
+        assert project.value_set.count() == 0
+        result = refresh_project_fields.enqueue(project.pk)
+        assert result.status == TaskResultStatus.SUCCESSFUL
+        assert project.value_set.count() == 1
 
-    def test_named_by_field(self, project: Project, field: Field) -> None:
-        Value.objects.create(project=project, field=field, value="Trails to Rails")
-        assert str(project) == "Trails to Rails"
-
-    def test_subsection_description(
-        self, project: Project, subsection: Subsection
-    ) -> None:
-        assert subsection.description == "Some description"
-
-    def test_group_description(self, project: Project, group: Group) -> None:
-        assert group.description == "General description"
-
-    def test_value_string_representation(self, value: Value):
-        assert str(value) == "Testing v1 § 1A Project Name Point Lobos Train"
+    def test_calculate_project_fields_preserves_value(self, project: Project, field: Field) -> None:
+        name_value = project.value_set.create(field=field, value="Nombre")
+        result = refresh_project_fields.enqueue(project.pk)
+        assert result.status == TaskResultStatus.SUCCESSFUL
+        assert project.value_set.get(pk=name_value.pk).value == "Nombre"
