@@ -1,10 +1,10 @@
 {% load svg %}
-<div class="absolute right-0 flex items-center pr-2 sm:static sm:ml-6 sm:pr-0">
+<div class="absolute right-0 flex items-center pr-4 sm:pr-6 lg:static lg:ml-6 lg:pr-0">
   <el-dropdown class="relative ml-3">
     <button class="relative flex rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
       <span class="absolute -inset-1.5"></span>
       <span class="sr-only">Open user menu</span>
-      <div class="h-11 w-11 font-bold text-dds-teal-950 rounded-full bg-yellow-500 flex items-center text-2xl justify-center font-mono">{{ user.get_username|make_list|first }}</div>
+      <div class="h-11 w-11 font-bold text-dds-teal-950 rounded-full bg-yellow-500 flex items-center text-2xl justify-center">{{ user.get_username|make_list|first }}</div>
     </button>
 
     <el-menu anchor="bottom end" popover class="text-lg w-75 py-4 border-1 border-gray-200 origin-top-right rounded-lg bg-white shadow-lg outline outline-black/5 transition transition-discrete [--anchor-gap:--spacing(2)] data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in">
