@@ -45,11 +45,11 @@ class TestProject:
 
     @pytest.fixture
     def subsection(self, section: Section) -> Subsection:
-        return section.subsection_set.create(name="Data", code="A", description="Some description")
+        return section.subsection_set.create(name="Data", code="A")
 
     @pytest.fixture
     def group(self, subsection: Subsection) -> Group:
-        return subsection.group_set.create(name="General", description="General description")
+        return subsection.group_set.create(name="General")
 
     @pytest.fixture
     def row(self, group: Group) -> Row:
@@ -65,14 +65,6 @@ class TestProject:
     def test_named_by_field(self, project: Project, field: Field) -> None:
         Value.objects.create(project=project, field=field, value="Trails to Rails")
         assert str(project) == "Trails to Rails"
-
-    def test_subsection_description(
-        self, project: Project, subsection: Subsection
-    ) -> None:
-        assert subsection.description == "Some description"
-
-    def test_group_description(self, project: Project, group: Group) -> None:
-        assert group.description == "General description"
 
     def test_value_string_representation(self, value: Value):
         assert str(value) == "Testing v1 § 1A Project Name Point Lobos Train"

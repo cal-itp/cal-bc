@@ -36,7 +36,7 @@ class TestModel:
 
     @pytest.fixture()
     def subsection_1_a(self, section_1: Section) -> Subsection:
-        return section_1.subsection_set.create(code="A", name="Project Data")
+        return section_1.subsection_set.create(code="A", name="Project Data", description="Some description")
 
     @pytest.fixture()
     def subsection_1_b(self, section_1: Section) -> Subsection:
@@ -48,7 +48,7 @@ class TestModel:
 
     @pytest.fixture()
     def group(self, subsection_1_a: Subsection) -> Group:
-        return subsection_1_a.group_set.create(name="General Information", position=1)
+        return subsection_1_a.group_set.create(name="General Information", position=1, description="General description")
 
     @pytest.fixture()
     def row(self, group: Group) -> Row:
@@ -92,6 +92,14 @@ class TestModel:
 
     def test_section_string_representation(self, section_1: Section):
         assert str(section_1) == "Cal-B/C Sketch v8.1 § 1 Project Information"
+
+    def test_subsection_description(
+        self, subsection_1_a: Subsection
+    ) -> None:
+        assert subsection_1_a.description == "Some description"
+
+    def test_group_description(self, group: Group) -> None:
+        assert group.description == "General description"
 
     def test_next_section(self, section_1: Section, section_2: Section):
         assert section_1.next_section == section_2
