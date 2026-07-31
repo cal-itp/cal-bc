@@ -59,6 +59,10 @@ class TestModel:
         return row.field_set.create(name="District", position=1)
 
     @pytest.fixture()
+    def field_with_unit(self, row: Row) -> Field:
+        return row.field_set.create(name="Highway Free-Flow Speed", position=1, unit="mph")
+
+    @pytest.fixture()
     def value(self, field: Field) -> Value:
         return field.value_set.create(
             name="District 4 - Bay Area",
@@ -170,6 +174,9 @@ class TestModel:
 
     def test_field_string_representation(self, field: Field):
         assert str(field) == "Cal-B/C Sketch v8.1 § 1A District"
+
+    def test_field_with_unit(self, field_with_unit: Field):
+        assert str(field_with_unit) == "Cal-B/C Sketch v8.1 § 1A Highway Free-Flow Speed mph"
 
     def test_value_string_representation(self, value: Value):
         assert str(value) == "District 4 - Bay Area"
