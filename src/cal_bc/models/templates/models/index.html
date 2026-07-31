@@ -22,9 +22,9 @@
             {% with model.latest_version as version %}
                 {% if version %}
                 <li class="divide-y divide-gray-200 border border-gray-200 rounded-lg bg-white p-6">
-                    <p class="text-2xl text-left font-bold text-dds-teal-950">{{ version }}</p>
+                    <p class="text-2xl text-left font-bold text-dds-teal-950 border-b-0">{{ version }}</p>
                     <div class="space-y-6 mt-2">
-                        <p class="text-sm text-left font-light text-pretty text-gray-700">Best for early-stage highway or transit projects where detailed model data isn't available. It uses simplified inputs and rule-of-thumb methods to quickly estimate benefits.</p>
+                        <p class="text-sm text-left font-light text-pretty text-gray-700">{{ model.description }}</p>
                         <div class="flex items-center space-x-2">
                             <span class="inline-flex shrink-0 items-center px-2 py-1 border border-gray-200 rounded-full bg-gray-100 text-xs font-medium text-dds-teal-950">Highway</span>
                             <span class="inline-flex shrink-0 items-center px-2 py-1 border border-gray-200 rounded-full bg-gray-100 text-xs font-medium text-dds-teal-950">Transit</span>
@@ -32,8 +32,8 @@
                         {% if version.has_form_link %}
                             <form method="post" action="{% url 'model_project_new' model.id version.id %}">
                                 {% csrf_token %}
-                                <button type="submit">
-                                    <div class="flex items-center gap-2 rounded-md bg-dds-teal-600 px-3 py-2 text-md font-medium text-white shadow hover:shadow-inner hover:text-gray-200 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+                                <button type="submit" class="focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+                                    <div class="flex items-center gap-2 rounded-md bg-dds-teal-600 px-3 py-2 text-md font-medium text-white shadow hover:shadow-inner hover:text-gray-200">
                                         <span>Start project</span>{% svg 'projects/arrow_forward' %}
                                     </div>
                                 </button>
