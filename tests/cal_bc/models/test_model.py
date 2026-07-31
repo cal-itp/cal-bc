@@ -93,14 +93,6 @@ class TestModel:
     def test_section_string_representation(self, section_1: Section):
         assert str(section_1) == "Cal-B/C Sketch v8.1 § 1 Project Information"
 
-    def test_subsection_description(
-        self, subsection_1_a: Subsection
-    ) -> None:
-        assert subsection_1_a.description == "Some description"
-
-    def test_group_description(self, group: Group) -> None:
-        assert group.description == "General description"
-
     def test_next_section(self, section_1: Section, section_2: Section):
         assert section_1.next_section == section_2
 
@@ -115,6 +107,11 @@ class TestModel:
 
     def test_subsection_string_representation(self, subsection_1_a: Subsection):
         assert str(subsection_1_a) == "Cal-B/C Sketch v8.1 § 1A Project Data"
+
+    def test_subsection_description(
+        self, subsection_1_a: Subsection
+    ) -> None:
+        assert subsection_1_a.description == "Some description"
 
     def test_next_subsection(
         self, subsection_1_a: Subsection, subsection_1_b: Subsection
@@ -146,6 +143,9 @@ class TestModel:
 
     def test_group_string_representation(self, group: Group):
         assert str(group) == "Cal-B/C Sketch v8.1 § 1A General Information"
+
+    def test_group_description(self, group: Group) -> None:
+        assert group.description == "General description"
 
     def test_group_table_row_set_empty(self, group: Group):
         assert list(group.table_row_set.all()) == []
