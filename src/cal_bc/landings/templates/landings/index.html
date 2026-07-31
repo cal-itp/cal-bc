@@ -1,27 +1,27 @@
 {% extends "base.html" %}
-{% load static %}
-{% load svg %}
+{% load static svg %}
 {% block main %}
 
 <header class="absolute inset-x-0 top-0 z-50">
-    {% include "_statewide_header.html" %}
-
-    <div class="border-b-1 border-gray-500 mx-auto max-w-7xl">
-        <div class="px-6 py-3 lg:px-8">
-            <nav aria-label="Global" class="flex items-center space-x-5">
-                <div class="pr-4 border-r-1 border-gray-500 border-dashed">
-                    {% svg 'shared/cal_bc_logo' alt="Cal-B/C" class="h-8" %}
-                </div>
-                <a href="https://dot.ca.gov" class="m-1.5 p-1.5">
-                    <span class="sr-only">California Department of Transportation</span>
-                    {% svg 'shared/caltrans_logo' alt="Caltrans" class="h-8 w-auto" %}
-                </a>
-                <span class="m-1.5 p-1.5">
-          <span class="sr-only">Data and Digital Services</span>
-          {% svg 'shared/dds_logo' alt="DDS" class="h-8 w-auto" %}
-        </span>
-            </nav>
-        </div>
+    <div class="border-b-1 border-gray-500 px-6 py-5 lg:px-8 mx-auto max-w-7xl">
+        <nav aria-label="Global" class="flex items-center space-x-3">
+            <div class="p-1 flex items-center">
+                {% svg 'shared/cal_bc_logo' alt="Cal-B/C" class="h-8 w-auto" %}
+            </div>
+            <span class="h-10 border-r-1 border-gray-500 border-dashed"></span>
+            <a target="_blank" rel="noopener noreferrer" href="https://ca.gov" class="p-1 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+                <span class="sr-only">State of California</span>
+                {% svg 'shared/ca_gov_logo' alt="CA" class="h-6 w-auto" %}
+            </a>
+            <a target="_blank" href="https://dot.ca.gov" class="p-1 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+                <span class="sr-only">California Department of Transportation</span>
+                {% svg 'shared/caltrans_logo' alt="Caltrans" class="h-8 w-auto" %}
+            </a>
+            <span class="p-1">
+                <span class="sr-only">Data and Digital Services</span>
+                {% svg 'shared/dds_logo' alt="DDS" class="h-8 w-auto" %}
+            </span>
+        </nav>
     </div>
 </header>
 
