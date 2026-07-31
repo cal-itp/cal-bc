@@ -16,7 +16,7 @@ class TestModelViews:
 
     @pytest.fixture
     def model(self) -> Model:
-        return Model.objects.create(name="Testing")
+        return Model.objects.create(name="Testing", description="Use this model for testing!")
 
     @pytest.fixture(autouse=True)
     def version(self, model: Model) -> Version:
@@ -48,6 +48,7 @@ class TestModelViews:
         dom = parse_html(response.content)
         assert query_by_text(dom, "Welcome, John")
         assert query_by_text(dom, "Testing v1")
+        assert query_by_text(dom, "Use this model for testing!")
 
     def test_row_guide(
         self,

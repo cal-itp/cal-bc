@@ -4,6 +4,7 @@ from django_prose_editor.fields import ProseEditorField
 
 class Model(models.Model):
     name = models.CharField(null=False, blank=False, db_index=True)
+    description = models.CharField(blank=True)
 
     class Meta:
         ordering = ["name"]
