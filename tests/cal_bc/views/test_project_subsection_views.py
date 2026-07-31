@@ -17,6 +17,7 @@ from cal_bc.projects.models.project import Project
 from cal_bc.projects.models.project import Value as ProjectValue
 
 
+@pytest.mark.django_db(transaction=True)
 class TestProjectSubsectionViews:
     @pytest.fixture
     def user(self, django_user_model) -> User:
@@ -82,7 +83,7 @@ class TestProjectSubsectionViews:
         client.force_login(user)
         response = client.get(
             reverse_lazy(
-                "project_subsection_edit",
+                "project_subsection",
                 kwargs={"project_pk": project.pk, "pk": subsection.pk},
             )
         )
@@ -107,7 +108,7 @@ class TestProjectSubsectionViews:
         client.force_login(user)
         response = client.post(
             reverse_lazy(
-                "project_subsection_edit",
+                "project_subsection",
                 kwargs={"project_pk": project.pk, "pk": subsection.pk},
             ),
             data={
@@ -122,7 +123,7 @@ class TestProjectSubsectionViews:
 
         assert response.status_code == 302
         assert response.url == reverse_lazy(
-            "project_subsection_edit",
+            "project_subsection",
             kwargs={"project_pk": project.pk, "pk": subsection.pk},
         )
 

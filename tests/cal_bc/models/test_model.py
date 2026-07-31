@@ -12,7 +12,7 @@ from cal_bc.models.models.model import (
 )
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=True)
 class TestModel:
     @pytest.fixture()
     def model(self) -> Model:

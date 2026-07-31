@@ -6,6 +6,7 @@ from asgiref.sync import sync_to_async
 from channels.layers import get_channel_layer
 from channels.testing import WebsocketCommunicator
 from django.contrib.auth.models import User
+from django.urls import reverse_lazy
 from unbrowsed import parse_html, query_by_role, query_by_text
 
 from cal_bc.asgi import application
@@ -36,7 +37,7 @@ class AuthWebsocketCommunicator(WebsocketCommunicator):
 
 
 @pytest.mark.django_db(transaction=True)
-class TestProejctChannels:
+class TestProjectChannels:
     @pytest_asyncio.fixture
     async def user(self, django_user_model) -> User:
         yield django_user_model.objects.create_user(
@@ -92,12 +93,13 @@ class TestProejctChannels:
     async def test_project_subsection_edit_refresh(self, user: User, project: Project, subsection: Subsection, name_field: Field) -> None:
         communicator = AuthWebsocketCommunicator(
             application,
-            path=f"/ws/projects/{project.pk}/subsections/{subsection.pk}/edit",
+            path=f"/ws{reverse_lazy('project_subsection', kwargs={'project_pk': project.pk, 'pk': subsection.pk})}",
             headers=[(b'origin', b'http://localhost:80')],
             user=user,
         )
         connected, _ = await communicator.connect()
         assert connected
+
         channel_layer = get_channel_layer()
         await channel_layer.group_send(
             f'user_{user.pk}_project_{project.pk}_subsection_{subsection.pk}',
@@ -106,6 +108,7 @@ class TestProejctChannels:
 
         response = await communicator.receive_from()
         dom = await sync_to_async(parse_html)(response)
+
         assert await sync_to_async(query_by_text)(dom, "General Information description")
         assert await sync_to_async(query_by_role)(dom, "heading", name="1A. Project Data")
         assert await sync_to_async(query_by_role)(dom, "textbox", name="Project Name")
@@ -116,7 +119,7 @@ class TestProejctChannels:
     async def test_projects_refresh(self, user: User, project: Project, subsection: Subsection, name_field: Field) -> None:
         communicator = AuthWebsocketCommunicator(
             application,
-            path="/ws/projects",
+            path=f"/ws{reverse_lazy("projects")}",
             headers=[(b'origin', b'http://localhost:80')],
             user=user,
         )

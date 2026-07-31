@@ -13,7 +13,7 @@ from cal_bc.models.models.model import (
 from cal_bc.projects.models.project import Project, Value
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=True)
 class TestProject:
     @pytest.fixture
     def user(self, django_user_model) -> User:

@@ -16,6 +16,7 @@ from cal_bc.models.models.model import (
 from cal_bc.projects.models.project import Project
 
 
+@pytest.mark.django_db(transaction=True)
 class TestProjectViews:
     @pytest.fixture
     def user(self, django_user_model) -> User:
@@ -131,9 +132,9 @@ class TestProjectViews:
     ) -> None:
         client.force_login(user)
         Subsection.objects.create(section=section, name="Highway Design", code="B")
-        response = client.get(reverse_lazy("project_edit", kwargs={"pk": project.pk}))
+        response = client.get(reverse_lazy("project", kwargs={"pk": project.pk}))
         assert response.status_code == 302
         assert response.url == reverse_lazy(
-            "project_subsection_edit",
+            "project_subsection",
             kwargs={"project_pk": project.pk, "pk": subsection.pk},
         )
