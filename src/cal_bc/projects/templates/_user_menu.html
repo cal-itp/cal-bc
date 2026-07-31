@@ -11,10 +11,10 @@
       {% if user.get_full_name %}
         <div class="block px-4 text-gray-700 font-bold focus:bg-gray-100 focus:outline-hidden">{{ user.get_full_name }}</div>
       {% endif %}
-      <div href="#" class="text-block border-b-1 border-gray-200 mb-0 px-4 pb-4 text-gray-700 focus:bg-gray-100 focus:outline-hidden">{{ user.get_username }}</div>
-      <form method="post" action="{% url 'logout' %}">
+      <div class="text-block border-b-1 border-gray-200 px-4 pb-4 text-gray-700 focus:bg-gray-100 focus:outline-hidden">{{ user.get_username }}</div>
+      <form method="post" action="{% url 'logout' %}" class="px-4 mt-4">
         {% csrf_token %}
-        <button type="submit" class="cursor-pointer flex items-center px-4 pt-4 text-dds-teal-600">
+        <button type="submit" class="flex items-center text-dds-teal-600 pr-1 cursor-pointer hover:text-dds-teal-700 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
           {% svg "projects/logout" class="mr-2 size-6" %}
           <span>Sign out</span>
         </button>
