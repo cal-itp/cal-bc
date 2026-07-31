@@ -27,7 +27,7 @@ urlpatterns = [
     path("azure_auth/", include("azure_auth.urls"), name="azure_auth"),
     re_path(r"^accounts/logout/$", LogoutView.as_view(next_page="/"), name="logout"),
     re_path(r"^admin/login/$", azure_auth.views.azure_auth_login),
-    path("admin/", admin.site.urls),
+    path("admin/", admin.site.urls, name="admin"),
     path("", include("cal_bc.landings.urls")),
     path("projects/", include("cal_bc.projects.urls")),
     path("models/", include("cal_bc.models.urls")),

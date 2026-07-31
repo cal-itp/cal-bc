@@ -34,7 +34,7 @@ class SortedValueInlineFormSet(BaseInlineFormSet):
         return iter([field_id_forms[pk[0]] for pk in sorted_field_ids])
 
 
-class ProjectEditView(
+class ProjectSubsectionView(
     LoginRequiredMixin, FormSetSuccessMessageMixin, InlineFormSetView
 ):
     model = Project
@@ -97,6 +97,6 @@ class ProjectEditView(
         elif self.request.POST.get("step") == "next" and subsection.next_subsection:
             subsection = subsection.next_subsection
         return reverse_lazy(
-            "project_subsection_edit",
+            "project_subsection",
             kwargs={"project_pk": project.id, "pk": subsection.id},
         )

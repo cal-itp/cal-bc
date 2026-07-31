@@ -7,6 +7,7 @@ from unbrowsed import parse_html, query_by_text
 from cal_bc.models.models.model import Group, Model, Row, Section, Subsection, Version
 
 
+@pytest.mark.django_db(transaction=True)
 class TestModelViews:
     @pytest.fixture
     def user(self, django_user_model) -> User:

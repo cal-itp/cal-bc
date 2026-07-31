@@ -15,7 +15,7 @@ from cal_bc.projects.models.project import Project
 from cal_bc.projects.tasks import refresh_project_fields
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=True)
 class TestProjectTasks:
     @pytest.fixture
     def user(self, django_user_model) -> User:

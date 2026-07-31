@@ -31,7 +31,7 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
             return result
 
     def get_success_url(self):
-        return reverse_lazy("project_edit", kwargs={"pk": self.object.pk})
+        return reverse_lazy("project", kwargs={"pk": self.object.pk})
 
 
 class RowGuideView(LoginRequiredMixin, DetailView):

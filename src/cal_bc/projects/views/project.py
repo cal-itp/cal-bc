@@ -9,7 +9,7 @@ from cal_bc.models.models.model import Subsection
 from cal_bc.projects.models.project import Project
 
 
-class ProjectListView(LoginRequiredMixin, ListView):
+class ProjectsView(LoginRequiredMixin, ListView):
     paginate_by = 10
     template_name = "projects/index.html"
     model = Project
@@ -26,7 +26,7 @@ class ProjectListView(LoginRequiredMixin, ListView):
         return context
 
 
-class ProjectEditRedirectView(LoginRequiredMixin, RedirectView):
+class ProjectView(LoginRequiredMixin, RedirectView):
     permanent = False
 
     def get_redirect_url(self, *args, **kwargs):
@@ -38,7 +38,7 @@ class ProjectEditRedirectView(LoginRequiredMixin, RedirectView):
         except Subsection.DoesNotExist:
             raise Http404("No Subsection matches the given query.")
         return reverse_lazy(
-            "project_subsection_edit",
+            "project_subsection",
             kwargs={"project_pk": project.pk, "pk": subsection.pk},
         )
 

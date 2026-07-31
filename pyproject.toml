@@ -24,6 +24,7 @@ dependencies = [
     "google-auth>=2.41.1",
     "platformdirs>=4.4.0",
     "psycopg2-binary>=2.9.11",
+    "psycopg[binary]>=3.3.4",
     "tqdm>=4.67.1",
     "typer>=0.19.2",
     "xlcalculator",

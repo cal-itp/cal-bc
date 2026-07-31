@@ -2,8 +2,8 @@ from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.http.request import HttpRequest
 
-from cal_bc.projects.views.project import ProjectListView
-from cal_bc.projects.views.project_subsection import ProjectEditView
+from cal_bc.projects.views.project import ProjectsView
+from cal_bc.projects.views.project_subsection import ProjectSubsectionView
 
 
 class ProjectsConsumer(AsyncWebsocketConsumer):
@@ -33,7 +33,8 @@ class ProjectsConsumer(AsyncWebsocketConsumer):
             )
 
     async def refresh(self, event):
-        view = ProjectListView()
+        view = ProjectsView()
+        view.template_name = "projects/_list.html"
         request = HttpRequest()
         request.GET['page'] = self.scope['query_params'].get('page',('1',))[0]
         request.user = self.scope['user']
@@ -72,7 +73,7 @@ class ProjectSubsectionEditConsumer(AsyncWebsocketConsumer):
             )
 
     async def refresh(self, event):
-        view = ProjectEditView()
+        view = ProjectSubsectionView()
         view.template_name = "projects/_form.html"
         request = HttpRequest()
         request.user = self.scope['user']

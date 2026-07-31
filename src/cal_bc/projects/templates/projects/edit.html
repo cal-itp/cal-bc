@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% load svg %}
-
 {% block main %}
 
 <div class="min-h-full bg-gray-100">
-    {% include "_form_header_nav.html" %}
+    {% include "projects/_header_nav.html" %}
+
     {% if messages %}
     <header class="relative">
         <div class="mx-auto max-w-7xl px-6 py-6 lg:px-8">
@@ -32,7 +32,7 @@
 
             <div class="py-6 sm:py-8">
                 <section class="group md:grid md:grid-cols-7 md:gap-4">
-                    <section class="space-y-4 md:col-span-4" hx-ext="ws" hx-ws:connect="/ws{% url 'project_subsection_edit' project_pk=object.pk pk=subsection.pk %}" hx-target="this" hx-swap="innerMorph">
+                    <section class="space-y-4 md:col-span-4" hx-ext="ws" hx-ws:connect="/ws{% url 'project_subsection' project_pk=object.pk pk=subsection.pk %}" hx-target="this" hx-swap="innerMorph">
                         {% include "projects/_form.html" with title="Edit Project" %}
                     </section>
                     <section class="md:block md:self-start md:sticky md:top-0 md:col-span-3">
