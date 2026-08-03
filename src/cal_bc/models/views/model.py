@@ -15,7 +15,7 @@ class ModelListView(LoginRequiredMixin, ListView):
     model = Model
 
     def get_queryset(self):
-        return self.model.objects.prefetch_related("version_set").all()
+        return self.model.objects.prefetch_related("version_set", "tags").all()
 
 
 class ProjectCreateView(LoginRequiredMixin, CreateView):

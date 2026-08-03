@@ -1,10 +1,12 @@
 from django.db import models
 from django_prose_editor.fields import ProseEditorField
+from taggit.managers import TaggableManager
 
 
 class Model(models.Model):
     name = models.CharField(null=False, blank=False, db_index=True)
     description = models.CharField(blank=True)
+    tags = TaggableManager(ordering=["name"])
 
     class Meta:
         ordering = ["name"]

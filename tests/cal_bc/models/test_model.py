@@ -16,7 +16,7 @@ from cal_bc.models.models.model import (
 class TestModel:
     @pytest.fixture()
     def model(self) -> Model:
-        return Model.objects.create(name="Cal-B/C Sketch", description="Best for early-stage highway or transit projects.")
+        return Model.objects.create(name="Cal-B/C Sketch", description="Best for early-stage highway or transit projects.", tags=["Transit", "Commuter Rail"])
 
     @pytest.fixture()
     def version(self, model: Model) -> Version:
@@ -69,8 +69,11 @@ class TestModel:
     def test_model_string_representation(self, model: Model):
         assert str(model) == "Cal-B/C Sketch"
 
-    def test_model_desctiption_string_representation(self, model: Model):
+    def test_model_description_string_representation(self, model: Model):
         assert str(model.description) == "Best for early-stage highway or transit projects."
+
+    def test_model_tags_list_representation(self, model: Model):
+        assert list(model.tags) == ["Transit", "Commuter Rail"]
 
     def test_model_latest_version(self, model: Model, version: Version):
         assert model.latest_version() == version
