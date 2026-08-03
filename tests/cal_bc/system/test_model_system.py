@@ -44,6 +44,8 @@ class TestModelSystem:
         ).get_by_role("link", name="Models", exact=True).click()
         first_page.get_by_role("link", name="Add model").click()
         first_page.get_by_label("Name").fill("Sketch")
+        first_page.get_by_label("Description").fill("Caltrans’s California Benefit/Cost Analysis tool")
+        first_page.get_by_label("Tags").fill("Highway, Transit")
         first_page.get_by_role("button", name="Save", exact=True).click()
         first_page.wait_for_selector("text=The model “Sketch” was added successfully")
 
@@ -78,6 +80,9 @@ class TestModelSystem:
             "Code"
         ).nth(0).fill("A")
         first_page.locator(":text('Subsection: #1') + fieldset").get_by_label(
+            "Description"
+        ).nth(0).fill("This is the main info.")
+        first_page.locator(":text('Subsection: #1') + fieldset").get_by_label(
             "Guide"
         ).locator("~ [contenteditable]").nth(0).fill(
             "Add basic project infomration here"
@@ -97,6 +102,7 @@ class TestModelSystem:
         first_page.get_by_role(
             "link", name="Sketch v8.1 § 1A General Information", exact=True
         ).click()
+        first_page.get_by_label("Description").fill("All fields are required.")
         first_page.locator(":text('Row: #1') + fieldset").get_by_label("Guide").locator(
             "~ [contenteditable]"
         ).fill("Complete this section")

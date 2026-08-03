@@ -83,6 +83,7 @@ INSTALLED_APPS = [
     "django_tasks",
     "django_tasks_db",
     "channels_postgres",
+    "taggit",
 ]
 
 if importlib.util.find_spec("django_extensions"):
@@ -225,6 +226,8 @@ AUTHENTICATION_BACKENDS = ("azure_auth.backends.AzureBackend",)
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+
+TAGGIT_CASE_INSENSITIVE = True
 
 if TESTING:
     TASKS = {
