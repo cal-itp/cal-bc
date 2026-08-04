@@ -59,6 +59,7 @@ dev = [
     "pytest-asyncio>=1.4.0",
     "pytest-django>=4.11.1",
     "pytest-playwright>=0.7.1",
+    "pytest-playwright-axe>=4.12.1",
     "pytest-recording>=0.13.4",
     "ruff>=0.13.2",
     "unbrowsed>=0.1.0a22",
