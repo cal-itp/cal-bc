@@ -1,12 +1,12 @@
 {% load static widget_tweaks svg %}
 
 {% partialdef subsection-header %}
-    <h2 class="text-4xl font-bold tracking-tight text-dds-teal-950">{{ subsection.section.code }}{{ subsection.code }}. {{ subsection.name }}</h2>
+    <h1 class="text-4xl font-bold tracking-tight text-dds-teal-950">{{ subsection.section.code }}{{ subsection.code }}. {{ subsection.name }}</h1>
     {% if subsection.description %}<p class="mt-1 text-lg/8 font-light text-gray-700">{{ subsection.description }}</p>{% endif %}
 {% endpartialdef %}
 
 {% partialdef group-header %}
-    <h3 class="text-xl font-semibold text-gray-900">{{ group.name }}</h3>
+    <h2 class="text-xl font-semibold text-gray-900">{{ group.name }}</h2>
     {% if group.description %}<p class="mt-1 text-lg/8 font-light text-gray-700">{{ group.description }}</p>{% endif %}
 {% endpartialdef %}
 
@@ -25,7 +25,7 @@
             {% endif %}
         </div>
         {% for error in field.errors %}
-            <p class="text-red-600">{{ error }}</p>
+            <p class="text-red-700">{{ error }}</p>
         {% endfor %}
     {% endfor %}
 {% endpartialdef %}
@@ -45,7 +45,7 @@
             {% endif %}
         </div>
         {% for error in field.errors %}
-            <p class="text-red-600">{{ error }}</p>
+            <p class="text-red-700">{{ error }}</p>
         {% endfor %}
     {% endfor %}
 {% endpartialdef %}
