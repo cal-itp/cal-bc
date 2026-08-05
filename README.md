@@ -92,6 +92,10 @@ $ uv run manage.py test
 > $ uv run manage.py test tests/cal_bc
 > ```
 
+> [!NOTE]
+> The Project System Test includes Accessibility checks.
+> Remember to include new pages to the test. Reports can be found locally in `axe-results/`.
+
 
 ### Linting
 
