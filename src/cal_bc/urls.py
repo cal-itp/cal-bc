@@ -20,7 +20,6 @@ from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.views import LogoutView
 from django.urls import include, path, re_path
-from django.views.generic import RedirectView
 from django.views.static import serve
 
 urlpatterns = [
@@ -32,7 +31,6 @@ urlpatterns = [
     path("projects/", include("cal_bc.projects.urls")),
     path("models/", include("cal_bc.models.urls")),
     re_path(r"^static/(?P<path>.*)$", serve, {"document_root": settings.STATIC_ROOT}),
-    path('favicon.ico', RedirectView.as_view(url='static/shared/favicon.svg')),
 ]
 
 if not settings.TESTING:
