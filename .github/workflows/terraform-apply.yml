@@ -10,6 +10,7 @@ on:
       - 'src/**'
       - '.dockerignore'
       - '.gcloudignore'
+      - '.github/workflows/terraform-apply.yml'
       - '.github/workflows/terraform-plan.yml'
       - '.python-version'
       - 'Dockerfile'
@@ -55,17 +56,5 @@ jobs:
         with:
           path: iac/
           auto_approve: true
-          variables: |
-            image_tag = "${{ github.ref == 'refs/heads/main' && github.sha || github.event.pull_request.head.sha }}"
-          target: |
-            google_cloud_run_v2_service.cal-bc-staging
-            google_cloud_run_v2_job.cal-bc-staging-manage
-
-      - name: Terraform Apply
-        uses: dflook/terraform-apply@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          path: iac/
           variables: |
             image_tag = "${{ github.ref == 'refs/heads/main' && github.sha || github.event.pull_request.head.sha }}"
