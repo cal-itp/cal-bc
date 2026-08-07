@@ -36,7 +36,7 @@ class TestModel:
 
     @pytest.fixture()
     def subsection_1_a(self, section_1: Section) -> Subsection:
-        return section_1.subsection_set.create(code="A", name="Project Data")
+        return section_1.subsection_set.create(code="A", name="Project Data", description="Some description")
 
     @pytest.fixture()
     def subsection_1_b(self, section_1: Section) -> Subsection:
@@ -48,7 +48,7 @@ class TestModel:
 
     @pytest.fixture()
     def group(self, subsection_1_a: Subsection) -> Group:
-        return subsection_1_a.group_set.create(name="General Information", position=1)
+        return subsection_1_a.group_set.create(name="General Information", position=1, description="General description")
 
     @pytest.fixture()
     def row(self, group: Group) -> Row:
@@ -57,6 +57,10 @@ class TestModel:
     @pytest.fixture()
     def field(self, row: Row) -> Field:
         return row.field_set.create(name="District", position=1)
+
+    @pytest.fixture()
+    def field_with_unit(self, row: Row) -> Field:
+        return row.field_set.create(name="Highway Free-Flow Speed", position=1, unit="mph")
 
     @pytest.fixture()
     def value(self, field: Field) -> Value:
@@ -108,6 +112,11 @@ class TestModel:
     def test_subsection_string_representation(self, subsection_1_a: Subsection):
         assert str(subsection_1_a) == "Cal-B/C Sketch v8.1 § 1A Project Data"
 
+    def test_subsection_description(
+        self, subsection_1_a: Subsection
+    ) -> None:
+        assert subsection_1_a.description == "Some description"
+
     def test_next_subsection(
         self, subsection_1_a: Subsection, subsection_1_b: Subsection
     ):
@@ -139,6 +148,9 @@ class TestModel:
     def test_group_string_representation(self, group: Group):
         assert str(group) == "Cal-B/C Sketch v8.1 § 1A General Information"
 
+    def test_group_description(self, group: Group) -> None:
+        assert group.description == "General description"
+
     def test_group_table_row_set_empty(self, group: Group):
         assert list(group.table_row_set.all()) == []
 
@@ -162,6 +174,9 @@ class TestModel:
 
     def test_field_string_representation(self, field: Field):
         assert str(field) == "Cal-B/C Sketch v8.1 § 1A District"
+
+    def test_field_with_unit(self, field_with_unit: Field):
+        assert str(field_with_unit) == "Cal-B/C Sketch v8.1 § 1A Highway Free-Flow Speed mph"
 
     def test_value_string_representation(self, value: Value):
         assert str(value) == "District 4 - Bay Area"

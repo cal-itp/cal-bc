@@ -189,12 +189,13 @@ class Field(models.Model):
     name = models.CharField(null=False, blank=False)
     cell = models.CharField(null=False)
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
+    unit = models.CharField(blank=True)
 
     class Meta:
         ordering = ["position"]
 
     def __str__(self):
-        return f"{self.row.group.subsection.section.version!s} § {self.row.group.subsection.section.code}{self.row.group.subsection.code} {self.name}"
+        return f"{self.row.group.subsection.section.version!s} § {self.row.group.subsection.section.code}{self.row.group.subsection.code} {self.name}" + (f" {self.unit}" if self.unit else "")
 
 
 class Value(models.Model):
