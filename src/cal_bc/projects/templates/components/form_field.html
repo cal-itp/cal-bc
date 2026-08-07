@@ -1,0 +1,32 @@
+{% load widget_tweaks svg %}
+
+<c-vars
+    variant="default"
+    is_in_table=False
+    :variants="{
+        'default': '{% if is_in_table %}w-fit{% else %}w-full{% endif %} block px-3 py-3 rounded-xs bg-white text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600',
+        'with_unit': '{% if is_in_table %}w-fit{% else %}w-full{% endif %} flex-grow block pr-3 text-center outline-none placeholder:text-gray-400',
+        'select': 'col-start-1 row-start-1 appearance-none pl-5 pr-12 py-3 rounded-xs bg-white text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600',
+    }"
+/>
+
+<label for="{{ field.id_for_label }}" class="{% if is_in_table %}sr-only {% endif %}block text-lg font-medium text-gray-900">{{ field.label }}</label>
+<div class="grid grid-cols-1">
+    {% if variant == 'with_unit' %}
+        <div class="flex items-baseline rounded-xs bg-white py-3 text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-dds-teal-600">
+    {% endif %}
+
+    {% render_field field|append_attr:"hx-on:input changed once -> this.setAttribute('hx-morph-skip','true')" hx-get=row_url hx-params="none" hx-swap="innerMorph" hx-target="#guide" hx-trigger="focus" class=variants|get_item:variant %}
+
+    {% if variant == 'with_unit' %}
+            <div class="shrink-0 pr-5 text-base text-gray-600 select-none sm:text-sm/6" id="{% firstof form.initial.field.name form.instance.field.name|slugify %}-unit">{% firstof form.initial.field.unit form.instance.field.unit %}</div>
+        </div>
+    {% endif %}
+
+    {% if variant == 'select' %}
+        {% svg "projects/chevron_down" class="pointer-events-none col-start-1 row-start-1 mr-4 size-6 self-center justify-self-end fill-dds-teal-600" %}
+    {% endif %}
+</div>
+{% for error in field.errors %}
+    <p class="text-red-700">{{ error }}</p>
+{% endfor %}

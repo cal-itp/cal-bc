@@ -15,48 +15,25 @@
     {{ form.id }}
     {{ form.field }}
     {% for field in form.visible_fields %}
-        <label for="{{ field.id_for_label }}" class="sr-only block text-lg font-medium text-gray-900">{{ field.label }}</label>
-        <div class="grid grid-cols-1">
-            {% if field.widget_type == 'select' %}
-                {% render_field field|append_attr:"hx-on:input changed once -> this.setAttribute('hx-morph-skip','true')" hx-get=row_url hx-params="none" hx-swap="innerMorph" hx-target="#guide" hx-trigger="focus" class="col-start-1 row-start-1 w-full appearance-none pl-5 pr-12 py-3 rounded-xs bg-white text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600" %}
-                {% svg "projects/chevron_down" class="pointer-events-none col-start-1 row-start-1 mr-4 size-6 self-center justify-self-end fill-dds-teal-600" %}
-            {% elif form.initial.field.unit or form.instance.field.unit %}
-                <div class="flex items-baseline rounded-xs bg-white py-3 text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-dds-teal-600">
-                    {% render_field field|append_attr:"hx-on:input changed once -> this.setAttribute('hx-morph-skip','true')" hx-get=row_url hx-params="none" hx-swap="innerMorph" hx-target="#guide" hx-trigger="focus" class="w-full flex-grow block pr-3 text-center outline-none placeholder:text-gray-400 " %}
-                    <div class="shrink-0 pr-5 text-base text-gray-600 select-none sm:text-sm/6" id="{% firstof form.initial.field.name form.instance.field.name|slugify %}-unit">{% firstof form.initial.field.unit form.instance.field.unit %}</div>
-                </div>
-            {% else %}
-                {% render_field field|append_attr:"hx-on:input changed once -> this.setAttribute('hx-morph-skip','true')" hx-get=row_url hx-params="none" hx-swap="innerMorph" hx-target="#guide" hx-trigger="focus" class="block w-full px-3 py-3 rounded-xs bg-white text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600" %}
-            {% endif %}
-        </div>
-        {% for error in field.errors %}
-            <p class="text-red-700">{{ error }}</p>
-        {% endfor %}
+        <c-form-field
+            form=form
+            field=field
+            is_in_table
+            variant="{% if field.widget_type == 'select' %}select{% elif form.initial.field.unit or form.instance.field.unit %}with_unit{% else %}default{% endif %}"
+        />
     {% endfor %}
 {% endpartialdef %}
 
-{% partialdef form-field %}
+{% partialdef form-row %}
     {% url 'model_version_section_subsection_group_row_guide' model_pk=row.group.subsection.section.version.model.pk version_pk=row.group.subsection.section.version.pk section_pk=row.group.subsection.section.pk subsection_pk=row.group.subsection.pk group_pk=row.group.pk pk=row.pk as row_url %}
     {{ form.id }}
     {{ form.field }}
     {% for field in form.visible_fields %}
-        <label for="{{ field.id_for_label }}" class="block text-lg font-medium text-gray-900">{{ field.label }}</label>
-        <div class="grid grid-cols-1">
-            {% if field.widget_type == 'select' %}
-                {% render_field field|append_attr:"hx-on:input changed once -> this.setAttribute('hx-morph-skip','true')" hx-get=row_url hx-params="none" hx-swap="innerMorph" hx-target="#guide" hx-trigger="focus" class="col-start-1 row-start-1 appearance-none pl-5 pr-12 py-3 rounded-xs bg-white text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600" %}
-                {% svg "projects/chevron_down" class="pointer-events-none col-start-1 row-start-1 mr-4 size-6 self-center justify-self-end fill-dds-teal-600" %}
-            {% elif form.initial.field.unit or form.instance.field.unit %}
-                <div class="w-fit flex items-baseline rounded-xs bg-white py-3 text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-dds-teal-600">
-                    {% render_field field|append_attr:"hx-on:input changed once -> this.setAttribute('hx-morph-skip','true')" hx-get=row_url hx-params="none" hx-swap="innerMorph" hx-target="#guide" hx-trigger="focus" class="flex-grow block pr-3 text-center outline-none placeholder:text-gray-400 " %}
-                    <div class="shrink-0 pr-5 text-base text-gray-600 select-none sm:text-sm/6" id="{% firstof form.initial.field.name form.instance.field.name|slugify %}-unit">{% firstof form.initial.field.unit form.instance.field.unit %}</div>
-                </div>
-            {% else %}
-                {% render_field field|append_attr:"hx-on:input changed once -> this.setAttribute('hx-morph-skip','true')" hx-get=row_url hx-params="none" hx-swap="innerMorph" hx-target="#guide" hx-trigger="focus" class="block w-fit px-3 py-3 rounded-xs bg-white text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600" %}
-            {% endif %}
-        </div>
-        {% for error in field.errors %}
-            <p class="text-red-700">{{ error }}</p>
-        {% endfor %}
+        <c-form-field
+            form=form
+            field=field
+            variant="{% if field.widget_type == 'select' %}select{% elif form.initial.field.unit or form.instance.field.unit %}with_unit{% else %}default{% endif %}"
+        />
     {% endfor %}
 {% endpartialdef %}
 
@@ -80,7 +57,7 @@
                 {% for form in formset %}
                     {% if form.initial.field.row == row or form.instance.field.row == row %}
                     <div class="col-span-1 mt-2">
-                        {% partial form-field %}
+                        {% partial form-row %}
                     </div>
                     {% endif %}
                 {% endfor %}
