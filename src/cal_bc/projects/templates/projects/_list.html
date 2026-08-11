@@ -2,48 +2,45 @@
 
 <section class="mx-auto max-w-7xl pt-6 pb-12 px-6 lg:px-8 flow-root overflow-x-auto">
     {% if object_list %}
-        <div class="inline-block min-w-full py-2 align-middle overflow-hidden">
-            <table class="relative min-w-full divide-y-3 divide-gray-100">
-                <thead>
-                    <tr>
-                        <th scope="col" class="py-2 px-3 pl-4 text-left text-sm font-semibold text-gray-800 sm:pl-6">Project Name</th>
-                        <th scope="col" class="py-2 pr-3 pl-4 text-left text-sm font-semibold text-gray-800 sm:pl-6">Model</th>
-                        <th scope="col" class="py-2 pr-3 pl-4 text-left text-sm font-semibold text-gray-800 flex items-center sm:pl-6">
-                            <span class="text-gray-800">Last Edited</span>
-                            {% svg 'projects/arrow_down' alt="desc_sort" class="text-dds-teal-600 h-4 w-4 ml-1" %}
-                        </th>
-                        <th scope="col" class="py-2 pr-4 pl-3 text-left text-sm font-semibold text-gray-800 sm:pr-6">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y-3 divide-gray-100">
-                    {% for project in object_list %}
-                    <tr>
-                        <td class="bg-white rounded-l-md py-4 pl-4 font-semibold whitespace-nowrap text-gray-900 sm:pl-6">{{ project }}</td>
-                        <td class="bg-white py-4 pr-3 pl-4 font-light whitespace-nowrap text-gray-900 sm:pl-6">{{ project.version }}</td>
-                        <td class="bg-white py-4 pr-3 pl-4 font-light whitespace-nowrap text-gray-900 sm:pl-6">{{ project.updated_at|date:"F j, Y" }}</td>
-                        <td class="bg-white rounded-r-md text-right whitespace-nowrap text-gray-900 sm:pr-6">
-                            <div class="flex items-center space-x-3">
-                                <a href="{% url 'project' project.id %}" class="text-dds-teal-600 hover:text-dds-teal-700 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
-                                    <span class="sr-only">Edit</span>
-                                    {% svg 'projects/edit' alt="Edit" class="h-5 w-5" %}
-                                </a>
-                                <form action="{% url 'project_delete' project.id %}" method="POST" class="flex items-center">
-                                    {% csrf_token %}
-                                    <button type="submit" class="text-dds-teal-600 hover:text-dds-teal-700 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400" onclick="return confirm('Are you sure you want to delete the {{ project }}?');">
-                                        <span class="sr-only">Delete</span>
-                                        {% svg 'projects/delete' alt="Delete" class="h-5 w-5" %}
-                                    </button>
-                                </form>
-                                <a href="{% url 'project_download' project.id %}" class="text-dds-teal-600 hover:text-dds-teal-700 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
-                                    <span class="sr-only">Download</span>
-                                    {% svg 'projects/download' alt="Download" class="h-5 w-5" %}
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="grid grid-cols-[1fr_156px] gap-y-1 overflow-hidden md:grid-cols-[1fr_1fr_156px_156px] lg:grid-cols-[1fr_1fr_1fr_156px_156px]">
+            <div class="col-span-1 pl-4 py-2 text-left text-sm font-semibold text-gray-800 md:col-span-2">Project Name</div>
+            <div class="hidden pl-4 py-2 text-left text-sm font-semibold text-gray-800 lg:block lg:col-span-1">Model</div>
+            <div class="hidden pl-4 py-2 text-left text-sm font-semibold text-gray-800 md:flex md:col-span-1 md:items-center">
+                <span class="text-gray-800">Last Edited</span>
+                {% svg 'projects/arrow_down' alt="desc_sort" class="text-dds-teal-600 h-4 w-4 ml-1" %}
+            </div>
+            <div class="col-span-1 pl-4 py-2 text-left text-sm font-semibold text-gray-800">Actions</div>
+
+            {% for project in object_list %}
+            <div class="col-span-1 bg-white rounded-l-md pl-4 py-4 font-semibold whitespace-nowrap truncate text-gray-900 md:col-span-2">
+                {{ project }}
+                <dl class="lg:hidden">
+                    <dt class="sr-only">Model</dt>
+                    <dd class="mt-1 font-light">{{ project.version }}</dd>
+                    <dt class="sr-only md:hidden">Last Edited</dt>
+                    <dd class="mt-1 font-light md:hidden">{{ project.updated_at|date:"M j, Y" }}</dd>
+                </dl>
+            </div>
+            <div class="hidden bg-white pl-4 py-4 font-light whitespace-nowrap truncate text-gray-900 lg:block lg:col-span-1">{{ project.version }}</div>
+            <div class="hidden bg-white pl-4 py-4 font-light whitespace-nowrap text-gray-900 md:flex md:items-center md:col-span-1">{{ project.updated_at|date:"M j, Y" }}</div>
+            <div class="col-span-1 bg-white rounded-r-md p-4 whitespace-nowrap text-right text-gray-900 flex items-center space-x-3">
+                <a href="{% url 'project' project.id %}" class="text-dds-teal-600 hover:text-dds-teal-700 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+                    <span class="sr-only">Edit</span>
+                    {% svg 'projects/edit' alt="Edit" class="h-6 w-6" %}
+                </a>
+                <form action="{% url 'project_delete' project.id %}" method="POST" class="flex items-center">
+                    {% csrf_token %}
+                    <button type="submit" class="text-dds-teal-600 hover:text-dds-teal-700 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400" onclick="return confirm('Are you sure you want to delete the {{ project }}?');">
+                        <span class="sr-only">Delete</span>
+                        {% svg 'projects/delete' alt="Delete" class="h-6 w-6" %}
+                    </button>
+                </form>
+                <a href="{% url 'project_download' project.id %}" class="text-dds-teal-600 hover:text-dds-teal-700 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+                    <span class="sr-only">Download</span>
+                    {% svg 'projects/download' alt="Download" class="h-6 w-6" %}
+                </a>
+            </div>
+            {% endfor %}
         </div>
 
         <div class="flex items-center justify-between py-6">
@@ -73,16 +70,17 @@
                 <div class="hidden md:flex md:flex-1 md:items-center md:justify-between">
                     <nav aria-label="Pagination" class="isolate inline-flex space-x-2">
                         {% if page_obj.has_previous %}
-                        <a href="?page={{ page_obj.previous_page_number }}" class="relative size-7 inline-flex items-center justify-center text-dds-teal-600 border-1 border-dds-teal-600 rounded-md shadow hover:shadow-inner hover:bg-gray-200 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
-                            <span class="sr-only">Previous</span>
-                            {% svg 'projects/chevron_left' %}
-                        </a>
+                            <a href="?page={{ page_obj.previous_page_number }}" class="relative size-7 inline-flex items-center justify-center text-dds-teal-600 border-1 border-dds-teal-600 rounded-md shadow hover:shadow-inner hover:bg-gray-200 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+                                <span class="sr-only">Previous</span>
+                                {% svg 'projects/chevron_left' %}
+                            </a>
                         {% else %}
                             <span class="relative size-7 inline-flex items-center justify-center text-gray-300 border-1 border-gray-300 rounded-md cursor-not-allowed">
                                 <span class="sr-only">Previous</span>
                                 {% svg 'projects/chevron_left' %}
                             </span>
                         {% endif %}
+
                         {% for number in elided_page_range %}
                             {% if number == page_obj.paginator.ELLIPSIS %}
                                 <span class="relative size-7 inline-flex items-center justify-center text-sm pt-2 text-gray-900">...</span>
@@ -94,6 +92,7 @@
                                 {% endif %}
                             {% endif %}
                         {% endfor %}
+
                         {% if page_obj.has_next %}
                             <a href="?page={{ page_obj.next_page_number }}" class="relative size-7 inline-flex items-center justify-center text-dds-teal-600 border-1 border-dds-teal-600 rounded-md shadow hover:shadow-inner hover:bg-gray-200 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
                                 <span class="sr-only">Next</span>
