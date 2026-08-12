@@ -2,9 +2,8 @@
 {% load static i18n svg %}
 {% block main %}
 
-<div class="min-h-full bg-gray-100">
+<div class="min-h-full bg-gray-100 flex flex-col">
     {% include "_header_nav.html" %}
-
     <header class="relative">
         <div class="mx-auto max-w-7xl py-6 px-6 lg:px-8">
             <p class="mt-4 uppercase text-base font-light text-pretty text-dds-teal-700">Welcome, {% if user.get_short_name != "" %}{{ user.get_short_name }}{% endif %}</p>
@@ -22,10 +21,10 @@
         </div>
     </header>
 
-    <main class="min-h-full" hx-ext="ws" hx-ws:connect="/ws{% url 'projects' %}?page={{ page_obj.number }}" hx-target="this" hx-swap="innerMorph">
+    <main class="grow" hx-ext="ws" hx-ws:connect="/ws{% url 'projects' %}?page={{ page_obj.number }}" hx-target="this" hx-swap="innerMorph">
         {% include "projects/_list.html" %}
     </main>
-</div>
 
-{% include "_footer.html" %}
+    {% include "_footer.html" %}
+</div>
 {% endblock %}
