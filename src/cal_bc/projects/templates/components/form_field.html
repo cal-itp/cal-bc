@@ -4,9 +4,9 @@
     variant="default"
     is_in_table=False
     :input_styles="{
-        'default': '{% if is_in_table %}w-fit{% else %}w-full{% endif %} block px-3 py-3 rounded-xs bg-white text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600',
-        'with_unit': '{% if is_in_table %}w-fit{% else %}w-full{% endif %} flex-grow block pr-3 text-center outline-none placeholder:text-gray-400',
-        'select': 'col-start-1 row-start-1 appearance-none pl-5 pr-12 py-3 rounded-xs bg-white text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600',
+        'default': '{% if is_in_table %}w-fit{% else %}w-full{% endif %} block px-4 py-3 rounded-xs bg-white text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600',
+        'with_unit': '{% if is_in_table %}w-fit{% else %}w-full{% endif %} flex-grow block px-4 text-center outline-none placeholder:text-gray-400',
+        'select': 'col-start-1 row-start-1 appearance-none pl-4 pr-12 py-3 rounded-xs bg-white text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600',
     }"
     :wrapper_styles="{
         'default': 'grid grid-cols-1',
@@ -15,7 +15,7 @@
     }",
 />
 
-<label for="{{ field.id_for_label }}" class="{% if is_in_table %}sr-only {% endif %}block text-lg font-medium text-gray-900">{{ field.label }}</label>
+<label for="{{ field.id_for_label }}" class="{% if is_in_table %}sr-only {% endif %}block text-lg font-medium text-gray-900 mb-2">{{ field.label }}</label>
 <div class="{{wrapper_styles|get_item:variant}}">
     {% render_field field|append_attr:"hx-on:input changed once -> this.setAttribute('hx-morph-skip','true')" hx-get=row_url hx-params="none" hx-swap="innerMorph" hx-target="#guide" hx-trigger="focus" class=input_styles|get_item:variant %}
 

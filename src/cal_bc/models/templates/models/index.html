@@ -5,8 +5,8 @@
 <div class="min-h-full bg-gray-100 flex flex-col">
     {% include "_header_nav.html" %}
 
-    <header class="mx-auto max-w-7xl py-6 px-6 lg:px-8">
-        <div class="space-y-2">
+    <header>
+        <div class="mx-auto max-w-7xl py-6 px-6 lg:px-8 space-y-2">
             <p class="mt-4 uppercase text-base font-light text-pretty text-dds-teal-700">Welcome, {% if user.get_short_name != "" %}{{ user.get_short_name }}{% endif %}</p>
             <h1 class="mt-4 text-4xl font-bold tracking-tight text-dds-teal-950">Start a new benefit-cost project</h1>
             <p class="text-base font-light text-pretty text-gray-700">

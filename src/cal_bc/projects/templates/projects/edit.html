@@ -7,8 +7,8 @@
 
     {% if messages %}
     <header class="relative">
-        <div class="mx-auto max-w-7xl px-6 py-6 lg:px-8">
-            <div class="bg-dds-teal-100 border-l-4 border-dds-teal-700 rounded text-dds-teal-900 shadow-md min-w-md float-top float-right" role="alert">
+        <div class="mx-auto max-w-7xl pt-4 px-6 lg:px-8">
+            <div class="bg-dds-teal-100 border-l-4 border-dds-teal-700 rounded text-dds-teal-900 shadow-md min-w-md md:float-top md:float-right" role="alert">
                 <div class="flex items-center p-2">
                     <div class="shrink-0">
                         {% svg 'projects/alert_resolved' class="h-8" %}
@@ -27,12 +27,12 @@
     {% endif %}
 
     <main class="grow">
-        <form method="post" class="mx-auto max-w-7xl px-6 py-6 lg:px-8">
+        <form method="post" class="mx-auto max-w-7xl pt-16 pb-20 px-6 lg:px-8">
             {% csrf_token %}
 
-            <div class="py-6 sm:py-8">
+            <div>
                 <section class="group md:grid md:grid-cols-7 md:gap-4">
-                    <section class="space-y-4 md:col-span-4" hx-ext="ws" hx-ws:connect="/ws{% url 'project_subsection' project_pk=object.pk pk=subsection.pk %}" hx-target="this" hx-swap="innerMorph">
+                    <section class="md:col-span-4" hx-ext="ws" hx-ws:connect="/ws{% url 'project_subsection' project_pk=object.pk pk=subsection.pk %}" hx-target="this" hx-swap="innerMorph">
                         {% include "projects/_form.html" with title="Edit Project" %}
                     </section>
                     <section class="md:block md:self-start md:sticky md:top-0 md:col-span-3">
@@ -41,7 +41,7 @@
                 </section>
             </div>
 
-            <div class="mt-6 pt-6 border-t border-gray-300 flex flex-row-reverse items-center justify-between gap-x-6">
+            <div class="mt-12 pt-12 border-t border-gray-300 flex flex-row-reverse items-center justify-between gap-x-6">
                 <div class="flex flex-row-reverse items-center justify-end gap-x-6">
                     {% if subsection.next_subsection %}
                         <button type="submit" name="step" value="next" hx-disable="this" class="rounded-md bg-dds-teal-600 px-7 py-3 text-lg font-semibold text-white shadow hover:shadow-inner hover:text-gray-200 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Continue<span class="sr-only sm:not-sr-only"> to Subsection {{ subsection.next_subsection.section.code }}{{ subsection.next_subsection.code }}</span></button>
