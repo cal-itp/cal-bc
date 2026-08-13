@@ -16,6 +16,10 @@ on:
       - 'pyproject.toml'
       - 'uv.lock'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 env:
   SERVICE_ACCOUNT: 'github-actions-service-account@cal-itp-data-infra-staging.iam.gserviceaccount.com'
   WORKLOAD_IDENTITY_PROVIDER: 'projects/473674835135/locations/global/workloadIdentityPools/github-actions/providers/cal-bc'
