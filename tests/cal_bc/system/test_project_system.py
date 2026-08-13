@@ -119,7 +119,7 @@ class TestProjectSystem:
 
     @pytest.fixture(autouse=True)
     def cars_per_hour(self, group_2_row_1: Row) -> Field:
-        return group_2_row_1.field_set.create(name="Cars per hour", cell="ADT0", unit="each")
+        return group_2_row_1.field_set.create(name="Annual Capital Expenditure", cell="ADT0", unit="$")
 
     @pytest.fixture(autouse=True)
     def district_4(self, district_field: Field) -> Value:
@@ -168,8 +168,8 @@ class TestProjectSystem:
 
         first_page.get_by_role("button", name="Save draft").click()
         expect(first_page.locator("body")).to_contain_text("This field is required")
-        first_page.get_by_label("Cars per hour").fill("333")
-        expect(first_page.locator("#cars-per-hour-unit")).to_contain_text("each")
+        first_page.get_by_label("Annual Capital Expenditure").fill("333")
+        expect(first_page.locator("#annual-capital-expenditure-unit")).to_contain_text("$")
         first_page.get_by_role("button", name="Back to Subsection 1A").click()
         first_page.get_by_role("button", name="1A - Project Data").click()
         first_page.get_by_role("menuitem", name="1B. Traffic Data").click()
