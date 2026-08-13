@@ -6,7 +6,7 @@
 {% endpartialdef %}
 
 {% partialdef group-header %}
-    <h2 class="text-xl font-semibold text-gray-900">{{ group.name }}</h2>
+    <h2 class="mt-16 text-3xl font-semibold text-gray-900">{{ group.name }}</h2>
     {% if group.description %}<p class="mt-1 text-lg/8 font-light text-gray-700">{{ group.description }}</p>{% endif %}
 {% endpartialdef %}
 
@@ -45,18 +45,18 @@
 {% for group in subsection.group_set.all %}
     {% partial group-header %}
 
-    <div class="space-y-10">
+    <div class="space-y-6 mt-6">
         {% for row in group.non_table_row_set.all %}
             <div class="{% spaceless %}
                 {% if row.field_set.count == 1 %}
-                    grid grid-cols-3 gap-4
+                    grid grid-cols-2 gap-6
                 {% else %}
                     grid grid-cols-{{ row.field_set.count }} gap-6
                 {% endif %}
             {% endspaceless %}">
                 {% for form in formset %}
                     {% if form.initial.field.row == row or form.instance.field.row == row %}
-                    <div class="col-span-1 mt-2">
+                    <div class="col-span-1">
                         {% partial form-row %}
                     </div>
                     {% endif %}

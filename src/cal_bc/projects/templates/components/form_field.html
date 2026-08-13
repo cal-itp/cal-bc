@@ -4,20 +4,24 @@
     variant="default"
     is_in_table=False
     :input_styles="{
-        'default': '{% if is_in_table %}w-fit{% else %}w-full{% endif %} block px-3 py-3 rounded-xs bg-white text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600',
-        'with_unit': '{% if is_in_table %}w-fit{% else %}w-full{% endif %} flex-grow block pr-3 text-center outline-none placeholder:text-gray-400',
-        'select': 'col-start-1 row-start-1 appearance-none pl-5 pr-12 py-3 rounded-xs bg-white text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-dds-teal-600',
+        'default': 'block px-4 py-3 border-2 border-gray-600 rounded-xs bg-white text-lg text-gray-900 focus:border-dds-teal-600 focus:outline-4 focus:outline-dds-teal-400 placeholder:text-gray-400',
+        'with_unit': 'text-center flex-grow block px-4 outline-none placeholder:text-gray-400',
+        'select': 'col-start-1 row-start-1 appearance-none pl-4 pr-12 py-3 border-2 border-gray-600 rounded-xs bg-white text-lg text-gray-900 focus:border-dds-teal-600 focus:outline-4 focus:outline-dds-teal-400 placeholder:text-gray-400',
+    }"
+    :tab_input_styles="{
+        True: 'w-full text-center',
+        False: 'w-full',
     }"
     :wrapper_styles="{
         'default': 'grid grid-cols-1',
-        'with_unit': 'flex items-baseline rounded-xs bg-white py-3 text-lg text-gray-900 outline-1 -outline-offset-1 outline-gray-600 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-dds-teal-600',
+        'with_unit': 'flex items-baseline border-2 border-gray-600 rounded-xs bg-white py-3 text-lg text-gray-900 focus-within:border-dds-teal-600 focus-within:outline-4 focus-within:outline-dds-teal-400',
         'select': 'grid grid-cols-1',
-    }",
+    }"
 />
 
-<label for="{{ field.id_for_label }}" class="{% if is_in_table %}sr-only {% endif %}block text-lg font-medium text-gray-900">{{ field.label }}</label>
+<label for="{{ field.id_for_label }}" class="{% if is_in_table %}sr-only {% endif %}block text-lg font-medium text-gray-900 mb-2">{{ field.label }}</label>
 <div class="{{wrapper_styles|get_item:variant}}">
-    {% render_field field|append_attr:"hx-on:input changed once -> this.setAttribute('hx-morph-skip','true')" hx-get=row_url hx-params="none" hx-swap="innerMorph" hx-target="#guide" hx-trigger="focus" class=input_styles|get_item:variant %}
+    {% render_field field|append_attr:"hx-on:input changed once -> this.setAttribute('hx-morph-skip','true')" hx-get=row_url hx-params="none" hx-swap="innerMorph" hx-target="#guide" hx-trigger="focus" class+=input_styles|get_item:variant class+=tab_input_styles|get_item:is_in_table %}
 
     {% if variant == 'with_unit' %}
         <div class="{% if form.initial.field.unit == '$' or form.instance.field.unit == '$' %}order-first pl-5 {% else %}pr-5 {% endif %}shrink-0 text-gray-600 select-none" id="{% firstof form.initial.field.name form.instance.field.name|slugify %}-unit">

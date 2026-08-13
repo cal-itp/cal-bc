@@ -2,9 +2,8 @@
 {% load static i18n svg %}
 {% block main %}
 
-<div class="min-h-full bg-gray-100">
+<div class="min-h-full bg-gray-100 flex flex-col">
     {% include "_header_nav.html" %}
-
     <header class="relative">
         <div class="mx-auto max-w-7xl py-6 px-6 lg:px-8">
             <p class="mt-4 uppercase text-base font-light text-pretty text-dds-teal-700">Welcome, {% if user.get_short_name != "" %}{{ user.get_short_name }}{% endif %}</p>
@@ -14,7 +13,7 @@
                     <p class="text-base font-light text-pretty text-gray-700">{{ page_obj.paginator.count }} projects</p>
                 </div>
                 <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-                    <a href="{% url 'models' %}" class="flex items-center gap-2 rounded-md bg-dds-teal-600 px-3 py-2 text-md font-medium text-white shadow hover:shadow-inner hover:text-gray-200 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+                    <a href="{% url 'models' %}" class="flex items-center gap-2 rounded-md bg-dds-teal-600 pl-3 pr-4 py-3 text-lg font-semibold text-white shadow hover:shadow-inner hover:text-gray-200 focus:outline-4 focus:outline-dds-teal-400 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
                         {% svg 'projects/plus' %}<span>New project</span>
                     </a>
                 </div>
@@ -22,10 +21,10 @@
         </div>
     </header>
 
-    <main class="min-h-full" hx-ext="ws" hx-ws:connect="/ws{% url 'projects' %}?page={{ page_obj.number }}" hx-target="this" hx-swap="innerMorph">
+    <main class="grow" hx-ext="ws" hx-ws:connect="/ws{% url 'projects' %}?page={{ page_obj.number }}" hx-target="this" hx-swap="innerMorph">
         {% include "projects/_list.html" %}
     </main>
-</div>
 
-{% include "_footer.html" %}
+    {% include "_footer.html" %}
+</div>
 {% endblock %}
