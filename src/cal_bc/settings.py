@@ -84,6 +84,7 @@ INSTALLED_APPS = [
     "django_tasks_db",
     "channels_postgres",
     "taggit",
+    "django_cotton",
 ]
 
 if importlib.util.find_spec("django_extensions"):
@@ -93,6 +94,9 @@ if importlib.util.find_spec("django_extensions"):
 STATICFILES_DIRS = [BASE_DIR / "assets"]
 
 SVG_DIRS = [BASE_DIR / "assets"]
+
+COTTON_BASE_DIR = BASE_DIR / "cal-bc"
+COTTON_DIR = "components"
 
 TAILWIND_CLI_DIST_CSS = "css/tailwind.min.css"
 TAILWIND_CLI_SRC_CSS = BASE_DIR / "styles" / "main.css"

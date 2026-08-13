@@ -11,6 +11,7 @@ dependencies = [
     "dj-svg>=0.3.1",
     "django>=6.0.7",
     "django-azure-auth>=2.4.0",
+    "django-cotton>=2.7.2",
     "django-debug-toolbar>=6.3.0",
     "django-downloadview>=2.4.0",
     "django-environ>=0.12.0",
