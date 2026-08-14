@@ -102,6 +102,23 @@ class GroupAdmin(nested_admin.NestedModelAdmin):
     model = Group
     inlines = [RowInline, ColumnGroupInline]
     exclude = ["position"]
+    list_display = ["name", "model_name", "version_name", "section", "subsection"]
+    list_select_related = ["subsection", "subsection__section", "subsection__section__version", "subsection__section__version__model"]
+    ordering = ["name"]
+    search_fields = ["name", "subsection__code", "subsection__name", "subsection__code", "subsection__section__name", "subsection__section__version__name", "subsection__section__version__model__name"]
+    search_help_text = "Search by Name, Model, Version, Section, and Subsection"
+
+    @admin.display(description="Model", ordering="subsection__section__version__model__name")
+    def model_name(self, obj):
+        return obj.subsection.section.version.model.name
+
+    @admin.display(description="Version", ordering="subsection__section__version__name")
+    def version_name(self, obj):
+        return obj.subsection.section.version.name
+
+    @admin.display(description="Section", ordering="subsection__section__name")
+    def section(self, obj):
+        return obj.subsection.section
 
 
 class GroupInline(nested_admin.SortableHiddenMixin, nested_admin.NestedTabularInline):
@@ -141,6 +158,9 @@ class SectionInline(nested_admin.NestedStackedInline):
 class VersionAdmin(nested_admin.NestedModelAdmin):
     model = Version
     inlines = [SectionInline]
+    list_display = ["name", "model", "url"]
+    search_fields = ["name", "url", "model__name"]
+    search_help_text = "Search by Name, URL, and Model"
 
 
 class VersionInline(nested_admin.NestedTabularInline):
@@ -151,3 +171,6 @@ class VersionInline(nested_admin.NestedTabularInline):
 @admin.register(Model)
 class ModelAdmin(admin.ModelAdmin):
     inlines = [VersionInline]
+    list_display = ["name", "description"]
+    search_fields = ["name", "description"]
+    search_help_text = "Search by Name and Description"
