@@ -9,7 +9,7 @@
         {% svg "projects/chevron_down" class="pointer-events-none col-start-1 row-start-1 size-6 self-center justify-self-end fill-dds-teal-500" %}
     </button>
 
-    <el-menu anchor="bottom end" popover class="w-(--button-width) origin-top-right rounded-xs bg-white text-lg shadow-lg outline-1 outline-black/5 transition transition-discrete [--anchor-gap:--spacing(0.25)] data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in">
+    <el-menu anchor="bottom end" popover class="w-[450px] origin-top-right rounded-xs bg-white text-lg shadow-lg outline-1 outline-black/5 transition transition-discrete [--anchor-gap:--spacing(0.25)] data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in">
         {% for section_option in subsection.section.version.section_set.all %}
             <div class="font-semibold block px-4 py-2 text-gray-700 underline focus:bg-gray-100 focus:text-gray-900 focus:outline-hidden">Section {{section_option.code}}: {{ section_option.name }}</div>
             {% for subsection_option in section_option.subsection_set.all %}
