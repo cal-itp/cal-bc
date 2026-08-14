@@ -10,7 +10,7 @@ class Project(models.Model):
     )
     user = models.ForeignKey(User, null=False, db_index=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now=True, db_index=True)
 
     class Meta:
         ordering = ["-updated_at"]
@@ -50,7 +50,7 @@ class Value(models.Model):
         ]
 
     def __str__(self) -> str:
-        return f"{self.field!s} {self.value}"
+        return self.value
 
     def save(self, *args, **kwargs):
         with transaction.atomic():

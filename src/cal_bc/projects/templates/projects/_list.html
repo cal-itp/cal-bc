@@ -14,7 +14,7 @@
             {% for project in object_list %}
             <div class="col-span-1 bg-white rounded-l-md py-2 items-center md:grid md:grid-cols-subgrid md:col-span-3 lg:col-span-4">
                 <div class="font-semibold whitespace-wrap text-gray-900 pl-4 lg:col-span-2">{{ project }}</div>
-                <div class="font-light whitespace-wrap text-gray-900 pl-4 py-1 md:py-0 lg:col-start-2 lg:items-center lg:col-start-3">{{ project.version }}</div>
+                <div class="font-light whitespace-wrap text-gray-900 pl-4 py-1 md:py-0 lg:col-start-2 lg:items-center lg:col-start-3">{{ project.version.model.name }} v{{ project.version.name }}</div>
                 <div class="font-light whitespace-nowrap text-gray-900 pl-4 md:flex md:items-center md:col-start-4 lg:col-start-5">{{ project.updated_at|date:"M j, Y" }}</div>
             </div>
             <div class="col-span-1 bg-white rounded-r-md py-2 px-4 whitespace-nowrap flex items-center space-x-3">

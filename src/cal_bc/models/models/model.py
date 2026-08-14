@@ -28,7 +28,7 @@ class Version(models.Model):
         ordering = ["name"]
 
     def __str__(self):
-        return f"{self.model!s} v{self.name}"
+        return self.name
 
     def has_form_link(self):
         return Subsection.objects.filter(section__in=self.section_set.all()).exists()
@@ -36,14 +36,14 @@ class Version(models.Model):
 
 class Section(models.Model):
     version = models.ForeignKey(Version, null=False, on_delete=models.CASCADE)
-    name = models.CharField(null=False, blank=False)
+    name = models.CharField(null=False, blank=False, db_index=True)
     code = models.CharField(null=False, blank=False, db_index=True)
 
     class Meta:
         ordering = ["code"]
 
     def __str__(self):
-        return f"{self.version!s} § {self.code} {self.name}"
+        return f"{self.code} - {self.name}"
 
     @property
     def next_section(self):
@@ -56,7 +56,7 @@ class Section(models.Model):
 
 class Subsection(models.Model):
     section = models.ForeignKey(Section, null=False, on_delete=models.CASCADE)
-    name = models.CharField(null=False, blank=False)
+    name = models.CharField(null=False, blank=False, db_index=True)
     code = models.CharField(null=False, blank=False, db_index=True)
     description = models.CharField(blank=True)
     guide = ProseEditorField(
@@ -76,7 +76,7 @@ class Subsection(models.Model):
         ordering = ["code"]
 
     def __str__(self):
-        return f"{self.section.version!s} § {self.section.code}{self.code} {self.name}"
+        return f"{self.code} - {self.name}"
 
     @property
     def next_subsection(self):
@@ -95,7 +95,7 @@ class Subsection(models.Model):
 
 class Group(models.Model):
     subsection = models.ForeignKey(Subsection, null=False, on_delete=models.CASCADE)
-    name = models.CharField(null=False, blank=False)
+    name = models.CharField(null=False, blank=False, db_index=True)
     description = models.CharField(blank=True)
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
 
@@ -103,7 +103,7 @@ class Group(models.Model):
         ordering = ["position"]
 
     def __str__(self):
-        return f"{self.subsection.section.version!s} § {self.subsection.section.code}{self.subsection.code} {self.name}"
+        return self.name
 
     @property
     def table_row_set(self):
@@ -147,7 +147,7 @@ class Row(models.Model):
         ordering = ["position"]
 
     def __str__(self):
-        return f"{self.group.subsection.section.version!s} § {self.group.subsection.section.code}{self.group.subsection.code} Row {self.position}"
+        return f"{self.name} - Position {self.position!s}" if self.name else f"Position {self.position!s}"
 
 
 class ColumnGroup(models.Model):
@@ -158,9 +158,8 @@ class ColumnGroup(models.Model):
     class Meta:
         ordering = ["position"]
 
-
     def __str__(self):
-        return f"{self.group!s} {self.name}"
+        return f"{self.name} - Position {self.position!s}" if self.name else f"Position {self.position!s}"
 
 
 class Column(models.Model):
@@ -172,15 +171,20 @@ class Column(models.Model):
         ordering = ["position"]
 
     def __str__(self):
-        return f"{self.column_group!s} {self.name}"
+        return self.name
 
 
 class FieldColumn(models.Model):
     field = models.OneToOneField("Field", on_delete=models.CASCADE)
     column = models.ForeignKey("Column", on_delete=models.CASCADE)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['field', 'column'], name='field_column_idx')
+        ]
+
     def __str__(self):
-        return str(self.column)
+        return f"Field #{self.field_id} - Column #{self.column_id}"
 
 
 class FieldRange(models.Model):
@@ -212,7 +216,7 @@ class Field(models.Model):
         ordering = ["position"]
 
     def __str__(self):
-        return f"{self.row.group.subsection.section.version!s} § {self.row.group.subsection.section.code}{self.row.group.subsection.code} {self.name}" + (f" {self.unit}" if self.unit else "")
+        return f"{self.name} ({self.unit}) - Position {self.position!s}" if self.unit else f"{self.name} - Position {self.position!s}"
 
 
 class Value(models.Model):
@@ -225,4 +229,4 @@ class Value(models.Model):
         ordering = ["position"]
 
     def __str__(self):
-        return self.name
+        return f"{self.name}: {self.value}"

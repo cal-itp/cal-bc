@@ -52,11 +52,15 @@ class TestModel:
 
     @pytest.fixture()
     def row(self, group: Group) -> Row:
-        return group.row_set.create(position=1)
+        return group.row_set.create()
+
+    @pytest.fixture()
+    def row2(self, group: Group) -> Row:
+        return group.row_set.create(name="Roadway Type")
 
     @pytest.fixture()
     def field(self, row: Row) -> Field:
-        return row.field_set.create(name="District", position=1)
+        return row.field_set.create(name="Highway Free-Flow Speed")
 
     @pytest.fixture()
     def field_with_unit(self, row: Row) -> Field:
@@ -86,7 +90,7 @@ class TestModel:
         assert model.latest_version() is None
 
     def test_version_string_representation(self, version: Version):
-        assert str(version) == "Cal-B/C Sketch v8.1"
+        assert str(version) == "8.1"
 
     def test_version_has_form_link(self, version: Version, subsection_1_a: Subsection):
         assert version.has_form_link() is True
@@ -95,7 +99,7 @@ class TestModel:
         assert version.has_form_link() is False
 
     def test_section_string_representation(self, section_1: Section):
-        assert str(section_1) == "Cal-B/C Sketch v8.1 § 1 Project Information"
+        assert str(section_1) == "1 - Project Information"
 
     def test_next_section(self, section_1: Section, section_2: Section):
         assert section_1.next_section == section_2
@@ -110,7 +114,7 @@ class TestModel:
         assert section_1.previous_section is None
 
     def test_subsection_string_representation(self, subsection_1_a: Subsection):
-        assert str(subsection_1_a) == "Cal-B/C Sketch v8.1 § 1A Project Data"
+        assert str(subsection_1_a) == "A - Project Data"
 
     def test_subsection_description(
         self, subsection_1_a: Subsection
@@ -146,10 +150,29 @@ class TestModel:
         assert subsection_2_a.previous_subsection == subsection_1_b
 
     def test_group_string_representation(self, group: Group):
-        assert str(group) == "Cal-B/C Sketch v8.1 § 1A General Information"
+        assert str(group) == "General Information"
 
     def test_group_description(self, group: Group) -> None:
         assert group.description == "General description"
+
+    def test_column_group_string_representation(self, group: Group):
+        column_group = group.columngroup_set.create()
+        assert str(column_group) == "Position 0"
+
+    def test_column_group_with_name_string_representation(self, group: Group):
+        column_group_with_name = group.columngroup_set.create(position=1, name="Initial Costs")
+        assert str(column_group_with_name) == "Initial Costs - Position 1"
+
+    def test_column_string_representation(self, group: Group):
+        column_group = group.columngroup_set.create()
+        column = column_group.column_set.create(position=1, name="Project Support")
+        assert str(column) == "Project Support"
+
+    def test_field_column_string_representation(self, group: Group, field: Field):
+        column_group = group.columngroup_set.create()
+        column = column_group.column_set.create(position=1, name="Project Support")
+        field_column = column.fieldcolumn_set.create(field=field)
+        assert str(field_column) == f"Field #{field_column.field_id} - Column #{field_column.column_id}"
 
     def test_group_table_row_set_empty(self, group: Group):
         assert list(group.table_row_set.all()) == []
@@ -170,13 +193,16 @@ class TestModel:
         assert list(group.non_table_row_set.all()) == []
 
     def test_row_string_representation(self, row: Row):
-        assert str(row) == "Cal-B/C Sketch v8.1 § 1A Row 1"
+        assert str(row) == "Position 0"
+
+    def test_row_with_name_string_representation(self, row2: Row):
+        assert str(row2) == "Roadway Type - Position 0"
 
     def test_field_string_representation(self, field: Field):
-        assert str(field) == "Cal-B/C Sketch v8.1 § 1A District"
+        assert str(field) == "Highway Free-Flow Speed - Position 0"
 
     def test_field_with_unit(self, field_with_unit: Field):
-        assert str(field_with_unit) == "Cal-B/C Sketch v8.1 § 1A Highway Free-Flow Speed mph"
+        assert str(field_with_unit) == "Highway Free-Flow Speed (mph) - Position 1"
 
     def test_value_string_representation(self, value: Value):
-        assert str(value) == "District 4 - Bay Area"
+        assert str(value) == "District 4 - Bay Area: District 4"

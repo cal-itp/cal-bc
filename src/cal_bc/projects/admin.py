@@ -33,11 +33,10 @@ class ProjectAdmin(admin.ModelAdmin):
 
     @admin.display(description="Project", ordering="id")
     def project_name(self, obj):
-        name_value = obj.value_set.filter(
-            field__name="Project Name",
-            project_id=obj.id
+        name = obj.value_set.filter(
+            field__name="Project Name"
         ).first()
-        return f"{obj.id!s} - {name_value.value}" if name_value else f"{obj.id!s} - <New Project>"
+        return f"{obj.id!s} - {name.value}" if name and name.value else f"{obj.id!s} - <New Project>"
 
     @admin.display(description="Model", ordering="version__model__name")
     def model_name(self, obj):
