@@ -2,8 +2,9 @@
 import pytest
 from django.contrib.auth.models import User
 from django.test import Client
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Page
 from pytest_playwright.pytest_playwright import CreateContextCallback
+from pytest_playwright_axe import Axe
 
 from cal_bc.models.models.model import (
     Field,
@@ -127,60 +128,37 @@ class TestProjectSystem:
             value="District 4",
         )
 
-    def test_projects(self, first_page: Page, second_page: Page, channels_live_server: ChannelsLiveServer):
-        first_page.goto(channels_live_server.http_url)
-        expect(first_page.locator("body")).to_contain_text("My Cal B/C Projects")
+    def test_accessibility(self, first_page: Page, channels_live_server: ChannelsLiveServer):
+        axe = Axe()
+        msg = "Accessibility violations found. Check the report in 'axe-reports/'."
 
-        second_page.goto(channels_live_server.http_url)
-        expect(second_page.locator("body")).to_contain_text("My Cal B/C Projects")
+        first_page.goto(channels_live_server.http_url)
+        axe_check = axe.run(first_page, filename="accessibility_report")
+        assert len(axe_check["violations"]) == 0, f"{len(axe_check["violations"])} {msg}"
 
         first_page.get_by_role("link", name="New project").click()
+        axe_check = axe.run(first_page, filename="accessibility_report")
+        assert len(axe_check["violations"]) == 0, f"{len(axe_check["violations"])} {msg}"
+
         first_page.get_by_role("button", name="Start project").click()
-        expect(first_page.locator("body")).to_contain_text(
-            "All fields in this step are required"
-        )
-
-        first_page.get_by_label("Project Name").click()
-        expect(first_page.locator("body")).to_contain_text(
-            "Enter a name for your project"
-        )
+        axe_check = axe.run(first_page, filename="accessibility_report")
+        assert len(axe_check["violations"]) == 0, f"{len(axe_check["violations"])} {msg}"
         first_page.get_by_label("Project Name").fill("Geary Boulevard Light Rail")
-        first_page.get_by_label("District").select_option(
-            "District 4 - Bay Area / Oakland"
-        )
 
-        expect(second_page.locator("body")).to_contain_text("Hypothetical Project")
-        first_page.get_by_role("button", name="Save draft").click()
-        expect(second_page.locator("body")).to_contain_text("Geary Boulevard Light Rail")
-
-        second_page.get_by_role("link", name="Edit").click()
-
-        expect(first_page.locator("body")).to_contain_text("Project successfully saved!")
-        first_page.get_by_role("link", name="Projects").click()
-        expect(first_page.locator("body")).to_contain_text("1 projects")
-        expect(first_page.locator("body")).to_contain_text("Geary Boulevard Light Rail")
-        first_page.get_by_role("link", name="Edit").click()
-        first_page.get_by_label("Project Name").fill("New Geary Boulevard Light Rail")
         first_page.get_by_role("button", name="Continue to Subsection 1B").click()
+        axe_check = axe.run(first_page, filename="accessibility_report")
+        assert len(axe_check["violations"]) == 0, f"{len(axe_check["violations"])} {msg}"
 
-        expect(second_page.get_by_label("Project Name")).to_have_value("New Geary Boulevard Light Rail", timeout=240_000)
-
-        first_page.get_by_role("button", name="Save draft").click()
-        expect(first_page.locator("body")).to_contain_text("This field is required")
-        first_page.get_by_label("Annual Capital Expenditure").fill("333")
-        expect(first_page.locator("#annual-capital-expenditure-unit")).to_contain_text("$")
-        first_page.get_by_role("button", name="Back to Subsection 1A").click()
-        first_page.get_by_role("button", name="1A - Project Data").click()
-        first_page.get_by_role("menuitem", name="1B. Traffic Data").click()
         first_page.get_by_role("link", name="Projects").click()
-        expect(first_page.locator("body")).to_contain_text(
-            "New Geary Boulevard Light Rail"
-        )
+        axe_check = axe.run(first_page, filename="accessibility_report")
+        assert len(axe_check["violations"]) == 0, f"{len(axe_check["violations"])} {msg}"
 
-        first_page.on("dialog", lambda dialog: dialog.accept())
-        first_page.get_by_role("button", name="Delete").click()
-        expect(first_page.locator("body")).to_contain_text("0 projects")
         first_page.get_by_role("button", name="User").click()
+        axe_check = axe.run(first_page, filename="accessibility_report")
+        assert len(axe_check["violations"]) == 0, f"{len(axe_check["violations"])} {msg}"
+
         first_page.get_by_text("Sign out").click()
-        expect(first_page.locator("body")).to_contain_text("Sign in with Microsoft")
+        axe_check = axe.run(first_page, filename="accessibility_report")
+        assert len(axe_check["violations"]) == 0, f"{len(axe_check["violations"])} {msg}"
+
         first_page.close()

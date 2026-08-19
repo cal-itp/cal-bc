@@ -56,14 +56,28 @@ class TestProjectTasks:
     def field(self, row: Row) -> Field:
         return row.field_set.create(name="Project Name", cell="ProjName")
 
-    def test_calculate_project_fields_creates_value(self, project: Project, field: Field) -> None:
+    @pytest.fixture
+    def formula_field(self, row: Row) -> Field:
+        return row.field_set.create(name="Ramp Design Speed (Build)", cell="RampFFSpdB")
+
+    @pytest.fixture
+    def formula_dependency(self, row: Row) -> Field:
+        return row.field_set.create(name="Ramp Design Speed (No Build)", cell="RampFFSpdNB")
+
+    def test_refresh_project_fields_creates_value(self, project: Project, field: Field) -> None:
         assert project.value_set.count() == 0
         result = refresh_project_fields.enqueue(project.pk)
         assert result.status == TaskResultStatus.SUCCESSFUL
         assert project.value_set.count() == 1
 
-    def test_calculate_project_fields_preserves_value(self, project: Project, field: Field) -> None:
-        name_value = project.value_set.create(field=field, value="Nombre")
+    def test_refresh_project_fields_preserves_value(self, project: Project, field: Field) -> None:
+        project.value_set.create(field=field, value="Nombre")
         result = refresh_project_fields.enqueue(project.pk)
         assert result.status == TaskResultStatus.SUCCESSFUL
-        assert project.value_set.get(pk=name_value.pk).value == "Nombre"
+        assert project.value_set.get(field=field).value == "Nombre"
+
+    def test_refresh_project_fields_does_not_set_blank_values(self, project: Project, formula_field: Field, formula_dependency: Field) -> None:
+        project.value_set.create(field=formula_dependency, value="40")
+        result = refresh_project_fields.enqueue(project.pk)
+        assert result.status == TaskResultStatus.SUCCESSFUL
+        assert project.value_set.get(field=formula_field).value == "40"

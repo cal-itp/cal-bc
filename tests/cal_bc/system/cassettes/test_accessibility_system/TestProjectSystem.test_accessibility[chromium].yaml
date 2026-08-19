@@ -13208,11 +13208,14 @@ interactions:
       Content-Type:
       - application/vnd.ms-excel.sheet.macroEnabled.12
       Date:
-      - Thu, 13 Aug 2026 23:26:53 GMT
+      - Tue, 18 Aug 2026 18:54:49 GMT
       Last-Modified:
       - Sat, 26 Oct 2024 23:30:45 GMT
-      Server:
-      - Microsoft-IIS/10.0
+      Set-Cookie:
+      - BIGipServer~A~Pool_SiteCore_ContentDelivery=rd1o00000000000000000000ffff95881545o443;
+        path=/; Httponly; Secure
+      - TS0115e638=01ccba8e7fa0f4a972a16574b7de61ed114d70ee466b3a4bc3a4588ce48c8679aa643165adf6f710123554cd0109eeca08f66c09fb197e13d12bda375bc2db78b6a1025c81;
+        Path=/; Domain=.dot.ca.gov
     status:
       code: 200
       message: OK

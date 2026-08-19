@@ -102,7 +102,7 @@ class TestProjectChannels:
 
         channel_layer = get_channel_layer()
         await channel_layer.group_send(
-            f'user_{user.pk}_project_{project.pk}_subsection_{subsection.pk}',
+            f'project_{project.pk}_subsection_{subsection.pk}',
             {'type': 'refresh'}
         )
 

@@ -68,5 +68,7 @@ dev = [
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "cal_bc.settings"
-env_files = ".env"
 addopts = "--screenshot only-on-failure --full-page-screenshot --video retain-on-failure --slowmo 100"
+
+[tool.pytest_env]
+env_files = [".env", ".env.test"]
