@@ -67,4 +67,4 @@ class TestProject:
         assert str(project) == "Trails to Rails"
 
     def test_value_string_representation(self, value: Value):
-        assert str(value) == "Testing v1 § 1A Project Name Point Lobos Train"
+        assert str(value) == "Point Lobos Train"

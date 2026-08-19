@@ -59,14 +59,14 @@ class TestModelSystem:
         first_page.get_by_label("Model").select_option("Sketch")
         first_page.get_by_role("button", name="Save", exact=True).click()
         first_page.wait_for_selector(
-            "text=The version “Sketch v8.1” was added successfully"
+            "text=The version “8.1” was added successfully"
         )
 
         first_page.get_by_role("link", name="Home").click()
         first_page.locator(".app-models").get_by_role(
             "link", name="Versions", exact=True
         ).click()
-        first_page.get_by_role("link", name="Sketch v8.1", exact=True).click()
+        first_page.get_by_role("link", name="8.1", exact=True).click()
         first_page.locator(":text('Section: #1') + fieldset").get_by_label("Name").nth(
             0
         ).fill("Project Information")
@@ -92,7 +92,7 @@ class TestModelSystem:
         ).locator("input").fill("General Information")
         first_page.get_by_role("button", name="Save", exact=True).click()
         first_page.wait_for_selector(
-            "text=The version “Sketch v8.1” was changed successfully"
+            "text=The version “8.1” was changed successfully"
         )
 
         first_page.get_by_role("link", name="Home").click()
@@ -100,7 +100,7 @@ class TestModelSystem:
             "link", name="Groups", exact=True
         ).click()
         first_page.get_by_role(
-            "link", name="Sketch v8.1 § 1A General Information", exact=True
+            "link", name="General Information", exact=True
         ).click()
         first_page.get_by_label("Description").fill("All fields are required.")
         first_page.locator(":text('Row: #1') + fieldset").get_by_label("Guide").locator(
@@ -142,7 +142,7 @@ class TestModelSystem:
         ).locator("input").press_sequentially("50")
         first_page.get_by_role("button", name="Save", exact=True).click()
         first_page.wait_for_selector(
-            "text=The group “Sketch v8.1 § 1A General Information” was changed successfully"
+            "text=The group “General Information” was changed successfully"
         )
 
         first_page.close()
