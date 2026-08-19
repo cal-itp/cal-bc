@@ -250,6 +250,30 @@ if TESTING:
 
 DATABASES["channels_postgres"] = DATABASES["default"]
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'level': 'INFO',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+    }
+}
+
 if not TESTING:
     INSTALLED_APPS = [
         *INSTALLED_APPS,
