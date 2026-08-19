@@ -14,10 +14,10 @@ class ProjectsConsumer(AsyncWebsocketConsumer):
             await self.close()
             return
 
-        self.user_group = f'user_{user.id}_projects'
+        self.group_name = f'user_{user.id}_projects'
 
         await self.channel_layer.group_add(
-            self.user_group,
+            self.group_name,
             self.channel_name
         )
 
@@ -28,7 +28,7 @@ class ProjectsConsumer(AsyncWebsocketConsumer):
 
         if user.is_authenticated:
             await self.channel_layer.group_discard(
-                self.user_group,
+                self.group_name,
                 self.channel_name
             )
 
@@ -44,20 +44,20 @@ class ProjectsConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=response.content.decode("utf-8"))
 
 
-class ProjectSubsectionEditConsumer(AsyncWebsocketConsumer):
+class ProjectSubsectionConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         user = self.scope['user']
         self.project_pk = self.scope['url_route']['kwargs']['project_pk']
-        self.subsection_pk = self.scope['url_route']['kwargs']['pk']
+        self.pk = self.scope['url_route']['kwargs']['pk']
 
         if not user.is_authenticated:
             await self.close()
             return
 
-        self.user_group = f'user_{user.id}_project_{self.project_pk}_subsection_{self.subsection_pk}'
+        self.group_name = f'project_{self.project_pk}_subsection_{self.pk}'
 
         await self.channel_layer.group_add(
-            self.user_group,
+            self.group_name,
             self.channel_name
         )
 
@@ -68,7 +68,7 @@ class ProjectSubsectionEditConsumer(AsyncWebsocketConsumer):
 
         if user.is_authenticated:
             await self.channel_layer.group_discard(
-                self.user_group,
+                self.group_name,
                 self.channel_name
             )
 
@@ -77,7 +77,7 @@ class ProjectSubsectionEditConsumer(AsyncWebsocketConsumer):
         view.template_name = "projects/_form.html"
         request = HttpRequest()
         request.user = self.scope['user']
-        await sync_to_async(view.setup)(request=request, project_pk=self.project_pk, pk=self.subsection_pk)
-        response = await sync_to_async(view.get)(request=request, project_pk=self.project_pk, pk=self.subsection_pk)
+        await sync_to_async(view.setup)(request=request, project_pk=self.project_pk, pk=self.pk)
+        response = await sync_to_async(view.get)(request=request, project_pk=self.project_pk, pk=self.pk)
         await sync_to_async(response.render)()
         await self.send(text_data=response.content.decode("utf-8"))

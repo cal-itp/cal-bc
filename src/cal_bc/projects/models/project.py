@@ -16,14 +16,11 @@ class Project(models.Model):
         ordering = ["-updated_at"]
 
     def __str__(self) -> str:
-        name_value = self.name_value()
-        return name_value.value if name_value else "New Project"
+        return self.name.value if self.name and self.name.value else "New Project"
 
-    def name_value(self):
-        return self.value_set.filter(
-            field__name="Project Name",
-            field__row__group__subsection__section__version=self.version,
-        ).first()
+    @property
+    def name(self):
+        return self.value_set.filter(field__name="Project Name").first()
 
 
 class Value(models.Model):
@@ -40,6 +37,17 @@ class Value(models.Model):
     value = models.CharField(null=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "project",
+                    "field",
+                ],
+                name="unique_project_field",
+            ),
+        ]
 
     def __str__(self) -> str:
         return f"{self.field!s} {self.value}"

@@ -183,6 +183,23 @@ class FieldColumn(models.Model):
         return str(self.column)
 
 
+class FieldRange(models.Model):
+    field = models.OneToOneField("Field", on_delete=models.CASCADE)
+    min_value = models.IntegerField(default=0, null=False)
+    max_value = models.IntegerField(null=False)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(max_value__gt=models.F('min_value')),
+                name='max_value_greater_than_min_value'
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.min_value!s} to {self.max_value!s}"
+
+
 class Field(models.Model):
     row = models.ForeignKey(Row, null=False, on_delete=models.CASCADE)
     column = models.ManyToManyField(Column, through="FieldColumn")

@@ -6,6 +6,7 @@ from cal_bc.models.models.model import (
     ColumnGroup,
     Field,
     FieldColumn,
+    FieldRange,
     Group,
     Model,
     Row,
@@ -44,9 +45,16 @@ class FieldColumnInline(nested_admin.NestedTabularInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
+class FieldRangeInline(nested_admin.NestedTabularInline):
+    model = FieldRange
+
+    def get_extra(self, request, obj=None, **kwargs):
+        return 0
+
+
 class FieldInline(nested_admin.SortableHiddenMixin, nested_admin.NestedStackedInline):
     model = Field
-    inlines = [FieldColumnInline, ValueInline]
+    inlines = [FieldColumnInline, FieldRangeInline, ValueInline]
 
     def get_extra(self, request, obj=None, **kwargs):
         if obj is not None and obj.pk is not None and obj.field_set.count():

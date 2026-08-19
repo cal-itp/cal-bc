@@ -3,7 +3,7 @@ import pytest
 from django.contrib.auth.models import User
 from django.test import Client
 from django.urls import reverse_lazy
-from playwright.sync_api import Page
+from playwright.sync_api import Page, expect
 from pytest_playwright.pytest_playwright import CreateContextCallback
 
 from tests.channels_live_server_helper import ChannelsLiveServer
@@ -85,7 +85,7 @@ class TestModelSystem:
         first_page.locator(":text('Subsection: #1') + fieldset").get_by_label(
             "Guide"
         ).locator("~ [contenteditable]").nth(0).fill(
-            "Add basic project infomration here"
+            "Add basic project information here"
         )
         first_page.locator(":text('Groups') ~ table tbody tr").nth(0).locator("td").nth(
             1
@@ -119,6 +119,27 @@ class TestModelSystem:
         first_page.locator(":text('Values') ~ table tbody tr").nth(0).locator("td").nth(
             2
         ).locator("input").fill("District 4")
+
+        first_page.get_by_role("link", name="Add another Field", exact=True).click()
+        first_page.locator(":text('Field: #2') + fieldset").get_by_label("Name").nth(
+            0
+        ).fill("New trips from Parallel Hwy")
+        first_page.locator(":text('Field: #2') + fieldset").get_by_label("Cell").nth(
+            0
+        ).fill("'1) Project Information'::Table 1::Q31")
+        first_page.locator(":text('Field: #2') + fieldset").get_by_label("Unit").nth(
+            0
+        ).fill("%")
+        first_page.get_by_role("link", name="Add another Field Range").nth(1).click()
+        expect(first_page.locator(":text('Field range') ~ table tbody tr").nth(0).locator("td").nth(
+            1
+        ).locator("input")).to_have_value("0")
+        first_page.locator(":text('Field range') ~ table tbody tr").nth(0).locator("td").nth(
+            1
+        ).locator("input").press_sequentially("20")
+        first_page.locator(":text('Field range') ~ table tbody tr").nth(0).locator("td").nth(
+            2
+        ).locator("input").press_sequentially("50")
         first_page.get_by_role("button", name="Save", exact=True).click()
         first_page.wait_for_selector(
             "text=The group “Sketch v8.1 § 1A General Information” was changed successfully"
