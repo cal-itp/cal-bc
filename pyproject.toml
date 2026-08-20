@@ -5,7 +5,7 @@ description = "The California Life-Cycle Benefit-Cost Analysis Tool (Cal-B/C) ca
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "channels-postgres[cryptography]>=1.1.4",
+    "channels-postgres>=1.1.4",
     "channels[daphne]>=4.3.2",
     "daphne>=4.2.3",
     "dj-svg>=0.3.1",

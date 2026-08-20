@@ -88,7 +88,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "channels", extra = ["daphne"] },
-    { name = "channels-postgres", extra = ["cryptography"] },
+    { name = "channels-postgres" },
     { name = "daphne" },
     { name = "dj-svg" },
     { name = "django" },
@@ -130,7 +130,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "channels", extras = ["daphne"], specifier = ">=4.3.2" },
-    { name = "channels-postgres", extras = ["cryptography"], specifier = ">=1.1.4" },
+    { name = "channels-postgres", specifier = ">=1.1.4" },
     { name = "daphne", specifier = ">=4.2.3" },
     { name = "dj-svg", specifier = ">=0.3.1" },
     { name = "django", specifier = ">=6.0.7" },
@@ -324,11 +324,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/93/d9/4b83d738d38c772acb88264967f14b14ba83441b5ed3303f7e2c04e70804/channels_postgres-1.1.4.tar.gz", hash = "sha256:7cb15027c34ae6afbbfb86395ace7409df6e5b659ed86218c6de2df19844a2ca", size = 20151, upload-time = "2025-11-06T16:27:11.882Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/8b/16/6fd370d88ff70e7ab2c0c7c07770f27ed50ab2387959ed63c06fb401c30d/channels_postgres-1.1.4-py3-none-any.whl", hash = "sha256:3aa8c8161757ad5a10cd048fbcd40a3a01dcf75ea5c6c9159ba2e961ec362bd7", size = 17104, upload-time = "2025-11-06T16:27:10.852Z" },
-]
-
-[package.optional-dependencies]
-cryptography = [
-    { name = "cryptography" },
 ]
 
 [[package]]
