@@ -51,6 +51,10 @@ class TestModel:
         return subsection_1_a.group_set.create(name="General Information", position=1, description="General description")
 
     @pytest.fixture()
+    def summary_group(self, subsection_1_a: Subsection) -> Group:
+        return subsection_1_a.group_set.create(name="Summary", is_summary=True)
+
+    @pytest.fixture()
     def row(self, group: Group) -> Row:
         return group.row_set.create()
 
@@ -148,6 +152,16 @@ class TestModel:
         self, subsection_1_b: Subsection, subsection_2_a: Subsection
     ):
         assert subsection_2_a.previous_subsection == subsection_1_b
+
+    def test_summary_group_set(self, subsection_1_a: Subsection, subsection_1_b: Subsection, summary_group: Group):
+        subsection_1_a.group_set.create(name="Summary", is_summary=False)
+        subsection_1_b.group_set.create(name="Summary", is_summary=True)
+        assert list(subsection_1_a.summary_group_set) == [summary_group]
+
+    def test_non_summary_group_set(self, subsection_1_a: Subsection, subsection_1_b: Subsection, group: group):
+        subsection_1_a.group_set.create(name="Summary", is_summary=True)
+        subsection_1_b.group_set.create(name="Summary", is_summary=False)
+        assert list(subsection_1_a.non_summary_group_set) == [group]
 
     def test_group_string_representation(self, group: Group):
         assert str(group) == "General Information"

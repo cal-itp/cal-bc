@@ -59,6 +59,18 @@ class TestProject:
     def field(self, row: Row) -> Field:
         return row.field_set.create(name="Project Name")
 
+    @pytest.fixture
+    def summary_value(self, project: Project, subsection: Subsection) -> Value:
+        summary_group = subsection.group_set.create(name="General", is_summary=True)
+        summary_row = summary_group.row_set.create()
+        summary_field = summary_row.field_set.create(name="Cost Per Mile")
+
+        return Value.objects.create(
+            project=project,
+            field=summary_field,
+            value="333"
+        )
+
     def test_default_name(self, project: Project) -> None:
         assert str(project) == "New Project"
 
@@ -66,5 +78,8 @@ class TestProject:
         Value.objects.create(project=project, field=field, value="Trails to Rails")
         assert str(project) == "Trails to Rails"
 
-    def test_value_string_representation(self, value: Value):
+    def test_value_string_representation(self, value: Value) -> None:
         assert str(value) == "Point Lobos Train"
+
+    def test_summary_value_set(self, project: Project, summary_value: Value) -> None:
+        assert list(project.summary_value_set) == [summary_value]

@@ -22,6 +22,10 @@ class Project(models.Model):
     def name(self):
         return self.value_set.filter(field__name="Project Name").first()
 
+    @property
+    def summary_value_set(self):
+        return self.value_set.filter(field__row__group__is_summary=True).all()
+
 
 class Value(models.Model):
     project = models.ForeignKey(

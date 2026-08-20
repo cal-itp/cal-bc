@@ -68,6 +68,7 @@ class ProjectSubsectionView(
         kwargs = super().get_formset_kwargs()
         kwargs["queryset"] = Value.objects.filter(
             field__row__group__subsection_id=self.kwargs["pk"],
+            field__row__group__is_summary=False,
             project_id=self.kwargs["project_pk"],
         )
         return kwargs
