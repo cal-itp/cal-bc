@@ -37,6 +37,15 @@
     {% endfor %}
 {% endpartialdef %}
 
+{% partialdef summary-row %}
+    {% for field in form.visible_fields %}
+        <div class="flex-1 bg-white rounded-sm px-5 py-6">
+            <div class="uppercase ">{{ field.label }}</div>
+            <div>{{ form }}</div>
+        </div>
+    {% endfor %}
+{% endpartialdef %}
+
 {{ formset.management_form }}
 {{ formset.non_form_errors }}
 
@@ -45,7 +54,18 @@
 {% for group in subsection.group_set.all %}
     {% partial group-header %}
 
-    <div class="space-y-6 mt-6">
+    {% if group.is_summary %}
+        <div class="flex space-x-1 mt-12">
+            {% for row in group.row_set.all %}
+                {% for form in formset %}
+                    {% if form.initial.field.row == row or form.instance.field.row == row %}
+                        {% partial summary-row %}
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="space-y-6 mt-6">
         {% for row in group.non_table_row_set.all %}
             <div class="{% spaceless %}
                 {% if row.field_set.count == 1 %}
@@ -114,4 +134,5 @@
             </table>
         {% endif %}
     </div>
+    {% endif %}
 {% endfor %}
