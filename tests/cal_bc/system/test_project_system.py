@@ -127,6 +127,18 @@ class TestProjectSystem:
             value="District 4",
         )
 
+    @pytest.fixture
+    def summary_group(self, subsection_1: Subsection) -> Group:
+        return subsection_1.group_set.create(name="Summary", is_summary=True)
+
+    @pytest.fixture
+    def summary_group_row(self, summary_group: Group) -> Row:
+        return summary_group.row_set.create()
+
+    @pytest.fixture(autouse=True)
+    def summary_group_field(self, summary_group_row: Row) -> Field:
+        return summary_group_row.field_set.create(name="Total Projected Revenue", cell="AA44", unit="$")
+
     def test_projects(self, first_page: Page, second_page: Page, channels_live_server: ChannelsLiveServer):
         first_page.goto(channels_live_server.http_url)
         expect(first_page.locator("body")).to_contain_text("My Cal B/C Projects")
