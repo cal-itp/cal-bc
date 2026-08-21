@@ -37,15 +37,46 @@
     {% endfor %}
 {% endpartialdef %}
 
+{% partialdef summary-row %}
+    {{ form.id }}
+    {{ form.field }}
+    {% for field in form.visible_fields %}
+        <div class="flex-1 flex flex-col justify-between bg-white rounded-sm px-5 py-6 text-dds-teal-950">
+            <label for="{{ field.id_for_label }}" class="text-sm uppercase">{{ field.label }}</label>
+            <div class="flex font-bold text-2xl">
+                {% if form.initial.value or form.instance.value %}
+                    {% render_field field|append_attr:"disabled" %}
+                {% else %}
+                    0
+                {% endif %}
+                <div class="{% if form.initial.field.unit == '$' or form.instance.field.unit == '$' %}order-first {% endif %}shrink-0">
+                    {% firstof form.initial.field.unit form.instance.field.unit %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endpartialdef %}
+
 {{ formset.management_form }}
 {{ formset.non_form_errors }}
 
 {% partial subsection-header %}
 
 {% for group in subsection.group_set.all %}
-    {% partial group-header %}
+    {% if group.is_summary %}
+        <div class="flex space-x-1 mt-12">
+            {% for row in group.row_set.all %}
+                {% for form in formset %}
+                    {% if form.initial.field.row == row or form.instance.field.row == row %}
+                        {% partial summary-row %}
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        </div>
+    {% else %}
+        {% partial group-header %}
 
-    <div class="space-y-6 mt-6">
+        <div class="space-y-6 mt-6">
         {% for row in group.non_table_row_set.all %}
             <div class="{% spaceless %}
                 {% if row.field_set.count == 1 %}
@@ -114,4 +145,5 @@
             </table>
         {% endif %}
     </div>
+    {% endif %}
 {% endfor %}
