@@ -38,7 +38,7 @@ class FieldColumnInline(nested_admin.NestedTabularInline):
             return 1
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "column":
+        if db_field.name == "column" and request.resolver_match.kwargs:
             kwargs["queryset"] = Column.objects.filter(
                 column_group__group=request.resolver_match.kwargs["object_id"]
             )
