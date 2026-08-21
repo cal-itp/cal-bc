@@ -55,8 +55,9 @@ class ProjectSubsectionView(
         return context
 
     def extra_field_set(self):
-        return (
+        return  (
             Field.objects.filter(row__group__subsection_id=self.kwargs["pk"])
+            .exclude(read_only=True)
             .exclude(project_value__project_id=self.kwargs["project_pk"])
             .select_related("row", "row__group")
         )
@@ -66,10 +67,11 @@ class ProjectSubsectionView(
 
     def get_formset_kwargs(self):
         kwargs = super().get_formset_kwargs()
-        kwargs["queryset"] = Value.objects.filter(
-            field__row__group__subsection_id=self.kwargs["pk"],
-            field__row__group__is_summary=False,
-            project_id=self.kwargs["project_pk"],
+        kwargs["queryset"] = (
+            Value.objects.filter(project_id=self.kwargs["project_pk"])
+            .filter(field__row__group__subsection_id=self.kwargs["pk"])
+            .exclude(field__read_only=True)
+            .exclude(field__row__group__is_summary=True)
         )
         return kwargs
 

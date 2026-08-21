@@ -1,7 +1,9 @@
 @import "tailwindcss";
 @import "./font";
 @import "./tw-prose";
+
 @source inline("grid-cols-{1..15}");
+@source inline("col-span-{1..15}");
 
 @theme {
   --font-sans: "Public Sans", sans-serif;

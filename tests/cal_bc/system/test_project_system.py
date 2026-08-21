@@ -79,10 +79,6 @@ class TestProjectSystem:
         )
 
     @pytest.fixture
-    def subsection_2(self, section: Section) -> Subsection:
-        return section.subsection_set.create(name="Traffic Data", code="B")
-
-    @pytest.fixture
     def group_1(self, subsection_1: Subsection) -> Group:
         return subsection_1.group_set.create(name="General Information", description="All fields are required.")
 
@@ -96,29 +92,37 @@ class TestProjectSystem:
             """
         )
 
+    @pytest.fixture(autouse=True)
+    def project_name(self, group_1_row_1: Row) -> Field:
+        return group_1_row_1.field_set.create(name="Project Name", cell="ProjName")
+
     @pytest.fixture
     def group_1_row_2(self, group_1: Group) -> Row:
         return group_1.row_set.create(position=2)
 
+    @pytest.fixture(autouse=True)
+    def district_field(self, group_1_row_2: Row) -> Field:
+        return group_1_row_2.field_set.create(name="District", cell="1) Project Information!E2")
+
+    @pytest.fixture
+    def subsection_2(self, section: Section) -> Subsection:
+        return section.subsection_set.create(name="Traffic Data", code="B")
+
     @pytest.fixture
     def group_2(self, subsection_2: Subsection) -> Group:
-        return subsection_2.group_set.create(name="Average daily traffic")
+        return subsection_2.group_set.create(name="Project Costs")
 
     @pytest.fixture
     def group_2_row_1(self, group_2: Group) -> Row:
         return group_2.row_set.create()
 
     @pytest.fixture(autouse=True)
-    def project_name(self, group_1_row_1: Row) -> Field:
-        return group_1_row_1.field_set.create(name="Project Name", cell="ProjName")
+    def current_daily_traffic(self, group_2_row_1: Row) -> Field:
+        return group_2_row_1.field_set.create(name="Year 1 Project Support", cell="1) Project Information!W15", unit="$")
 
     @pytest.fixture(autouse=True)
-    def district_field(self, group_1_row_2: Row) -> Field:
-        return group_1_row_2.field_set.create(name="District", cell="1) Project Information!E2")
-
-    @pytest.fixture(autouse=True)
-    def cars_per_hour(self, group_2_row_1: Row) -> Field:
-        return group_2_row_1.field_set.create(name="Annual Capital Expenditure", cell="ADT0", unit="$")
+    def base_daily_traffic(self, group_2_row_1: Row) -> Field:
+        return group_2_row_1.field_set.create(name="Total Project Support", cell="1) Project Information!W44", unit="$", read_only=True)
 
     @pytest.fixture(autouse=True)
     def district_4(self, district_field: Field) -> Value:
@@ -180,8 +184,12 @@ class TestProjectSystem:
 
         first_page.get_by_role("button", name="Save draft").click()
         expect(first_page.locator("body")).to_contain_text("This field is required")
-        first_page.get_by_label("Annual Capital Expenditure").fill("333")
-        expect(first_page.locator("#annual-capital-expenditure-unit")).to_contain_text("$")
+        expect(first_page.get_by_label("Year 1 Project Support").locator("//following-sibling::span")).to_contain_text("$")
+        first_page.get_by_label("Year 1 Project Support").fill("10")
+        expect(first_page.get_by_label("Total Project Support")).to_contain_text("$0")
+        first_page.get_by_role("button", name="Save draft").click()
+        expect(first_page.get_by_label("Total Project Support")).to_contain_text("$10")
+
         first_page.get_by_role("button", name="Back to Subsection 1A").click()
         first_page.get_by_role("button", name="1A - Project Data").click()
         first_page.get_by_role("menuitem", name="1B. Traffic Data").click()
