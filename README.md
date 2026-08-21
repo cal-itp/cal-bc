@@ -71,7 +71,16 @@ $ uv run manage.py db_worker
 Now, visit the server at [http://localhost:8000](http://localhost:8000).
 
 
-### Running tests
+### Linting
+
+This project uses [ruff](https://astral.sh/ruff) to lint code. To run linting and apply fixes:
+
+```bash
+$ uv run ruff check --fix
+```
+
+
+### Testing
 
 In order to run tests, you will need to ensure that [Playwright](https://playwright.dev) is installed:
 
@@ -86,23 +95,59 @@ $ uv run manage.py test
 ```
 
 > [!NOTE]
-> You can run only the web application tests using:
->
-> ```bash
-> $ uv run manage.py test tests/cal_bc
-> ```
-
-> [!NOTE]
-> The Project System Test includes Accessibility checks.
-> Remember to include new pages to the test. Reports can be found locally in `axe-results/`.
+> Remember to add new pages or components to [/tests/cal_bc/system/test_accessibility_system.py](https://github.com/cal-itp/cal-bc/blob/main/tests/cal_bc/system/test_accessibility_system.py).<br>
+> Accessibility reports can be found locally in the `axe-results/` folder.
 
 
-### Linting
+Additional options you can add to the test command:
 
-This project uses [ruff](https://astral.sh/ruff) to lint code. To run linting and apply fixes:
+* To run only the web application tests, use:
+
+  ```bash
+  $ uv run manage.py test tests/cal_bc
+  ```
+
+* To run a specific file, add the file path. For example:
+
+  ```bash
+  $ uv run manage.py test tests/cal_bc/system/test_model_system.py
+  ```
+
+* To run a specific test, add the file path separating the test name with double colons `::`. For example:
+
+  ```bash
+  $ uv run manage.py test tests/cal_bc/models/test_model.py::TestModel::test_version_has_form_link
+  ```
+
+
+If a Playwright test fails, you can find screenshots and videos locally in the `cal-bc/test-results/` folder.
+
+Playwright executes tests in a "headless" state, meaning it runs in the background without opening a user interface.
+If you want Playwright tests in a visible browser window use the `-- --headed` flag. You can change the velocity of the test adding `--slowmo <milliseconds>`.
+
+For example:
 
 ```bash
-$ uv run ruff check --fix
+$ uv run manage.py test tests/cal_bc/system/test_model_system.py -- --headed --slowmo 2000
+```
+
+
+#### VCR / Cassette files
+
+If you are testing features that makes HTTP requests, you need to include the decorator `@pytest.mark.vcr` before your test definition.
+The Pytest VCR records your HTTP requests and responses into a cassette file so they can be replayed offline during future test runs.
+Cassette files are created inside `cassettes\` folder located in the same folder as your test file.
+
+To run for the first time, or if you deleted the cassette file, add `-- --record-mode=once` after the test command. For example:
+
+```bash
+$ uv run manage.py test tests/cal_bc/system/test_accessibility_system.py -- --record-mode=once
+```
+
+To update a cassette file add `-- --record-mode=rewrite` after the test command. For example:
+
+```bash
+$ uv run manage.py test tests/cal_bc/system/test_project_system.py  -- --record-mode=rewrite
 ```
 
 
