@@ -10,7 +10,7 @@
     {% if group.description %}<p class="mt-1 text-lg/8 font-light text-gray-700">{{ group.description }}</p>{% endif %}
 {% endpartialdef %}
 
-{% partialdef table-form-cell %}
+{% partialdef form-cell--table %}
     {% url 'model_version_section_subsection_group_row_guide' model_pk=row.group.subsection.section.version.model.pk version_pk=row.group.subsection.section.version.pk section_pk=row.group.subsection.section.pk subsection_pk=row.group.subsection.pk group_pk=row.group.pk pk=row.pk as row_url %}
     {{ form.id }}
     {{ form.field }}
@@ -19,12 +19,13 @@
             form=form
             field=field
             is_in_table
+            disabled="{% firstof form.initial.field.read_only form.instance.field.read_only False %}"
             variant="{% if field.widget_type == 'select' %}select{% elif form.initial.field.unit or form.instance.field.unit %}with_unit{% else %}default{% endif %}"
         />
     {% endfor %}
 {% endpartialdef %}
 
-{% partialdef form-row %}
+{% partialdef form-cell %}
     {% url 'model_version_section_subsection_group_row_guide' model_pk=row.group.subsection.section.version.model.pk version_pk=row.group.subsection.section.version.pk section_pk=row.group.subsection.section.pk subsection_pk=row.group.subsection.pk group_pk=row.group.pk pk=row.pk as row_url %}
     {{ form.id }}
     {{ form.field }}
@@ -32,6 +33,7 @@
         <c-form-field
             form=form
             field=field
+            disabled="{% firstof form.initial.field.read_only form.instance.field.read_only False %}"
             variant="{% if field.widget_type == 'select' %}select{% elif form.initial.field.unit or form.instance.field.unit %}with_unit{% else %}default{% endif %}"
         />
     {% endfor %}
@@ -47,22 +49,34 @@
 
     <div class="space-y-6 mt-6">
         {% for row in group.non_table_row_set.all %}
-            <div class="{% spaceless %}
-                {% if row.field_set.count == 1 %}
-                    grid grid-cols-2 gap-6
-                {% else %}
-                    grid grid-cols-{{ row.field_set.count }} gap-6
-                {% endif %}
-            {% endspaceless %}">
+            {% if row.field_set.count == 1 %}
+            <div class="grid grid-cols-2 gap-6">
+            {% else %}
+            <div class="grid grid-cols-{{ row.field_set.count }} gap-6">
+            {% endif %}
                 {% for form in formset %}
                     {% if form.initial.field.row == row or form.instance.field.row == row %}
                     <div class="col-span-1">
-                        {% partial form-row %}
+                        {% partial form-cell %}
                     </div>
                     {% endif %}
                 {% endfor %}
             </div>
         {% endfor %}
+
+        {% if group.table_row_set.count > 0 %}
+            <div class="grid grid-cols-{{ subsection.column_count }}">
+                {% for column_group in group.columngroup_set.all %}
+                    <div class="py-3.5 pr-3 pl-4 text-center text-lg font-semibold text-gray-900 border-b border-gray-900/10 sm:pl-0">
+                        <div class="uppercase">{{ column_group.name }}</div>
+                        {% for column in column_group.column_set.all %}
+                            <div>{{ column.name }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
 
         {% if group.table_row_set.count > 0 %}
             <table class="relative min-w-full table-fixed">
@@ -100,9 +114,9 @@
                                 <td class="px-3 py-4 text-lg whitespace-nowrap text-gray-500">
                                     {% for form in formset %}
                                         {% if form.initial.field and form.initial.field.fieldcolumn.column == column and form.initial.field.row == row %}
-                                            {% partial table-form-cell %}
+                                            {% partial form-cell--table %}
                                         {% elif form.instance.field and form.instance.field.fieldcolumn.column == column and form.instance.field.row == row %}
-                                            {% partial table-form-cell %}
+                                            {% partial form-cell--table %}
                                         {% endif %}
                                     {% endfor %}
                                 </td>
