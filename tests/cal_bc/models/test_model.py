@@ -206,3 +206,12 @@ class TestModel:
 
     def test_value_string_representation(self, value: Value):
         assert str(value) == "District 4 - Bay Area: District 4"
+
+    def test_subsection_column_count(self, subsection_1_a: Subsection, group: Group, field: Field, field_with_unit: Field) -> None:
+        column_group = group.columngroup_set.create()
+        column_1 = column_group.column_set.create(name="Test")
+        column_1.fieldcolumn_set.create(field=field)
+        column_2 = column_group.column_set.create(name="Other Test")
+        column_2.fieldcolumn_set.create(field=field_with_unit)
+        other_group = subsection_1_a.group_set.create(name="Other Group")
+        assert subsection_1_a.column_count == 2
