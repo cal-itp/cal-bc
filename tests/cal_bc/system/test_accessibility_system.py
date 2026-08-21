@@ -21,7 +21,7 @@ from tests.channels_live_server_helper import ChannelsLiveServer
 
 @pytest.mark.vcr
 @pytest.mark.django_db(transaction=True)
-class TestProjectSystem:
+class TestAccessibilitySystem:
     @pytest.fixture
     def user(self) -> User:
         return User.objects.create_user(username="caltrans")
