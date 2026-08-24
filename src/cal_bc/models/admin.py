@@ -38,7 +38,7 @@ class FieldColumnInline(nested_admin.NestedTabularInline):
             return 1
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "column":
+        if db_field.name == "column" and request.resolver_match.kwargs:
             kwargs["queryset"] = Column.objects.filter(
                 column_group__group=request.resolver_match.kwargs["object_id"]
             )
@@ -107,6 +107,8 @@ class GroupAdmin(nested_admin.NestedModelAdmin):
     ordering = ["name"]
     search_fields = ["name", "subsection__code", "subsection__name", "subsection__code", "subsection__section__name", "subsection__section__version__name", "subsection__section__version__model__name"]
     search_help_text = "Search by Name, Model, Version, Section, and Subsection"
+    fields = ["model_name", "version_name", "section", "subsection", "name", "description"]
+    readonly_fields = ["model_name", "version_name", "section"]
 
     @admin.display(description="Model", ordering="subsection__section__version__model__name")
     def model_name(self, obj):

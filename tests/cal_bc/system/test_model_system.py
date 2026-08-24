@@ -102,7 +102,6 @@ class TestModelSystem:
         first_page.get_by_role(
             "link", name="General Information", exact=True
         ).click()
-        first_page.get_by_label("Description").fill("All fields are required.")
         first_page.locator(":text('Row: #1') + fieldset").get_by_label("Guide").locator(
             "~ [contenteditable]"
         ).fill("Complete this section")
@@ -123,13 +122,10 @@ class TestModelSystem:
         first_page.get_by_role("link", name="Add another Field", exact=True).click()
         first_page.locator(":text('Field: #2') + fieldset").get_by_label("Name").nth(
             0
-        ).fill("New trips from Parallel Hwy")
+        ).fill("Project Name")
         first_page.locator(":text('Field: #2') + fieldset").get_by_label("Cell").nth(
             0
-        ).fill("'1) Project Information'::Table 1::Q31")
-        first_page.locator(":text('Field: #2') + fieldset").get_by_label("Unit").nth(
-            0
-        ).fill("%")
+        ).fill("ProjName")
         first_page.get_by_role("link", name="Add another Field Range").nth(1).click()
         expect(first_page.locator(":text('Field range') ~ table tbody tr").nth(0).locator("td").nth(
             1
@@ -143,6 +139,23 @@ class TestModelSystem:
         first_page.get_by_role("button", name="Save", exact=True).click()
         first_page.wait_for_selector(
             "text=The group “General Information” was changed successfully"
+        )
+        first_page.get_by_role("link", name="Add group").click()
+        first_page.get_by_label("subsection").select_option("A - Project Data")
+        first_page.get_by_label("Name").nth(0).fill("Project Data")
+        first_page.get_by_label("Description").fill("Configure project analysis settings.")
+        first_page.locator(":text('Field: #1') + fieldset").get_by_label("Name").nth(
+            0
+        ).fill("Length of Construction Period")
+        first_page.locator(":text('Field: #1') + fieldset").get_by_label("Cell").nth(
+            0
+        ).fill("1) Project Information!F14")
+        first_page.locator(":text('Field: #1') + fieldset").get_by_label("Unit").nth(
+            0
+        ).fill("years")
+        first_page.get_by_role("button", name="Save", exact=True).click()
+        first_page.wait_for_selector(
+            "text=The group “Project Data” was added successfully"
         )
 
         first_page.close()
