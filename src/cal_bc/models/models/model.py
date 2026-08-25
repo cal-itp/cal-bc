@@ -106,7 +106,7 @@ class Group(models.Model):
     name = models.CharField(null=False, blank=False, db_index=True)
     description = models.CharField(blank=True)
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
-    is_summary = models.BooleanField(default=False)
+    is_summary = models.BooleanField(default=False, db_index=True)
 
     class Meta:
         ordering = ["position"]
