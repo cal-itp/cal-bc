@@ -92,12 +92,21 @@ class Subsection(models.Model):
             query = self.section.previous_section.subsection_set
         return query.last()
 
+    @property
+    def summary_group_set(self):
+        return self.group_set.filter(is_summary=True).all()
+
+    @property
+    def non_summary_group_set(self):
+        return self.group_set.filter(is_summary=False).all()
+
 
 class Group(models.Model):
     subsection = models.ForeignKey(Subsection, null=False, on_delete=models.CASCADE)
     name = models.CharField(null=False, blank=False, db_index=True)
     description = models.CharField(blank=True)
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
+    is_summary = models.BooleanField(default=False, db_index=True)
 
     class Meta:
         ordering = ["position"]
