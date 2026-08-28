@@ -1,0 +1,810 @@
+[
+  {
+    "model": "models.model",
+    "pk": 1,
+    "fields": {
+      "name": "Sketch",
+      "description": "Caltrans’s California Benefit/Cost Analysis tool which focuses on highway and transit modes, allowing the use of post-process travel demand and micro-simulation model data."
+    }
+  },
+  {
+    "model": "models.version",
+    "pk": 101,
+    "fields": {
+      "model_id": 1,
+      "name": "8.1",
+      "url": "https://dot.ca.gov/-/media/dot-media/programs/transportation-planning/documents/new-state-planning/transportation-economics/cal-bc/2023-cal-bc/2023-non-federal-model/cal-bc-8-1-sketch-a11y.xlsm"
+    }
+  },
+  {
+    "model": "models.section",
+    "pk": 10101,
+    "fields": {
+      "version_id": 101,
+      "name": "Project Information",
+      "code": "1"
+    }
+  },
+  {
+    "model": "models.subsection",
+    "pk": 1010101,
+    "fields": {
+      "section_id": 10101,
+      "name": "Project Data",
+      "code": "A",
+      "guide": "Setup Help\nAll fields in this step are required.\nClick on any field to see specific help and guidance for that input."
+    }
+  },
+  {
+    "model": "models.group",
+    "pk": 101010101,
+    "fields": {
+      "subsection_id": 1010101,
+      "name": "General Information",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.row",
+    "pk": 10101010101,
+    "fields": {
+      "group_id": 101010101,
+      "position": 1,
+      "guide":"Project Name\nEnter a name for your project."
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010101010101,
+    "fields": {
+      "row_id": 10101010101,
+      "name": "Project Name",
+      "cell": "ProjName",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.row",
+    "pk": 10101010102,
+    "fields": {
+      "group_id": 101010101,
+      "position": 2
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010101010201,
+    "fields": {
+      "row_id": 10101010102,
+      "name": "State",
+      "cell": "1) Project Information!F2",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010101020101,
+    "fields": {
+      "field_id": 1010101010201,
+      "name": "California",
+      "value": "CA",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010101020102,
+    "fields": {
+      "field_id": 1010101010201,
+      "name": "New York",
+      "value": "NY",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010101010202,
+    "fields": {
+      "row_id": 10101010102,
+      "name": "District",
+      "cell": "1) Project Information!E2",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.group",
+    "pk": 101010102,
+    "fields": {
+      "subsection_id": 1010101,
+      "name": "Project Data",
+      "description": "Configure project analysis settings.",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.row",
+    "pk": 10101010201,
+    "fields": {
+      "group_id": 101010102,
+      "position": 1
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010101020101,
+    "fields": {
+      "row_id": 10101010201,
+      "name": "Length of Construction Period",
+      "cell": "1) Project Information!F14",
+      "unit": "years",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.row",
+    "pk": 10101010202,
+    "fields": {
+      "group_id": 101010102,
+      "position": 2
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010101020201,
+    "fields": {
+      "row_id": 10101010202,
+      "name": "One-Way or Two-Way Data",
+      "cell": "1) Project Information!F15",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010102020101,
+    "fields": {
+      "field_id": 1010101020201,
+      "name": "One-Way",
+      "value": "1",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010102020102,
+    "fields": {
+      "field_id": 1010101020201,
+      "name": "Two-Way",
+      "value": "2",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.row",
+    "pk": 10101010203,
+    "fields": {
+      "group_id": 101010102,
+      "position": 3
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010101020301,
+    "fields": {
+      "row_id": 10101010203,
+      "name": "Length of Peak Period(s) (up to 24 hrs)",
+      "cell": "1) Project Information!F17",
+      "unit": "hours",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.fieldrange",
+    "pk": 101010102030101,
+    "fields": {
+      "field_id": 1010101020301,
+      "min_value": "0",
+      "max_value": "24"
+    }
+  },
+  {
+    "model": "models.subsection",
+    "pk": 1010102,
+    "fields": {
+      "section_id": 10101,
+      "name": "Highway Design and Traffic Data",
+      "code": "B",
+      "guide": "Setup Help\nAll fields in this step are required.\nClick on any field to see specific help and guidance for that input."
+    }
+  },
+  {
+    "model": "models.group",
+    "pk": 101010201,
+    "fields": {
+      "subsection_id": 1010102,
+      "name": "Highway Design",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.columngroup",
+    "pk": 10101020101,
+    "fields": {
+      "group_id": 101010201,
+      "name": "",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.column",
+    "pk": 1010102010101,
+    "fields": {
+      "column_group_id": 10101020101,
+      "name": "No Build",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.columngroup",
+    "pk": 10101020102,
+    "fields": {
+      "group_id": 101010201,
+      "name": "",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.column",
+    "pk": 1010102010202,
+    "fields": {
+      "column_group_id": 10101020102,
+      "name": "Build",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.row",
+    "pk": 10101020101,
+    "fields": {
+      "group_id": 101010201,
+      "name": "Roadway Type",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010102010101,
+    "fields": {
+      "row_id": 10101020101,
+      "name": "Roadway Type No Build",
+      "cell": "RoadTypeNB",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010201010101,
+    "fields": {
+      "field_id": 1010102010101,
+      "name": "Fwy",
+      "value": "F",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010201010102,
+    "fields": {
+      "field_id": 1010102010101,
+      "name": "Exp",
+      "value": "E",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010201010103,
+    "fields": {
+      "field_id": 1010102010101,
+      "name": "Conv Hwy",
+      "value": "C",
+      "position": 3
+    }
+  },
+  {
+    "model": "models.fieldcolumn",
+    "pk": 101010201010101,
+    "fields": {
+      "column_id": 1010102010101,
+      "field_id": 1010102010101
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010102010102,
+    "fields": {
+      "row_id": 10101020101,
+      "name": "Roadway Type Build",
+      "cell": "RoadTypeB",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010201010201,
+    "fields": {
+      "field_id": 1010102010102,
+      "name": "Fwy",
+      "value": "F",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010201010202,
+    "fields": {
+      "field_id": 1010102010102,
+      "name": "Exp",
+      "value": "E",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010201010203,
+    "fields": {
+      "field_id": 1010102010102,
+      "name": "Conv Hwy",
+      "value": "C",
+      "position": 3
+    }
+  },
+  {
+    "model": "models.fieldcolumn",
+    "pk": 101010201010202,
+    "fields": {
+      "column_id": 1010102010202,
+      "field_id": 1010102010102
+    }
+  },
+  {
+    "model": "models.row",
+    "pk": 10101020102,
+    "fields": {
+      "group_id": 101010201,
+      "name": "HOV Restriction",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010102010201,
+    "fields": {
+      "row_id": 10101020102,
+      "name": "HOV Restriction No Build",
+      "cell": "HOVRest",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010201020101,
+    "fields": {
+      "field_id": 1010102010201,
+      "name": "2",
+      "value": "2",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010201020102,
+    "fields": {
+      "field_id": 1010102010201,
+      "name": "3",
+      "value": "3",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.fieldcolumn",
+    "pk": 101010201020101,
+    "fields": {
+      "column_id": 1010102010101,
+      "field_id": 1010102010201
+    }
+  },
+  {
+    "model": "models.group",
+    "pk": 101010202,
+    "fields": {
+      "subsection_id": 1010102,
+      "name": "Average Daily Traffic",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.columngroup",
+    "pk": 10101020201,
+    "fields": {
+      "group_id": 101010202,
+      "name": "",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.column",
+    "pk": 1010102020101,
+    "fields": {
+      "column_group_id": 10101020201,
+      "name": "",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.columngroup",
+    "pk": 10101020202,
+    "fields": {
+      "group_id": 101010202,
+      "name": "",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.column",
+    "pk": 1010102020201,
+    "fields": {
+      "column_group_id": 10101020202,
+      "name": "",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.row",
+    "pk": 10101020201,
+    "fields": {
+      "group_id": 101010202,
+      "name": "Current",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010102020101,
+    "fields": {
+      "row_id": 10101020201,
+      "name": "Current",
+      "cell": "1) Project Information!G36",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.fieldcolumn",
+    "pk": 101010202010101,
+    "fields": {
+      "column_id": 1010102020201,
+      "field_id": 1010102020101
+    }
+  },
+  {
+    "model": "models.subsection",
+    "pk": 1010105,
+    "fields": {
+      "section_id": 10101,
+      "name": "Project Costs",
+      "code": "E",
+      "description": "All values should be entered in thousands of dollars using today's constant dollars. Project costs (including maintenance and operating costs) should be net of costs without project."
+    }
+  },
+  {
+    "model": "models.group",
+    "pk": 101010501,
+    "fields": {
+      "subsection_id": 1010105,
+      "name": "Summary",
+      "is_summary": "True",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.row",
+    "pk": 10101050101,
+    "fields": {
+      "group_id": 101010501,
+      "name": "",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010105010101,
+    "fields": {
+      "row_id": 10101050101,
+      "name": "Total Mitigation",
+      "cell": "1) Project Information!AB44",
+      "read_only": "True",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010105010102,
+    "fields": {
+      "row_id": 10101050101,
+      "name": "Total Transit Agency Cost Savings",
+      "cell": "1) Project Information!AC44",
+      "read_only": "True",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010105010103,
+    "fields": {
+      "row_id": 10101050101,
+      "name": "Total Costs in Constant Dollars",
+      "cell": "1) Project Information!AD44",
+      "unit": "$",
+      "read_only": "True",
+      "position": 3
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010105010104,
+    "fields": {
+      "row_id": 10101050101,
+      "name": "Total Costs as Present Value",
+      "cell": "1) Project Information!AE44",
+      "unit": "$",
+      "read_only": "True",
+      "position": 4
+    }
+  },
+  {
+    "model": "models.group",
+    "pk": 101010502,
+    "fields": {
+      "subsection_id": 1010105,
+      "name": "Construction Period Costs",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.columngroup",
+    "pk": 10101050201,
+    "fields": {
+      "group_id": 101010502,
+      "name": "Direct Project Initial Costs",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.column",
+    "pk": 1010105020101,
+    "fields": {
+      "column_group_id": 10101050201,
+      "name": "Project Support",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.column",
+    "pk": 1010105020102,
+    "fields": {
+      "column_group_id": 10101050201,
+      "name": "Right of Way",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.column",
+    "pk": 1010105020103,
+    "fields": {
+      "column_group_id": 10101050201,
+      "name": "Construction",
+      "position": 3
+    }
+  },
+  {
+    "model": "models.columngroup",
+    "pk": 10101050202,
+    "fields": {
+      "group_id": 101010502,
+      "name": "",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.column",
+    "pk": 1010105020201,
+    "fields": {
+      "column_group_id": 10101050202,
+      "name": "Mitigation",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.columngroup",
+    "pk": 10101050203,
+    "fields": {
+      "group_id": 101010502,
+      "name": "",
+      "position": 3
+    }
+  },
+  {
+    "model": "models.column",
+    "pk": 1010105020301,
+    "fields": {
+      "column_group_id": 10101050203,
+      "name": "Transit AGY Cost SVGS",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.columngroup",
+    "pk": 10101050204,
+    "fields": {
+      "group_id": 101010502,
+      "name": "Costs (in Dollars)",
+      "position": 4
+    }
+  },
+  {
+    "model": "models.column",
+    "pk": 1010105020401,
+    "fields": {
+      "column_group_id": 10101050204,
+      "name": "Constant Dollars",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.column",
+    "pk": 1010105020402,
+    "fields": {
+      "column_group_id": 10101050204,
+      "name": "Present Value",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.row",
+    "pk": 10101050201,
+    "fields": {
+      "group_id": 101010502,
+      "name": "Yr 1",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010105020101,
+    "fields": {
+      "row_id": 10101050201,
+      "name": "Project Support Year 1",
+      "cell": "1) Project Information!W15",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.fieldcolumn",
+    "pk": 101010502010101,
+    "fields": {
+      "column_id": 1010105020101,
+      "field_id": 1010105020101
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010105020102,
+    "fields": {
+      "row_id": 10101050201,
+      "name": "Right of Way Year 1",
+      "cell": "1) Project Information!X15",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.fieldcolumn",
+    "pk": 10101050201021,
+    "fields": {
+      "column_id": 1010105020102,
+      "field_id": 1010105020102
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010105020103,
+    "fields": {
+      "row_id": 10101050201,
+      "name": "Construction Year 1",
+      "cell": "1) Project Information!Y15",
+      "position": 3
+    }
+  },
+  {
+    "model": "models.fieldcolumn",
+    "pk": 101010502010301,
+    "fields": {
+      "column_id": 1010105020103,
+      "field_id": 1010105020103
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010105020104,
+    "fields": {
+      "row_id": 10101050201,
+      "name": "Mitigation Year 1",
+      "cell": "1) Project Information!AB15",
+      "position": 4
+    }
+  },
+  {
+    "model": "models.fieldcolumn",
+    "pk": 101010502010401,
+    "fields": {
+      "column_id": 1010105020201,
+      "field_id": 1010105020104
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010105020105,
+    "fields": {
+      "row_id": 10101050201,
+      "name": "Transit AGY Cost SVGS Year 1",
+      "cell": "1) Project Information!AC15",
+      "position": 5
+    }
+  },
+  {
+    "model": "models.fieldcolumn",
+    "pk": 101010502010501,
+    "fields": {
+      "column_id": 1010105020301,
+      "field_id": 1010105020105
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010105020106,
+    "fields": {
+      "row_id": 10101050201,
+      "name": "Constant Dollars Year 1",
+      "cell": "1) Project Information!AD15",
+      "unit": "$",
+      "read_only": "True",
+      "position": 6
+    }
+  },
+  {
+    "model": "models.fieldcolumn",
+    "pk": 101010502010601,
+    "fields": {
+      "column_id": 1010105020401,
+      "field_id": 1010105020106
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010105020107,
+    "fields": {
+      "row_id": 10101050201,
+      "name": "Present Value Year 1",
+      "cell": "1) Project Information!AE15",
+      "unit": "$",
+      "read_only": "True",
+      "position": 7
+    }
+  },
+  {
+    "model": "models.fieldcolumn",
+    "pk": 101010502010701,
+    "fields": {
+      "column_id": 1010105020402,
+      "field_id": 1010105020107
+    }
+  }
+]

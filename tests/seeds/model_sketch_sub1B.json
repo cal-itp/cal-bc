@@ -1,0 +1,542 @@
+[
+  {
+    "model": "models.model",
+    "pk": 1,
+    "fields": {
+      "name": "Sketch",
+      "description": "Caltrans’s California Benefit/Cost Analysis tool which focuses on highway and transit modes, allowing the use of post-process travel demand and micro-simulation model data."
+    }
+  },
+  {
+    "model": "models.version",
+    "pk": 101,
+    "fields": {
+      "model_id": 1,
+      "name": "8.1",
+      "url": "https://dot.ca.gov/-/media/dot-media/programs/transportation-planning/documents/new-state-planning/transportation-economics/cal-bc/2023-cal-bc/2023-non-federal-model/cal-bc-8-1-sketch-a11y.xlsm"
+    }
+  },
+  {
+    "model": "models.section",
+    "pk": 10101,
+    "fields": {
+      "version_id": 101,
+      "name": "Project Information",
+      "code": "1"
+    }
+  },
+  {
+    "model": "models.subsection",
+    "pk": 1010102,
+    "fields": {
+      "section_id": 10101,
+      "name": "Highway Design and Traffic Data",
+      "code": "B",
+      "guide": "Setup Help\nAll fields in this step are required.\nClick on any field to see specific help and guidance for that input."
+    }
+  },
+
+
+  {
+    "model": "models.group",
+    "pk": 101010201,
+    "fields": {
+      "subsection_id": 1010102,
+      "name": "Highway Design",
+      "position": 1
+    }
+  },
+
+
+  {
+    "model": "models.columngroup",
+    "pk": 10101020101,
+    "fields": {
+      "group_id": 101010201,
+      "name": "",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.column",
+    "pk": 1010102010101,
+    "fields": {
+      "column_group_id": 10101020101,
+      "name": "No Build",
+      "position": 1
+    }
+  },
+
+  {
+    "model": "models.columngroup",
+    "pk": 10101020102,
+    "fields": {
+      "group_id": 101010201,
+      "name": "",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.column",
+    "pk": 1010102010202,
+    "fields": {
+      "column_group_id": 10101020102,
+      "name": "Build",
+      "position": 2
+    }
+  },
+
+
+  {
+    "model": "models.row",
+    "pk": 10101020101,
+    "fields": {
+      "group_id": 101010201,
+      "name": "Roadway Type",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010102010101,
+    "fields": {
+      "row_id": 10101020101,
+      "name": "Roadway Type No Build",
+      "cell": "RoadTypeNB",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010201010101,
+    "fields": {
+      "field_id": 1010102010101,
+      "name": "Fwy",
+      "value": "F",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010201010102,
+    "fields": {
+      "field_id": 1010102010101,
+      "name": "Exp",
+      "value": "E",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010201010103,
+    "fields": {
+      "field_id": 1010102010101,
+      "name": "Conv Hwy",
+      "value": "C",
+      "position": 3
+    }
+  },
+  {
+    "model": "models.fieldcolumn",
+    "pk": 101010201010101,
+    "fields": {
+      "column_id": 1010102010101,
+      "field_id": 1010102010101
+    }
+  },
+
+  {
+    "model": "models.field",
+    "pk": 1010102010102,
+    "fields": {
+      "row_id": 10101020101,
+      "name": "Roadway Type Build",
+      "cell": "RoadTypeB",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010201010201,
+    "fields": {
+      "field_id": 1010102010102,
+      "name": "Fwy",
+      "value": "F",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010201010202,
+    "fields": {
+      "field_id": 1010102010102,
+      "name": "Exp",
+      "value": "E",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010201010203,
+    "fields": {
+      "field_id": 1010102010102,
+      "name": "Conv Hwy",
+      "value": "C",
+      "position": 3
+    }
+  },
+  {
+    "model": "models.fieldcolumn",
+    "pk": 101010201010202,
+    "fields": {
+      "column_id": 1010102010202,
+      "field_id": 1010102010102
+    }
+  },
+
+
+  {
+    "model": "models.row",
+    "pk": 10101020102,
+    "fields": {
+      "group_id": 101010201,
+      "name": "HOV Restriction",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010102010201,
+    "fields": {
+      "row_id": 10101020102,
+      "name": "HOV Restriction No Build",
+      "cell": "HOVRest",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010201020101,
+    "fields": {
+      "field_id": 1010102010201,
+      "name": "2",
+      "value": "2",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010201020102,
+    "fields": {
+      "field_id": 1010102010201,
+      "name": "3",
+      "value": "3",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.fieldcolumn",
+    "pk": 101010201020101,
+    "fields": {
+      "column_id": 1010102010101,
+      "field_id": 1010102010201
+    }
+  },
+
+
+  {
+    "model": "models.group",
+    "pk": 101010202,
+    "fields": {
+      "subsection_id": 1010102,
+      "name": "Average Daily Traffic",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.columngroup",
+    "pk": 10101020201,
+    "fields": {
+      "group_id": 101010202,
+      "name": "",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.column",
+    "pk": 1010102020101,
+    "fields": {
+      "column_group_id": 10101020201,
+      "name": "No Build",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.columngroup",
+    "pk": 10101020202,
+    "fields": {
+      "group_id": 101010202,
+      "name": "",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.column",
+    "pk": 1010102020201,
+    "fields": {
+      "column_group_id": 10101020202,
+      "name": "Build",
+      "position": 1
+    }
+  },
+
+
+  {
+    "model": "models.row",
+    "pk": 10101020201,
+    "fields": {
+      "group_id": 101010202,
+      "name": "Current",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010102020101,
+    "fields": {
+      "row_id": 10101020201,
+      "name": "Current",
+      "cell": "1) Project Information!G36",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.fieldcolumn",
+    "pk": 101010202010101,
+    "fields": {
+      "column_id": 1010102020101,
+      "field_id": 1010102020101
+    }
+  },
+
+
+  {
+    "model": "models.row",
+    "pk": 10101020202,
+    "fields": {
+      "group_id": 101010202,
+      "name": "Base (Year 1)",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010102020201,
+    "fields": {
+      "row_id": 10101020202,
+      "name": "Base (Year 1) No Build",
+      "cell": "1) Project Information!G38",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.fieldcolumn",
+    "pk": 101010202020101,
+    "fields": {
+      "column_id": 1010102020101,
+      "field_id": 1010102020201
+    }
+  },
+
+  {
+    "model": "models.field",
+    "pk": 1010102020202,
+    "fields": {
+      "row_id": 10101020202,
+      "name": "Base (Year 1) Build",
+      "cell": "1) Project Information!H38",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.fieldcolumn",
+    "pk": 101010202020201,
+    "fields": {
+      "column_id": 1010102020201,
+      "field_id": 1010102020202
+    }
+  },
+
+
+  {
+    "model": "models.row",
+    "pk": 10101020203,
+    "fields": {
+      "group_id": 101010202,
+      "name": "Forecast (Year 20)",
+      "position": 3
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010102020301,
+    "fields": {
+      "row_id": 10101020203,
+      "name": "Forecast (Year 20) No Build",
+      "cell": "1) Project Information!G39",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.fieldcolumn",
+    "pk": 101010202030101,
+    "fields": {
+      "column_id": 1010102020101,
+      "field_id": 1010102020301
+    }
+  },
+
+  {
+    "model": "models.field",
+    "pk": 1010102020302,
+    "fields": {
+      "row_id": 10101020203,
+      "name": "Forecast (Year 20) Build",
+      "cell": "1) Project Information!H39",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.fieldcolumn",
+    "pk": 101010202030201,
+    "fields": {
+      "column_id": 1010102020201,
+      "field_id": 1010102020302
+    }
+  },
+
+
+  {
+    "model": "models.group",
+    "pk": 101010203,
+    "fields": {
+      "subsection_id": 1010102,
+      "name": "HOV/HOT Lane Traffic",
+      "position": 3
+    }
+  },
+
+  {
+    "model": "models.columngroup",
+    "pk": 10101020301,
+    "fields": {
+      "group_id": 101010203,
+      "name": "",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.column",
+    "pk": 1010102030101,
+    "fields": {
+      "column_group_id": 10101020301,
+      "name": "No Build",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.columngroup",
+    "pk": 10101020302,
+    "fields": {
+      "group_id": 101010203,
+      "name": "",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.column",
+    "pk": 1010102030201,
+    "fields": {
+      "column_group_id": 10101020302,
+      "name": "Build",
+      "position": 1
+    }
+  },
+
+
+  {
+    "model": "models.row",
+    "pk": 10101020301,
+    "fields": {
+      "group_id": 101010203,
+      "name": "Average Hourly",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010102030101,
+    "fields": {
+      "row_id": 10101020301,
+      "name": "Average Hourly No Build",
+      "cell": "1) Project Information!G40",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.fieldcolumn",
+    "pk": 101010203010101,
+    "fields": {
+      "column_id": 1010102030101,
+      "field_id": 1010102030101
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010102030102,
+    "fields": {
+      "row_id": 10101020301,
+      "name": "Average Hourly Build",
+      "cell": "1) Project Information!H40",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.fieldcolumn",
+    "pk": 101010203010201,
+    "fields": {
+      "column_id": 1010102030201,
+      "field_id": 1010102030102
+    }
+  },
+
+
+  {
+    "model": "models.row",
+    "pk": 10101020302,
+    "fields": {
+      "group_id": 101010203,
+      "name": "Induced Trips",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.field",
+    "pk": 1010102030202,
+    "fields": {
+      "row_id": 10101020302,
+      "name": "Induced Trips Build",
+      "cell": "1) Project Information!H41",
+      "unit": "%",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.fieldcolumn",
+    "pk": 101010203020201,
+    "fields": {
+      "column_id": 1010102030201,
+      "field_id": 1010102030202
+    }
+  }
+]

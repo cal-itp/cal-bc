@@ -1,0 +1,371 @@
+[
+  {
+    "model": "models.model",
+    "pk": 1,
+    "fields": {
+      "name": "Sketch",
+      "description": "Caltrans’s California Benefit/Cost Analysis tool which focuses on highway and transit modes, allowing the use of post-process travel demand and micro-simulation model data."
+    }
+  },
+  {
+    "model": "models.version",
+    "pk": 101,
+    "fields": {
+      "model_id": 1,
+      "name": "8.1",
+      "url": "https://dot.ca.gov/-/media/dot-media/programs/transportation-planning/documents/new-state-planning/transportation-economics/cal-bc/2023-cal-bc/2023-non-federal-model/cal-bc-8-1-sketch-a11y.xlsm"
+    }
+  },
+  {
+    "model": "models.section",
+    "pk": 10101,
+    "fields": {
+      "version_id": 101,
+      "name": "Project Information",
+      "code": "1"
+    }
+  },
+  {
+    "model": "models.subsection",
+    "pk": 1010101,
+    "fields": {
+      "section_id": 10101,
+      "name": "Project Data",
+      "code": "A",
+      "guide": "Setup Help\nAll fields in this step are required.\nClick on any field to see specific help and guidance for that input."
+    }
+  },
+
+
+  {
+    "model": "models.group",
+    "pk": 101010101,
+    "fields": {
+      "subsection_id": 1010101,
+      "name": "General Information",
+      "position": 1
+    }
+  },
+
+
+  {
+    "model": "models.row",
+    "pk": 10101010101,
+    "fields": {
+      "group_id": 101010101,
+      "name": "Project Name",
+      "position": 1,
+      "guide":"Project Name\nEnter a name for your project."
+    }
+  },
+
+  {
+    "model": "models.field",
+    "pk": 1010101010101,
+    "fields": {
+      "row_id": 10101010101,
+      "name": "Project Name",
+      "cell": "ProjName",
+      "position": 1
+    }
+  },
+
+
+  {
+    "model": "models.row",
+    "pk": 10101010102,
+    "fields": {
+      "group_id": 101010101,
+      "position": 2
+    }
+  },
+
+  {
+    "model": "models.field",
+    "pk": 1010101010201,
+    "fields": {
+      "row_id": 10101010102,
+      "name": "State",
+      "cell": "1) Project Information!F2",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010101020101,
+    "fields": {
+      "field_id": 1010101010201,
+      "name": "California",
+      "value": "CA",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010101020102,
+    "fields": {
+      "field_id": 1010101010201,
+      "name": "New York",
+      "value": "NY",
+      "position": 2
+    }
+  },
+
+  {
+    "model": "models.field",
+    "pk": 1010101010202,
+    "fields": {
+      "row_id": 10101010102,
+      "name": "District",
+      "cell": "1) Project Information!E2",
+      "position": 2
+    }
+  },
+
+
+  {
+    "model": "models.group",
+    "pk": 101010102,
+    "fields": {
+      "subsection_id": 1010101,
+      "name": "Project Data",
+      "description": "Configure project analysis settings.",
+      "position": 2
+    }
+  },
+
+
+  {
+    "model": "models.row",
+    "pk": 10101010201,
+    "fields": {
+      "group_id": 101010102,
+      "name": "Project Type",
+      "position": 1,
+      "guide": "Project Type\nThere are 29 project types available.\nFor a truck only lane, bypass or intersection project, information must be entered for both roads impacted by project."
+    }
+  },
+
+  {
+    "model": "models.field",
+    "pk": 1010101020101,
+    "fields": {
+      "row_id": 10101010201,
+      "name": "Project Type",
+      "cell": "ProjType",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010102010101,
+    "fields": {
+      "field_id": 1010101020101,
+      "name": "HIGHWAY CAPACITY EXPANSION",
+      "value": "-",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010102010102,
+    "fields": {
+      "field_id": 1010101020101,
+      "name": "• General Highway",
+      "value": "General Highway",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010102010103,
+    "fields": {
+      "field_id": 1010101020101,
+      "name": "• HOV Lane Addition",
+      "value": "HOV Lane Addition",
+      "position": 3
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010102010104,
+    "fields": {
+      "field_id": 1010101020101,
+      "name": "• Passing Lane",
+      "value": "Passing Lane",
+      "position": 4
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010102010105,
+    "fields": {
+      "field_id": 1010101020101,
+      "name": "• Intersectiony",
+      "value": "Intersection",
+      "position": 5
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010102010106,
+    "fields": {
+      "field_id": 1010101020101,
+      "name": "• Truck Only Lane",
+      "value": "Truck Only Lane",
+      "position": 6
+    }
+  },
+
+
+  {
+    "model": "models.row",
+    "pk": 10101010202,
+    "fields": {
+      "group_id": 101010102,
+      "name": "Project Location",
+      "position": 2,
+      "guide": "Project Location\nValues for the selected region of California are used to estimate percentage of peak traffic and emissions benefits.\nAdd note for if State isn’t California."
+    }
+  },
+
+  {
+    "model": "models.field",
+    "pk": 1010101020201,
+    "fields": {
+      "row_id": 10101010202,
+      "name": "Project Location",
+      "cell": "ProjLoc",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010102020101,
+    "fields": {
+      "field_id": 1010101020201,
+      "name": "NorCal",
+      "value": "NorCal",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010102020102,
+    "fields": {
+      "field_id": 1010101020201,
+      "name": "SoCal",
+      "value": "SoCal",
+      "position": 2
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010102020103,
+    "fields": {
+      "field_id": 1010101020201,
+      "name": "Rural",
+      "value": "Rural",
+      "position": 3
+    }
+  },
+
+
+  {
+    "model": "models.row",
+    "pk": 10101010203,
+    "fields": {
+      "group_id": 101010102,
+      "name": "Construction Period",
+      "position": 3,
+      "guide": "Construction Period\n\n* Years needed to construct project.\n* This must be a whole number (round to next higher integer).\n* Project opening date assumed to occur at the end of the construction period."
+    }
+  },
+
+  {
+    "model": "models.field",
+    "pk": 1010101020301,
+    "fields": {
+      "row_id": 10101010203,
+      "name": "Length of Construction Period",
+      "cell": "Construct",
+      "unit": "years",
+      "position": 1
+    }
+  },
+
+  {
+    "model": "models.row",
+    "pk": 10101010204,
+    "fields": {
+      "group_id": 101010102,
+      "name": "One- or Two-Way Data",
+      "position": 4,
+      "guide": "One- or Two-Way Data\n\nIndicates if Step 2 data is for travel in one direction or two directions.\nExample\nCaltrans Annual Average Daily Traffic (AADT) volumes are reported for 2-way traffic, but the Performance Measurement System (PeMS) volumes can be one-way traffic."
+    }
+  },
+
+  {
+    "model": "models.field",
+    "pk": 1010101020401,
+    "fields": {
+      "row_id": 10101010204,
+      "name": "One- or Two-Way Data",
+      "cell": "NumDirections",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010102040101,
+    "fields": {
+      "field_id": 1010101020401,
+      "name": "One-Way",
+      "value": "1",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.value",
+    "pk": 101010102040102,
+    "fields": {
+      "field_id": 1010101020401,
+      "name": "Two-Way",
+      "value": "2",
+      "position": 2
+    }
+  },
+
+
+  {
+    "model": "models.row",
+    "pk": 10101010205,
+    "fields": {
+      "group_id": 101010102,
+      "name": "Length of Peak Period",
+      "position": 5,
+      "guide": "Length of Peak Period(s)\n\n* Helps determine peak/non - peak volumes and speeds for emissions and operating cost benefit calculations.\n* Insert the number of peak period hours per typical day. Default is 5 hours (statewide avg).\n* This model estimates total % daily traffic occurring during peak period using a lookup table developed from Traffic Census data. No difference between weekdays and weekends.\n\nExamples:\n* If peak period is four hours from 3PM to 7PM, then enter a “4”.\n* To model a 24-hour HOV or HOT lane, enter 24 hours so peak is 100% of average daily traffic.\n* To model a ramp metering project, enter the hours per day that metering is operational."
+    }
+  },
+
+  {
+    "model": "models.field",
+    "pk": 1010101020501,
+    "fields": {
+      "row_id": 10101010205,
+      "name": "Length of Peak Period(s) (up to 24 hrs)",
+      "cell": "PeakLngthNB",
+      "unit": "hours",
+      "position": 1
+    }
+  },
+  {
+    "model": "models.fieldrange",
+    "pk": 101010102050101,
+    "fields": {
+      "field_id": 1010101020501,
+      "min_value": "0",
+      "max_value": "24"
+    }
+  }
+]
