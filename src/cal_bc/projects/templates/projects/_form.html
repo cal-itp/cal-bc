@@ -71,15 +71,11 @@
 
 {% for group in subsection.summary_group_set.all %}
     {% for row in group.non_table_row_set.all %}
-        <div class="flex space-x-0.5 mt-12">
-            {% for field in row.field_set.all %}
-                {% for value in object.summary_value_set.all %}
-                    {% if value.field == field %}
-                        {% partial summary-field %}
-                    {% endif %}
-                {% endfor %}
-            {% endfor %}
-        </div>
+    <div class="flex space-x-0.5 mt-12">
+        {% for field in row.field_set.all %}
+            {% partial summary-field %}
+        {% endfor %}
+    </div>
     {% endfor %}
 {% endfor %}
 
