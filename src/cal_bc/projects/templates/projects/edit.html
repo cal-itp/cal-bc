@@ -2,6 +2,11 @@
 {% load svg %}
 {% block main %}
 
+{% partialdef subsection-header %}
+    <h1 class="text-4xl font-bold tracking-tight text-dds-teal-950">{{ subsection.section.code }}{{ subsection.code }}. {{ subsection.name }}</h1>
+    {% if subsection.description %}<p class="mt-1 text-lg/8 font-light text-gray-700">{{ subsection.description }}</p>{% endif %}
+{% endpartialdef %}
+
 <div class="min-h-full bg-gray-100 flex flex-col">
     {% include "projects/_header_nav.html" %}
 
@@ -30,7 +35,7 @@
         <form method="post" class="mx-auto max-w-7xl pt-16 pb-20 px-6 lg:px-8">
             {% csrf_token %}
 
-            {% if subsection.column_count < 4 %}
+            {% if subsection.column_count < 4 and subsection.summary_group_set.count == 0 %}
             <div class="md:grid md:grid-cols-7 md:gap-4">
                 <section class="md:col-span-4">
                     <div hx-ext="ws" hx-ws:connect="/ws{% url 'project_subsection' project_pk=object.pk pk=subsection.pk %}" hx-target="this" hx-swap="innerMorph">
