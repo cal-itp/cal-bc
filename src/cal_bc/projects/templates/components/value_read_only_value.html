@@ -1,16 +1,12 @@
 {% load humanize %}
 
-{% partialdef numeric_value %}
-    {{ value.value|floatformat:-2|intcomma }}
-{% endpartialdef %}
-
 {% if value.value %}
     {% if field.unit == '$' %}
-        {% partial numeric_value %}
+        ${{ value.value|floatformat:-2|intcomma }}
     {% elif field.unit %}
-        {% partial numeric_value %} {{ field.unit }}
+        {{ value.value|floatformat:-2|intcomma }} {{ field.unit }}
     {% else %}
-        {% partial numeric_value %}
+        {{ value.value|floatformat:-2|intcomma }}
     {% endif %}
 {% else %}
      {% firstof blank "&nbsp;" %}
