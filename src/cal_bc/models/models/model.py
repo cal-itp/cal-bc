@@ -100,6 +100,16 @@ class Subsection(models.Model):
     def non_summary_group_set(self):
         return self.group_set.filter(is_summary=False).all()
 
+    @property
+    def column_count(self):
+        return (
+            self.group_set
+            .values("id")
+            .annotate(column_count=models.Count("columngroup__column__id"))
+            .values("id", "column_count")
+            .order_by("-column_count")[0]["column_count"]
+        )
+
 
 class Group(models.Model):
     subsection = models.ForeignKey(Subsection, null=False, on_delete=models.CASCADE)
@@ -133,6 +143,10 @@ class Group(models.Model):
     @property
     def nonempty_column_group_set(self):
         return self.columngroup_set.exclude(name="").all()
+
+    @property
+    def column_count(self):
+        return self.columngroup_set.aggregate(column_count=models.Count("column__id"))
 
 
 class Row(models.Model):
@@ -220,6 +234,7 @@ class Field(models.Model):
     cell = models.CharField(null=False)
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
     unit = models.CharField(blank=True)
+    read_only = models.BooleanField(null=False, default=False, db_index=True)
 
     class Meta:
         ordering = ["position"]

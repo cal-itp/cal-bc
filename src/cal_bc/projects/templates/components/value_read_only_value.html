@@ -1,0 +1,13 @@
+{% load humanize %}
+
+{% if value.value %}
+    {% if field.unit == '$' %}
+        ${{ value.value|floatformat:-2|intcomma }}
+    {% elif field.unit %}
+        {{ value.value|floatformat:-2|intcomma }} {{ field.unit }}
+    {% else %}
+        {{ value.value|floatformat:-2|intcomma }}
+    {% endif %}
+{% else %}
+     {% firstof blank "&nbsp;" %}
+{% endif %}

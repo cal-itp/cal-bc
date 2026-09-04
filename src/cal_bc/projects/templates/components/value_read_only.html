@@ -1,0 +1,9 @@
+<label id="field-{{ field.pk }}-value" class="block text-lg font-medium text-gray-900 mb-2 {{ label_classes }}">
+    {{ field.name }}
+</label>
+
+<div class="flex items-baseline border border-gray-600 rounded-xs bg-gray-100 py-3 text-lg text-gray-900 focus-within:border-dds-teal-600 focus-within:outline-4 focus-within:outline-dds-teal-400">
+    <div aria-labelledby="field-{{ field.pk }}-value" class="w-full truncate flex-grow block px-4 outline-none {{input_classes}}">
+        <c-value-read-only-value />
+    </div>
+</div>

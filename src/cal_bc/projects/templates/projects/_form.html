@@ -1,4 +1,4 @@
-{% load static widget_tweaks svg %}
+{% load static widget_tweaks svg define find_formset_field humanize %}
 
 {% partialdef subsection-header %}
     <h1 class="text-4xl font-bold tracking-tight text-dds-teal-950">{{ subsection.section.code }}{{ subsection.code }}. {{ subsection.name }}</h1>
@@ -10,48 +10,41 @@
     {% if group.description %}<p class="mt-1 text-lg/8 font-light text-gray-700">{{ group.description }}</p>{% endif %}
 {% endpartialdef %}
 
-{% partialdef table-form-cell %}
-    {% url 'model_version_section_subsection_group_row_guide' model_pk=row.group.subsection.section.version.model.pk version_pk=row.group.subsection.section.version.pk section_pk=row.group.subsection.section.pk subsection_pk=row.group.subsection.pk group_pk=row.group.pk pk=row.pk as row_url %}
-    {{ form.id }}
-    {{ form.field }}
-    {% for field in form.visible_fields %}
-        <c-form-field
-            form=form
-            field=field
-            is_in_table
-            variant="{% if field.widget_type == 'select' %}select{% elif form.initial.field.unit or form.instance.field.unit %}with_unit{% else %}default{% endif %}"
-        />
-    {% endfor %}
-{% endpartialdef %}
-
-{% partialdef form-row %}
-    {% url 'model_version_section_subsection_group_row_guide' model_pk=row.group.subsection.section.version.model.pk version_pk=row.group.subsection.section.version.pk section_pk=row.group.subsection.section.pk subsection_pk=row.group.subsection.pk group_pk=row.group.pk pk=row.pk as row_url %}
-    {{ form.id }}
-    {{ form.field }}
-    {% for field in form.visible_fields %}
-        <c-form-field
-            form=form
-            field=field
-            variant="{% if field.widget_type == 'select' %}select{% elif form.initial.field.unit or form.instance.field.unit %}with_unit{% else %}default{% endif %}"
-        />
-    {% endfor %}
-{% endpartialdef %}
-
-{% partialdef summary-field %}
-    <div class="flex-1 flex flex-col justify-between bg-white rounded-sm px-5 py-6 text-dds-teal-950">
-        <div class="text-sm uppercase">{{ field.name }}</div>
-        <div class="flex font-bold text-2xl">
-            {% if value.value %}
-                <div>{{ value.value|floatformat:"-2" }}</div>
-            {% else %}
-                <div>0</div>
-            {% endif %}
-
-            <div class="{% if field.unit == '$' %}order-first {% else %}pl-2 {% endif %}shrink-0">
-                {{ field.unit }}
+{% partialdef form-cell--new %}
+    {% with formset|find_formset_field:field as form %}
+        {% if form %}
+            <div>
+                {% url 'model_version_section_subsection_group_row_guide' model_pk=row.group.subsection.section.version.model.pk version_pk=row.group.subsection.section.version.pk section_pk=row.group.subsection.section.pk subsection_pk=row.group.subsection.pk group_pk=row.group.pk pk=row.pk as row_url %}
+                {{ form.id }}
+                {{ form.field }}
+                {% for field in form.visible_fields %}
+                    {% if field.widget_type == 'select' %}
+                        <c-value-select
+                            form=form
+                            field=field
+                            has_errors="{{ form.errors.count > 0 }}"
+                        />
+                    {% else %}
+                        <c-value-textbox
+                            form=form
+                            field=field
+                            has_errors="{{ form.errors.count > 0 }}"
+                        />
+                    {% endif %}
+                {% endfor %}
             </div>
-        </div>
-    </div>
+        {% else %}
+            {% with object.value_set.all|find_valueset_field:field as value %}
+                {% if value %}
+                    <div>
+                        <c-value-read-only field=field value=value />
+                    </div>
+                {% else %}
+                    <div></div>
+                {% endif %}
+            {% endwith %}
+        {% endif %}
+    {% endwith %}
 {% endpartialdef %}
 
 {{ formset.management_form }}
@@ -61,15 +54,18 @@
 
 {% for group in subsection.summary_group_set.all %}
     {% for row in group.non_table_row_set.all %}
-        <div class="flex space-x-0.5 mt-12">
-            {% for field in row.field_set.all %}
-                {% for value in object.summary_value_set.all %}
-                    {% if value.field == field %}
-                        {% partial summary-field %}
-                    {% endif %}
-                {% endfor %}
-            {% endfor %}
-        </div>
+    <div class="flex space-x-0.5 mt-12">
+        {% for field in row.field_set.all %}
+            <div class="flex-1 flex flex-col justify-between bg-white rounded-sm px-5 py-6 text-dds-teal-950">
+                <label id="summary-field--{{field.pk}}--name" class="text-sm uppercase">{{ field.name }}</label>
+                <div aria-labelledby="summary-field--{{field.pk}}--name" class="flex font-bold text-2xl">
+                    {% with object.value_set.all|find_valueset_field:field as value %}
+                        <c-value-read-only-value blank="-" />
+                    {% endwith %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
     {% endfor %}
 {% endfor %}
 
@@ -78,71 +74,56 @@
 
     <div class="space-y-6 mt-6">
         {% for row in group.non_table_row_set.all %}
-            <div class="{% spaceless %}
-                {% if row.field_set.count == 1 %}
-                    grid grid-cols-2 gap-6
-                {% else %}
-                    grid grid-cols-{{ row.field_set.count }} gap-6
-                {% endif %}
-            {% endspaceless %}">
-                {% for form in formset %}
-                    {% if form.initial.field.row == row or form.instance.field.row == row %}
-                    <div class="col-span-1">
-                        {% partial form-row %}
-                    </div>
-                    {% endif %}
+            {% if row.field_set.count == 1 %}
+            <div class="grid grid-cols-2 gap-6">
+            {% else %}
+            <div class="grid grid-cols-{{ row.field_set.count }} gap-6">
+            {% endif %}
+                {% for field in row.field_set.all %}
+                    {% partial form-cell--new %}
                 {% endfor %}
             </div>
         {% endfor %}
 
         {% if group.table_row_set.count > 0 %}
-            <table class="relative min-w-full table-fixed">
-                <thead>
-                    {% if group.nonempty_column_group_set.count > 0 %}
-                    <tr>
-                        <th scope="col" class="py-3.5 pr-3 pl-4 text-lg sm:pl-0"></th>
-                        {% for column_group in group.columngroup_set.all %}
-                            <th scope="col" colspan="{{ column_group.column_set.count }}" class="{% spaceless %}
-                                py-3.5 pr-3 pl-4 text-center text-lg font-semibold text-gray-900 sm:pl-0
-                                {% if column_group.name != '' %}
-                                    border-b border-gray-900/10
-                                {% endif %}
-                                {% endspaceless %}">
-                                {{ column_group.name }}
-                            </th>
-                        {% endfor %}
-                    </tr>
+            <div class="grid grid-cols-{{ subsection.column_count|add:1 }} gap-3 items-baseline-last">
+                <div></div>
+                {% for column_group in group.columngroup_set.all %}
+                    {% if column_group.name %}
+                    <div class="col-span-{{ column_group.column_set.count }} text-center uppercase text-lg font-semibold text-gray-900 border-b border-gray-900/50">
+                        {{ column_group.name }}
+                    </div>
+                    {% else %}
+                    <div class="col-span-{{ column_group.column_set.count }}"></div>
                     {% endif %}
-                    <tr>
-                        <th scope="col" class="py-3.5 pr-3 pl-4 text-lg sm:pl-0"></th>
-                        {% for column_group in group.columngroup_set.all %}
-                            {% for column in column_group.column_set.all %}
-                                <th scope="col" class="py-3.5 pr-3 pl-4 text-center text-lg font-semibold text-gray-900 sm:px-0">{{ column.name }}</th>
-                            {% endfor %}
-                        {% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                {% for row in group.table_row_set.all %}
-                    <tr>
-                        <th scope="row" class="py-4 pr-3 pl-4 text-left text-lg font-medium whitespace-nowrap text-gray-900 sm:pl-0">{{ row.name }}</th>
-                        {% for column_group in group.columngroup_set.all %}
-                            {% for column in column_group.column_set.all %}
-                                <td class="px-3 py-4 text-lg whitespace-nowrap text-gray-500">
-                                    {% for form in formset %}
-                                        {% if form.initial.field and form.initial.field.fieldcolumn.column == column and form.initial.field.row == row %}
-                                            {% partial table-form-cell %}
-                                        {% elif form.instance.field and form.instance.field.fieldcolumn.column == column and form.instance.field.row == row %}
-                                            {% partial table-form-cell %}
-                                        {% endif %}
-                                    {% endfor %}
-                                </td>
-                            {% endfor %}
-                        {% endfor %}
-                    </tr>
                 {% endfor %}
-                </tbody>
-            </table>
+
+                <div></div>
+                {% for column_group in group.columngroup_set.all %}
+                    {% for column in column_group.column_set.all %}
+                    <div class="text-center text-base font-semibold text-gray-900">{{column.name}}</div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+
+            <div class="grid grid-cols-{{ subsection.column_count|add:1 }} gap-3 items-baseline-last">
+                {% for row in group.table_row_set.all %}
+                    <div>{{ row.name }}</div>
+                    {% for column_group in group.columngroup_set.all %}
+                        {% for column in column_group.column_set.all %}
+                            {% with column.field_set.all|find_fieldset_row:row as field %}
+                                {% if field %}
+                                    {% with label_classes="sr-only" error_classes="sr-only" input_classes="text-center" %}
+                                        {% partial form-cell--new %}
+                                    {% endwith %}
+                                {% else %}
+                                    <div></div>
+                                {% endif %}
+                            {% endwith %}
+                        {% endfor %}
+                    {% endfor %}
+                {% endfor %}
+            </div>
         {% endif %}
     </div>
 {% endfor %}

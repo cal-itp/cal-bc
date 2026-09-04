@@ -79,10 +79,6 @@ class TestProjectSystem:
         )
 
     @pytest.fixture
-    def subsection_2(self, section: Section) -> Subsection:
-        return section.subsection_set.create(name="Traffic Data", code="B")
-
-    @pytest.fixture
     def group_1(self, subsection_1: Subsection) -> Group:
         return subsection_1.group_set.create(name="General Information", description="All fields are required.")
 
@@ -96,29 +92,37 @@ class TestProjectSystem:
             """
         )
 
+    @pytest.fixture(autouse=True)
+    def project_name(self, group_1_row_1: Row) -> Field:
+        return group_1_row_1.field_set.create(name="Project Name", cell="ProjName")
+
     @pytest.fixture
     def group_1_row_2(self, group_1: Group) -> Row:
         return group_1.row_set.create(position=2)
 
+    @pytest.fixture(autouse=True)
+    def district_field(self, group_1_row_2: Row) -> Field:
+        return group_1_row_2.field_set.create(name="District", cell="1) Project Information!E2")
+
+    @pytest.fixture
+    def subsection_2(self, section: Section) -> Subsection:
+        return section.subsection_set.create(name="Traffic Data", code="B")
+
     @pytest.fixture
     def group_2(self, subsection_2: Subsection) -> Group:
-        return subsection_2.group_set.create(name="Average daily traffic")
+        return subsection_2.group_set.create(name="Project Costs")
 
     @pytest.fixture
     def group_2_row_1(self, group_2: Group) -> Row:
         return group_2.row_set.create()
 
     @pytest.fixture(autouse=True)
-    def project_name(self, group_1_row_1: Row) -> Field:
-        return group_1_row_1.field_set.create(name="Project Name", cell="ProjName")
+    def year_one_project_support(self, group_2_row_1: Row) -> Field:
+        return group_2_row_1.field_set.create(name="Year 1 Project Support", cell="1) Project Information!W15", unit="$")
 
     @pytest.fixture(autouse=True)
-    def district_field(self, group_1_row_2: Row) -> Field:
-        return group_1_row_2.field_set.create(name="District", cell="1) Project Information!E2")
-
-    @pytest.fixture(autouse=True)
-    def cars_per_hour(self, group_2_row_1: Row) -> Field:
-        return group_2_row_1.field_set.create(name="Annual Capital Expenditure", cell="ADT0", unit="$")
+    def total_project_support(self, group_2_row_1: Row) -> Field:
+        return group_2_row_1.field_set.create(name="Total Project Support", cell="1) Project Information!W44", unit="$", read_only=True)
 
     @pytest.fixture(autouse=True)
     def district_4(self, district_field: Field) -> Value:
@@ -128,8 +132,8 @@ class TestProjectSystem:
         )
 
     @pytest.fixture
-    def summary_group(self, subsection_1: Subsection) -> Group:
-        return subsection_1.group_set.create(name="Summary", is_summary=True)
+    def summary_group(self, subsection_2: Subsection) -> Group:
+        return subsection_2.group_set.create(name="Summary", is_summary=True)
 
     @pytest.fixture
     def summary_group_row(self, summary_group: Group) -> Row:
@@ -137,7 +141,7 @@ class TestProjectSystem:
 
     @pytest.fixture(autouse=True)
     def summary_group_field(self, summary_group_row: Row) -> Field:
-        return summary_group_row.field_set.create(name="Total Projected Revenue", cell="AA44", unit="$")
+        return summary_group_row.field_set.create(name="Total Construction", cell="1) Project Information!Y44", unit="$", read_only=True)
 
     def test_projects(self, first_page: Page, second_page: Page, channels_live_server: ChannelsLiveServer):
         first_page.goto(channels_live_server.http_url)
@@ -153,7 +157,6 @@ class TestProjectSystem:
         )
 
         first_page.get_by_label("Project Name").click()
-        expect(first_page.locator("body")).to_contain_text("Total Projected Revenue")
         expect(first_page.locator("body")).to_contain_text(
             "Enter a name for your project"
         )
@@ -176,16 +179,22 @@ class TestProjectSystem:
         first_page.get_by_label("Project Name").fill("New Geary Boulevard Light Rail")
         first_page.get_by_role("button", name="Continue to Subsection 1B").click()
 
-        expect(second_page.get_by_label("Project Name")).to_have_value("New Geary Boulevard Light Rail", timeout=240_000)
+        expect(second_page.get_by_label("Project Name")).to_have_value("New Geary Boulevard Light Rail", timeout=10_000)
 
         first_page.get_by_role("button", name="Save draft").click()
         expect(first_page.locator("body")).to_contain_text("This field is required")
-        first_page.get_by_label("Annual Capital Expenditure").fill("333")
-        expect(first_page.locator("#annual-capital-expenditure-unit")).to_contain_text("$")
+        expect(first_page.get_by_label("Year 1 Project Support").locator("//following-sibling::span")).to_contain_text("$")
+        first_page.get_by_label("Year 1 Project Support").fill("10")
+        expect(first_page.get_by_label("Total Project Support")).to_contain_text("$0", use_inner_text=True)
+        first_page.get_by_role("button", name="Save draft").click()
+        expect(first_page.get_by_label("Total Project Support")).to_contain_text("$10", use_inner_text=True)
+        expect(first_page.get_by_label("Total Construction")).to_contain_text("$0")
+
         first_page.get_by_role("button", name="Back to Subsection 1A").click()
         first_page.get_by_role("button", name="1A - Project Data").click()
         first_page.get_by_role("menuitem", name="1B. Traffic Data").click()
         first_page.get_by_role("link", name="Projects").click()
+
         expect(first_page.locator("body")).to_contain_text(
             "New Geary Boulevard Light Rail"
         )

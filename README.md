@@ -195,6 +195,17 @@ To reset your local database, run:
 $ uv run manage.py reset_db
 ```
 
+You can seed your local database using json files. Use the command `run manage.py loaddata <file_path>`.
+
+Example:
+
+```bash
+uv run manage.py loaddata tests/seeds/model_sketch_sub1A.json
+```
+
+See available files on [tests/seeds/](https://github.com/cal-itp/cal-bc/blob/main/tests/seeds/).
+
+
 ## License
 
 This tool is licensed under the terms of the GNU Affero General Public License.
