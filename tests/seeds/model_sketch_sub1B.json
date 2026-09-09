@@ -319,6 +319,7 @@
       "row_id": 10101020202,
       "name": "Base (Year 1) No Build",
       "cell": "1) Project Information!G38",
+      "required": "False",
       "position": 1
     }
   },
@@ -338,6 +339,7 @@
       "row_id": 10101020202,
       "name": "Base (Year 1) Build",
       "cell": "1) Project Information!H38",
+      "required": "False",
       "position": 2
     }
   },
@@ -386,6 +388,7 @@
       "row_id": 10101020203,
       "name": "Forecast (Year 20) Build",
       "cell": "1) Project Information!H39",
+      "required": "False",
       "position": 2
     }
   },
@@ -481,6 +484,7 @@
       "row_id": 10101020301,
       "name": "Average Hourly Build",
       "cell": "1) Project Information!H40",
+      "required": "False",
       "position": 2
     }
   },
@@ -511,6 +515,7 @@
       "name": "Induced Trips Build",
       "cell": "1) Project Information!H41",
       "unit": "%",
+      "required": "False",
       "position": 2
     }
   },

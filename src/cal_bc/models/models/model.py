@@ -172,6 +172,10 @@ class Row(models.Model):
     def __str__(self):
         return f"{self.name} - Position {self.position!s}" if self.name else f"Position {self.position!s}"
 
+    @property
+    def required(self):
+        return True if self.field_set.exclude(required=False).exclude(read_only=True).exclude(row__group__is_summary=True).count() > 0 else False
+
 
 class ColumnGroup(models.Model):
     group = models.ForeignKey(Group, null=False, on_delete=models.CASCADE)
@@ -235,6 +239,7 @@ class Field(models.Model):
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
     unit = models.CharField(blank=True)
     read_only = models.BooleanField(null=False, default=False, db_index=True)
+    required = models.BooleanField(null=False, default=True, db_index=True)
 
     class Meta:
         ordering = ["position"]

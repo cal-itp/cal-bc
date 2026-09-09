@@ -275,7 +275,7 @@
     "fields": {
       "field_id": 1010101020101,
       "name": "• General Highway",
-      "value": "General Highway",
+      "value": "    General Highway",
       "position": 2
     }
   },
@@ -285,7 +285,7 @@
     "fields": {
       "field_id": 1010101020101,
       "name": "• HOV Lane Addition",
-      "value": "HOV Lane Addition",
+      "value": "    HOV Lane Addition",
       "position": 3
     }
   },
@@ -295,7 +295,7 @@
     "fields": {
       "field_id": 1010101020101,
       "name": "• Passing Lane",
-      "value": "Passing Lane",
+      "value": "    Passing Lane",
       "position": 4
     }
   },
@@ -305,7 +305,7 @@
     "fields": {
       "field_id": 1010101020101,
       "name": "• Intersectiony",
-      "value": "Intersection",
+      "value": "    Intersection",
       "position": 5
     }
   },
@@ -315,7 +315,7 @@
     "fields": {
       "field_id": 1010101020101,
       "name": "• Truck Only Lane",
-      "value": "Truck Only Lane",
+      "value": "    Truck Only Lane",
       "position": 6
     }
   },
@@ -415,6 +415,7 @@
       "row_id": 10101010204,
       "name": "One- or Two-Way Data",
       "cell": "NumDirections",
+      "required": "False",
       "position": 1
     }
   },
@@ -459,6 +460,7 @@
       "name": "Length of Peak Period(s) (up to 24 hrs)",
       "cell": "PeakLngthNB",
       "unit": "hours",
+      "required": "False",
       "position": 1
     }
   },

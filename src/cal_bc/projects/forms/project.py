@@ -42,11 +42,12 @@ class ValueForm(ModelForm):
 
             if len(values):
                 self.fields["value"] = ChoiceField(
-                    choices=[(None, ""), *[(v.value, v.name) for v in values]]
+                    choices=[(None, ""), *[(v.value, v.name) for v in values]],
+                    required=field.required
                 )
             elif hasattr(field, "fieldrange") or field.unit:
-                self.fields["value"] = DecimalField()
+                self.fields["value"] = DecimalField(required=field.required)
             else:
-                self.fields["value"] = CharField()
+                self.fields["value"] = CharField(required=field.required)
 
             self.fields["value"].label = field.name
