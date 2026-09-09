@@ -86,7 +86,7 @@
         {% endfor %}
 
         {% if group.table_row_set.count > 0 %}
-            <div class="grid grid-cols-{{ subsection.column_count|add:1 }} gap-3 items-baseline-last">
+            <div class="grid {% if subsection.column_count < 6 %}grid-cols-{{ subsection.column_count|add:1 }}{% else %}grid-cols-[50px_repeat({{ subsection.column_count }},minmax(0,1fr))]{% endif %} gap-3 items-baseline-last">
                 <div></div>
                 {% for column_group in group.columngroup_set.all %}
                     {% if column_group.name %}
@@ -106,7 +106,7 @@
                 {% endfor %}
             </div>
 
-            <div class="grid grid-cols-{{ subsection.column_count|add:1 }} gap-3 items-baseline-last">
+            <div class="grid {% if subsection.column_count < 6 %}grid-cols-{{ subsection.column_count|add:1 }}{% else %}grid-cols-[50px_repeat({{ subsection.column_count }},minmax(0,1fr))]{% endif %} gap-3 items-baseline-last">
                 {% for row in group.table_row_set.all %}
                     <div>{{ row.name }}</div>
                     {% for column_group in group.columngroup_set.all %}
