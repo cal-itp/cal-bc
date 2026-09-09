@@ -44,7 +44,7 @@ class ValueForm(ModelForm):
                 self.fields["value"] = ChoiceField(
                     choices=[(None, ""), *[(v.value, v.name) for v in values]]
                 )
-            elif hasattr(field, "fieldrange"):
+            elif hasattr(field, "fieldrange") or field.unit:
                 self.fields["value"] = DecimalField()
             else:
                 self.fields["value"] = CharField()
