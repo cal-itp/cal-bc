@@ -1,22 +1,10 @@
 import pytest
-
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.test import Client
-from pathlib import Path
 from playwright.sync_api import Page, expect
 from pytest_playwright.pytest_playwright import CreateContextCallback
 
-from cal_bc.models.models.model import (
-    Field,
-    Group,
-    Model,
-    Row,
-    Section,
-    Subsection,
-    Version,
-)
-from cal_bc.projects.models.project import Value
 from tests.channels_live_server_helper import ChannelsLiveServer
 
 

@@ -108,7 +108,7 @@
 
             <div class="grid {% if subsection.column_count < 6 %}grid-cols-{{ subsection.column_count|add:1 }}{% else %}grid-cols-[50px_repeat({{ subsection.column_count }},minmax(0,1fr))]{% endif %} gap-3 items-baseline-last">
                 {% for row in group.table_row_set.all %}
-                    <div>{{ row.name }}</div>
+                    <div>{{ row.name }}{% if row.required %}<span class="text-red-700 ml-1">*</span>{% endif %}</div>
                     {% for column_group in group.columngroup_set.all %}
                         {% for column in column_group.column_set.all %}
                             {% with column.field_set.all|find_fieldset_row:row as field %}
