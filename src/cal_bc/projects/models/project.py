@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models, transaction
 
-from cal_bc.models.models.model import Field, Version
+from cal_bc.models.models.model import BenefitsField, Field, Version
 
 
 class Project(models.Model):
@@ -60,3 +60,33 @@ class Value(models.Model):
         with transaction.atomic():
             super().save(*args, **kwargs)
             transaction.on_commit(self.project.save)
+
+
+class BenefitsValue(models.Model):
+    project = models.ForeignKey(
+        Project, null=False, db_index=True, on_delete=models.CASCADE
+    )
+    benefits_field = models.ForeignKey(
+        BenefitsField,
+        null=False,
+        db_index=True,
+        related_name="project_benefits_value",
+        on_delete=models.CASCADE,
+    )
+    value = models.CharField(null=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "project",
+                    "benefits_field",
+                ],
+                name="unique_project_benefits_field",
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return self.value

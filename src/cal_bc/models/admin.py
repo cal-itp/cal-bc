@@ -2,6 +2,9 @@ import nested_admin
 from django.contrib import admin
 
 from cal_bc.models.models.model import (
+    BenefitsField,
+    BenefitsGroup,
+    BenefitsRow,
     Column,
     ColumnGroup,
     Field,
@@ -97,6 +100,65 @@ class ColumnGroupInline(
             return 1
 
 
+class BenefitsFieldInline(nested_admin.SortableHiddenMixin, nested_admin.NestedStackedInline):
+    model = BenefitsField
+    inlines = []
+
+    def get_extra(self, request, obj=None, **kwargs):
+        if obj is not None and obj.pk is not None and obj.benefitsfield_set.count():
+            return 0
+        else:
+            return 1
+
+
+class BenefitsRowInline(nested_admin.SortableHiddenMixin, nested_admin.NestedStackedInline):
+    model = BenefitsRow
+    inlines = [BenefitsFieldInline]
+
+    def get_extra(self, request, obj=None, **kwargs):
+        if obj is not None and obj.pk is not None and obj.benefitsrow_set.count():
+            return 0
+        else:
+            return 1
+
+
+class BenefitsGroupInline(nested_admin.SortableHiddenMixin, nested_admin.NestedTabularInline):
+    model = BenefitsGroup
+    show_change_link = True
+
+    def get_extra(self, request, obj=None, **kwargs):
+        if obj is not None and obj.pk is not None and obj.benefitsgroup_set.count():
+            return 0
+        else:
+            return 1
+
+
+@admin.register(BenefitsGroup)
+class BenefitsGroupAdmin(nested_admin.NestedModelAdmin):
+    model = BenefitsGroup
+    inlines = [BenefitsRowInline]
+    exclude = ["position"]
+    list_display = ["name", "model_name", "version_name", "section", "subsection"]
+    list_select_related = ["subsection", "subsection__section", "subsection__section__version", "subsection__section__version__model"]
+    ordering = ["name"]
+    search_fields = ["name", "subsection__code", "subsection__name", "subsection__code", "subsection__section__name", "subsection__section__version__name", "subsection__section__version__model__name"]
+    search_help_text = "Search by Name, Model, Version, Section, and Subsection"
+    fields = ["model_name", "version_name", "section", "subsection", "name", "is_summary", "description"]
+    readonly_fields = ["model_name", "version_name", "section"]
+
+    @admin.display(description="Model", ordering="subsection__section__version__model__name")
+    def model_name(self, obj):
+        return obj.subsection.section.version.model.name
+
+    @admin.display(description="Version", ordering="subsection__section__version__name")
+    def version_name(self, obj):
+        return obj.subsection.section.version.name
+
+    @admin.display(description="Section", ordering="subsection__section__name")
+    def section(self, obj):
+        return obj.subsection.section
+
+
 @admin.register(Group)
 class GroupAdmin(nested_admin.NestedModelAdmin):
     model = Group
@@ -136,7 +198,7 @@ class GroupInline(nested_admin.SortableHiddenMixin, nested_admin.NestedTabularIn
 
 class SubsectionInline(nested_admin.NestedStackedInline):
     model = Subsection
-    inlines = [GroupInline]
+    inlines = [GroupInline, BenefitsGroupInline]
 
     def get_extra(self, request, obj=None, **kwargs):
         if obj is not None and obj.pk is not None and obj.subsection_set.count():

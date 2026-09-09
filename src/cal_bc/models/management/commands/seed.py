@@ -2,9 +2,23 @@ import logging
 
 from django.core.management.base import BaseCommand
 
-from cal_bc.models.models.model import FieldColumn, FieldDisplayType, Model
+from cal_bc.models.models.model import (
+    BenefitsGroup,
+    BenefitsRow,
+    ColumnGroup,
+    Field,
+    FieldColumn,
+    FieldDisplayType,
+    Group,
+    Model,
+    Row,
+    Section,
+    Subsection,
+    Version,
+)
 
 logger = logging.getLogger(__name__)
+# logger.setLevel(logging.INFO)
 
 # python manage.py seed --mode=reseed
 
@@ -34,7 +48,7 @@ def create_model():
     return model
 
 
-def create_version(model):
+def create_version(model: Model):
     version = model.version_set.create(
         name="8.1",
         url="https://dot.ca.gov/-/media/dot-media/programs/transportation-planning/documents/new-state-planning/transportation-economics/cal-bc/2023-cal-bc/2023-non-federal-model/cal-bc-8-1-sketch-a11y.xlsm",
@@ -43,13 +57,13 @@ def create_version(model):
     return version
 
 
-def create_section(version):
-    section = version.section_set.create(name="Project Information", code="1")
+def create_section(version:Version, name="", code=""):
+    section = version.section_set.create(name=name, code=code)
     logger.info(f"{section} section created.")
     return section
 
 
-def create_subsection(section, name, code, description="", guide=None):
+def create_subsection(section: Section, name, code, description="", guide=None):
     subsection = section.subsection_set.create(
         name=name,
         code=code,
@@ -61,46 +75,64 @@ def create_subsection(section, name, code, description="", guide=None):
     return subsection
 
 
-def create_group(subsection, name, description="", is_summary=False):
+def create_group(subsection: Subsection, name, description="", is_summary=False):
     group = subsection.group_set.create(name=name, description=description, is_summary=is_summary)
     logger.info(f"{group} group created.")
     return group
 
 
-def create_row(group, name=""):
+def create_row(group: Group, name=""):
     row = group.row_set.create(name=name)
     logger.info(f"{row} row created.")
     return row
 
 
-def create_field(row, name, cell, unit="", display_type=FieldDisplayType.REQUIRED):
+def create_field(row: Row, name, cell, unit="", display_type=FieldDisplayType.REQUIRED):
     field = row.field_set.create(name=name, cell=cell, unit=unit, display_type=display_type)
     logger.info(f"{field} field created.")
     return field
 
 
-def create_value(field, name, value):
+def create_value(field: Field, name, value):
     value = field.value_set.create(name=name, value=value)
     logger.info(f"{value} value created.")
     return value
 
 
-def create_column_group(group, name=""):
+def create_column_group(group: Group, name=""):
     column_group = group.columngroup_set.create(name=name)
     logger.info(f"{column_group} column_group created.")
     return column_group
 
 
-def create_column(column_group, name=""):
+def create_column(column_group: ColumnGroup, name=""):
     column = column_group.column_set.create(name=name)
     logger.info(f"{column} column created.")
     return column
 
 
-def create_field_column(field, column):
+def create_field_column(field: Field, column):
     field_column = FieldColumn.objects.create(field=field, column=column)
     logger.info(f"{field_column} field column created.")
     return field_column
+
+
+def create_benefits_group(subsection: Subsection, name="", description="", is_summary=True):
+    benefits_group = subsection.benefitsgroup_set.create(name=name, description=description, is_summary=is_summary)
+    logger.info(f"{benefits_group} benefits group created.")
+    return benefits_group
+
+
+def create_benefits_row(benefits_group: BenefitsGroup):
+    benefits_row = benefits_group.benefitsrow_set.create()
+    logger.info(f"{benefits_row} benefits row created.")
+    return benefits_row
+
+
+def create_benefits_field(benefits_row: BenefitsRow, cell, name="", unit=""):
+    benefits_field = benefits_row.benefitsfield_set.create(name=name, cell=cell, unit=unit)
+    logger.info(f"{benefits_field} benefits field created.")
+    return benefits_field
 
 
 def seed(self, mode):
@@ -117,7 +149,8 @@ def seed(self, mode):
     model = create_model()
     version = create_version(model)
 
-    section_project_information = create_section(version)
+    section_project_information = create_section(version, name="Project Information", code="1")
+    section_results = create_section(version, name="Results", code="3")
 
     subsection_project_data = create_subsection(
         section=section_project_information,
@@ -147,6 +180,8 @@ def seed(self, mode):
         description="This subsection contains the project data.",
         guide="All values should be entered in thousands of dollars using today's constant dollars. Project costs (including maintenance and operating costs) should be net of costs without project."
     )
+
+    subsection_investment_analysis = create_subsection(section=section_results, name="Investment Analysis", code="")
 
     group_general_information = create_group(subsection=subsection_project_data, name="General Information")
     create_field(row=create_row(group_general_information), name="Project Name", cell="ProjName")
@@ -498,3 +533,12 @@ def seed(self, mode):
     create_field_column(field=create_field(row=row_construction_period_costs_total, name="Present Value Total",
                                            cell="1) Project Information!AE44", display_type=FieldDisplayType.READ_ONLY),
                         column=column_present_value)
+
+    benefits_group_summary = create_benefits_group(subsection=subsection_investment_analysis, name="")
+    benefits_row_summary = create_benefits_row(benefits_group=benefits_group_summary)
+    create_benefits_field(benefits_row=benefits_row_summary, name="Life-Cycle Costs", cell="3) Results!H13", unit="$")
+    create_benefits_field(benefits_row=benefits_row_summary, name="Life-Cycle Benefits", cell="3) Results!H14", unit="$")
+    create_benefits_field(benefits_row=benefits_row_summary, name="Net Present Value", cell="3) Results!H15", unit="$")
+    create_benefits_field(benefits_row=benefits_row_summary, name="Benefit / Cost Ratio", cell="BeneCostRatio", unit="x")
+    create_benefits_field(benefits_row=benefits_row_summary, name="Rate of Return on Investment", cell="3) Results!H19", unit="%")
+    create_benefits_field(benefits_row=benefits_row_summary, name="Payback Period", cell="3) Results!H21", unit="years")
