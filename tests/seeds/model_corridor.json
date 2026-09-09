@@ -7,6 +7,35 @@
       "description": "If your project has been modeled in a travel demand or microsimulation model, this tool can evaluate it — covering all highway and transit modes."
     }
   },
+
+  {
+    "model": "taggit.taggeditem",
+    "pk": 10192,
+    "fields": {
+      "tag_id": 101,
+      "content_type_id": 9,
+      "object_id": 2
+    }
+  },
+  {
+    "model": "taggit.taggeditem",
+    "pk": 10292,
+    "fields": {
+      "tag_id": 102,
+      "content_type_id": 9,
+      "object_id": 2
+    }
+  },
+  {
+    "model": "taggit.taggeditem",
+    "pk": 10392,
+    "fields": {
+      "tag_id": 103,
+      "content_type_id": 9,
+      "object_id": 2
+    }
+  },
+
   {
     "model": "models.version",
     "pk": 201,
