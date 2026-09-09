@@ -1,7 +1,9 @@
-
 import pytest
+
 from django.contrib.auth.models import User
+from django.core.management import call_command
 from django.test import Client
+from pathlib import Path
 from playwright.sync_api import Page, expect
 from pytest_playwright.pytest_playwright import CreateContextCallback
 
@@ -51,97 +53,13 @@ class TestProjectSystem:
         second_page.context.add_cookies([cookie])
         return second_page
 
-    @pytest.fixture
-    def model(self) -> Model:
-        return Model.objects.create(name="Cal-B/C Sketch", description="Best for early-stage highway or transit projects.", tags=["Transit", "Commuter Rail"])
-
-    @pytest.fixture
-    def version(self, model: Model) -> Version:
-        return model.version_set.create(
-            name="8.1",
-            url="https://dot.ca.gov/-/media/dot-media/programs/transportation-planning/documents/new-state-planning/transportation-economics/cal-bc/2023-cal-bc/2023-non-federal-model/cal-bc-8-1-sketch-a11y.xlsm",
-        )
-
-    @pytest.fixture
-    def section(self, version: Version) -> Section:
-        return version.section_set.create(name="Project Information", code="1")
-
-    @pytest.fixture
-    def subsection_1(self, section: Section) -> Subsection:
-        return section.subsection_set.create(
-            name="Project Data",
-            code="A",
-            description="This subsection contains the project data.",
-            guide="""
-                # Setup Help
-                All fields in this step are required.
-            """,
-        )
-
-    @pytest.fixture
-    def group_1(self, subsection_1: Subsection) -> Group:
-        return subsection_1.group_set.create(name="General Information", description="All fields are required.")
-
-    @pytest.fixture
-    def group_1_row_1(self, group_1: Group) -> Row:
-        return group_1.row_set.create(
-            position=1,
-            guide="""
-                # Project Name
-                Enter a name for your project.
-            """
-        )
-
     @pytest.fixture(autouse=True)
-    def project_name(self, group_1_row_1: Row) -> Field:
-        return group_1_row_1.field_set.create(name="Project Name", cell="ProjName")
-
-    @pytest.fixture
-    def group_1_row_2(self, group_1: Group) -> Row:
-        return group_1.row_set.create(position=2)
-
-    @pytest.fixture(autouse=True)
-    def district_field(self, group_1_row_2: Row) -> Field:
-        return group_1_row_2.field_set.create(name="District", cell="1) Project Information!E2")
-
-    @pytest.fixture
-    def subsection_2(self, section: Section) -> Subsection:
-        return section.subsection_set.create(name="Traffic Data", code="B")
-
-    @pytest.fixture
-    def group_2(self, subsection_2: Subsection) -> Group:
-        return subsection_2.group_set.create(name="Project Costs")
-
-    @pytest.fixture
-    def group_2_row_1(self, group_2: Group) -> Row:
-        return group_2.row_set.create()
-
-    @pytest.fixture(autouse=True)
-    def year_one_project_support(self, group_2_row_1: Row) -> Field:
-        return group_2_row_1.field_set.create(name="Year 1 Project Support", cell="1) Project Information!W15", unit="$")
-
-    @pytest.fixture(autouse=True)
-    def total_project_support(self, group_2_row_1: Row) -> Field:
-        return group_2_row_1.field_set.create(name="Total Project Support", cell="1) Project Information!W44", unit="$", read_only=True)
-
-    @pytest.fixture(autouse=True)
-    def district_4(self, district_field: Field) -> Value:
-        return district_field.value_set.create(
-            name="District 4 - Bay Area / Oakland",
-            value="District 4",
-        )
-
-    @pytest.fixture
-    def summary_group(self, subsection_2: Subsection) -> Group:
-        return subsection_2.group_set.create(name="Summary", is_summary=True)
-
-    @pytest.fixture
-    def summary_group_row(self, summary_group: Group) -> Row:
-        return summary_group.row_set.create()
-
-    @pytest.fixture(autouse=True)
-    def summary_group_field(self, summary_group_row: Row) -> Field:
-        return summary_group_row.field_set.create(name="Total Construction", cell="1) Project Information!Y44", unit="$", read_only=True)
+    def load_model_sketch(self):
+        call_command('loaddata', 'tags.json')
+        call_command('loaddata', 'model_sketch.json')
+        call_command('loaddata', 'model_sketch_sub1A.json')
+        call_command('loaddata', 'model_sketch_sub1D.json')
+        call_command('loaddata', 'model_sketch_sub1E.json')
 
     def test_projects(self, first_page: Page, second_page: Page, channels_live_server: ChannelsLiveServer):
         first_page.goto(channels_live_server.http_url)
@@ -149,6 +67,7 @@ class TestProjectSystem:
 
         second_page.goto(channels_live_server.http_url)
         expect(second_page.locator("body")).to_contain_text("My Cal B/C Projects")
+        expect(first_page.locator("body")).to_contain_text("0 projects")
 
         first_page.get_by_role("link", name="New project").click()
         first_page.get_by_role("button", name="Start project").click()
@@ -158,50 +77,112 @@ class TestProjectSystem:
 
         first_page.get_by_label("Project Name").click()
         expect(first_page.locator("body")).to_contain_text(
-            "Enter a name for your project"
+            "Enter a descriptive name for your project."
         )
-        first_page.get_by_label("Project Name").fill("Geary Boulevard Light Rail")
-        first_page.get_by_label("District").select_option(
-            "District 4 - Bay Area / Oakland"
+        expect(first_page.locator("body")).to_contain_text(
+            "Configure project analysis settings."
         )
-
-        expect(second_page.locator("body")).to_contain_text("Hypothetical Project")
-        first_page.get_by_role("button", name="Save draft").click()
-        expect(second_page.locator("body")).to_contain_text("Geary Boulevard Light Rail")
-
-        second_page.get_by_role("link", name="Edit").click()
-
-        expect(first_page.locator("body")).to_contain_text("Project successfully saved!")
-        first_page.get_by_role("link", name="Projects").click()
-        expect(first_page.locator("body")).to_contain_text("1 projects")
-        expect(first_page.locator("body")).to_contain_text("Geary Boulevard Light Rail")
-        first_page.get_by_role("link", name="Edit").click()
-        first_page.get_by_label("Project Name").fill("New Geary Boulevard Light Rail")
-        first_page.get_by_role("button", name="Continue to Subsection 1B").click()
-
-        expect(second_page.get_by_label("Project Name")).to_have_value("New Geary Boulevard Light Rail", timeout=10_000)
 
         first_page.get_by_role("button", name="Save draft").click()
         expect(first_page.locator("body")).to_contain_text("This field is required")
-        expect(first_page.get_by_label("Year 1 Project Support").locator("//following-sibling::span")).to_contain_text("$")
-        first_page.get_by_label("Year 1 Project Support").fill("10")
-        expect(first_page.get_by_label("Total Project Support")).to_contain_text("$0", use_inner_text=True)
+
+        first_page.get_by_label("Project Name").fill("Geary Boulevard Light Rail")
+        first_page.get_by_label("State").select_option("California")
+        first_page.get_by_label("District").select_option(
+            "District 4 - Bay Area / Oakland"
+        )
+        first_page.get_by_label("Project Type").select_option("• General Highway")
+        first_page.get_by_label("Project Location").select_option("NorCal")
+        expect(first_page.get_by_label("Length of Construction Period").locator("//following-sibling::span")).to_contain_text("years")
+        first_page.get_by_label("Length of Construction Period").fill("3")
+        first_page.get_by_label("One- or Two-Way Data").select_option("One-Way")
+        expect(first_page.get_by_label("Length of Peak Period").locator("//following-sibling::span")).to_contain_text("hours")
+        first_page.get_by_label("Length of Peak Period").fill("4")
+
+        expect(second_page.locator("body")).to_contain_text("Hypothetical Project")
         first_page.get_by_role("button", name="Save draft").click()
-        expect(first_page.get_by_label("Total Project Support")).to_contain_text("$10", use_inner_text=True)
-        expect(first_page.get_by_label("Total Construction")).to_contain_text("$0")
+        expect(first_page.locator("body")).to_contain_text("Project successfully saved!")
+        expect(second_page.locator("body")).to_contain_text("Geary Boulevard Light Rail")
 
+        first_page.get_by_label("Project Name").fill("New Geary Boulevard Light Rail")
+        first_page.get_by_role("button", name="Continue to Subsection 1D").click()
+        expect(first_page.locator("body")).to_contain_text("Project successfully saved!")
+
+        expect(second_page.locator("body")).to_contain_text("1 projects")
+        second_page.get_by_role("link", name="Edit").click()
+        expect(second_page.get_by_label("Project Name")).to_have_value("New Geary Boulevard Light Rail")
+
+        first_page.get_by_role("button", name="Save draft").click()
+        expect(first_page.locator("body")).to_contain_text("This field is required")
+        expect(first_page.get_by_label("Capital Expenditure No Build").locator("//following-sibling::span")).to_contain_text("$")
+        expect(first_page.get_by_label("Capital Expenditure Build").locator("//following-sibling::span")).to_contain_text("$")
+        expect(first_page.get_by_role("spinbutton", name="Capital Expenditure Build" )).to_have_value("0.0")
+        expect(first_page.get_by_label("Ops. & Maint. Expenditure No Build").locator("//following-sibling::span")).to_contain_text("$")
+        expect(first_page.get_by_label("Ops. & Maint. Expenditure Build").locator("//following-sibling::span")).to_contain_text("$")
+        expect(first_page.get_by_role("spinbutton", name="Ops. & Maint. Expenditure Build" )).to_have_value("0.0")
+        first_page.get_by_label("Capital Expenditure No Build").fill("250")
+        first_page.get_by_label("Ops. & Maint. Expenditure No Build").fill("30")
         first_page.get_by_role("button", name="Back to Subsection 1A").click()
-        first_page.get_by_role("button", name="1A - Project Data").click()
-        first_page.get_by_role("menuitem", name="1B. Traffic Data").click()
-        first_page.get_by_role("link", name="Projects").click()
+        expect(first_page.locator("body")).to_contain_text("Project successfully saved!")
 
+        first_page.get_by_role("button", name="1A - Project Data").click()
+        first_page.get_by_role("menuitem", name="1E. Project Costs").click()
+
+        expect(first_page.get_by_label("Total Mitigation")).to_contain_text("0", use_inner_text=True)
+        expect(first_page.get_by_label("Total Transit Agency Cost Savings")).to_contain_text("0", use_inner_text=True)
+        expect(first_page.get_by_label("Total Costs in Constant Dollars")).to_contain_text("$0", use_inner_text=True)
+        expect(first_page.get_by_label("Total Costs as Present Value")).to_contain_text("$0", use_inner_text=True)
+
+        expect(first_page.get_by_label("Constant Dollars Year 1")).to_contain_text("$0", use_inner_text=True)
+        expect(first_page.get_by_label("Present Value Year 1")).to_contain_text("$0", use_inner_text=True)
+        expect(first_page.get_by_label("Constant Dollars Year 2")).to_contain_text("$0", use_inner_text=True)
+        expect(first_page.get_by_label("Present Value Year 2")).to_contain_text("$0", use_inner_text=True)
+
+        expect(first_page.get_by_label("Project Support Total")).to_contain_text("0", use_inner_text=True)
+        expect(first_page.get_by_label("Right of Way Total")).to_contain_text("0", use_inner_text=True)
+        expect(first_page.get_by_label("Construction Total")).to_contain_text("0", use_inner_text=True)
+        expect(first_page.get_by_label("Mitigation Total")).to_contain_text("0", use_inner_text=True)
+        expect(first_page.get_by_label("Transit AGY Cost SVGS Total")).to_contain_text("0", use_inner_text=True)
+        expect(first_page.get_by_label("Constant Dollars Total")).to_contain_text("$0", use_inner_text=True)
+        expect(first_page.get_by_label("Present Value Total")).to_contain_text("$0", use_inner_text=True)
+
+        first_page.get_by_label("Project Support Year 1").fill("10000")
+        first_page.get_by_label("Right of Way Year 1").fill("11000")
+        first_page.get_by_label("Construction Year 1").fill("12000")
+        first_page.get_by_label("Mitigation Year 1").fill("13000")
+        first_page.get_by_label("Transit AGY Cost SVGS Year 1").fill("14000")
+
+        first_page.get_by_label("Project Support Year 2").fill("21000")
+        first_page.get_by_label("Right of Way Year 2").fill("22000")
+        first_page.get_by_label("Construction Year 2").fill("23000")
+        first_page.get_by_label("Mitigation Year 2").fill("24000")
+        first_page.get_by_label("Transit AGY Cost SVGS Year 2").fill("25000")
+
+        first_page.get_by_role("button", name="Save draft").click()
+
+        expect(first_page.get_by_label("Constant Dollars Year 1")).to_contain_text("$60,000,000", use_inner_text=True, timeout=10_000)
+        expect(first_page.get_by_label("Present Value Year 1")).to_contain_text("$60,000,000", use_inner_text=True)
+        expect(first_page.get_by_label("Constant Dollars Year 2")).to_contain_text("$115,000,000", use_inner_text=True)
+        expect(first_page.get_by_label("Present Value Year 2")).to_contain_text("$110,576,923", use_inner_text=True)
+
+        expect(first_page.get_by_label("Project Support Total")).to_contain_text("31,000", use_inner_text=True)
+        expect(first_page.get_by_label("Right of Way Total")).to_contain_text("33,000", use_inner_text=True)
+        expect(first_page.get_by_label("Construction Total")).to_contain_text("35,000", use_inner_text=True)
+        expect(first_page.get_by_label("Mitigation Total")).to_contain_text("37,000", use_inner_text=True)
+        expect(first_page.get_by_label("Transit AGY Cost SVGS Total")).to_contain_text("39,000", use_inner_text=True)
+        expect(first_page.get_by_label("Constant Dollars Total")).to_contain_text("$175,000,000", use_inner_text=True)
+        expect(first_page.get_by_label("Present Value Total")).to_contain_text("$170,576,923", use_inner_text=True)
+
+        first_page.get_by_role("link", name="Projects").click()
         expect(first_page.locator("body")).to_contain_text(
             "New Geary Boulevard Light Rail"
         )
 
+        expect(first_page.locator("body")).to_contain_text("1 projects")
         first_page.on("dialog", lambda dialog: dialog.accept())
         first_page.get_by_role("button", name="Delete").click()
         expect(first_page.locator("body")).to_contain_text("0 projects")
+
         first_page.get_by_role("button", name="User").click()
         first_page.get_by_text("Sign out").click()
         expect(first_page.locator("body")).to_contain_text("Sign in with Microsoft")

@@ -93,7 +93,6 @@ if importlib.util.find_spec("django_extensions"):
 
 
 STATICFILES_DIRS = [BASE_DIR / "assets"]
-
 SVG_DIRS = [BASE_DIR / "assets"]
 
 COTTON_BASE_DIR = BASE_DIR / "cal-bc"
@@ -233,6 +232,8 @@ INTERNAL_IPS = [
 ]
 
 TAGGIT_CASE_INSENSITIVE = True
+
+FIXTURE_DIRS = [BASE_DIR.parent / 'tests'/ 'seeds']
 
 if TESTING:
     TASKS = {
