@@ -254,3 +254,43 @@ class Value(models.Model):
 
     def __str__(self):
         return f"{self.name}: {self.value}"
+
+
+class BenefitsGroup(models.Model):
+    subsection = models.ForeignKey(Subsection, null=False, on_delete=models.CASCADE)
+    name = models.CharField(null=False, blank=False, db_index=True)
+    description = models.CharField(blank=True)
+    position = models.PositiveIntegerField(default=0, null=False, db_index=True)
+    is_summary = models.BooleanField(default=False, db_index=True)
+
+    class Meta:
+        ordering = ["position"]
+
+    def __str__(self):
+        return self.name
+
+
+class BenefitsRow(models.Model):
+    benefits_group = models.ForeignKey(BenefitsGroup, null=False, on_delete=models.CASCADE)
+    name = models.CharField(blank=True)
+    position = models.PositiveIntegerField(default=0, null=False, db_index=True)
+
+    class Meta:
+        ordering = ["position"]
+
+    def __str__(self):
+        return f"{self.name} - Position {self.position!s}" if self.name else f"Position {self.position!s}"
+
+
+class BenefitsField(models.Model):
+    benefits_row = models.ForeignKey(BenefitsRow, null=False, on_delete=models.CASCADE)
+    name = models.CharField(null=False, blank=False)
+    cell = models.CharField(null=False)
+    position = models.PositiveIntegerField(default=0, null=False, db_index=True)
+    unit = models.CharField(blank=True)
+
+    class Meta:
+        ordering = ["position"]
+
+    def __str__(self):
+        return f"{self.name} ({self.unit}) - Position {self.position!s}" if self.unit else f"{self.name} - Position {self.position!s}"
