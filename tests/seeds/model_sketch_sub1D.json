@@ -94,7 +94,7 @@
       "name": "Capital Expenditure Build",
       "cell": "1) Project Information!Q52",
       "unit": "$",
-      "required": "False",
+      "display_type": 2,
       "position": 2
     }
   },
@@ -145,7 +145,7 @@
       "name": "Ops. & Maint. Expenditure Build",
       "cell": "1) Project Information!Q53",
       "unit": "$",
-      "required": "False",
+      "display_type": 2,
       "position": 2
     }
   },

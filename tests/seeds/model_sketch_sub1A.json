@@ -415,7 +415,7 @@
       "row_id": 10101010204,
       "name": "One- or Two-Way Data",
       "cell": "NumDirections",
-      "required": "False",
+      "display_type": 2,
       "position": 1
     }
   },
@@ -460,7 +460,7 @@
       "name": "Length of Peak Period(s) (up to 24 hrs)",
       "cell": "PeakLngthNB",
       "unit": "hours",
-      "required": "False",
+      "display_type": 2,
       "position": 1
     }
   },

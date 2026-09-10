@@ -4,6 +4,7 @@ from django.tasks import TaskResultStatus
 
 from cal_bc.models.models.model import (
     Field,
+    FieldDisplayType,
     Group,
     Model,
     Row,
@@ -56,6 +57,14 @@ class TestProjectTasks:
     def field(self, row: Row) -> Field:
         return row.field_set.create(name="Project Name", cell="ProjName")
 
+    @pytest.fixture
+    def summary_group(self, subsection: Subsection) -> Group:
+        return subsection.group_set.create(name="Summary", description="Summary Group", is_summary=True)
+
+    @pytest.fixture
+    def summary_row(self, summary_group: Group) -> Row:
+        return summary_group.row_set.create()
+
     def test_refresh_project_fields_creates_value(self, project: Project, field: Field) -> None:
         assert project.value_set.count() == 0
         result = refresh_project_fields.enqueue(project.pk)
@@ -69,7 +78,7 @@ class TestProjectTasks:
         assert project.value_set.get(field=field).value == "Nombre"
 
     def test_refresh_project_fields_does_not_set_blank_values(self, project: Project, row: Row) -> None:
-        formula_field = row.field_set.create(name="Ramp Design Speed (Build)", cell="RampFFSpdB", required=False)
+        formula_field = row.field_set.create(name="Ramp Design Speed (Build)", cell="RampFFSpdB", display_type=FieldDisplayType.NOT_REQUIRED)
         formula_dependency = row.field_set.create(name="Ramp Design Speed (No Build)", cell="RampFFSpdNB")
         project.value_set.create(field=formula_dependency, value="")
         result = refresh_project_fields.enqueue(project.pk)
@@ -77,7 +86,7 @@ class TestProjectTasks:
         assert project.value_set.get(field=formula_field).value == "35"
 
     def test_refresh_project_fields_does_not_write_read_only_values(self, project: Project, row: Row) -> None:
-        formula_field = row.field_set.create(name="Ramp Design Speed (Build)", cell="RampFFSpdB", read_only=True)
+        formula_field = row.field_set.create(name="Ramp Design Speed (Build)", cell="RampFFSpdB", display_type=FieldDisplayType.READ_ONLY)
         project.value_set.create(field=formula_field, value="40")
         result = refresh_project_fields.enqueue(project.pk)
         assert result.status == TaskResultStatus.SUCCESSFUL
@@ -89,3 +98,25 @@ class TestProjectTasks:
         result = refresh_project_fields.enqueue(project.pk)
         assert result.status == TaskResultStatus.SUCCESSFUL
         assert project.value_set.get(field=formula_field).value == "40"
+
+    def test_refresh_project_dependent_fields(self, project: Project, row: Row) -> None:
+        year1_field = row.field_set.create(name="Mitigation Year 1", cell="1) Project Information!AB15", display_type=FieldDisplayType.REQUIRED)
+        year2_field = row.field_set.create(name="Mitigation Year 2", cell="1) Project Information!AB16", display_type=FieldDisplayType.NOT_REQUIRED)
+        result_field = row.field_set.create(name="Mitigation Total", cell="1) Project Information!AB44", display_type=FieldDisplayType.READ_ONLY)
+        project.value_set.create(field=year1_field, value="100")
+        project.value_set.create(field=year2_field, value="200")
+        project.value_set.create(field=result_field, value="50")
+        result = refresh_project_fields.enqueue(project.pk)
+        assert result.status == TaskResultStatus.SUCCESSFUL
+        assert project.value_set.get(field=result_field).value == "300.0"
+
+    def test_refresh_project_fields_does_not_overwrite_summary_values(self, project: Project, row: Row, summary_row: Row) -> None:
+        year1_field = row.field_set.create(name="Mitigation Year 1", cell="1) Project Information!AB15", display_type=FieldDisplayType.REQUIRED)
+        year2_field = row.field_set.create(name="Mitigation Year 2", cell="1) Project Information!AB16", display_type=FieldDisplayType.NOT_REQUIRED)
+        summary_field = summary_row.field_set.create(name="Mitigation Total", cell="1) Project Information!AB44", display_type=FieldDisplayType.REQUIRED)
+        project.value_set.create(field=year1_field, value="110")
+        project.value_set.create(field=year2_field, value="210")
+        project.value_set.create(field=summary_field, value="50")
+        result = refresh_project_fields.enqueue(project.pk)
+        assert result.status == TaskResultStatus.SUCCESSFUL
+        assert project.value_set.get(field=summary_field).value == "320.0"

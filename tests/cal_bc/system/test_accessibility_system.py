@@ -3,11 +3,11 @@ import pytest
 from django.contrib.auth.models import User
 from django.test import Client
 from playwright.sync_api import Page
-from pytest_playwright.pytest_playwright import CreateContextCallback
 from pytest_playwright_axe import Axe
 
 from cal_bc.models.models.model import (
     Field,
+    FieldDisplayType,
     Group,
     Model,
     Row,
@@ -47,12 +47,6 @@ class TestAccessibilitySystem:
         return first_page
 
     @pytest.fixture
-    def second_page(self, cookie: dict, new_context: CreateContextCallback) -> Page:
-        second_page = new_context().new_page()
-        second_page.context.add_cookies([cookie])
-        return second_page
-
-    @pytest.fixture
     def model(self) -> Model:
         return Model.objects.create(name="Cal-B/C Sketch", description="Best for early-stage highway or transit projects.", tags=["Transit", "Commuter Rail"])
 
@@ -68,7 +62,7 @@ class TestAccessibilitySystem:
         return version.section_set.create(name="Project Information", code="1")
 
     @pytest.fixture
-    def subsection_1(self, section: Section) -> Subsection:
+    def subsection_1A(self, section: Section) -> Subsection:
         return section.subsection_set.create(
             name="Project Data",
             code="A",
@@ -80,46 +74,33 @@ class TestAccessibilitySystem:
         )
 
     @pytest.fixture
-    def subsection_2(self, section: Section) -> Subsection:
-        return section.subsection_set.create(name="Traffic Data", code="B")
-
-    @pytest.fixture
-    def group_1(self, subsection_1: Subsection) -> Group:
-        return subsection_1.group_set.create(name="General Information", description="All fields are required.")
-
-    @pytest.fixture
-    def group_1_row_1(self, group_1: Group) -> Row:
-        return group_1.row_set.create(
-            position=1,
-            guide="""
-                # Project Name
-                Enter a name for your project.
-            """
+    def group_1A(self, subsection_1A: Subsection) -> Group:
+        return subsection_1A.group_set.create(
+            name="General Information",
+            description="This is the general information group."
         )
 
     @pytest.fixture
-    def group_1_row_2(self, group_1: Group) -> Row:
-        return group_1.row_set.create(position=2)
+    def group_1A_row_1(self, group_1A: Group) -> Row:
+        return group_1A.row_set.create(
+            position=1,
+            guide="""
+                # Project Name
+                Enter a descriptive name for your project.
+            """
+        )
+
+    @pytest.fixture(autouse=True)
+    def project_name(self, group_1A_row_1: Row) -> Field:
+        return group_1A_row_1.field_set.create(name="Project Name", cell="ProjName")
 
     @pytest.fixture
-    def group_2(self, subsection_2: Subsection) -> Group:
-        return subsection_2.group_set.create(name="Average daily traffic")
-
-    @pytest.fixture
-    def group_2_row_1(self, group_2: Group) -> Row:
-        return group_2.row_set.create()
+    def group_1A_row_2(self, group_1A: Group) -> Row:
+        return group_1A.row_set.create(position=2)
 
     @pytest.fixture(autouse=True)
-    def project_name(self, group_1_row_1: Row) -> Field:
-        return group_1_row_1.field_set.create(name="Project Name", cell="ProjName")
-
-    @pytest.fixture(autouse=True)
-    def district_field(self, group_1_row_2: Row) -> Field:
-        return group_1_row_2.field_set.create(name="District", cell="1) Project Information!E2")
-
-    @pytest.fixture(autouse=True)
-    def cars_per_hour(self, group_2_row_1: Row) -> Field:
-        return group_2_row_1.field_set.create(name="Annual Capital Expenditure", cell="ADT0", unit="$")
+    def district_field(self, group_1A_row_2: Row) -> Field:
+        return group_1A_row_2.field_set.create(name="District", cell="1) Project Information!E2")
 
     @pytest.fixture(autouse=True)
     def district_4(self, district_field: Field) -> Value:
@@ -127,6 +108,54 @@ class TestAccessibilitySystem:
             name="District 4 - Bay Area / Oakland",
             value="District 4",
         )
+
+    @pytest.fixture
+    def subsection_1B(self, section: Section) -> Subsection:
+        return section.subsection_set.create(name="Traffic Data", code="B")
+
+    @pytest.fixture
+    def group_1B(self, subsection_1B: Subsection) -> Group:
+        return subsection_1B.group_set.create(name="Project Costs")
+
+    @pytest.fixture
+    def group_1B_row_1(self, group_1B: Group) -> Row:
+        return group_1B.row_set.create()
+
+    @pytest.fixture(autouse=True)
+    def year_one_project_support(self, group_1B_row_1: Row) -> Field:
+        return group_1B_row_1.field_set.create(name="Project Support Year 1", cell="1) Project Information!W15", position=1, display_type=FieldDisplayType.REQUIRED)
+
+    @pytest.fixture(autouse=True)
+    def year_one_construction(self, group_1B_row_1: Row) -> Field:
+        return group_1B_row_1.field_set.create(name="Construction Year 1", cell="1) Project Information!Y15", position=2, display_type=FieldDisplayType.REQUIRED)
+
+    @pytest.fixture
+    def group_1B_row_2(self, group_1B: Group) -> Row:
+        return group_1B.row_set.create()
+
+    @pytest.fixture(autouse=True)
+    def year_two_project_support(self, group_1B_row_2: Row) -> Field:
+        return group_1B_row_2.field_set.create(name="Project Support Year 2", cell="1) Project Information!W16", position=1, display_type=FieldDisplayType.NOT_REQUIRED)
+
+    @pytest.fixture(autouse=True)
+    def year_two_construction(self, group_1B_row_2: Row) -> Field:
+        return group_1B_row_2.field_set.create(name="Construction Year 2", cell="1) Project Information!Y16", position=2, display_type=FieldDisplayType.NOT_REQUIRED)
+
+    @pytest.fixture
+    def summary_group(self, subsection_1B: Subsection) -> Group:
+        return subsection_1B.group_set.create(name="Summary", is_summary=True)
+
+    @pytest.fixture
+    def summary_group_row(self, summary_group: Group) -> Row:
+        return summary_group.row_set.create()
+
+    @pytest.fixture(autouse=True)
+    def total_project_support(self, summary_group_row: Row) -> Field:
+        return summary_group_row.field_set.create(name="Total Project Support", cell="1) Project Information!W44", unit="$", position=1)
+
+    @pytest.fixture(autouse=True)
+    def total_construction(self, summary_group_row: Row) -> Field:
+        return summary_group_row.field_set.create(name="Total Construction", cell="1) Project Information!Y44", unit="$", position=1)
 
     def test_accessibility(self, first_page: Page, channels_live_server: ChannelsLiveServer):
         axe = Axe()
