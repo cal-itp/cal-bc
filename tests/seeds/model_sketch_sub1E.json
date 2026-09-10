@@ -48,8 +48,7 @@
       "row_id": 10101050101,
       "name": "Total Mitigation",
       "cell": "1) Project Information!AB44",
-      "read_only": "True",
-      "required": "False",
+      "display_type": 3,
       "position": 1
     }
   },
@@ -61,8 +60,7 @@
       "row_id": 10101050101,
       "name": "Total Transit Agency Cost Savings",
       "cell": "1) Project Information!AC44",
-      "read_only": "True",
-      "required": "False",
+      "display_type": 3,
       "position": 2
     }
   },
@@ -75,8 +73,7 @@
       "name": "Total Costs in Constant Dollars",
       "cell": "1) Project Information!AD44",
       "unit": "$",
-      "read_only": "True",
-      "required": "False",
+      "display_type": 3,
       "position": 3
     }
   },
@@ -89,8 +86,7 @@
       "name": "Total Costs as Present Value",
       "cell": "1) Project Information!AE44",
       "unit": "$",
-      "read_only": "True",
-      "required": "False",
+      "display_type": 3,
       "position": 4
     }
   },
@@ -226,7 +222,7 @@
       "row_id": 10101050201,
       "name": "Project Support Year 1",
       "cell": "1) Project Information!W15",
-      "required": "False",
+      "display_type": 2,
       "position": 1
     }
   },
@@ -246,7 +242,7 @@
       "row_id": 10101050201,
       "name": "Right of Way Year 1",
       "cell": "1) Project Information!X15",
-      "required": "False",
+      "display_type": 2,
       "position": 2
     }
   },
@@ -266,7 +262,7 @@
       "row_id": 10101050201,
       "name": "Construction Year 1",
       "cell": "1) Project Information!Y15",
-      "required": "False",
+      "display_type": 2,
       "position": 3
     }
   },
@@ -286,7 +282,7 @@
       "row_id": 10101050201,
       "name": "Mitigation Year 1",
       "cell": "1) Project Information!AB15",
-      "required": "False",
+      "display_type": 2,
       "position": 4
     }
   },
@@ -306,7 +302,7 @@
       "row_id": 10101050201,
       "name": "Transit AGY Cost SVGS Year 1",
       "cell": "1) Project Information!AC15",
-      "required": "False",
+      "display_type": 2,
       "position": 5
     }
   },
@@ -327,8 +323,7 @@
       "name": "Constant Dollars Year 1",
       "cell": "1) Project Information!AD15",
       "unit": "$",
-      "read_only": "True",
-      "required": "False",
+      "display_type": 3,
       "position": 6
     }
   },
@@ -349,8 +344,7 @@
       "name": "Present Value Year 1",
       "cell": "1) Project Information!AE15",
       "unit": "$",
-      "read_only": "True",
-      "required": "False",
+      "display_type": 3,
       "position": 7
     }
   },
@@ -380,7 +374,7 @@
       "row_id": 10101050202,
       "name": "Project Support Year 2",
       "cell": "1) Project Information!W16",
-      "required": "False",
+      "display_type": 2,
       "position": 1
     }
   },
@@ -400,7 +394,7 @@
       "row_id": 10101050202,
       "name": "Right of Way Year 2",
       "cell": "1) Project Information!X16",
-      "required": "False",
+      "display_type": 2,
       "position": 2
     }
   },
@@ -420,7 +414,7 @@
       "row_id": 10101050202,
       "name": "Construction Year 2",
       "cell": "1) Project Information!Y16",
-      "required": "False",
+      "display_type": 2,
       "position": 3
     }
   },
@@ -440,7 +434,7 @@
       "row_id": 10101050202,
       "name": "Mitigation Year 2",
       "cell": "1) Project Information!AB16",
-      "required": "False",
+      "display_type": 2,
       "position": 4
     }
   },
@@ -460,7 +454,7 @@
       "row_id": 10101050202,
       "name": "Transit AGY Cost SVGS Year 2",
       "cell": "1) Project Information!AC16",
-      "required": "False",
+      "display_type": 2,
       "position": 5
     }
   },
@@ -481,8 +475,7 @@
       "name": "Constant Dollars Year 2",
       "cell": "1) Project Information!AD16",
       "unit": "$",
-      "read_only": "True",
-      "required": "False",
+      "display_type": 3,
       "position": 6
     }
   },
@@ -503,8 +496,7 @@
       "name": "Present Value Year 2",
       "cell": "1) Project Information!AE16",
       "unit": "$",
-      "read_only": "True",
-      "required": "False",
+      "display_type": 3,
       "position": 7
     }
   },
@@ -534,7 +526,7 @@
       "row_id": 10101050207,
       "name": "Project Support Total",
       "cell": "1) Project Information!W44",
-      "read_only": "True",
+      "display_type": 3,
       "position": 1
     }
   },
@@ -554,7 +546,7 @@
       "row_id": 10101050207,
       "name": "Right of Way Total",
       "cell": "1) Project Information!X44",
-      "read_only": "True",
+      "display_type": 3,
       "position": 2
     }
   },
@@ -574,7 +566,7 @@
       "row_id": 10101050207,
       "name": "Construction Total",
       "cell": "1) Project Information!Y44",
-      "read_only": "True",
+      "display_type": 3,
       "position": 3
     }
   },
@@ -594,7 +586,7 @@
       "row_id": 10101050207,
       "name": "Mitigation Total",
       "cell": "1) Project Information!AB44",
-      "read_only": "True",
+      "display_type": 3,
       "position": 4
     }
   },
@@ -614,7 +606,7 @@
       "row_id": 10101050207,
       "name": "Transit AGY Cost SVGS Total",
       "cell": "1) Project Information!AC44",
-      "read_only": "True",
+      "display_type": 3,
       "position": 5
     }
   },
@@ -635,7 +627,7 @@
       "name": "Constant Dollars Total",
       "cell": "1) Project Information!AD44",
       "unit": "$",
-      "read_only": "True",
+      "display_type": 3,
       "position": 6
     }
   },
@@ -656,7 +648,7 @@
       "name": "Present Value Total",
       "cell": "1) Project Information!AE44",
       "unit": "$",
-      "read_only": "True",
+      "display_type": 3,
       "position": 7
     }
   },

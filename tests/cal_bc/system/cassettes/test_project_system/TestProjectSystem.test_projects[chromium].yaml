@@ -5,6 +5,103 @@ interactions:
       Connection:
       - close
       Host:
+      - github.com
+      User-Agent:
+      - django-tailwind-cli
+    method: GET
+    uri: https://github.com/tailwindlabs/tailwindcss/releases/latest/
+  response:
+    body:
+      string: ''
+    headers:
+      Cache-Control:
+      - no-cache
+      Content-Length:
+      - '0'
+      Content-Security-Policy:
+      - 'default-src ''none''; base-uri ''self''; child-src github.githubassets.com
+        github.com/assets-cdn/worker/ github.com/assets/ gist.github.com/assets-cdn/worker/;
+        connect-src ''self'' uploads.github.com www.githubstatus.com collector.github.com
+        raw.githubusercontent.com api.github.com github-cloud.s3.amazonaws.com github-production-repository-file-5c1aeb.s3.amazonaws.com
+        github-production-upload-manifest-file-7fdce7.s3.amazonaws.com github-production-user-asset-6210df.s3.amazonaws.com
+        *.rel.tunnels.api.visualstudio.com wss://*.rel.tunnels.api.visualstudio.com
+        github.githubassets.com objects-origin.githubusercontent.com copilot-proxy.githubusercontent.com
+        proxy.individual.githubcopilot.com proxy.business.githubcopilot.com proxy.enterprise.githubcopilot.com
+        *.actions.githubusercontent.com wss://*.actions.githubusercontent.com productionresultssa0.blob.core.windows.net
+        productionresultssa1.blob.core.windows.net productionresultssa2.blob.core.windows.net
+        productionresultssa3.blob.core.windows.net productionresultssa4.blob.core.windows.net
+        productionresultssa5.blob.core.windows.net productionresultssa6.blob.core.windows.net
+        productionresultssa7.blob.core.windows.net productionresultssa8.blob.core.windows.net
+        productionresultssa9.blob.core.windows.net productionresultssa10.blob.core.windows.net
+        productionresultssa11.blob.core.windows.net productionresultssa12.blob.core.windows.net
+        productionresultssa13.blob.core.windows.net productionresultssa14.blob.core.windows.net
+        productionresultssa15.blob.core.windows.net productionresultssa16.blob.core.windows.net
+        productionresultssa17.blob.core.windows.net productionresultssa18.blob.core.windows.net
+        productionresultssa19.blob.core.windows.net github-production-repository-image-32fea6.s3.amazonaws.com
+        github-production-release-asset-2e65be.s3.amazonaws.com insights.github.com
+        wss://alive.github.com wss://alive-staging.github.com api.githubcopilot.com
+        api.individual.githubcopilot.com api.business.githubcopilot.com api.enterprise.githubcopilot.com
+        wss://production-copilot-host.webpubsub.azure.com; font-src github.githubassets.com;
+        form-action ''self'' github.com gist.github.com copilot-workspace.githubnext.com
+        objects-origin.githubusercontent.com; frame-ancestors ''none''; frame-src
+        viewscreen.githubusercontent.com notebooks.githubusercontent.com; img-src
+        ''self'' data: blob: github.githubassets.com media.githubusercontent.com camo.githubusercontent.com
+        identicons.github.com avatars.githubusercontent.com private-avatars.githubusercontent.com
+        github-cloud.s3.amazonaws.com objects.githubusercontent.com release-assets.githubusercontent.com
+        secured-user-images.githubusercontent.com user-images.githubusercontent.com
+        private-user-images.githubusercontent.com opengraph.githubassets.com repository-images.githubusercontent.com
+        marketplace-screenshots.githubusercontent.com copilotprodattachments.blob.core.windows.net/github-production-copilot-attachments/
+        github-production-user-asset-6210df.s3.amazonaws.com customer-stories-feed.github.com
+        spotlights-feed.github.com explore-feed.github.com objects-origin.githubusercontent.com
+        *.githubusercontent.com; manifest-src ''self''; media-src github.com user-images.githubusercontent.com
+        secured-user-images.githubusercontent.com private-user-images.githubusercontent.com
+        github-production-user-asset-6210df.s3.amazonaws.com gist.github.com github.githubassets.com;
+        script-src github.githubassets.com; style-src ''unsafe-inline'' github.githubassets.com;
+        upgrade-insecure-requests; worker-src github.githubassets.com github.com/assets-cdn/worker/
+        github.com/assets/ gist.github.com/assets-cdn/worker/'
+      Content-Type:
+      - text/html; charset=utf-8
+      Date:
+      - Thu, 10 Sep 2026 04:51:10 GMT
+      Location:
+      - https://github.com/tailwindlabs/tailwindcss/releases/tag/v4.3.3
+      Referrer-Policy:
+      - no-referrer-when-downgrade
+      Server:
+      - github.com
+      Set-Cookie:
+      - _gh_sess=lMtdUtRt%2BWzAnfRb%2Bl7zmcLS3BbWoQvooO%2Biycc8vgQoDUO1vspZBpd6Sa%2BkSVyNIM8BgPneTbP3JzcJ7y2OLWtl4p3bRqI3KonZqpPn%2FmCj3K%2B%2F4ZBiAN6TiTPgRRilIYUr3LAyI1IOtr3yYUKdaWGVgK%2BDlIsYPUtbiWfn5cwU4rNnpLkKi4dRCeObg0yGKulqdzoUI1At4RXPDZp5IAmasn0I8vvKk5uuhacZbIoX5zLyZRobFGDU%2BUEtmPc4uRrI6exzakDUwUTY35Vhew%3D%3D--WKePHJwj6WxmsRw7--nC5WVCithoLVAzsPErq61A%3D%3D;
+        path=/; HttpOnly; secure; SameSite=Lax
+      - _octo=GH1.1.315828627.1789015870; expires=Fri, 10 Sep 2027 04:51:10 GMT; domain=.github.com;
+        path=/; secure; SameSite=Lax
+      - logged_in=no; expires=Fri, 10 Sep 2027 04:51:10 GMT; domain=.github.com; path=/;
+        HttpOnly; secure; SameSite=Lax
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Vary:
+      - X-PJAX, X-PJAX-Container, Turbo-Visit, Turbo-Frame, X-Requested-With, X-GitHub-Client-Version,
+        Sec-Fetch-Site,Accept-Encoding, Accept, X-Requested-With
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - C525:20DEF4:911C23:B1702A:6AA2373E
+      X-XSS-Protection:
+      - '0'
+      connection:
+      - close
+      x-github-edge-region:
+      - westus3
+    status:
+      code: 302
+      message: Found
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
       - dot.ca.gov
       User-Agent:
       - Python-urllib/3.12
@@ -13208,13 +13305,13 @@ interactions:
       Content-Type:
       - application/vnd.ms-excel.sheet.macroEnabled.12
       Date:
-      - Wed, 09 Sep 2026 20:41:59 GMT
+      - Thu, 10 Sep 2026 04:51:11 GMT
       Last-Modified:
       - Sat, 26 Oct 2024 23:30:45 GMT
       Set-Cookie:
-      - BIGipServer~A~Pool_SiteCore_ContentDelivery=rd1o00000000000000000000ffff95881544o443;
+      - BIGipServer~A~Pool_SiteCore_ContentDelivery=rd1o00000000000000000000ffff95881545o443;
         path=/; Httponly; Secure
-      - TS0115e638=01ccba8e7f3f79dc336d17baa3af3cbefdeaf61a7f033acc036aafc723ef4209c47944c32dd1aac91b5db0a39a417657eb1e256bdf349480cef66d158b567edaf4ed9ee85c;
+      - TS0115e638=01ccba8e7fa1b9dc85d4761e04f0ee7babd58e0ed052158d4ba6ce736f1fd9240813f1761bf2540742ce922908ebe67e1fe7269bf49e9c489e68f601f1a712c23f7105c072;
         Path=/; Domain=.dot.ca.gov
     status:
       code: 200
@@ -26428,13 +26525,13 @@ interactions:
       Content-Type:
       - application/vnd.ms-excel.sheet.macroEnabled.12
       Date:
-      - Wed, 09 Sep 2026 20:42:07 GMT
+      - Thu, 10 Sep 2026 04:51:18 GMT
       Last-Modified:
       - Sat, 26 Oct 2024 23:30:45 GMT
       Set-Cookie:
       - BIGipServer~A~Pool_SiteCore_ContentDelivery=rd1o00000000000000000000ffff95881544o443;
         path=/; Httponly; Secure
-      - TS0115e638=01ccba8e7f103ae8f868a63c462d587d2a5ff227c6e7adaf3ed2bc86f0283dbef4d607922a3e0b2bd7b26c2faa00dedacd455f3a18d2db876514534b2420aa3c625e89e3ec;
+      - TS0115e638=01ccba8e7f6a63e6b288d0dff42e39c9691163d14a679657c2a2a5e9678f68221dbec8d709e31c4bb4430665b91242b89794c7b56808fbdc9e6289d5e6ec1be456ebb673e5;
         Path=/; Domain=.dot.ca.gov
     status:
       code: 200
@@ -39648,13 +39745,13 @@ interactions:
       Content-Type:
       - application/vnd.ms-excel.sheet.macroEnabled.12
       Date:
-      - Wed, 09 Sep 2026 20:42:13 GMT
+      - Thu, 10 Sep 2026 04:51:24 GMT
       Last-Modified:
       - Sat, 26 Oct 2024 23:30:45 GMT
       Set-Cookie:
-      - BIGipServer~A~Pool_SiteCore_ContentDelivery=rd1o00000000000000000000ffff95881544o443;
+      - BIGipServer~A~Pool_SiteCore_ContentDelivery=rd1o00000000000000000000ffff95881545o443;
         path=/; Httponly; Secure
-      - TS0115e638=01ccba8e7f7a3372640762e3c125a2f234fae6a0b552e891bc2a9056b5a02648df9a6a8b10170ccb69c4a6ee27da204003547b8b6a6a08efc32e303c62d884dcc261b3f6a2;
+      - TS0115e638=01ccba8e7f0477112bb89bc5683ec15075e47c86397d9381ad95d3b9fc0b65644ddf1c49434e900760db1f0ca3dea8b87ad1917273477bf56a363d4f9332e481c678bc796f;
         Path=/; Domain=.dot.ca.gov
     status:
       code: 200
@@ -52868,13 +52965,13 @@ interactions:
       Content-Type:
       - application/vnd.ms-excel.sheet.macroEnabled.12
       Date:
-      - Wed, 09 Sep 2026 20:42:21 GMT
+      - Thu, 10 Sep 2026 04:51:32 GMT
       Last-Modified:
       - Sat, 26 Oct 2024 23:30:45 GMT
       Set-Cookie:
-      - BIGipServer~A~Pool_SiteCore_ContentDelivery=rd1o00000000000000000000ffff95881544o443;
+      - BIGipServer~A~Pool_SiteCore_ContentDelivery=rd1o00000000000000000000ffff95881545o443;
         path=/; Httponly; Secure
-      - TS0115e638=01ccba8e7ffc113a72140e1599d673de06a44ce55c2b8d2c2e8b2d3b7983f29831c2fd2cd5e2f8c4957c44b39ec16f38e9e64ca1161264ab593a5088316f12b07e1295b4ba;
+      - TS0115e638=01ccba8e7f33356bfe380b2e53dc3722ef42838d415bbe2eea4122eda0679d2247b8b2efc660364006333f7660cb3dd971363ea553f040497d2dfc0785ddc0e00b5f8c4f99;
         Path=/; Domain=.dot.ca.gov
     status:
       code: 200
@@ -66088,13 +66185,13 @@ interactions:
       Content-Type:
       - application/vnd.ms-excel.sheet.macroEnabled.12
       Date:
-      - Wed, 09 Sep 2026 20:42:30 GMT
+      - Thu, 10 Sep 2026 04:51:40 GMT
       Last-Modified:
       - Sat, 26 Oct 2024 23:30:45 GMT
       Set-Cookie:
       - BIGipServer~A~Pool_SiteCore_ContentDelivery=rd1o00000000000000000000ffff95881544o443;
         path=/; Httponly; Secure
-      - TS0115e638=01ccba8e7f2dfd6ca047912096141bbe978e4fd1f4bc0407fb10e8413430fabddcca895a8bcc3716b5a7426cdd3ce82be5a5a722e4cb8214817bbe7bf2300666bb2ff781b4;
+      - TS0115e638=01ccba8e7ffa061733558ee5be3edc2b6ab35c46df3d477dedfbe24130bdb5a40508affc2ea9018ec9fc5cc4b09667df93e2857eac528ce74a23ecc71984708ebfedd78e0b;
         Path=/; Domain=.dot.ca.gov
     status:
       code: 200

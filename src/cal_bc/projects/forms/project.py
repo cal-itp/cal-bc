@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from django.forms import CharField, ChoiceField, DecimalField, HiddenInput, ModelForm
 from django.utils.translation import gettext as _
 
+from cal_bc.models.models.model import FieldDisplayType
 from cal_bc.projects.models.project import Value
 
 
