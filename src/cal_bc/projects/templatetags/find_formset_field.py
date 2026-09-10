@@ -20,3 +20,9 @@ def find_fieldset_row(field_set, row):
     for field in field_set:
         if hasattr(field, "row") and field.row == row:
                 return field
+
+@register.filter
+def find_benefits_valueset_field(value_set, field):
+    for value in value_set:
+        if hasattr(value, "benefits_field") and value.benefits_field == field:
+            return value
