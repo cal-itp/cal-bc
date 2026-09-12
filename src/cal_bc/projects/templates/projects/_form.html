@@ -11,40 +11,38 @@
 {% endpartialdef %}
 
 {% partialdef form-cell--new %}
-    {% with formset|find_formset_field:field as form %}
-        {% if form %}
+    {% if field.read_only %}
+        {% with object.value_set.all|find_valueset_field:field as value %}
             <div>
-                {% url 'model_version_section_subsection_group_row_guide' model_pk=row.group.subsection.section.version.model.pk version_pk=row.group.subsection.section.version.pk section_pk=row.group.subsection.section.pk subsection_pk=row.group.subsection.pk group_pk=row.group.pk pk=row.pk as row_url %}
-                {{ form.id }}
-                {{ form.field }}
-                {% for field in form.visible_fields %}
-                    {% if field.widget_type == 'select' %}
-                        <c-value-select
-                            form=form
-                            field=field
-                            input_error_classes="{% if form.errors %} border-red-700 focus:border-red-700 focus:outline-red-400 {% endif %}"
-                        />
-                    {% else %}
-                        <c-value-textbox
-                            form=form
-                            field=field
-                            input_error_classes="{% if form.errors %} border-red-700 focus-within:border-red-700 focus-within:outline-red-400 {% endif %}"
-                        />
-                    {% endif %}
-                {% endfor %}
+                <c-value-read-only blank="" field=field value=value />
             </div>
-        {% else %}
-            {% with object.value_set.all|find_valueset_field:field as value %}
-                {% if value %}
-                    <div>
-                        <c-value-read-only field=field value=value />
-                    </div>
-                {% else %}
-                    <div></div>
-                {% endif %}
-            {% endwith %}
-        {% endif %}
-    {% endwith %}
+        {% endwith %}
+    {% else %}
+        {% with formset|find_formset_field:field as form %}
+            {% if form %}
+                <div>
+                    {% url 'model_version_section_subsection_group_row_guide' model_pk=row.group.subsection.section.version.model.pk version_pk=row.group.subsection.section.version.pk section_pk=row.group.subsection.section.pk subsection_pk=row.group.subsection.pk group_pk=row.group.pk pk=row.pk as row_url %}
+                    {{ form.id }}
+                    {{ form.field }}
+                    {% for field in form.visible_fields %}
+                        {% if field.widget_type == 'select' %}
+                            <c-value-select
+                                form=form
+                                field=field
+                                input_error_classes="{% if form.errors %} border-red-700 focus:border-red-700 focus:outline-red-400 {% endif %}"
+                            />
+                        {% else %}
+                            <c-value-textbox
+                                form=form
+                                field=field
+                                input_error_classes="{% if form.errors %} border-red-700 focus-within:border-red-700 focus-within:outline-red-400 {% endif %}"
+                            />
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    {% endif %}
 {% endpartialdef %}
 
 {{ formset.management_form }}
@@ -56,14 +54,14 @@
     {% for row in group.non_table_row_set.all %}
     <div class="flex space-x-0.5 mt-12">
         {% for field in row.field_set.all %}
-            <div class="flex-1 flex flex-col justify-between bg-white rounded-sm px-5 py-6 text-dds-teal-950">
-                <label id="summary-field--{{field.pk}}--name" class="text-sm uppercase">{{ field.name }}</label>
-                <div aria-labelledby="summary-field--{{field.pk}}--name" class="flex font-bold text-2xl">
-                    {% with object.value_set.all|find_valueset_field:field as value %}
+            {% with object.value_set.all|find_valueset_field:field as value %}
+                <dl class="flex-1 flex flex-col justify-between bg-white rounded-sm px-5 py-6 text-dds-teal-950">
+                    <dt class="text-sm uppercase">{{ field.name }}</dt>
+                    <dd class="flex font-bold text-2xl">
                         <c-value-read-only-value blank="-" />
-                    {% endwith %}
-                </div>
-            </div>
+                    </dd>
+                </dl>
+            {% endwith %}
         {% endfor %}
     </div>
     {% endfor %}

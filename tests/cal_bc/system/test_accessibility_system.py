@@ -76,15 +76,16 @@ class TestAccessibilitySystem:
         )
 
     @pytest.fixture
-    def group_1A(self, subsection_1A: Subsection) -> Group:
+    def general_info_1A_group(self, subsection_1A: Subsection) -> Group:
         return subsection_1A.group_set.create(
             name="General Information",
-            description="This is the general information group."
+            description="This is the general information group.",
+            position=1
         )
 
     @pytest.fixture
-    def group_1A_row_1(self, group_1A: Group) -> Row:
-        return group_1A.row_set.create(
+    def general_info_1A_group_row_1(self, general_info_1A_group: Group) -> Row:
+        return general_info_1A_group.row_set.create(
             position=1,
             guide="""
                 # Project Name
@@ -93,126 +94,142 @@ class TestAccessibilitySystem:
         )
 
     @pytest.fixture(autouse=True)
-    def project_name(self, group_1A_row_1: Row) -> Field:
-        return group_1A_row_1.field_set.create(name="Project Name", cell="ProjName")
+    def project_name_field(self, general_info_1A_group_row_1: Row) -> Field:
+        return general_info_1A_group_row_1.field_set.create(name="Project Name", cell="ProjName")
 
     @pytest.fixture
-    def group_1A_row_2(self, group_1A: Group) -> Row:
-        return group_1A.row_set.create(position=2)
+    def general_info_1A_group_row_2(self, general_info_1A_group: Group) -> Row:
+        return general_info_1A_group.row_set.create(position=2)
+
+    @pytest.fixture
+    def district_field(self, general_info_1A_group_row_2: Row) -> Field:
+        return general_info_1A_group_row_2.field_set.create(name="District", cell="ProjLoc")
 
     @pytest.fixture(autouse=True)
-    def district_field(self, group_1A_row_2: Row) -> Field:
-        return group_1A_row_2.field_set.create(name="District", cell="1) Project Information!E2")
-
-    @pytest.fixture(autouse=True)
-    def district_4(self, district_field: Field) -> Value:
+    def district_4_value(self, district_field: Field) -> Value:
         return district_field.value_set.create(
             name="District 4 - Bay Area / Oakland",
             value="District 4",
         )
 
     @pytest.fixture
-    def subsection_1B(self, section: Section) -> Subsection:
-        return section.subsection_set.create(name="Traffic Data", code="B")
-
+    def project_data_1A_group(self, subsection_1A: Subsection) -> Group:
+        return subsection_1A.group_set.create(
+            name="Project Data",
+            description="Configure project analysis settings.",
+            position=2
+        )
+    
     @pytest.fixture
-    def summary_group(self, subsection_1B: Subsection) -> Group:
-        return subsection_1B.group_set.create(name="Summary", is_summary=True)
-
-    @pytest.fixture
-    def summary_group_row(self, summary_group: Group) -> Row:
-        return summary_group.row_set.create()
+    def project_data_1A_group_row(self, project_data_1A_group: Group) -> Row:
+        return project_data_1A_group.row_set.create(position=5)
 
     @pytest.fixture(autouse=True)
-    def total_project_support_summary(self, summary_group_row: Row) -> Field:
-        return summary_group_row.field_set.create(name="Total Project Support", cell="1) Project Information!W44", unit="$", position=1)
+    def length_peak_period_field(self, project_data_1A_group_row: Row) -> Field:
+        return project_data_1A_group_row.field_set.create(name="Length of Peak Period(s)", cell="1) Project Information!F17", unit="hours", position=1, display_type=FieldDisplayType.READ_ONLY)
+
+    @pytest.fixture
+    def subsection_1E(self, section: Section) -> Subsection:
+        return section.subsection_set.create(name="Project Costs", code="E")
+
+    @pytest.fixture
+    def summary_1E_group(self, subsection_1E: Subsection) -> Group:
+        return subsection_1E.group_set.create(name="Summary", is_summary=True)
+
+    @pytest.fixture
+    def summary_1E_group_row(self, summary_1E_group: Group) -> Row:
+        return summary_1E_group.row_set.create()
 
     @pytest.fixture(autouse=True)
-    def total_construction_summary(self, summary_group_row: Row) -> Field:
-        return summary_group_row.field_set.create(name="Total Construction", cell="1) Project Information!Y44", unit="$", position=2)
-
-    @pytest.fixture
-    def group_1B(self, subsection_1B: Subsection) -> Group:
-        return subsection_1B.group_set.create(name="Project Costs")
+    def total_project_support_summary_field(self, summary_1E_group_row: Row) -> Field:
+        return summary_1E_group_row.field_set.create(name="Total Project Support", cell="1) Project Information!W44", unit="$", position=1)
 
     @pytest.fixture(autouse=True)
-    def group_1B_column_group_project(self, group_1B: Group) -> ColumnGroup:
-        return group_1B.columngroup_set.create(name="Direct Project Initial Costs", position=1)
+    def total_construction_summary_field(self, summary_1E_group_row: Row) -> Field:
+        return summary_1E_group_row.field_set.create(name="Total Construction", cell="1) Project Information!Y44", unit="$", position=2)
 
     @pytest.fixture
-    def group_1B_column_project(self, group_1B_column_group_project: ColumnGroup) -> Column:
-        return group_1B_column_group_project.column_set.create(name="Project Support", position=1)
-
-    @pytest.fixture
-    def group_1B_column_construction(self, group_1B_column_group_project: ColumnGroup) -> Column:
-        return group_1B_column_group_project.column_set.create(name="Construction", position=2)
+    def costs_1E_group(self, subsection_1E: Subsection) -> Group:
+        return subsection_1E.group_set.create(name="Construction Period Costs")
 
     @pytest.fixture(autouse=True)
-    def group_1B_column_group_costs(self, group_1B: Group) -> ColumnGroup:
-        return group_1B.columngroup_set.create(name="Direct Project Initial Costs", position=2)
+    def costs_1E_group_project_column_group(self, costs_1E_group: Group) -> ColumnGroup:
+        return costs_1E_group.columngroup_set.create(name="Direct Project Initial Costs", position=1)
 
     @pytest.fixture
-    def group_1B_column_constant(self, group_1B_column_group_costs: ColumnGroup) -> Column:
-        return group_1B_column_group_costs.column_set.create(name="Constant Dollars", position=1)
+    def costs_1E_group_project_column(self, costs_1E_group_project_column_group: ColumnGroup) -> Column:
+        return costs_1E_group_project_column_group.column_set.create(name="Project Support", position=1)
 
     @pytest.fixture
-    def group_1B_column_present(self, group_1B_column_group_costs: ColumnGroup) -> Column:
-        return group_1B_column_group_costs.column_set.create(name="Present Value", position=2)
+    def costs_1E_group_construction_column(self, costs_1E_group_project_column_group: ColumnGroup) -> Column:
+        return costs_1E_group_project_column_group.column_set.create(name="Construction", position=2)
 
     @pytest.fixture
-    def group_1B_row_year_1(self, group_1B: Group) -> Row:
-        return group_1B.row_set.create(name="Yr 1", position=1)
+    def costs_1E_group_costs_column_group(self, costs_1E_group: Group) -> ColumnGroup:
+        return costs_1E_group.columngroup_set.create(name="Costs (in Dollars)", position=2)
+
+    @pytest.fixture
+    def costs_1E_group_constant_column(self, costs_1E_group_costs_column_group: ColumnGroup) -> Column:
+        return costs_1E_group_costs_column_group.column_set.create(name="Constant Dollars", position=1)
+
+    @pytest.fixture
+    def costs_1E_group_present_column(self, costs_1E_group_costs_column_group: ColumnGroup) -> Column:
+        return costs_1E_group_costs_column_group.column_set.create(name="Present Value", position=2)
+
+    @pytest.fixture
+    def costs_1E_group_year_1_row(self, costs_1E_group: Group) -> Row:
+        return costs_1E_group.row_set.create(name="Yr 1", position=1)
 
     @pytest.fixture(autouse=True)
-    def year_one_project_support(self, group_1B_row_year_1: Row, group_1B_column_project: Column) -> Field:
-        field = group_1B_row_year_1.field_set.create(name="Project Support Year 1", cell="1) Project Information!W15", position=1, display_type=FieldDisplayType.REQUIRED)
-        group_1B_column_project.fieldcolumn_set.create(field=field)
+    def year_one_project_support_field(self, costs_1E_group_year_1_row: Row, costs_1E_group_project_column: Column) -> Field:
+        field = costs_1E_group_year_1_row.field_set.create(name="Project Support Year 1", cell="1) Project Information!W15", position=1, display_type=FieldDisplayType.REQUIRED)
+        costs_1E_group_project_column.fieldcolumn_set.create(field=field)
         return field
 
     @pytest.fixture(autouse=True)
-    def year_one_construction(self, group_1B_row_year_1: Row, group_1B_column_construction: Column) -> Field:
-        field = group_1B_row_year_1.field_set.create(name="Construction Year 1", cell="1) Project Information!Y15", position=2, display_type=FieldDisplayType.REQUIRED)
-        group_1B_column_construction.fieldcolumn_set.create(field=field)
+    def year_one_construction_field(self, costs_1E_group_year_1_row: Row, costs_1E_group_construction_column: Column) -> Field:
+        field = costs_1E_group_year_1_row.field_set.create(name="Construction Year 1", cell="1) Project Information!Y15", position=2, display_type=FieldDisplayType.REQUIRED)
+        costs_1E_group_construction_column.fieldcolumn_set.create(field=field)
         return field
 
     @pytest.fixture(autouse=True)
-    def year_one_constant(self, group_1B_row_year_1: Row, group_1B_column_constant: Column) -> Field:
-        field = group_1B_row_year_1.field_set.create(name="Constant Dollars Year 1", cell="1) Project Information!AD15", position=3, unit="$", display_type=FieldDisplayType.READ_ONLY)
-        group_1B_column_constant.fieldcolumn_set.create(field=field)
+    def year_one_constant_field(self, costs_1E_group_year_1_row: Row, costs_1E_group_constant_column: Column) -> Field:
+        field = costs_1E_group_year_1_row.field_set.create(name="Constant Dollars Year 1", cell="1) Project Information!AD15", position=3, unit="$", display_type=FieldDisplayType.READ_ONLY)
+        costs_1E_group_constant_column.fieldcolumn_set.create(field=field)
         return field
 
     @pytest.fixture(autouse=True)
-    def year_one_present(self, group_1B_row_year_1: Row, group_1B_column_present: Column) -> Field:
-        field = group_1B_row_year_1.field_set.create(name="Present Value Year 1", cell="1) Project Information!AE15", position=4, unit="$", display_type=FieldDisplayType.READ_ONLY)
-        group_1B_column_present.fieldcolumn_set.create(field=field)
+    def year_one_present_field(self, costs_1E_group_year_1_row: Row, costs_1E_group_present_column: Column) -> Field:
+        field = costs_1E_group_year_1_row.field_set.create(name="Present Value Year 1", cell="1) Project Information!AE15", position=4, unit="$", display_type=FieldDisplayType.READ_ONLY)
+        costs_1E_group_present_column.fieldcolumn_set.create(field=field)
         return field
 
     @pytest.fixture
-    def group_1B_row_year_2(self, group_1B: Group) -> Row:
-        return group_1B.row_set.create(name="Yr 2", position=2)
+    def costs_1E_group_year_2_row(self, costs_1E_group: Group) -> Row:
+        return costs_1E_group.row_set.create(name="Yr 2", position=2)
 
     @pytest.fixture(autouse=True)
-    def year_two_project_support(self, group_1B_row_year_2: Row, group_1B_column_project: Column) -> Field:
-        field = group_1B_row_year_2.field_set.create(name="Project Support Year 2", cell="1) Project Information!W16", position=1, display_type=FieldDisplayType.NOT_REQUIRED)
-        group_1B_column_project.fieldcolumn_set.create(field=field)
+    def year_two_project_support_field(self, costs_1E_group_year_2_row: Row, costs_1E_group_project_column: Column) -> Field:
+        field = costs_1E_group_year_2_row.field_set.create(name="Project Support Year 2", cell="1) Project Information!W16", position=1, display_type=FieldDisplayType.NOT_REQUIRED)
+        costs_1E_group_project_column.fieldcolumn_set.create(field=field)
         return field
 
     @pytest.fixture(autouse=True)
-    def year_two_construction(self, group_1B_row_year_2: Row, group_1B_column_construction: Column) -> Field:
-        field = group_1B_row_year_2.field_set.create(name="Construction Year 2", cell="1) Project Information!Y16", position=2, display_type=FieldDisplayType.NOT_REQUIRED)
-        group_1B_column_construction.fieldcolumn_set.create(field=field)
+    def year_two_construction_field(self, costs_1E_group_year_2_row: Row, costs_1E_group_construction_column: Column) -> Field:
+        field = costs_1E_group_year_2_row.field_set.create(name="Construction Year 2", cell="1) Project Information!Y16", position=2, display_type=FieldDisplayType.NOT_REQUIRED)
+        costs_1E_group_construction_column.fieldcolumn_set.create(field=field)
         return field
 
     @pytest.fixture(autouse=True)
-    def year_two_constant(self, group_1B_row_year_2: Row, group_1B_column_constant: Column) -> Field:
-        field = group_1B_row_year_2.field_set.create(name="Constant Dollars Year 2", cell="1) Project Information!AD16", position=3, unit="$", display_type=FieldDisplayType.READ_ONLY)
-        group_1B_column_constant.fieldcolumn_set.create(field=field)
+    def year_two_constant_field(self, costs_1E_group_year_2_row: Row, costs_1E_group_constant_column: Column) -> Field:
+        field = costs_1E_group_year_2_row.field_set.create(name="Constant Dollars Year 2", cell="1) Project Information!AD16", position=3, unit="$", display_type=FieldDisplayType.READ_ONLY)
+        costs_1E_group_constant_column.fieldcolumn_set.create(field=field)
         return field
 
     @pytest.fixture(autouse=True)
-    def year_two_present(self, group_1B_row_year_2: Row, group_1B_column_present: Column) -> Field:
-        field = group_1B_row_year_2.field_set.create(name="Present Value Year 2", cell="1) Project Information!AE16", position=4, unit="$", display_type=FieldDisplayType.READ_ONLY)
-        group_1B_column_present.fieldcolumn_set.create(field=field)
+    def year_two_present_field(self, costs_1E_group_year_2_row: Row, costs_1E_group_present_column: Column) -> Field:
+        field = costs_1E_group_year_2_row.field_set.create(name="Present Value Year 2", cell="1) Project Information!AE16", position=4, unit="$", display_type=FieldDisplayType.READ_ONLY)
+        costs_1E_group_present_column.fieldcolumn_set.create(field=field)
         return field
 
     def test_accessibility(self, first_page: Page, channels_live_server: ChannelsLiveServer):
@@ -243,7 +260,7 @@ class TestAccessibilitySystem:
         axe_check = axe.run(first_page, filename="accessibility_report")
         assert len(axe_check["violations"]) == 0, f"{len(axe_check["violations"])} {msg}"
 
-        first_page.get_by_role("button", name="Continue to Subsection 1B").click()
+        first_page.get_by_role("button", name="Continue to Subsection 1E").click()
         axe_check = axe.run(first_page, filename="accessibility_report")
         assert len(axe_check["violations"]) == 0, f"{len(axe_check["violations"])} {msg}"
 

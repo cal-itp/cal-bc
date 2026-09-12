@@ -55,9 +55,10 @@ class ProjectSubsectionView(
         return context
 
     def extra_field_set(self):
-        return  (
+        return (
             Field.objects.filter(row__group__subsection_id=self.kwargs["pk"])
             .exclude(display_type=FieldDisplayType.READ_ONLY)
+            .exclude(row__group__is_summary=True)
             .exclude(project_value__project_id=self.kwargs["project_pk"])
             .select_related("row", "row__group")
         )

@@ -140,6 +140,7 @@ class TestModelSystem:
         first_page.wait_for_selector(
             "text=The group “General Information” was changed successfully"
         )
+        
         first_page.get_by_role("link", name="Add group").click()
         first_page.get_by_label("subsection").select_option("A - Project Data")
         first_page.get_by_label("Name").nth(0).fill("Project Data")
@@ -153,6 +154,34 @@ class TestModelSystem:
         first_page.locator(":text('Field: #1') + fieldset").get_by_label("Unit").nth(
             0
         ).fill("years")
+        expect(first_page.locator(":text('Field: #1') + fieldset").get_by_label("Display Type").nth(
+            0
+        )).to_contain_text("Required")
+        
+        first_page.get_by_role("link", name="Add another row").click()
+        first_page.locator(":text('Field: #1') + fieldset").nth(1).get_by_label("Name").nth(
+            0
+        ).fill("One- or Two-Way Data")
+        first_page.locator(":text('Field: #1') + fieldset").nth(1).get_by_label("Cell").nth(
+            0
+        ).fill("1) Project Information!F15")
+        first_page.locator(":text('Field: #1') + fieldset").nth(1).get_by_label("Display Type").nth(
+            0
+        ).select_option("Not Required")
+
+        first_page.get_by_role("link", name="Add another row").click()
+        first_page.locator(":text('Field: #1') + fieldset").nth(2).get_by_label("Name").nth(
+            0
+        ).fill("Length of Peak Period(s)")
+        first_page.locator(":text('Field: #1') + fieldset").nth(2).get_by_label("Cell").nth(
+            0
+        ).fill("1) Project Information!F17")
+        first_page.locator(":text('Field: #1') + fieldset").nth(2).get_by_label("Unit").nth(
+            0
+        ).fill("hours")
+        first_page.locator(":text('Field: #1') + fieldset").nth(2).get_by_label("Display Type").nth(
+            0
+        ).select_option("Read-Only")
         first_page.get_by_role("button", name="Save", exact=True).click()
         first_page.wait_for_selector(
             "text=The group “Project Data” was added successfully"
