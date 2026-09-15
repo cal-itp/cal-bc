@@ -93,7 +93,7 @@ class TestProjectSubsectionViews:
         assert query_by_role(dom, "heading", name="1A. Project Data")
         assert query_by_text(dom, "General Information")
 
-        assert query_by_label_text(dom, "Project Name", exact=False)
+        assert query_by_label_text(dom, "Project Name*")
         assert query_by_role(dom, "combobox", name="District")
 
     def test_subsection_edit_submission(
