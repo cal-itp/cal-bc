@@ -93,7 +93,6 @@ if importlib.util.find_spec("django_extensions"):
 
 
 STATICFILES_DIRS = [BASE_DIR / "assets"]
-
 SVG_DIRS = [BASE_DIR / "assets"]
 
 COTTON_BASE_DIR = BASE_DIR / "cal-bc"
@@ -131,7 +130,7 @@ TEMPLATES = [
 ]
 
 ASGI_APPLICATION = "cal_bc.asgi.application"
-
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 2000
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
@@ -233,6 +232,8 @@ INTERNAL_IPS = [
 ]
 
 TAGGIT_CASE_INSENSITIVE = True
+
+FIXTURE_DIRS = [BASE_DIR.parent / 'tests'/ 'seeds']
 
 if TESTING:
     TASKS = {

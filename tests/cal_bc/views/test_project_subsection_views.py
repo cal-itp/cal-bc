@@ -2,10 +2,11 @@ import pytest
 from django.contrib.auth.models import User
 from django.test.client import Client
 from django.urls import reverse_lazy
-from unbrowsed import parse_html, query_by_role, query_by_text
+from unbrowsed import parse_html, query_by_label_text, query_by_role, query_by_text
 
 from cal_bc.models.models.model import (
     Field,
+    FieldDisplayType,
     Group,
     Model,
     Row,
@@ -66,7 +67,7 @@ class TestProjectSubsectionViews:
 
     @pytest.fixture
     def district_field(self, row: Row) -> Field:
-        field = Field.objects.create(row=row, cell="ProjLoc", name="District")
+        field = Field.objects.create(row=row, cell="ProjLoc", name="District", display_type=FieldDisplayType.NOT_REQUIRED)
         field.value_set.create(name="District 1", value="1")
         return field
 
@@ -92,7 +93,7 @@ class TestProjectSubsectionViews:
         assert query_by_role(dom, "heading", name="1A. Project Data")
         assert query_by_text(dom, "General Information")
 
-        assert query_by_role(dom, "textbox", name="Project Name")
+        assert query_by_label_text(dom, "Project Name*")
         assert query_by_role(dom, "combobox", name="District")
 
     def test_subsection_edit_submission(

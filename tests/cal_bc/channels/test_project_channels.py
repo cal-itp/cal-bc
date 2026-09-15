@@ -7,7 +7,7 @@ from channels.layers import get_channel_layer
 from channels.testing import WebsocketCommunicator
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy
-from unbrowsed import parse_html, query_by_role, query_by_text
+from unbrowsed import parse_html, query_by_label_text, query_by_role, query_by_text
 
 from cal_bc.asgi import application
 from cal_bc.models.models.model import (
@@ -111,7 +111,7 @@ class TestProjectChannels:
 
         assert await sync_to_async(query_by_text)(dom, "General Information description")
         assert await sync_to_async(query_by_role)(dom, "heading", name="1A. Project Data")
-        assert await sync_to_async(query_by_role)(dom, "textbox", name="Project Name")
+        assert await sync_to_async(query_by_label_text)(dom, "Project Name*")
 
         await communicator.disconnect()
 

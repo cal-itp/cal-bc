@@ -7,7 +7,7 @@ from django.db import transaction
 from django.tasks import task
 from xlcalculator import Evaluator, Model, ModelCompiler, xltypes
 
-from cal_bc.models.models.model import Field, Subsection
+from cal_bc.models.models.model import Field, FieldDisplayType, Subsection
 from cal_bc.projects.models.project import Project, Value
 from cal_bc.tasks import refresh_channel
 
@@ -53,8 +53,7 @@ def refresh_project_fields(project_pk: int) -> None:
     project = Project.objects.get(id=project_pk)
 
     remote_workbook = RemoteWorkbook(url=project.version.url)
-
-    for value in project.value_set.exclude(field__cell="").exclude(value="").exclude(field__read_only=True).select_related("field"):
+    for value in project.value_set.exclude(field__cell="").exclude(value="").exclude(field__display_type=FieldDisplayType.READ_ONLY).exclude(field__row__group__is_summary=True).select_related("field"):
         try:
             remote_workbook.set_cell_value(address=value.field.cell, value=value.value)
         except ValueError as e:

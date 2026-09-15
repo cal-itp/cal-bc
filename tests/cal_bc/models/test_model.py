@@ -2,6 +2,7 @@ import pytest
 
 from cal_bc.models.models.model import (
     Field,
+    FieldDisplayType,
     Group,
     Model,
     Row,
@@ -64,11 +65,19 @@ class TestModel:
 
     @pytest.fixture()
     def field(self, row: Row) -> Field:
-        return row.field_set.create(name="Highway Free-Flow Speed")
+        return row.field_set.create(name="Highway Free-Flow Speed", cell="FFSpeedNB", display_type=FieldDisplayType.REQUIRED)
 
     @pytest.fixture()
     def field_with_unit(self, row: Row) -> Field:
-        return row.field_set.create(name="Highway Free-Flow Speed", position=1, unit="mph")
+        return row.field_set.create(name="Highway Free-Flow Speed", cell="FFSpeedNB", position=1, unit="mph", display_type=FieldDisplayType.REQUIRED)
+
+    @pytest.fixture()
+    def field_not_required(self, row: Row) -> Field:
+        return row.field_set.create(name="Highway Free-Flow Speed", cell="FFSpeedNB", display_type=FieldDisplayType.NOT_REQUIRED)
+
+    @pytest.fixture()
+    def field_read_only(self, row: Row) -> Field:
+        return row.field_set.create(name="Highway Free-Flow Speed", cell="FFSpeedNB", display_type=FieldDisplayType.READ_ONLY)
 
     @pytest.fixture()
     def value(self, field: Field) -> Value:
@@ -217,6 +226,33 @@ class TestModel:
 
     def test_field_with_unit(self, field_with_unit: Field):
         assert str(field_with_unit) == "Highway Free-Flow Speed (mph) - Position 1"
+
+    def test_field_required(self, field: Field):
+        assert field.required == True
+
+    def test_field_not_required(self, field_not_required: Field):
+        assert field_not_required.required == False
+
+    def test_field_read_only(self, field_read_only: Field):
+        assert field_read_only.read_only == True
+
+    def test_summary_field_read_only(self, summary_group: Group):
+        row = summary_group.row_set.create()
+        field_read_only = row.field_set.create(name="Highway Free-Flow Speed", cell="FFSpeedNB", display_type=FieldDisplayType.READ_ONLY)
+        field_required = row.field_set.create(name="Highway Free-Flow Speed", cell="FFSpeedNB", display_type=FieldDisplayType.REQUIRED)
+        field_not_required = row.field_set.create(name="Highway Free-Flow Speed", cell="FFSpeedNB", display_type=FieldDisplayType.NOT_REQUIRED)
+        assert field_read_only.read_only == True
+        assert field_required.read_only == True
+        assert field_not_required.read_only == True
+
+    def test_summary_field_not_required(self, summary_group: Group):
+        row = summary_group.row_set.create()
+        field_read_only = row.field_set.create(name="Highway Free-Flow Speed", cell="FFSpeedNB", display_type=FieldDisplayType.READ_ONLY)
+        field_required = row.field_set.create(name="Highway Free-Flow Speed", cell="FFSpeedNB", display_type=FieldDisplayType.REQUIRED)
+        field_not_required = row.field_set.create(name="Highway Free-Flow Speed", cell="FFSpeedNB", display_type=FieldDisplayType.NOT_REQUIRED)
+        assert field_read_only.required == False
+        assert field_required.required == False
+        assert field_not_required.required == False
 
     def test_value_string_representation(self, value: Value):
         assert str(value) == "District 4 - Bay Area: District 4"

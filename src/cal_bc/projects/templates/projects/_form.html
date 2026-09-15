@@ -22,13 +22,13 @@
                         <c-value-select
                             form=form
                             field=field
-                            has_errors="{{ form.errors.count > 0 }}"
+                            input_error_classes="{% if form.errors %} border-red-700 focus:border-red-700 focus:outline-red-400 {% endif %}"
                         />
                     {% else %}
                         <c-value-textbox
                             form=form
                             field=field
-                            has_errors="{{ form.errors.count > 0 }}"
+                            input_error_classes="{% if form.errors %} border-red-700 focus-within:border-red-700 focus-within:outline-red-400 {% endif %}"
                         />
                     {% endif %}
                 {% endfor %}
@@ -79,14 +79,16 @@
             {% else %}
             <div class="grid grid-cols-{{ row.field_set.count }} gap-6">
             {% endif %}
+            {% with show_errors="True" %}
                 {% for field in row.field_set.all %}
                     {% partial form-cell--new %}
                 {% endfor %}
+            {% endwith %}
             </div>
         {% endfor %}
 
         {% if group.table_row_set.count > 0 %}
-            <div class="grid grid-cols-{{ subsection.column_count|add:1 }} gap-3 items-baseline-last">
+            <div class="grid {% if subsection.column_count < 6 %}grid-cols-{{ subsection.column_count|add:1 }}{% else %}grid-cols-[50px_repeat({{ subsection.column_count }},minmax(0,1fr))]{% endif %} gap-3 items-baseline-last">
                 <div></div>
                 {% for column_group in group.columngroup_set.all %}
                     {% if column_group.name %}
@@ -106,14 +108,14 @@
                 {% endfor %}
             </div>
 
-            <div class="grid grid-cols-{{ subsection.column_count|add:1 }} gap-3 items-baseline-last">
+            <div class="grid {% if subsection.column_count < 6 %}grid-cols-{{ subsection.column_count|add:1 }}{% else %}grid-cols-[50px_repeat({{ subsection.column_count }},minmax(0,1fr))]{% endif %} gap-x-3 items-baseline-last">
                 {% for row in group.table_row_set.all %}
-                    <div>{{ row.name }}</div>
+                    <div>{{ row.name }}{% if row.required %}<span class="text-red-700 ml-1">*</span>{% endif %}</div>
                     {% for column_group in group.columngroup_set.all %}
                         {% for column in column_group.column_set.all %}
                             {% with column.field_set.all|find_fieldset_row:row as field %}
                                 {% if field %}
-                                    {% with label_classes="sr-only" error_classes="sr-only" input_classes="text-center" %}
+                                    {% with label_classes="sr-only" input_classes="text-center" %}
                                         {% partial form-cell--new %}
                                     {% endwith %}
                                 {% else %}
@@ -122,6 +124,18 @@
                             {% endwith %}
                         {% endfor %}
                     {% endfor %}
+
+                    {% with formset|find_formset_row_errors:row as errors %}
+                        {% if errors %}
+                            <div></div>
+                            <div class="mt-1 mb-2 text-red-700 col-start-2 col-span-{{ subsection.column_count }} flex items-start">
+                                {% svg 'projects/warning' alt="error" class="h-6 w-auto" %}<span class="ml-2">{{ errors }}</span>
+                            </div>
+                        {% else %}
+                            <div></div>
+                            <div class="mt-3 col-start-2 col-span-{{ subsection.column_count }}"></div>
+                        {% endif %}
+                    {% endwith %}
                 {% endfor %}
             </div>
         {% endif %}
