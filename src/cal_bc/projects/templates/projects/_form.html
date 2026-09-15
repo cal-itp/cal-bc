@@ -124,6 +124,18 @@
                             {% endwith %}
                         {% endfor %}
                     {% endfor %}
+
+                    {% with formset|find_formset_row_errors:row as errors %}
+                        {% if errors %}
+                            <div></div>
+                            <div class="mt-1 mb-2 text-red-700 col-start-2 col-span-{{ subsection.column_count }} flex items-start">
+                                {% svg 'projects/warning' alt="error" class="h-6 w-auto" %}<span class="ml-2">{{ errors }}</span>
+                            </div>
+                        {% else %}
+                            <div></div>
+                            <div class="mt-3 col-start-2 col-span-{{ subsection.column_count }}"></div>
+                        {% endif %}
+                    {% endwith %}
                 {% endfor %}
             </div>
         {% endif %}
