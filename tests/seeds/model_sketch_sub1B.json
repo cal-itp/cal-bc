@@ -484,7 +484,7 @@
       "row_id": 10101020301,
       "name": "Average Hourly Build",
       "cell": "1) Project Information!H40",
-      "display_type": 2,
+      "display_type": 1,
       "position": 2
     }
   },
