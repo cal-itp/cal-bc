@@ -180,7 +180,10 @@ class Row(models.Model):
 
     @property
     def required(self):
-        return self.field_set.filter(display_type=FieldDisplayType.REQUIRED).exclude(row__group__is_summary=True).count() > 0
+        input_fields = self.field_set.exclude(display_type=FieldDisplayType.READ_ONLY).exclude(row__group__is_summary=True).count()
+        if input_fields > 0:
+            return self.field_set.filter(display_type=FieldDisplayType.REQUIRED).exclude(row__group__is_summary=True).count() == input_fields
+        return False
 
 
 class ColumnGroup(models.Model):

@@ -111,7 +111,7 @@ class TestProjectChannels:
 
         assert await sync_to_async(query_by_text)(dom, "General Information description")
         assert await sync_to_async(query_by_role)(dom, "heading", name="1A. Project Data")
-        assert await sync_to_async(query_by_label_text)(dom, "Project Name", exact=False)
+        assert await sync_to_async(query_by_label_text)(dom, "Project Name*")
 
         await communicator.disconnect()
 

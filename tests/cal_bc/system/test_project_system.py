@@ -5,6 +5,8 @@ from playwright.sync_api import Page, expect
 from pytest_playwright.pytest_playwright import CreateContextCallback
 
 from cal_bc.models.models.model import (
+    Column,
+    ColumnGroup,
     Field,
     FieldDisplayType,
     Group,
@@ -119,34 +121,6 @@ class TestProjectSystem:
         return section.subsection_set.create(name="Traffic Data", code="B")
 
     @pytest.fixture
-    def group_1B(self, subsection_1B: Subsection) -> Group:
-        return subsection_1B.group_set.create(name="Project Costs")
-
-    @pytest.fixture
-    def group_1B_row_1(self, group_1B: Group) -> Row:
-        return group_1B.row_set.create()
-
-    @pytest.fixture(autouse=True)
-    def year_one_project_support(self, group_1B_row_1: Row) -> Field:
-        return group_1B_row_1.field_set.create(name="Project Support Year 1", cell="1) Project Information!W15", position=1, display_type=FieldDisplayType.REQUIRED)
-
-    @pytest.fixture(autouse=True)
-    def year_one_construction(self, group_1B_row_1: Row) -> Field:
-        return group_1B_row_1.field_set.create(name="Construction Year 1", cell="1) Project Information!Y15", position=2, display_type=FieldDisplayType.REQUIRED)
-
-    @pytest.fixture
-    def group_1B_row_2(self, group_1B: Group) -> Row:
-        return group_1B.row_set.create()
-
-    @pytest.fixture(autouse=True)
-    def year_two_project_support(self, group_1B_row_2: Row) -> Field:
-        return group_1B_row_2.field_set.create(name="Project Support Year 2", cell="1) Project Information!W16", position=1, display_type=FieldDisplayType.NOT_REQUIRED)
-
-    @pytest.fixture(autouse=True)
-    def year_two_construction(self, group_1B_row_2: Row) -> Field:
-        return group_1B_row_2.field_set.create(name="Construction Year 2", cell="1) Project Information!Y16", position=2, display_type=FieldDisplayType.NOT_REQUIRED)
-
-    @pytest.fixture
     def summary_group(self, subsection_1B: Subsection) -> Group:
         return subsection_1B.group_set.create(name="Summary", is_summary=True)
 
@@ -155,12 +129,96 @@ class TestProjectSystem:
         return summary_group.row_set.create()
 
     @pytest.fixture(autouse=True)
-    def total_project_support(self, summary_group_row: Row) -> Field:
+    def total_project_support_summary(self, summary_group_row: Row) -> Field:
         return summary_group_row.field_set.create(name="Total Project Support", cell="1) Project Information!W44", unit="$", position=1)
 
     @pytest.fixture(autouse=True)
-    def total_construction(self, summary_group_row: Row) -> Field:
-        return summary_group_row.field_set.create(name="Total Construction", cell="1) Project Information!Y44", unit="$", position=1)
+    def total_construction_summary(self, summary_group_row: Row) -> Field:
+        return summary_group_row.field_set.create(name="Total Construction", cell="1) Project Information!Y44", unit="$", position=2)
+
+    @pytest.fixture
+    def group_1B(self, subsection_1B: Subsection) -> Group:
+        return subsection_1B.group_set.create(name="Project Costs")
+
+    @pytest.fixture(autouse=True)
+    def group_1B_column_group_project(self, group_1B: Group) -> ColumnGroup:
+        return group_1B.columngroup_set.create(name="Direct Project Initial Costs", position=1)
+
+    @pytest.fixture
+    def group_1B_column_project(self, group_1B_column_group_project: ColumnGroup) -> Column:
+        return group_1B_column_group_project.column_set.create(name="Project Support", position=1)
+
+    @pytest.fixture
+    def group_1B_column_construction(self, group_1B_column_group_project: ColumnGroup) -> Column:
+        return group_1B_column_group_project.column_set.create(name="Construction", position=2)
+
+    @pytest.fixture(autouse=True)
+    def group_1B_column_group_costs(self, group_1B: Group) -> ColumnGroup:
+        return group_1B.columngroup_set.create(name="Direct Project Initial Costs", position=2)
+
+    @pytest.fixture
+    def group_1B_column_constant(self, group_1B_column_group_costs: ColumnGroup) -> Column:
+        return group_1B_column_group_costs.column_set.create(name="Constant Dollars", position=1)
+
+    @pytest.fixture
+    def group_1B_column_present(self, group_1B_column_group_costs: ColumnGroup) -> Column:
+        return group_1B_column_group_costs.column_set.create(name="Present Value", position=2)
+
+    @pytest.fixture
+    def group_1B_row_year_1(self, group_1B: Group) -> Row:
+        return group_1B.row_set.create(name="Yr 1", position=1)
+
+    @pytest.fixture(autouse=True)
+    def year_one_project_support(self, group_1B_row_year_1: Row, group_1B_column_project: Column) -> Field:
+        field = group_1B_row_year_1.field_set.create(name="Project Support Year 1", cell="1) Project Information!W15", position=1, display_type=FieldDisplayType.REQUIRED)
+        group_1B_column_project.fieldcolumn_set.create(field=field)
+        return field
+
+    @pytest.fixture(autouse=True)
+    def year_one_construction(self, group_1B_row_year_1: Row, group_1B_column_construction: Column) -> Field:
+        field = group_1B_row_year_1.field_set.create(name="Construction Year 1", cell="1) Project Information!Y15", position=2, display_type=FieldDisplayType.REQUIRED)
+        group_1B_column_construction.fieldcolumn_set.create(field=field)
+        return field
+
+    @pytest.fixture(autouse=True)
+    def year_one_constant(self, group_1B_row_year_1: Row, group_1B_column_constant: Column) -> Field:
+        field = group_1B_row_year_1.field_set.create(name="Constant Dollars Year 1", cell="1) Project Information!AD15", position=3, unit="$", display_type=FieldDisplayType.READ_ONLY)
+        group_1B_column_constant.fieldcolumn_set.create(field=field)
+        return field
+
+    @pytest.fixture(autouse=True)
+    def year_one_present(self, group_1B_row_year_1: Row, group_1B_column_present: Column) -> Field:
+        field = group_1B_row_year_1.field_set.create(name="Present Value Year 1", cell="1) Project Information!AE15", position=4, unit="$", display_type=FieldDisplayType.READ_ONLY)
+        group_1B_column_present.fieldcolumn_set.create(field=field)
+        return field
+
+    @pytest.fixture
+    def group_1B_row_year_2(self, group_1B: Group) -> Row:
+        return group_1B.row_set.create(name="Yr 2", position=2)
+
+    @pytest.fixture(autouse=True)
+    def year_two_project_support(self, group_1B_row_year_2: Row, group_1B_column_project: Column) -> Field:
+        field = group_1B_row_year_2.field_set.create(name="Project Support Year 2", cell="1) Project Information!W16", position=1, display_type=FieldDisplayType.NOT_REQUIRED)
+        group_1B_column_project.fieldcolumn_set.create(field=field)
+        return field
+
+    @pytest.fixture(autouse=True)
+    def year_two_construction(self, group_1B_row_year_2: Row, group_1B_column_construction: Column) -> Field:
+        field = group_1B_row_year_2.field_set.create(name="Construction Year 2", cell="1) Project Information!Y16", position=2, display_type=FieldDisplayType.NOT_REQUIRED)
+        group_1B_column_construction.fieldcolumn_set.create(field=field)
+        return field
+
+    @pytest.fixture(autouse=True)
+    def year_two_constant(self, group_1B_row_year_2: Row, group_1B_column_constant: Column) -> Field:
+        field = group_1B_row_year_2.field_set.create(name="Constant Dollars Year 2", cell="1) Project Information!AD16", position=3, unit="$", display_type=FieldDisplayType.READ_ONLY)
+        group_1B_column_constant.fieldcolumn_set.create(field=field)
+        return field
+
+    @pytest.fixture(autouse=True)
+    def year_two_present(self, group_1B_row_year_2: Row, group_1B_column_present: Column) -> Field:
+        field = group_1B_row_year_2.field_set.create(name="Present Value Year 2", cell="1) Project Information!AE16", position=4, unit="$", display_type=FieldDisplayType.READ_ONLY)
+        group_1B_column_present.fieldcolumn_set.create(field=field)
+        return field
 
     def test_projects(self, first_page: Page, second_page: Page, channels_live_server: ChannelsLiveServer):
         first_page.goto(channels_live_server.http_url)
@@ -188,7 +246,7 @@ class TestProjectSystem:
         )
 
         first_page.get_by_role("button", name="Save draft").click()
-        expect(first_page.locator("body")).to_contain_text("This field is required")
+        expect(first_page.locator("body")).to_contain_text("Select District.")
 
         first_page.get_by_label("Project Name").fill("Geary Boulevard Light Rail")
         first_page.get_by_label("District").select_option(
@@ -209,8 +267,13 @@ class TestProjectSystem:
         expect(second_page.get_by_label("Project Name")).to_have_value("New Geary Boulevard Light Rail")
 
         first_page.get_by_role("button", name="Save draft").click()
-        expect(first_page.locator("body")).to_contain_text("This field is required")
-
+        expect(first_page.locator("body")).to_contain_text("Yr 1*")
+        expect(first_page.locator("body")).to_contain_text("Yr 2")
+        expect(first_page.locator("body")).to_contain_text("Enter Project Support Year 1, Enter Construction Year 1.")
+        expect(first_page.get_by_label("Constant Dollars Year 1")).to_contain_text("$0", use_inner_text=True)
+        expect(first_page.get_by_label("Constant Dollars Year 2")).to_contain_text("$0", use_inner_text=True)
+        expect(first_page.get_by_label("Present Value Year 1")).to_contain_text("$0", use_inner_text=True)
+        expect(first_page.get_by_label("Present Value Year 2")).to_contain_text("$0", use_inner_text=True)
         expect(first_page.get_by_label("Total Project Support")).to_contain_text("$0", use_inner_text=True)
         expect(first_page.get_by_label("Total Construction")).to_contain_text("$0", use_inner_text=True)
 
@@ -224,6 +287,10 @@ class TestProjectSystem:
         first_page.get_by_role("button", name="1A - Project Data").click()
         first_page.get_by_role("menuitem", name="1B. Traffic Data").click()
 
+        expect(first_page.get_by_label("Constant Dollars Year 1")).to_contain_text("$22,000,000", use_inner_text=True)
+        expect(first_page.get_by_label("Constant Dollars Year 2")).to_contain_text("$15,000,000", use_inner_text=True)
+        expect(first_page.get_by_label("Present Value Year 1")).to_contain_text("$22,000,000", use_inner_text=True)
+        expect(first_page.get_by_label("Present Value Year 2")).to_contain_text("$14,423,076.92", use_inner_text=True)
         expect(first_page.get_by_label("Total Project Support")).to_contain_text("25,000", use_inner_text=True)
         expect(first_page.get_by_label("Total Construction")).to_contain_text("12,000", use_inner_text=True)
 
