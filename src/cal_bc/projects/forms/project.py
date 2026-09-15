@@ -24,7 +24,7 @@ class ValueForm(ModelForm):
         if hasattr(self.instance, "field") and self.instance.field.read_only:
             return self.instance.value
         if value and hasattr(self.instance, "field") and hasattr(self.instance.field, "fieldrange") and not (self.instance.field.fieldrange.min_value <= float(value) <= self.instance.field.fieldrange.max_value):
-            raise ValidationError(f"Enter a number between {self.instance.field.fieldrange.min_value} and {self.instance.field.fieldrange.max_value}.")
+            raise ValidationError(f"Enter a number between {self.instance.field.fieldrange.min_value} and {self.instance.field.fieldrange.max_value} on {self.instance.field.name}.")
         return value
 
     def __init__(self, *args, **kwargs):
@@ -43,11 +43,12 @@ class ValueForm(ModelForm):
             if len(values):
                 self.fields["value"] = ChoiceField(
                     choices=[(None, ""), *[(v.value, v.name) for v in values]],
-                    required=field.required
+                    required=field.required,
+                    error_messages={'required': f'Select {field.name}.'},
                 )
             elif hasattr(field, "fieldrange") or field.unit:
-                self.fields["value"] = DecimalField(required=field.required)
+                self.fields["value"] = DecimalField(required=field.required, error_messages={'required': f'Enter {field.name}.'})
             else:
-                self.fields["value"] = CharField(required=field.required)
+                self.fields["value"] = CharField(required=field.required, error_messages={'required': f'Enter {field.name}.'})
 
             self.fields["value"].label = field.name

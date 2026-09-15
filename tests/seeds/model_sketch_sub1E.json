@@ -222,7 +222,7 @@
       "row_id": 10101050201,
       "name": "Project Support Year 1",
       "cell": "1) Project Information!W15",
-      "display_type": 2,
+      "display_type": 1,
       "position": 1
     }
   },
@@ -242,7 +242,7 @@
       "row_id": 10101050201,
       "name": "Right of Way Year 1",
       "cell": "1) Project Information!X15",
-      "display_type": 2,
+      "display_type": 1,
       "position": 2
     }
   },
@@ -262,7 +262,7 @@
       "row_id": 10101050201,
       "name": "Construction Year 1",
       "cell": "1) Project Information!Y15",
-      "display_type": 2,
+      "display_type": 1,
       "position": 3
     }
   },
@@ -282,7 +282,7 @@
       "row_id": 10101050201,
       "name": "Mitigation Year 1",
       "cell": "1) Project Information!AB15",
-      "display_type": 2,
+      "display_type": 1,
       "position": 4
     }
   },
@@ -302,7 +302,7 @@
       "row_id": 10101050201,
       "name": "Transit AGY Cost SVGS Year 1",
       "cell": "1) Project Information!AC15",
-      "display_type": 2,
+      "display_type": 1,
       "position": 5
     }
   },
@@ -374,7 +374,7 @@
       "row_id": 10101050202,
       "name": "Project Support Year 2",
       "cell": "1) Project Information!W16",
-      "display_type": 2,
+      "display_type": 1,
       "position": 1
     }
   },
