@@ -2,7 +2,7 @@
 
 <label for="{{ field.id_for_label }}" class="block text-lg font-medium text-gray-900 mb-2 {{ label_classes }}">{{ field.label }}{% if form.initial.field.required or form.instance.field.required %}<span class="text-red-700 ml-2">*</span>{% endif %}</label>
 
-<div class="flex items-baseline border border-gray-600 rounded-xs bg-white py-3 text-lg text-gray-900 focus-within:border-dds-teal-600 focus-within:outline-4 focus-within:outline-dds-teal-400">
+<div class="flex items-baseline border border-gray-600 rounded-xs bg-white py-3 text-lg text-gray-900 focus-within:border-dds-teal-600 focus-within:outline-4 focus-within:outline-dds-teal-400 {{ input_error_classes }}">
     {% render_field field|append_attr:"hx-on:input changed once -> this.setAttribute('hx-morph-skip','true')" hx-get=row_url hx-params="none" hx-swap="innerMorph" hx-target="#guide" hx-trigger="focus" data-1p-ignore="" class+="w-full flex-grow block px-4 outline-none placeholder:text-gray-400" class+=input_classes %}
 
     {% if form.initial.field.unit == '$' or form.instance.field.unit == '$' %}
@@ -12,6 +12,6 @@
     {% endif %}
 </div>
 
-{% for error in field.errors %}
-    <p class="text-red-700 {{ error_classes }}">{{ error }}</p>
-{% endfor %}
+{% with show_errors=show_errors errors=field.errors %}
+    <c-value-error-message show_errors=show_errors errors=field.errors/>
+{% endwith %}
