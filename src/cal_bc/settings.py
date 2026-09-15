@@ -130,7 +130,7 @@ TEMPLATES = [
 ]
 
 ASGI_APPLICATION = "cal_bc.asgi.application"
-
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 2000
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
