@@ -62,6 +62,8 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
+    "unfold",
+    "unfold.contrib.filters",
     "daphne",
     "cal_bc.projects.apps.ProjectsConfig",
     "cal_bc.models.apps.ModelsConfig",
@@ -78,7 +80,6 @@ INSTALLED_APPS = [
     "dj_svg",
     "django_htmx",
     "widget_tweaks",
-    "nested_admin",
     "extra_views",
     "django_prose_editor",
     "django_tasks",
@@ -196,6 +197,117 @@ TASKS = {
         "BACKEND": "django_tasks_db.DatabaseBackend",
         "QUEUES": ("default",)
     }
+}
+
+# Supported icon set: https://fonts.google.com/icons
+UNFOLD = {
+    "SITE_TITLE": "Cal-B/C",
+    "SITE_HEADER": "Admin",
+    "SITE_ICON": {
+        "light": lambda request: "/static/shared/cal_bc_logo_black.svg",
+        "dark": lambda request: "/static/shared/cal_bc_logo.svg",
+    },
+    "COLORS": {
+        "primary": {
+            "500": "#00b2a9",
+            "600": "#027c76",
+            "900": "#162933",
+        },
+        "green": {
+            "100": "#e5fffc",
+            "500": "#00b2a9",
+            "400": "#72cbc7",
+            "600": "#027c76",
+            "700": "#004a46",
+            "900": "#162933",
+        },
+        "red": {
+            "500": "#b91c1c",
+            "600": "#9F0712",
+        },
+    },
+    "SIDEBAR": {
+        "navigation": [
+            {
+                "title": "Models",
+                "items": [
+                    {
+                        "title": "Models",
+                        "icon": "dashboard",
+                        "link": reverse_lazy("admin:models_model_changelist"),
+                    },
+                    {
+                        "title": "Versions",
+                        "icon": "backup_table",
+                        "link": reverse_lazy("admin:models_version_changelist"),
+                    },
+                    {
+                        "title": "Subsections",
+                        "icon": "auto_awesome_mosaic",
+                        "link": reverse_lazy("admin:models_subsection_changelist"),
+                    },
+                    {
+                        "title": "Groups",
+                        "icon": "communities",
+                        "link": reverse_lazy("admin:models_group_changelist"),
+                    },
+                    {
+                        "title": "Fields",
+                        "icon": "variable_insert",
+                        "link": reverse_lazy("admin:models_field_changelist"),
+                    },
+                    {
+                        "title": "Benefits Groups",
+                        "icon": "calculate",
+                        "link": reverse_lazy("admin:models_benefitsgroup_changelist"),
+                    },
+                    {
+                        "title": "Benefits Fields",
+                        "icon": "function",
+                        "link": reverse_lazy("admin:models_benefitsfield_changelist"),
+                    },
+                    {
+                        "title": "Tags",
+                        "icon": "bookmarks",
+                        "link": reverse_lazy("admin:taggit_tag_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": "Projects",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Projects",
+                        "icon": "assignment",
+                        "link": reverse_lazy("admin:projects_project_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": "Authorization",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Users",
+                        "icon": "group",
+                        "link": reverse_lazy("admin:auth_user_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": "Database",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Task Results",
+                        "icon": "checklist_rtl",
+                        "link": reverse_lazy("admin:django_tasks_database_dbtaskresult_changelist"),
+                    },
+                ],
+            },
+        ],
+    },
 }
 
 # Default primary key field type
