@@ -62,6 +62,7 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
+    "unfold",
     "daphne",
     "cal_bc.projects.apps.ProjectsConfig",
     "cal_bc.models.apps.ModelsConfig",
@@ -78,7 +79,6 @@ INSTALLED_APPS = [
     "dj_svg",
     "django_htmx",
     "widget_tweaks",
-    "nested_admin",
     "extra_views",
     "django_prose_editor",
     "django_tasks",
@@ -196,6 +196,26 @@ TASKS = {
         "BACKEND": "django_tasks_db.DatabaseBackend",
         "QUEUES": ("default",)
     }
+}
+
+UNFOLD = {
+    "THEME": "dark",
+    "COLORS": {
+        "primary": {
+            "100": "#e5fffc",
+            "200": "#cbf1f1",
+            "300": "#88D3D0",
+            "400": "#72cbc7",
+            "500": "#00b2a9",
+            "600": "#027c76",
+            "700": "#004a46",
+            "950": "#162933",
+        },
+        "red": {
+            "500": "#b91c1c",
+            "600": "#9F0712",
+        },
+    },
 }
 
 # Default primary key field type

@@ -104,6 +104,7 @@ dependencies = [
     { name = "django-taggit" },
     { name = "django-tailwind-cli" },
     { name = "django-tasks-db" },
+    { name = "django-unfold" },
     { name = "django-widget-tweaks" },
     { name = "google-auth" },
     { name = "platformdirs" },
@@ -146,6 +147,7 @@ requires-dist = [
     { name = "django-taggit", specifier = ">=6.1.0" },
     { name = "django-tailwind-cli", specifier = ">=4.6.2" },
     { name = "django-tasks-db", specifier = ">=0.12.0" },
+    { name = "django-unfold", specifier = ">=0.106.1" },
     { name = "django-widget-tweaks", specifier = ">=1.5.0" },
     { name = "google-auth", specifier = ">=2.41.1" },
     { name = "platformdirs", specifier = ">=4.4.0" },
@@ -726,6 +728,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/c7/de/8b38b5d7277e70a00adc6328532f174c632facdf99553b904f79e8aad026/django_typer-3.7.3.tar.gz", hash = "sha256:833059b0bddd5a0c68945c4963064ebb0662b54eec803f86b43904ba6038b777", size = 2977182, upload-time = "2026-05-24T14:33:55.391Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/2f/ee/ff00e923a81de3ea95deac71667744079d1e2709249631a5484a57b7baf6/django_typer-3.7.3-py3-none-any.whl", hash = "sha256:2e6591e081117725ef036578ada407dd5882b0213a8aff821d50399854b2c6f1", size = 296863, upload-time = "2026-05-24T14:33:53.502Z" },
+]
+
+[[package]]
+name = "django-unfold"
+version = "0.106.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/70/64/d6786a90e3c3892b329e738266eacf19abde9ad404fa36fc2a78371749de/django_unfold-0.106.1.tar.gz", hash = "sha256:1ecbadd9e73c0d4b4b304b1d14fb7bea6fa251de1645fa0ae1cdeae583b7be1e", size = 1112437, upload-time = "2026-09-14T11:53:23.226Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/30/e8/6102067725815e712f0be34aa2718182404d4bea6fa53d3a7fb207735c9d/django_unfold-0.106.1-py3-none-any.whl", hash = "sha256:aaabf6b66571d84b945393fdf24c934bd47e8f1118f3b797ab799e01d35b381f", size = 1237857, upload-time = "2026-09-14T11:53:21.852Z" },
 ]
 
 [[package]]
