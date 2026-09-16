@@ -128,7 +128,7 @@ class Group(models.Model):
         ordering = ["position"]
 
     def __str__(self):
-        return self.name
+        return f"{self.position + 1!s} - {self.name}"
 
     @property
     def table_row_set(self):
@@ -176,7 +176,7 @@ class Row(models.Model):
         ordering = ["position"]
 
     def __str__(self):
-        return f"{self.name} - Position {self.position!s}" if self.name else f"Position {self.position!s}"
+        return f"{self.position + 1!s} - {self.name}" if self.name else f"{self.position + 1!s}"
 
     @property
     def required(self):
@@ -195,7 +195,7 @@ class ColumnGroup(models.Model):
         ordering = ["position"]
 
     def __str__(self):
-        return f"{self.name} - Position {self.position!s}" if self.name else f"Position {self.position!s}"
+        return f"Column Group: {self.position + 1!s} - {self.name}" if self.name else f"Column Group {self.position + 1!s}"
 
 
 class Column(models.Model):
@@ -207,7 +207,7 @@ class Column(models.Model):
         ordering = ["position"]
 
     def __str__(self):
-        return self.name
+        return f"{self.position + 1!s} - {self.name}"
 
 
 class FieldColumn(models.Model):
@@ -220,7 +220,7 @@ class FieldColumn(models.Model):
         ]
 
     def __str__(self):
-        return f"Field #{self.field_id} - Column #{self.column_id}"
+        return f"Field: {self.field.name} - Column: {self.column.name}"
 
 
 class FieldRange(models.Model):
@@ -253,7 +253,7 @@ class Field(models.Model):
         ordering = ["position"]
 
     def __str__(self):
-        return f"{self.name} ({self.unit}) - Position {self.position!s}" if self.unit else f"{self.name} - Position {self.position!s}"
+        return f"{self.position + 1!s} - {self.name} ({self.unit})" if self.unit else f"{self.position + 1!s} - {self.name}"
 
     @property
     def required(self):
@@ -274,7 +274,7 @@ class Value(models.Model):
         ordering = ["position"]
 
     def __str__(self):
-        return f"{self.name}: {self.value}"
+        return f"{self.position + 1!s} - {self.name}"
 
 
 class BenefitsGroup(models.Model):
@@ -288,7 +288,7 @@ class BenefitsGroup(models.Model):
         ordering = ["position"]
 
     def __str__(self):
-        return self.name
+        return f"{self.position + 1!s} - {self.name}"
 
 
 class BenefitsRow(models.Model):
@@ -300,7 +300,7 @@ class BenefitsRow(models.Model):
         ordering = ["position"]
 
     def __str__(self):
-        return f"{self.name} - Position {self.position!s}" if self.name else f"Position {self.position!s}"
+        return f"{self.position + 1!s} - {self.name}" if self.name else f"{self.position + 1!s}"
 
 
 class BenefitsField(models.Model):
@@ -314,4 +314,5 @@ class BenefitsField(models.Model):
         ordering = ["position"]
 
     def __str__(self):
-        return f"{self.name} ({self.unit}) - Position {self.position!s}" if self.unit else f"{self.name} - Position {self.position!s}"
+        return f"{self.position + 1!s} - {self.name} ({self.unit})" if self.unit else f"{self.position + 1!s} - {self.name}"
+
