@@ -195,7 +195,7 @@ To reset your local database, run:
 $ uv run manage.py reset_db
 ```
 
-You can seed your local database using json files. Use the command `run manage.py loaddata <file_path>`.
+You can seed your local database with `uv run manage.py seed` or using json files via the command `run manage.py loaddata <file_path>`.
 
 Example:
 
