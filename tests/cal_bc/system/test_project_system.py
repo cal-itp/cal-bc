@@ -261,15 +261,14 @@ class TestProjectSystem:
         first_page.get_by_role("button", name="Save draft").click()
         expect(first_page.locator("body")).to_contain_text("Select District.")
 
+        expect(second_page.locator("body")).to_contain_text("Hypothetical Project", timeout=10_000)
         first_page.get_by_label("Project Name").fill("Geary Boulevard Light Rail")
         first_page.get_by_label("District").select_option("District 4 - Bay Area / Oakland")
-
-        expect(second_page.locator("body")).to_contain_text("Hypothetical Project")
         first_page.get_by_role("button", name="Save draft").click()
         expect(first_page.locator("body")).to_contain_text("Project successfully saved!")
         expect(second_page.locator("body")).to_contain_text("Geary Boulevard Light Rail")
 
-        first_page.get_by_label("Project Name").fill("New Geary Boulevard Light Rail")
+        first_page.get_by_label("Project Name").fill("New Geary Boulevard Light Rail", timeout=10_000)
         first_page.get_by_role("button", name="Continue to Subsection 1E").click()
         expect(first_page.locator("body")).to_contain_text("Project successfully saved!")
 
