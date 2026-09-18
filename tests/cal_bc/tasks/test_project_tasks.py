@@ -92,6 +92,17 @@ class TestProjectTasks:
         assert result.status == TaskResultStatus.SUCCESSFUL
         assert project.value_set.get(field=formula_field).value == "35"
 
+    def test_refresh_project_fields_does_not_write_summary_values(self, project: Project, row: Row, summary_row: Row) -> None:
+        year1_field = row.field_set.create(name="Mitigation Year 1", cell="1) Project Information!AB15", display_type=FieldDisplayType.REQUIRED)
+        year2_field = row.field_set.create(name="Mitigation Year 2", cell="1) Project Information!AB16", display_type=FieldDisplayType.NOT_REQUIRED)
+        summary_field = summary_row.field_set.create(name="Mitigation Total", cell="1) Project Information!AB44", display_type=FieldDisplayType.REQUIRED)
+        project.value_set.create(field=year1_field, value="110")
+        project.value_set.create(field=year2_field, value="210")
+        project.value_set.create(field=summary_field, value="50")
+        result = refresh_project_fields.enqueue(project.pk)
+        assert result.status == TaskResultStatus.SUCCESSFUL
+        assert project.value_set.get(field=summary_field).value == "320.0"
+
     def test_refresh_project_fields_overwrites_formulas(self, project: Project, row: Row) -> None:
         formula_field = row.field_set.create(name="Ramp Design Speed (Build)", cell="RampFFSpdB")
         project.value_set.create(field=formula_field, value="40")
@@ -105,18 +116,6 @@ class TestProjectTasks:
         result_field = row.field_set.create(name="Mitigation Total", cell="1) Project Information!AB44", display_type=FieldDisplayType.READ_ONLY)
         project.value_set.create(field=year1_field, value="100")
         project.value_set.create(field=year2_field, value="200")
-        project.value_set.create(field=result_field, value="50")
         result = refresh_project_fields.enqueue(project.pk)
         assert result.status == TaskResultStatus.SUCCESSFUL
         assert project.value_set.get(field=result_field).value == "300.0"
-
-    def test_refresh_project_fields_does_not_overwrite_summary_values(self, project: Project, row: Row, summary_row: Row) -> None:
-        year1_field = row.field_set.create(name="Mitigation Year 1", cell="1) Project Information!AB15", display_type=FieldDisplayType.REQUIRED)
-        year2_field = row.field_set.create(name="Mitigation Year 2", cell="1) Project Information!AB16", display_type=FieldDisplayType.NOT_REQUIRED)
-        summary_field = summary_row.field_set.create(name="Mitigation Total", cell="1) Project Information!AB44", display_type=FieldDisplayType.REQUIRED)
-        project.value_set.create(field=year1_field, value="110")
-        project.value_set.create(field=year2_field, value="210")
-        project.value_set.create(field=summary_field, value="50")
-        result = refresh_project_fields.enqueue(project.pk)
-        assert result.status == TaskResultStatus.SUCCESSFUL
-        assert project.value_set.get(field=summary_field).value == "320.0"
