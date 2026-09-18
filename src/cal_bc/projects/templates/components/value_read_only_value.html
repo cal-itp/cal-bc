@@ -6,7 +6,7 @@
     {% elif field.unit %}
         {{ value.value|floatformat:-2|intcomma }} {{ field.unit }}
     {% else %}
-        {{ value.value|floatformat:-2|intcomma }}
+        {{ value.value }}
     {% endif %}
 {% else %}
      {% firstof blank "&nbsp;" %}
