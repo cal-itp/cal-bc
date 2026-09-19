@@ -531,6 +531,11 @@ def seed(self, mode):
                                            cell="1) Project Information!AE44", display_type=FieldDisplayType.READ_ONLY),
                         column=column_present_value)
 
-    benefits_group_summary = create_benefits_group(subsection=subsection_investment_analysis, name="Summary")
-    benefits_row_summary = create_benefits_row(benefits_group=benefits_group_summary)
-    create_benefits_field(benefits_row=benefits_row_summary, name="Life-Cycle Costs (mil. $)", cell="3) Results!H13", unit="$")
+    results_group_summary = create_group(subsection=subsection_investment_analysis, name="Summary", is_summary=True)
+    results_row_summary = create_row(group=results_group_summary)
+    create_field(row=results_row_summary, name="Life-Cycle Costs (mil. $)", cell="3) Results!H13", unit="$")
+    create_field(row=results_row_summary, name="Life-Cycle Benefits (mil. $)", cell="3) Results!H14", unit="$")
+    create_field(row=results_row_summary, name="Net Present Value (mil. $)", cell="3) Results!H15", unit="$")
+    create_field(row=results_row_summary, name="Benefit / Cost Ratio", cell="BeneCostRatio", unit="x")
+    create_field(row=results_row_summary, name="Rate of Return on Investment", cell="3) Results!H19", unit="%")
+    create_field(row=results_row_summary, name="Payback Period", cell="3) Results!H21", unit="years")

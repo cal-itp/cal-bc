@@ -5,9 +5,6 @@ from playwright.sync_api import Page, expect
 from pytest_playwright.pytest_playwright import CreateContextCallback
 
 from cal_bc.models.models.model import (
-    BenefitsField,
-    BenefitsGroup,
-    BenefitsRow,
     Column,
     ColumnGroup,
     Field,
@@ -241,24 +238,24 @@ class TestProjectSystem:
         return field
 
     @pytest.fixture
-    def section_benefits(self, version: Version) -> Section:
-        return version.section_set.create(code="3", name="Benefits")
+    def section_3(self, version: Version) -> Section:
+        return version.section_set.create(code="3", name="Investment Analysis")
 
     @pytest.fixture
-    def subsection_investment_analysis(self, section_benefits: Section) -> Subsection:
-        return section_benefits.subsection_set.create(code=" ", name="Investment Analysis")
+    def subsection_3(self, section_3: Section) -> Subsection:
+        return section_3.subsection_set.create(code=" ", name="Investment Analysis")
 
     @pytest.fixture
-    def benefits_group_summary(self, subsection_investment_analysis: Subsection) -> BenefitsGroup:
-        return subsection_investment_analysis.benefitsgroup_set.create(name="Summary")
+    def summary_3_group(self, subsection_3: Subsection) -> Group:
+        return subsection_3.group_set.create(name="Summary", is_summary=True)
 
     @pytest.fixture
-    def benefits_row_summary(self, benefits_group_summary: BenefitsGroup) -> BenefitsRow:
-        return benefits_group_summary.benefitsrow_set.create()
+    def summary_3_row(self, summary_3_group: Group) -> Row:
+        return summary_3_group.row_set.create()
 
     @pytest.fixture(autouse=True)
-    def benefits_field_summary(self, benefits_row_summary: BenefitsRow) -> BenefitsField:
-        return benefits_row_summary.benefitsfield_set.create(name="Life-Cycle Costs (mil. $)", cell="3) Results!H13", unit="$")
+    def summary_life_cycle_field(self, summary_3_row: Row) -> Field:
+        return summary_3_row.field_set.create(name="Life-Cycle Costs (mil. $)", cell="3) Results!H13", unit="$")
 
     def test_projects(self, first_page: Page, second_page: Page, channels_live_server: ChannelsLiveServer):
         first_page.goto(channels_live_server.http_url)
@@ -335,11 +332,8 @@ class TestProjectSystem:
         expect(first_page.locator("dl dt").filter(has_text="Life-Cycle Costs (mil. $)").locator(
             "xpath=following-sibling::dd[1]")).to_contain_text("$36.42")
 
-        first_page.get_by_role("link", name="Projects").click()
-        expect(first_page.locator("body")).to_contain_text(
-            "New Geary Boulevard Light Rail"
-        )
-
+        first_page.get_by_role("link", name="Exit Project").click()
+        expect(first_page.locator("body")).to_contain_text("New Geary Boulevard Light Rail")
         expect(first_page.locator("body")).to_contain_text("1 projects")
         first_page.on("dialog", lambda dialog: dialog.accept())
         first_page.get_by_role("button", name="Delete").click()
