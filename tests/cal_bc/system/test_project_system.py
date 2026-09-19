@@ -307,11 +307,8 @@ class TestProjectSystem:
         first_page.get_by_role("menuitem", name="1E. Project Costs").click()
         expect(first_page.locator("dl dt").filter(has_text="Total Project Support").locator("xpath=following-sibling::dd[1]")).to_contain_text("25,000")
 
-        first_page.get_by_role("link", name="Projects").click()
-        expect(first_page.locator("body")).to_contain_text(
-            "New Geary Boulevard Light Rail"
-        )
-
+        first_page.get_by_role("button", name="Exit Project").click()
+        expect(first_page.locator("body")).to_contain_text("New Geary Boulevard Light Rail")
         expect(first_page.locator("body")).to_contain_text("1 projects")
         first_page.on("dialog", lambda dialog: dialog.accept())
         first_page.get_by_role("button", name="Delete").click()
