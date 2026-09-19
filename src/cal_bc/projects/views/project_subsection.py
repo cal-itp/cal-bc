@@ -93,6 +93,8 @@ class ProjectSubsectionView(
     def get_success_url(self):
         project = get_object_or_404(Project, pk=self.kwargs["project_pk"])
         subsection = get_object_or_404(Subsection, pk=self.kwargs["pk"])
+        if self.request.POST.get("step") == "end":
+            return reverse_lazy("projects")
         if (
             self.request.POST.get("step") == "previous"
             and subsection.previous_subsection
