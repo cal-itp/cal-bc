@@ -4,6 +4,7 @@
 
 @source inline("grid-cols-{1..15}");
 @source inline("col-span-{1..15}");
+@source inline("grid-cols-[50px_repeat({2..10},minmax(0,1fr))]");
 
 @theme {
   --font-sans: "Public Sans", sans-serif;

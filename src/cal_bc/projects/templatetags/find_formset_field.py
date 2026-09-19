@@ -19,4 +19,17 @@ def find_valueset_field(value_set, field):
 def find_fieldset_row(field_set, row):
     for field in field_set:
         if hasattr(field, "row") and field.row == row:
-                return field
+            return field
+
+@register.filter
+def find_formset_row_errors(formset, row):
+    errors = []
+    for form in formset:
+        if hasattr(form, "instance") and hasattr(form.instance, "field") and form.instance.field.row == row:
+            for form_errors in form.errors.values():
+                for form_error in form_errors:
+                    if form_error not in errors:
+                        errors.append(form_error)
+    if errors:
+        return ", ".join(item.replace(".", "") for item in errors) + '.'
+    return ""

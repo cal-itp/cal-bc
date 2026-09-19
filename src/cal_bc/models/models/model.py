@@ -3,6 +3,12 @@ from django_prose_editor.fields import ProseEditorField
 from taggit.managers import TaggableManager
 
 
+class FieldDisplayType(models.IntegerChoices):
+    REQUIRED = 1, "Required"
+    NOT_REQUIRED = 2, "Not Required"
+    READ_ONLY = 3, "Read-Only"
+
+
 class Model(models.Model):
     name = models.CharField(null=False, blank=False, db_index=True)
     description = models.CharField(blank=True)
@@ -172,6 +178,13 @@ class Row(models.Model):
     def __str__(self):
         return f"{self.name} - Position {self.position!s}" if self.name else f"Position {self.position!s}"
 
+    @property
+    def required(self):
+        input_fields = self.field_set.exclude(display_type=FieldDisplayType.READ_ONLY).exclude(row__group__is_summary=True).count()
+        if input_fields > 0:
+            return self.field_set.filter(display_type=FieldDisplayType.REQUIRED).exclude(row__group__is_summary=True).count() == input_fields
+        return False
+
 
 class ColumnGroup(models.Model):
     group = models.ForeignKey(Group, null=False, on_delete=models.CASCADE)
@@ -234,13 +247,21 @@ class Field(models.Model):
     cell = models.CharField(null=False)
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
     unit = models.CharField(blank=True)
-    read_only = models.BooleanField(null=False, default=False, db_index=True)
+    display_type = models.IntegerField(choices=FieldDisplayType.choices, null=False, default=FieldDisplayType.REQUIRED, db_index=True)
 
     class Meta:
         ordering = ["position"]
 
     def __str__(self):
         return f"{self.name} ({self.unit}) - Position {self.position!s}" if self.unit else f"{self.name} - Position {self.position!s}"
+
+    @property
+    def required(self):
+        return (self.display_type == FieldDisplayType.REQUIRED and self.row.group.is_summary == False)
+
+    @property
+    def read_only(self):
+        return self.display_type == FieldDisplayType.READ_ONLY or self.row.group.is_summary == True
 
 
 class Value(models.Model):
