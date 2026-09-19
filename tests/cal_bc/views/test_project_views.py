@@ -109,7 +109,7 @@ class TestProjectViews:
         page = query_by_text(dom, "My Cal B/C Projects", exact=False)
         assert page.to_have_text_content("1to1of1projects", exact=False)
 
-    def test_index_with_other_projects(self, client: Client,other_user: User, project: Project):
+    def test_index_with_other_projects(self, client: Client, other_user: User, project: Project):
         client.force_login(other_user)
         response = client.get(reverse_lazy("projects"))
         assert response.status_code == 200

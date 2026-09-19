@@ -1,0 +1,28 @@
+{% load svg %}
+
+<el-dialog>
+      <dialog id="exit_unsaved_dialog" aria-labelledby="dialog-title" class="fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent">
+            <el-dialog-backdrop class="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"></el-dialog-backdrop>
+
+            <div tabindex="0" class="flex min-h-full items-center justify-center p-4 text-left focus:outline-none">
+                <el-dialog-panel class="relative transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in  sm:w-full sm:max-w-xl sm:p-10 data-closed:sm:translate-y-0 data-closed:sm:scale-95">
+                    <div class="absolute top-0 right-0 pt-6 pr-6 sm:pt-10 sm:pr-10">
+                          <button type="button" command="close" commandfor="exit_unsaved_dialog" class="rounded-md bg-white text-dds-teal-600 p-2 border-1 border-dds-teal-600 shadow hover:shadow-inner hover:bg-gray-200 focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+                            <span class="sr-only">Close</span>{% svg "projects/close" %}
+                          </button>
+                    </div>
+                    <div class="space-y-6">
+                        <h3 id="dialog-title" class="text-3xl font-semibold text-gray-950">Unsaved changes.</h3>
+                        <div class="mt-2 space-y-4 text-lg font-light text-gray-900">
+                            <p>Your project hasn’t been saved.</p>
+                            <p>Note: This action cannot be undone.</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-row mt-12 space-x-4">
+                        <a href="{% url 'projects' %}" command="close" commandfor="exit_unsaved_dialog" class="rounded-md bg-white px-7 py-3 text-lg font-semibold text-dds-teal-600 border-1 border-dds-teal-600 shadow hover:shadow-inner hover:bg-gray-200 focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Discard</a>
+                        <button type="submit" name="step" value="end" hx-disable="this"class="cursor-pointer rounded-md bg-dds-teal-600 px-7 py-3 text-lg font-semibold text-white shadow hover:shadow-inner hover:text-gray-200 focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Save and leave</button>
+                    </div>
+                </el-dialog-panel>
+            </div>
+      </dialog>
+</el-dialog>
