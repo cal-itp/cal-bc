@@ -92,15 +92,19 @@ class ProjectSubsectionView(
 
     def get_success_url(self):
         project = get_object_or_404(Project, pk=self.kwargs["project_pk"])
-        subsection = get_object_or_404(Subsection, pk=self.kwargs["pk"])
-        if (
-            self.request.POST.get("step") == "previous"
-            and subsection.previous_subsection
-        ):
-            subsection = subsection.previous_subsection
-        elif self.request.POST.get("step") == "next" and subsection.next_subsection:
-            subsection = subsection.next_subsection
-        return reverse_lazy(
-            "project_subsection",
-            kwargs={"project_pk": project.id, "pk": subsection.id},
-        )
+        if self.request.POST.get("step") == "end":
+            return reverse_lazy("projects")
+        else:
+            subsection = get_object_or_404(Subsection, pk=self.kwargs["pk"])
+            if (
+                self.request.POST.get("step") == "previous"
+                and subsection.previous_subsection
+            ):
+                subsection = subsection.previous_subsection
+            elif self.request.POST.get("step") == "next" and subsection.next_subsection:
+                subsection = subsection.next_subsection
+
+            return reverse_lazy(
+                "project_subsection",
+                kwargs={"project_pk": project.id, "pk": subsection.id},
+            )
