@@ -2,11 +2,6 @@
 {% load svg %}
 {% block main %}
 
-{% partialdef subsection-header %}
-    <h1 class="text-4xl font-bold tracking-tight text-dds-teal-950">{{ subsection.section.code }}{{ subsection.code }}. {{ subsection.name }}</h1>
-    {% if subsection.description %}<p class="mt-1 text-lg/8 font-light text-gray-700">{{ subsection.description }}</p>{% endif %}
-{% endpartialdef %}
-
 <div class="min-h-full bg-gray-100 flex flex-col">
     {% include "projects/_header_nav.html" %}
 
@@ -34,6 +29,7 @@
     <main class="grow">
         <form method="post" class="mx-auto max-w-7xl pt-16 pb-20 px-6 lg:px-8">
             {% csrf_token %}
+            {% include "projects/_exit_unsaved_dialog.html" %}
 
             {% if subsection.column_count < 4 and subsection.summary_group_set.count == 0 %}
             <div class="md:grid md:grid-cols-7 md:gap-4">
@@ -55,14 +51,16 @@
             <div class="mt-12 pt-12 border-t border-gray-300 flex flex-row-reverse items-center justify-between gap-x-6">
                 <div class="flex flex-row-reverse items-center justify-end gap-x-6">
                     {% if subsection.next_subsection %}
-                        <button type="submit" name="step" value="next" hx-disable="this" class="rounded-md bg-dds-teal-600 px-7 py-3 text-lg font-semibold text-white shadow hover:shadow-inner hover:text-gray-200 focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Continue<span class="sr-only sm:not-sr-only"> to Subsection {{ subsection.next_subsection.section.code }}{{ subsection.next_subsection.code }}</span></button>
+                        <button type="submit" name="step" value="next" hx-disable="this" class="cursor-pointer rounded-md bg-dds-teal-600 px-7 py-3 text-lg font-semibold text-white shadow hover:shadow-[inset_0_0_200px_0_rgba(0,0,0,0.10)] focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Continue<span class="sr-only sm:not-sr-only"> to Subsection {{ subsection.next_subsection.section.code }}{{ subsection.next_subsection.code }}</span></button>
+                    {% else %}
+                        <button type="button" command="show-modal" commandfor="exit_unsaved_dialog" class="cursor-pointer rounded-md bg-dds-teal-600 px-7 py-3 text-lg font-semibold text-white shadow hover:shadow-[inset_0_0_200px_0_rgba(0,0,0,0.10)] focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Exit<span class="sr-only sm:not-sr-only"> Project</span></button>
                     {% endif %}
                 </div>
                 <div class="flex items-center justify-end gap-x-6">
                     {% if subsection.previous_subsection %}
-                        <button type="submit" name="step" value="previous" hx-disable="this" class="rounded-md bg-white px-7 py-3 text-lg font-semibold text-dds-teal-600 border-2 border-dds-teal-600 shadow hover:shadow-inner hover:bg-gray-200 focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Back<span class="sr-only sm:not-sr-only"> to Subsection {{ subsection.previous_subsection.section.code }}{{ subsection.previous_subsection.code }}</span></button>
+                        <button type="submit" name="step" value="previous" hx-disable="this" class="cursor-pointer rounded-md bg-white px-7 py-3 text-lg font-semibold text-dds-teal-600 border-1 border-dds-teal-600 shadow hover:shadow-[inset_0_0_200px_0_rgba(0,0,0,0.10)] focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Back<span class="sr-only sm:not-sr-only"> to Subsection {{ subsection.previous_subsection.section.code }}{{ subsection.previous_subsection.code }}</span></button>
                     {% endif %}
-                    <button type="submit" name="step" value="current" hx-disable="this" class="rounded-md bg-white px-7 py-3 text-lg font-semibold text-dds-teal-600 border-2 border-dds-teal-600 shadow hover:shadow-inner hover:bg-gray-200 focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Save draft</button>
+                    <button type="submit" name="step" value="current" hx-disable="this" class="cursor-pointer rounded-md bg-white px-7 py-3 text-lg font-semibold text-dds-teal-600 border-1 border-dds-teal-600 shadow hover:shadow-[inset_0_0_200px_0_rgba(0,0,0,0.10)] focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Save draft</button>
                 </div>
             </div>
         </form>
