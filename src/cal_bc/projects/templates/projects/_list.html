@@ -51,12 +51,12 @@
             <div>
                 <div class="flex flex-1 items-center justify-between space-x-2 md:hidden">
                     {% if page_obj.has_previous %}
-                        <a href="?page={{ page_obj.previous_page_number }}" class="relative w-24 px-4 py-2 inline-flex items-center justify-center text-dds-teal-600 border-1 border-dds-teal-600 rounded-md shadow hover:shadow-inner hover:bg-gray-200 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Previous</a>
+                        <a href="?page={{ page_obj.previous_page_number }}" class="relative w-24 px-4 py-2 inline-flex items-center justify-center text-dds-teal-600 border-1 border-dds-teal-600 rounded-md shadow hover:shadow-[inset_0_0_200px_0_rgba(0,0,0,0.10)] focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Previous</a>
                     {% else %}
                         <span class="relative w-24 px-4 py-2 inline-flex items-center justify-center text-gray-300 border-1 border-gray-300 rounded-md cursor-not-allowed">Previous</span>
                     {% endif %}
                     {% if page_obj.has_next %}
-                        <a href="?page={{ page_obj.next_page_number }}" class="relative w-24 px-4 py-2 inline-flex items-center justify-center text-dds-teal-600 border-1 border-dds-teal-600 rounded-md shadow hover:shadow-inner hover:bg-gray-200 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Next</a>
+                        <a href="?page={{ page_obj.next_page_number }}" class="relative w-24 px-4 py-2 inline-flex items-center justify-center text-dds-teal-600 border-1 border-dds-teal-600 rounded-md shadow hover:shadow-[inset_0_0_200px_0_rgba(0,0,0,0.10)] focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Next</a>
                     {% else %}
                         <span class="relative w-24 px-4 py-2 inline-flex items-center justify-center text-gray-300 border-1 border-gray-300 rounded-md cursor-not-allowed">Next</span>
                     {% endif %}
@@ -64,7 +64,7 @@
                 <div class="hidden md:flex md:flex-1 md:items-center md:justify-between">
                     <nav aria-label="Pagination" class="isolate inline-flex space-x-2">
                         {% if page_obj.has_previous %}
-                            <a href="?page={{ page_obj.previous_page_number }}" class="relative size-7 inline-flex items-center justify-center text-dds-teal-600 border-1 border-dds-teal-600 rounded-md shadow hover:shadow-inner hover:bg-gray-200 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+                            <a href="?page={{ page_obj.previous_page_number }}" class="relative size-7 inline-flex items-center justify-center text-dds-teal-600 border-1 border-dds-teal-600 rounded-md shadow hover:shadow-[inset_0_0_200px_0_rgba(0,0,0,0.10)] focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
                                 <span class="sr-only">Previous</span>
                                 {% svg 'projects/chevron_left' %}
                             </a>
@@ -82,13 +82,13 @@
                                 {% if page_obj.number == number %}
                                     <span aria-current="page" class="relative z-10 size-7 inline-flex items-center justify-center text-sm text-white border-1 border-dds-teal-600 rounded-md shadow bg-dds-teal-600">{{ number }}</span>
                                 {% else %}
-                                    <a href="?page={{ number }}" class="relative size-7 inline-flex items-center justify-center text-sm text-dds-teal-600 border-1 border-dds-teal-600 rounded-md shadow hover:shadow-inner hover:bg-gray-200 focus:ring-offset-2 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">{{ number }}</a>
+                                    <a href="?page={{ number }}" class="relative size-7 inline-flex items-center justify-center text-sm text-dds-teal-600 border-1 border-dds-teal-600 rounded-md shadow hover:shadow-[inset_0_0_200px_0_rgba(0,0,0,0.10)] focus:ring-offset-2 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">{{ number }}</a>
                                 {% endif %}
                             {% endif %}
                         {% endfor %}
 
                         {% if page_obj.has_next %}
-                            <a href="?page={{ page_obj.next_page_number }}" class="relative size-7 inline-flex items-center justify-center text-dds-teal-600 border-1 border-dds-teal-600 rounded-md shadow hover:shadow-inner hover:bg-gray-200 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+                            <a href="?page={{ page_obj.next_page_number }}" class="relative size-7 inline-flex items-center justify-center text-dds-teal-600 border-1 border-dds-teal-600 rounded-md shadow hover:shadow-[inset_0_0_200px_0_rgba(0,0,0,0.10)] focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
                                 <span class="sr-only">Next</span>
                                 {% svg 'projects/chevron_right' %}
                             </a>
@@ -108,7 +108,7 @@
             <p class="text-sm text-gray-700 text-center">Create your first Cal B/C project by completing the 2-section data entry process.</p>
             <p class="text-sm text-gray-700 text-center">California state averages are pre-populated where available.</p>
             <div class="pt-4 pb-8 flex items-center justify-center">
-                <a href="{% url 'models' %}" class="flex items-center gap-2 rounded-md bg-dds-teal-600 pl-3 pr-4 py-3 text-lg font-semibold text-white shadow hover:shadow-inner hover:text-gray-200 focus:outline-4 focus:outline-dds-teal-400 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+                <a href="{% url 'models' %}" class="flex items-center gap-2 rounded-md bg-dds-teal-600 pl-3 pr-4 py-3 text-lg font-semibold text-white shadow hover:shadow-[inset_0_0_200px_0_rgba(0,0,0,0.10)] focus:outline-4 focus:outline-dds-teal-400 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
                     {% svg 'projects/plus' %}<span>Create project</span>
                 </a>
             </div>
