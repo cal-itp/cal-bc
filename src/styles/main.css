@@ -19,4 +19,6 @@
   --color-dds-teal-950: #162933;
 
   --color-cal-state-bgd: #EEF8FB;
+
+  --button-hover: inset 0 0 200px 0 rgba(0,0,0,0.10);
 }
