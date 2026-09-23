@@ -78,7 +78,7 @@ class TestProjectTasks:
 
     @pytest.fixture
     def benefits_field(self, benefits_row: BenefitsRow) -> Field:
-        return benefits_row.benefitsfield_set.create(name="Project Name", cell="ProjName")
+        return benefits_row.benefitsfield_set.create(name="Life-Cycle Costs", cell="3) Results!H13")
 
     def test_refresh_project_fields_creates_value(self, project: Project, field: Field) -> None:
         assert project.value_set.count() == 0
@@ -143,7 +143,7 @@ class TestProjectTasks:
 
     def test_refresh_project_benefits_fields_updates_value(self, project: Project, benefits_field: BenefitsField) -> None:
         # benefits values are for display only, workbook is source of truth
-        project.benefitsvalue_set.create(benefits_field=benefits_field, value="Former Name")
+        project.benefitsvalue_set.create(benefits_field=benefits_field, value="3")
         result = refresh_project_fields.enqueue(project.pk)
         assert result.status == TaskResultStatus.SUCCESSFUL
-        assert project.benefitsvalue_set.get(benefits_field=benefits_field).value == "Hypothetical Project"
+        assert project.benefitsvalue_set.get(benefits_field=benefits_field).value == "0.0"

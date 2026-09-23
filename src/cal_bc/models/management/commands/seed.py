@@ -181,7 +181,7 @@ def seed(self, mode):
         guide="All values should be entered in thousands of dollars using today's constant dollars. Project costs (including maintenance and operating costs) should be net of costs without project."
     )
 
-    subsection_investment_analysis = create_subsection(section=section_results, name="Investment Analysis", code="")
+    subsection_investment_analysis = create_subsection(section=section_results, name="Investment Analysis", code=" ")
 
     group_general_information = create_group(subsection=subsection_project_data, name="General Information")
     create_field(row=create_row(group_general_information), name="Project Name", cell="ProjName")
@@ -533,4 +533,4 @@ def seed(self, mode):
 
     benefits_group_summary = create_benefits_group(subsection=subsection_investment_analysis, name="Summary")
     benefits_row_summary = create_benefits_row(benefits_group=benefits_group_summary)
-    create_benefits_field(benefits_row=benefits_row_summary, name="Life-Cycle Costs", cell="3) Results!H13", unit="$")
+    create_benefits_field(benefits_row=benefits_row_summary, name="Life-Cycle Costs (mil. $)", cell="3) Results!H13", unit="$")
