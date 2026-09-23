@@ -1,3 +1,6 @@
+import formualizer
+from itertools import groupby
+import formualizer
 import logging
 import urllib.request
 from functools import cached_property, partial
@@ -13,40 +16,49 @@ from cal_bc.tasks import refresh_channel
 
 logger = logging.getLogger(__name__)
 
+
 class RemoteWorkbook:
     def __init__(self, url: str) -> None:
         self.url = url
 
-    @cached_property
+    @property
     def request(self) -> urllib.request.Request:
         return urllib.request.Request(self.url)
 
     @cached_property
-    def workbook(self) -> BytesIO:
-        return BytesIO(urllib.request.urlopen(self.request).read())
+    def workbook_bytes(self) -> bytes:
+        return urllib.request.urlopen(self.request).read()
 
     @cached_property
-    def evaluator(self) -> Evaluator:
-        compiler: ModelCompiler = ModelCompiler()
-        model: Model = compiler.read_and_parse_archive(self.workbook, build_code=True)
-        return Evaluator(model)
+    def workbook(self) -> formualizer.Workbook:
+        return formualizer.load_workbook_bytes(self.workbook_bytes, backend="umya")
+
+    @property
+    def defined_names(self) -> dict[str, tuple[str, int, int]]:
+        return {
+            nr['name']: (nr["sheet"], nr["start_row"], nr["start_col"])
+            for nr in self.workbook.get_named_ranges() if nr["kind"] == "cell"
+        }
+
+    def resolve_address(self, address: str) -> tuple[str, int, int]:
+        def excel_column_index(column):
+            n = 0
+            for char in column:
+                n = n * 26 + 1 + ord(char) - ord('A')
+            return n
+
+        if address in self.defined_names:
+            return self.defined_names[address]
+        else:
+            sheet, cell = address.split("!")
+            column, row = ["".join(g) for _, g in groupby(cell, str.isalpha)]
+            return (sheet, int(row), excel_column_index(column))
 
     def evaluate(self, address: str) -> any:
-        return self.evaluator.evaluate(address)
+        return self.workbook.evaluate_cell(*self.resolve_address(address))
 
     def set_cell_value(self, address: str, value: str) -> None:
-        self.evaluator.set_cell_value(address=address, value=value)
-
-        addr = self.evaluator.resolve_names(address)
-        if addr in self.evaluator.model.defined_names and isinstance(self.evaluator.model.defined_names[addr], xltypes.XLCell):
-                addr = self.evaluator.model.defined_names[addr].address
-
-        if isinstance(addr, str):
-            self.evaluator.model.cells[addr].formula = None
-
-        elif isinstance(addr, xltypes.XLCell):
-            self.evaluator.model.cells[addr.address].formula = None
-
+        return self.workbook.set_value(*self.resolve_address(address), value)
 
 @task
 def refresh_project_fields(project_pk: int) -> None:
