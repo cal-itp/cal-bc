@@ -1,11 +1,8 @@
 import logging
-import urllib.request
 from functools import cached_property, partial
-from io import BytesIO
 
 from django.db import transaction
 from django.tasks import task
-from xlcalculator import Evaluator, Model, ModelCompiler, xltypes
 
 from cal_bc.models.models.model import (
     BenefitsField,
@@ -15,60 +12,47 @@ from cal_bc.models.models.model import (
 )
 from cal_bc.projects.models.project import BenefitsValue, Project, Value
 from cal_bc.tasks import refresh_channel
+from cal_bc_calculator.calculator import BytesCalculator
+from cal_bc_calculator.downloader import Downloader
 
 logger = logging.getLogger(__name__)
+
 
 class RemoteWorkbook:
     def __init__(self, url: str) -> None:
         self.url = url
 
-    @cached_property
-    def request(self) -> urllib.request.Request:
-        return urllib.request.Request(self.url)
+    @property
+    def downloader(self) -> Downloader:
+        return Downloader(url=self.url)
 
     @cached_property
-    def workbook(self) -> BytesIO:
-        return BytesIO(urllib.request.urlopen(self.request).read())
+    def calculator(self) -> BytesCalculator:
+        return BytesCalculator(self.downloader.to_bytes())
 
-    @cached_property
-    def evaluator(self) -> Evaluator:
-        compiler: ModelCompiler = ModelCompiler()
-        model: Model = compiler.read_and_parse_archive(self.workbook, build_code=True)
-        return Evaluator(model)
+    def set_cell_values(self, cell_values: dict[str, any]) -> None:
+        self.calculator.write(cell_values)
 
-    def evaluate(self, address: str) -> any:
-        return self.evaluator.evaluate(address)
-
-    def set_cell_value(self, address: str, value: str) -> None:
-        self.evaluator.set_cell_value(address=address, value=value)
-
-        addr = self.evaluator.resolve_names(address)
-        if addr in self.evaluator.model.defined_names and isinstance(self.evaluator.model.defined_names[addr], xltypes.XLCell):
-                addr = self.evaluator.model.defined_names[addr].address
-
-        if isinstance(addr, str):
-            self.evaluator.model.cells[addr].formula = None
-
-        elif isinstance(addr, xltypes.XLCell):
-            self.evaluator.model.cells[addr.address].formula = None
-
+    def read_cell_values(self, cells: list[str]) -> dict[str, any]:
+        return {k: v for k, v in zip(cells, self.calculator.evaluate(cells))}
 
 @task
 def refresh_project_fields(project_pk: int) -> None:
     project = Project.objects.get(id=project_pk)
 
     remote_workbook = RemoteWorkbook(url=project.version.url)
-    for value in project.value_set.exclude(field__cell="").exclude(value="").exclude(field__display_type=FieldDisplayType.READ_ONLY).exclude(field__row__group__is_summary=True).select_related("field"):
-        try:
-            remote_workbook.set_cell_value(address=value.field.cell, value=value.value)
-        except ValueError as e:
-            logger.error(f"Cannot set {value.field.cell} to {value.value}: {e}")
-            raise
-
+    cell_values = {
+        value.field.cell: value.value
+        for value in project.value_set.exclude(field__cell="").exclude(value="").exclude(field__display_type=FieldDisplayType.READ_ONLY).exclude(field__row__group__is_summary=True).select_related("field")
+    }
+    remote_workbook.set_cell_values(cell_values)
     field_set = Field.objects.filter(row__group__subsection__section__version=project.version).exclude(cell="")
-    value_set = [Value(project=project, field=f, value=remote_workbook.evaluate(f.cell)) for f in field_set.all()]
+    calculated_values = remote_workbook.read_cell_values([f.cell for f in field_set.all()])
+    value_set = [Value(project=project, field=f, value=calculated_values[f.cell]) for f in field_set.all() if calculated_values[f.cell] is not None]
+
     benefits_field_set = BenefitsField.objects.filter(benefits_row__benefits_group__subsection__section__version=project.version).exclude(cell="")
-    benefits_value_set = [BenefitsValue(project=project, benefits_field=f, value=remote_workbook.evaluate(f.cell)) for f in benefits_field_set.all()]
+    calculated_benefit_values = remote_workbook.read_cell_values([f.cell for f in benefits_field_set.all()])
+    benefits_value_set = [BenefitsValue(project=project, benefits_field=f, value=calculated_benefit_values[f.cell]) for f in benefits_field_set.all() if calculated_benefit_values[f.cell] is not None]
 
     with transaction.atomic():
         Value.objects.bulk_create(value_set, update_conflicts=True, update_fields=("value",), unique_fields=("project", "field"))

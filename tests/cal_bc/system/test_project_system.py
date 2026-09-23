@@ -127,7 +127,7 @@ class TestProjectSystem:
             description="Configure project analysis settings.",
             position=2
         )
-    
+
     @pytest.fixture
     def project_data_1A_group_row(self, project_data_1A_group: Group) -> Row:
         return project_data_1A_group.row_set.create(position=5)
@@ -307,7 +307,7 @@ class TestProjectSystem:
         expect(first_page.locator("body")).to_contain_text("Yr 2")
         expect(first_page.locator("dl dt").filter(has_text="Constant Dollars Year 2").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
         expect(first_page.locator("dl dt").filter(has_text="Present Value Year 2").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
-        
+
         first_page.get_by_role("button", name="Back to Subsection 1A").click()
         expect(first_page.locator("body")).to_contain_text("Enter Project Support Year 1, Enter Construction Year 1.")
 

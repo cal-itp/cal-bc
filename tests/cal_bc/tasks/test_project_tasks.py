@@ -98,14 +98,14 @@ class TestProjectTasks:
         project.value_set.create(field=formula_dependency, value="")
         result = refresh_project_fields.enqueue(project.pk)
         assert result.status == TaskResultStatus.SUCCESSFUL
-        assert project.value_set.get(field=formula_field).value == "35"
+        assert project.value_set.get(field=formula_field).value == "35.0"
 
     def test_refresh_project_fields_does_not_write_read_only_values(self, project: Project, row: Row) -> None:
         formula_field = row.field_set.create(name="Ramp Design Speed (Build)", cell="RampFFSpdB", display_type=FieldDisplayType.READ_ONLY)
         project.value_set.create(field=formula_field, value="40")
         result = refresh_project_fields.enqueue(project.pk)
         assert result.status == TaskResultStatus.SUCCESSFUL
-        assert project.value_set.get(field=formula_field).value == "35"
+        assert project.value_set.get(field=formula_field).value == "35.0"
 
     def test_refresh_project_fields_does_not_write_summary_values(self, project: Project, row: Row, summary_row: Row) -> None:
         year1_field = row.field_set.create(name="Mitigation Year 1", cell="1) Project Information!AB15", display_type=FieldDisplayType.REQUIRED)
@@ -123,7 +123,7 @@ class TestProjectTasks:
         project.value_set.create(field=formula_field, value="40")
         result = refresh_project_fields.enqueue(project.pk)
         assert result.status == TaskResultStatus.SUCCESSFUL
-        assert project.value_set.get(field=formula_field).value == "40"
+        assert project.value_set.get(field=formula_field).value == "40.0"
 
     def test_refresh_project_dependent_fields(self, project: Project, row: Row) -> None:
         year1_field = row.field_set.create(name="Mitigation Year 1", cell="1) Project Information!AB15", display_type=FieldDisplayType.REQUIRED)

@@ -22,7 +22,7 @@ def download(
     version_id: str,
     output_dir: str = user_cache_dir("cal-bc", "caltrans"),
 ):
-    Downloader(version_id=version_id).download(output_dir=output_dir)
+    Downloader.from_version(version_id=version_id).download(output_dir=output_dir)
 
 
 @app.command()
@@ -49,6 +49,5 @@ def evaluate(
     cell: Annotated[builtins.list[str], typer.Option()],
 ):
     calculator = Calculator(input_filename)
-    evaluator = calculator.compile()
-    for cell_address in cell:
-        print(f"{cell_address} = {evaluator.evaluate(cell_address)}")
+    for address, value in zip(cell, calculator.evaluate(cell)):
+        print(f"{address} = {value}")

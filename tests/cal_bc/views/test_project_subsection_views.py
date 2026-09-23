@@ -101,7 +101,7 @@ class TestProjectSubsectionViews:
 
     @pytest.fixture
     def length_peak_period_field(self, project_data_1A_group_row: Row) -> Field:
-        return project_data_1A_group_row.field_set.create(name="Length of Peak Period(s)", cell="1) Project Information!F17", display_type=FieldDisplayType.NOT_REQUIRED)
+        return project_data_1A_group_row.field_set.create(name="Length of Peak Period(s)", cell="PeakLngthNB", display_type=FieldDisplayType.NOT_REQUIRED)
 
     @pytest.fixture
     def subsection_1E(self, section: Section) -> Subsection:
@@ -281,5 +281,5 @@ class TestProjectSubsectionViews:
         )
 
         assert ProjectValue.objects.filter(field=name_field)[0].value == "Testing"
-        assert ProjectValue.objects.filter(field=district_field)[0].value == "1"
-        assert ProjectValue.objects.filter(field=length_peak_period_field)[0].value == "5"
+        assert ProjectValue.objects.filter(field=district_field)[0].value == "1.0"
+        assert ProjectValue.objects.filter(field=length_peak_period_field)[0].value == "5.0"

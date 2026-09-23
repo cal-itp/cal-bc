@@ -17,7 +17,7 @@ from cal_bc.models.models.model import (
 )
 from cal_bc.projects.models.project import Project
 from cal_bc.projects.models.project import Value as ProjectValue
-from cal_bc_calculator.calculator import Calculator
+from cal_bc_calculator.calculator import BytesCalculator
 
 
 @pytest.mark.django_db(transaction=True)
@@ -82,7 +82,7 @@ class TestProjectDownloadViews:
     @pytest.fixture
     def project_data_1A_group_row_2(self, project_data_1A_group: Group) -> Row:
         return Row.objects.create(group=project_data_1A_group, position=2)
-    
+
     @pytest.fixture
     def construction_period_field(self, project_data_1A_group_row_2: Row) -> Field:
         return Field.objects.create(row=project_data_1A_group_row_2, cell="1) Project Information!F14", unit="years", name="Length of Construction Period")
@@ -188,12 +188,23 @@ class TestProjectDownloadViews:
         )
         assert response.status_code == 200
         with BytesIO(b"".join(response.streaming_content)) as buffer:
-            evaluator = Calculator(buffer).compile()
-        assert evaluator.evaluate(name_field.cell) == "Monterey LRT"
-        assert evaluator.evaluate(project_location_field.cell) == 2
-        assert evaluator.evaluate(construction_period_field.cell) == 5
-        assert evaluator.evaluate(one_two_way_field.cell) == 2
-        assert evaluator.evaluate(roadway_no_build_field.cell) == "C"
-        assert evaluator.evaluate(roadway_build_field.cell) == "C"
-        assert evaluator.evaluate(project_support_year_1_field.cell) == 222
-        assert evaluator.evaluate(total_costs_field.cell) == 222000.0
+            calculator = BytesCalculator(buffer.read())
+        assert calculator.evaluate([
+            name_field.cell,
+            project_location_field.cell,
+            construction_period_field.cell,
+            one_two_way_field.cell,
+            roadway_no_build_field.cell,
+            roadway_build_field.cell,
+            project_support_year_1_field.cell,
+            total_costs_field.cell
+        ]) == [
+            "Monterey LRT",
+            2,
+            5,
+            2,
+            "C",
+            "C",
+            222,
+            222000.0
+        ]

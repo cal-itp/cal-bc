@@ -1,29 +1,14 @@
 import logging
-import os
-import pathlib
 
 import pytest
-from xlcalculator import Evaluator
 
-from cal_bc_calculator.calculator import Calculator
+from cal_bc_calculator.calculator import BytesCalculator
 from cal_bc_calculator.downloader import Downloader
 
 logging.basicConfig(level=logging.DEBUG)
 
 
 class TestCalculation:
-    @pytest.fixture
-    def output_file(self, tmp_path: pathlib.Path) -> str:
-        return tmp_path / "cal-bc-8-1-sketch.xlsm"
-
-    @pytest.fixture
-    def calculator(self, output_file: str) -> Calculator:
-        return Calculator(output_file)
-
-    @pytest.fixture
-    def downloader(self) -> Downloader:
-        return Downloader(version_id="cal-bc-8-1-sketch")
-
     @pytest.fixture
     def parameters(self) -> dict[str, any]:
         return {
@@ -120,19 +105,21 @@ class TestCalculation:
         }
 
     @pytest.fixture
-    def evaluator(
-        self,
-        output_file: pathlib.Path,
-        parameters: dict[str, any],
-        downloader: Downloader,
-        calculator: Calculator,
-    ) -> Evaluator:
-        downloader.download(output_dir=os.path.dirname(output_file))
-        calculator.write(parameters)
-        calculator.save(output_file)
-        return calculator.compile()
+    def downloader(self) -> Downloader:
+        return Downloader.from_version(version_id="cal-bc-8-1-sketch")
 
-    def test_calculation(self, evaluator: Evaluator):
-        # Investment Analysis
-        assert round(evaluator.evaluate("3) Results!H13"), 2) == 136.65
-        assert round(evaluator.evaluate("3) Results!H14"), 2) == 343.13
+    @pytest.fixture
+    def workbook_bytes(self, downloader: Downloader) -> bytes:
+        return downloader.to_bytes()
+
+    @pytest.fixture
+    def calculator(self, parameters: dict[str, any], workbook_bytes: bytes) -> BytesCalculator:
+        bytes_calculator = BytesCalculator(workbook_bytes)
+        bytes_calculator.write(parameters)
+        return bytes_calculator
+
+    def test_life_cycle_cost_calculation(self, calculator: BytesCalculator):
+        assert round(calculator.evaluate(["3) Results!H13"])[0], 2) == 136.65
+
+    def test_life_cycle_benefit_calculation(self, calculator: BytesCalculator):
+        assert round(calculator.evaluate(["3) Results!H14"])[0], 2) == 343.13
