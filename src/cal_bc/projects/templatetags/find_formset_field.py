@@ -33,3 +33,9 @@ def find_formset_row_errors(formset, row):
     if errors:
         return ", ".join(item.replace(".", "") for item in errors) + '.'
     return ""
+
+@register.filter
+def find_benefits_valueset_field(value_set, field):
+    for value in value_set:
+        if hasattr(value, "benefits_field") and value.benefits_field == field:
+            return value

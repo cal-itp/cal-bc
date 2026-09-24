@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 from django.tasks import TaskResultStatus
 
 from cal_bc.models.models.model import (
+    BenefitsField,
+    BenefitsGroup,
+    BenefitsRow,
     Field,
     FieldDisplayType,
     Group,
@@ -65,6 +68,18 @@ class TestProjectTasks:
     def summary_row(self, summary_group: Group) -> Row:
         return summary_group.row_set.create()
 
+    @pytest.fixture
+    def benefits_group(self, subsection: Subsection) -> Group:
+        return subsection.benefitsgroup_set.create(name="General", description="General description")
+
+    @pytest.fixture
+    def benefits_row(self, benefits_group: BenefitsGroup) -> Row:
+        return benefits_group.benefitsrow_set.create()
+
+    @pytest.fixture
+    def benefits_field(self, benefits_row: BenefitsRow) -> Field:
+        return benefits_row.benefitsfield_set.create(name="Life-Cycle Costs", cell="3) Results!H13")
+
     def test_refresh_project_fields_creates_value(self, project: Project, field: Field) -> None:
         assert project.value_set.count() == 0
         result = refresh_project_fields.enqueue(project.pk)
@@ -119,3 +134,16 @@ class TestProjectTasks:
         result = refresh_project_fields.enqueue(project.pk)
         assert result.status == TaskResultStatus.SUCCESSFUL
         assert project.value_set.get(field=result_field).value == "300.0"
+
+    def test_refresh_project_benefits_fields_creates_value(self, project: Project, benefits_field: BenefitsField) -> None:
+        assert project.benefitsvalue_set.count() == 0
+        result = refresh_project_fields.enqueue(project.pk)
+        assert result.status == TaskResultStatus.SUCCESSFUL
+        assert project.benefitsvalue_set.count() == 1
+
+    def test_refresh_project_benefits_fields_updates_value(self, project: Project, benefits_field: BenefitsField) -> None:
+        # benefits values are for display only, workbook is source of truth
+        project.benefitsvalue_set.create(benefits_field=benefits_field, value="3")
+        result = refresh_project_fields.enqueue(project.pk)
+        assert result.status == TaskResultStatus.SUCCESSFUL
+        assert project.benefitsvalue_set.get(benefits_field=benefits_field).value == "0.0"

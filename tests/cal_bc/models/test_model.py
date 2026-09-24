@@ -1,6 +1,8 @@
 import pytest
 
 from cal_bc.models.models.model import (
+    BenefitsGroup,
+    BenefitsRow,
     Field,
     FieldDisplayType,
     Group,
@@ -86,6 +88,14 @@ class TestModel:
             value="District 4",
             position=1
         )
+
+    @pytest.fixture()
+    def benefits_group(self, subsection_1_a: Subsection) -> BenefitsGroup:
+        return subsection_1_a.benefitsgroup_set.create(name="Summary", position=1, description="Benefits Summary")
+
+    @pytest.fixture()
+    def benefits_row(self, benefits_group: BenefitsGroup) -> BenefitsGroup:
+        return benefits_group.benefitsrow_set.create(name="YR 1")
 
     def test_model_string_representation(self, model: Model):
         assert str(model) == "Cal-B/C Sketch"
@@ -265,3 +275,13 @@ class TestModel:
         column_2.fieldcolumn_set.create(field=field_with_unit)
         subsection_1_a.group_set.create(name="Other Group")
         assert subsection_1_a.column_count == 2
+
+    def test_benefits_group_string_representation(self, benefits_group: BenefitsGroup):
+        assert str(benefits_group) == "Summary"
+
+    def test_benefits_row_string_representation(self, benefits_row: BenefitsRow):
+        assert str(benefits_row) == "YR 1 - Position 0"
+
+    def test_benefits_field_string_representation(self, benefits_row: BenefitsRow):
+        benefits_field = benefits_row.benefitsfield_set.create(name="Life-Cycle Cost")
+        assert str(benefits_field) == "Life-Cycle Cost - Position 0"

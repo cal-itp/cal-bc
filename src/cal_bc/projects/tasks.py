@@ -7,8 +7,13 @@ from django.db import transaction
 from django.tasks import task
 from xlcalculator import Evaluator, Model, ModelCompiler, xltypes
 
-from cal_bc.models.models.model import Field, FieldDisplayType, Subsection
-from cal_bc.projects.models.project import Project, Value
+from cal_bc.models.models.model import (
+    BenefitsField,
+    Field,
+    FieldDisplayType,
+    Subsection,
+)
+from cal_bc.projects.models.project import BenefitsValue, Project, Value
 from cal_bc.tasks import refresh_channel
 
 logger = logging.getLogger(__name__)
@@ -62,9 +67,12 @@ def refresh_project_fields(project_pk: int) -> None:
 
     field_set = Field.objects.filter(row__group__subsection__section__version=project.version).exclude(cell="")
     value_set = [Value(project=project, field=f, value=remote_workbook.evaluate(f.cell)) for f in field_set.all()]
+    benefits_field_set = BenefitsField.objects.filter(benefits_row__benefits_group__subsection__section__version=project.version).exclude(cell="")
+    benefits_value_set = [BenefitsValue(project=project, benefits_field=f, value=remote_workbook.evaluate(f.cell)) for f in benefits_field_set.all()]
 
     with transaction.atomic():
         Value.objects.bulk_create(value_set, update_conflicts=True, update_fields=("value",), unique_fields=("project", "field"))
+        BenefitsValue.objects.bulk_create(benefits_value_set, update_conflicts=True, update_fields=("value",),unique_fields=("project", "benefits_field"))
 
         transaction.on_commit(partial(refresh_channel.enqueue, channel_name=f"user_{project.user_id}_projects"))
 

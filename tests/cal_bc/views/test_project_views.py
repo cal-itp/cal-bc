@@ -138,3 +138,21 @@ class TestProjectViews:
             "project_subsection",
             kwargs={"project_pk": project.pk, "pk": subsection.pk},
         )
+
+    def test_edit_subsection_ordering(
+        self,
+        client: Client,
+        user: User,
+        project: Project,
+        version: Version,
+        section: Section,
+        subsection: Subsection,
+    ) -> None:
+        client.force_login(user)
+        Subsection.objects.create(section=Section.objects.create(version=version, name="Results", code="3"), name="Another Subsection", code="1")
+        response = client.get(reverse_lazy("project", kwargs={"pk": project.pk}))
+        assert response.status_code == 302
+        assert response.url == reverse_lazy(
+            "project_subsection",
+            kwargs={"project_pk": project.pk, "pk": subsection.pk},
+        )
