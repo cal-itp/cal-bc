@@ -51,21 +51,19 @@ $ uv run manage.py migrate
 In another terminal tab, start the Tailwind build process:
 
 ```bash
-$ uv run manage.py tailwind build
-$ uv run manage.py tailwind watch
+$ make tailwind
 ```
 
-Then, collect all the static files and start the Django server:
+Then, start the Django server:
 
 ```bash
-$ uv run manage.py collectstatic
-$ uv run manage.py runserver
+$ make start
 ```
 
 Finally, start the Django tasks worker:
 
 ```bash
-$ uv run manage.py db_worker
+$ make worker
 ```
 
 Now, visit the server at [http://localhost:8000](http://localhost:8000).
