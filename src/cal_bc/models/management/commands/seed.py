@@ -181,7 +181,7 @@ def seed(self, mode):
         guide="All values should be entered in thousands of dollars using today's constant dollars. Project costs (including maintenance and operating costs) should be net of costs without project."
     )
 
-    subsection_investment_analysis = create_subsection(section=section_results, name="Investment Analysis", code=" ")
+    subsection_investment_analysis = create_subsection(section=section_results, name="Investment Analysis", code="A")
 
     group_general_information = create_group(subsection=subsection_project_data, name="General Information")
     create_field(row=create_row(group_general_information), name="Project Name", cell="ProjName")
