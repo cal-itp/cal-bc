@@ -47,6 +47,12 @@
                 </section>
             </div>
             {% else %}
+            {% if subsection.guide %}
+            <c-modal-dialog modal_id="subsection-guide">
+                {% include "subsections/guides/_guide.html" %}
+            </c-modal-dialog>
+            <button type="button" command="show-modal" commandfor="modal-dialog-subsection-guide" class="cursor-pointer flex text-lg font-semibold text-dds-teal-600 hover:shadow-[inset_0_0_200px_0_rgba(0,0,0,0.10)] focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400"><div class="pr-1">{% svg "projects/guide" %}</div><span>Show Guide</span></button>
+            {% endif %}
             <section hx-ext="ws" hx-ws:connect="/ws{% url 'project_subsection' project_pk=object.pk pk=subsection.pk %}" hx-target="this" hx-swap="innerMorph">
                 {% include "projects/_form.html" with title="Edit Project" %}
             </section>

@@ -299,6 +299,10 @@ class TestProjectSystem:
         second_page.get_by_role("link", name="Edit").click()
         expect(second_page.get_by_label("Project Name")).to_have_value("New Geary Boulevard Light Rail")
 
+        expect(first_page.get_by_text("Section 1E Help")).not_to_be_visible()
+        first_page.get_by_role("button", name="Subsection guide").click()
+        expect(first_page.get_by_text("Section 1E Help")).to_be_visible()
+
         expect(first_page.locator("dl dt").filter(has_text="Total Project Support").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
         expect(first_page.locator("dl dt").filter(has_text="Total Construction").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
         expect(first_page.locator("body")).to_contain_text("Yr 1*")
@@ -307,7 +311,7 @@ class TestProjectSystem:
         expect(first_page.locator("body")).to_contain_text("Yr 2")
         expect(first_page.locator("dl dt").filter(has_text="Constant Dollars Year 2").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
         expect(first_page.locator("dl dt").filter(has_text="Present Value Year 2").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
-        
+
         first_page.get_by_role("button", name="Back to Subsection 1A").click()
         expect(first_page.locator("body")).to_contain_text("Enter Project Support Year 1, Enter Construction Year 1.")
 

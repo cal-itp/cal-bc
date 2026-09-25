@@ -70,6 +70,13 @@
 {% for group in subsection.non_summary_group_set.all %}
     {% partial group-header %}
 
+    {% if subsection.column_count > 3 or subsection.summary_group_set.count > 0 and group.guide %}
+    <c-modal-dialog modal_id="group-guide">
+        {% include "groups/guides/_guide.html" %}
+    </c-modal-dialog>
+    <button type="button" command="show-modal" commandfor="modal-dialog-group-guide" class="cursor-pointer flex text-lg font-semibold text-dds-teal-600 hover:shadow-[inset_0_0_200px_0_rgba(0,0,0,0.10)] focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400"><div class="pr-1">{% svg "projects/guide" %}</div><span>Show Guide</span></button>
+    {% endif %}
+
     <div class="space-y-6 mt-6">
         {% for row in group.non_table_row_set.all %}
             {% if row.field_set.count == 1 %}
