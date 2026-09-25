@@ -135,7 +135,7 @@ class TestProjectSystem:
 
     @pytest.fixture
     def subsection_1E(self, section: Section) -> Subsection:
-        return section.subsection_set.create(name="Project Costs", code="E")
+        return section.subsection_set.create(name="Project Costs", code="E", guide="Subsection 1E Help")
 
     @pytest.fixture
     def summary_1E_group(self, subsection_1E: Subsection) -> Group:
@@ -155,7 +155,7 @@ class TestProjectSystem:
 
     @pytest.fixture
     def costs_1E_group(self, subsection_1E: Subsection) -> Group:
-        return subsection_1E.group_set.create(name="Construction Period Costs")
+        return subsection_1E.group_set.create(name="Construction Period Costs", guide="Construction Period Costs Instructions")
 
     @pytest.fixture(autouse=True)
     def costs_1E_group_project_column_group(self, costs_1E_group: Group) -> ColumnGroup:
@@ -295,6 +295,16 @@ class TestProjectSystem:
         expect(second_page.locator("body")).to_contain_text("1 projects")
         second_page.get_by_role("link", name="Edit").click()
         expect(second_page.get_by_label("Project Name")).to_have_value("New Geary Boulevard Light Rail")
+
+        expect(first_page.get_by_text("Subsection 1E Help")).not_to_be_visible()
+        first_page.get_by_role("button", name="Show subsection guide").click()
+        expect(first_page.get_by_text("Subsection 1E Help")).to_be_visible()
+        first_page.get_by_role("button", name="close").click()
+
+        expect(first_page.get_by_text("Construction Period Costs Instructions")).not_to_be_visible()
+        first_page.get_by_role("button", name="Show group Construction Period Costs guide").click()
+        expect(first_page.get_by_text("Construction Period Costs Instructions")).to_be_visible()
+        first_page.get_by_role("button", name="close").click()
 
         expect(first_page.locator("dl dt").filter(has_text="Total Project Support").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
         expect(first_page.locator("dl dt").filter(has_text="Total Construction").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")

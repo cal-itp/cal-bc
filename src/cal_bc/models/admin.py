@@ -99,7 +99,7 @@ class GroupAdmin(nested_admin.NestedModelAdmin):
         ),
         (
             "GROUP",
-            { "fields": ["name", "description", "is_summary"] },
+            { "fields": ["name", "description", "guide", "is_summary"] },
         ),
     )
 
@@ -118,6 +118,7 @@ class GroupAdmin(nested_admin.NestedModelAdmin):
 
 class GroupInline(nested_admin.SortableHiddenMixin, nested_admin.NestedTabularInline):
     model = Group
+    exclude = ["guide"]
     show_change_link = True
 
     def get_extra(self, request, obj=None, **kwargs):
