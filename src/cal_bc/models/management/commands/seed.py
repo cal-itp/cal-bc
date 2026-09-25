@@ -81,8 +81,8 @@ def create_group(subsection: Subsection, name, description="", is_summary=False,
     return group
 
 
-def create_row(group: Group, name="", position=0):
-    row = group.row_set.create(name=name, position=position)
+def create_row(group: Group, name="", guide="", position=0):
+    row = group.row_set.create(name=name, guide=guide, position=position)
     logger.info(f"{row} row created.")
     return row
 
@@ -157,10 +157,7 @@ def seed(self, mode):
         name="Project Data",
         code="A",
         description="This subsection contains the project data.",
-        guide="""
-            # Setup Help
-            All fields in this step are required.
-        """
+        guide="<h2><strong>Setup Help</strong></h2><p>All fields in this step are required.</p><p>Click on any field to see specific help and guidance for that input.</p><h3><strong>Tips</strong></h3><ul><li><p>Your work is saved every X minutes.</p></li><li><p>Use 'Save Draft' to save immediately.</p></li><li><p>In the navigation menu for Section 1 only, a checkmark will be displayed when all mandatory questions have been completed.</p></li></ul>"
     )
 
     subsection_highway_traffic = create_subsection(
@@ -184,7 +181,7 @@ def seed(self, mode):
     subsection_investment_analysis = create_subsection(section=section_results, name="Investment Analysis", code="A")
 
     group_general_information = create_group(subsection=subsection_project_data, name="General Information")
-    create_field(row=create_row(group_general_information), name="Project Name", cell="ProjName")
+    create_field(row=create_row(group_general_information, guide="<h2>Project Name</h2><p>Enter a descriptive name for your project. This will be used to identify the project in reports and when saving your file.</p><h3><strong>Tips</strong></h3><ul><li><p>Include route number of location for easy identification.</p></li><li><p>Use consistent naming conventions for naming multiple projects.</p></li></ul>"), name="Project Name", cell="ProjName")
     row_location = create_row(group_general_information, position=1)
     field_state = create_field(row=row_location, name="State", cell="1) Project Information!F2")
     create_value(field=field_state, name="California", value="California")
