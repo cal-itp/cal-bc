@@ -169,7 +169,7 @@ class GroupAdmin(nested_admin.NestedModelAdmin):
     ordering = ["name"]
     search_fields = ["name", "subsection__code", "subsection__name", "subsection__code", "subsection__section__name", "subsection__section__version__name", "subsection__section__version__model__name"]
     search_help_text = "Search by Name, Model, Version, Section, and Subsection"
-    fields = ["model_name", "version_name", "section", "subsection", "name", "description", "is_summary"]
+    fields = ["model_name", "version_name", "section", "subsection", "name", "description", "is_summary", "guide"]
     readonly_fields = ["model_name", "version_name", "section"]
 
     @admin.display(description="Model", ordering="subsection__section__version__model__name")
@@ -187,6 +187,7 @@ class GroupAdmin(nested_admin.NestedModelAdmin):
 
 class GroupInline(nested_admin.SortableHiddenMixin, nested_admin.NestedTabularInline):
     model = Group
+    exclude = ["guide"]
     show_change_link = True
 
     def get_extra(self, request, obj=None, **kwargs):
