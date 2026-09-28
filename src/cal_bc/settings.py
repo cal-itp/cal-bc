@@ -257,16 +257,6 @@ UNFOLD = {
                         "link": reverse_lazy("admin:models_field_changelist"),
                     },
                     {
-                        "title": "Benefits Groups",
-                        "icon": "calculate",
-                        "link": reverse_lazy("admin:models_benefitsgroup_changelist"),
-                    },
-                    {
-                        "title": "Benefits Fields",
-                        "icon": "function",
-                        "link": reverse_lazy("admin:models_benefitsfield_changelist"),
-                    },
-                    {
                         "title": "Tags",
                         "icon": "bookmarks",
                         "link": reverse_lazy("admin:taggit_tag_changelist"),
