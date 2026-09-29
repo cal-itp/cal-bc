@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import Max
 from unfold.admin import ModelAdmin, StackedInline, TabularInline
 
 from cal_bc.models.models.model import (
@@ -179,6 +180,52 @@ class GroupAdmin(ModelAdmin):
     def section(self, obj):
         return obj.subsection.section
 
+    def save_formset(self, request, form, formset, change):
+        # Set the correct position on new Group item (Unfold creates with default value zero)
+        instances = formset.save(commit=False)
+
+        for obj in formset.deleted_objects:
+            obj.delete()
+        
+        for instance in instances:
+            if not instance.pk and instance.position == 0:
+                if formset.model == ColumnGroup:
+                    max_position = instance.group.columngroup_set.aggregate(Max("position"))["position__max"]
+                else:
+                    max_position = instance.group.row_set.aggregate(Max("position"))["position__max"]
+                instance.position = 0 if max_position is None else max_position + 1
+            instance.save()    
+
+        for f in formset.forms:
+            f_instance = f.save(commit=False)
+            
+            if hasattr(f, 'deleted_objects'):
+                for obj in f_instance.deleted_objects:
+                    obj.delete()
+
+            if not f_instance.pk and f_instance.position == 0:
+                if formset.model == ColumnGroup:
+                    max_position = f_instance.group.columngroup_set.aggregate(Max("position"))["position__max"]
+                else:
+                    max_position = f_instance.group.row_set.aggregate(Max("position"))["position__max"]
+                f_instance.position = 0 if max_position is None else max_position + 1
+            f_instance.save() 
+
+            if hasattr(f, 'nested_formsets'):
+                for nested_formset in f.nested_formsets:
+                    nested_instances = nested_formset.formset.save(commit=False)
+                    for obj in nested_formset.formset.deleted_objects:
+                        obj.delete()
+                    for nested_instance in nested_instances:
+                        if not nested_instance.pk and nested_instance.position == 0:
+                            if nested_formset.formset.model == Column:
+                                max_position = nested_instance.column_group.column_set.aggregate(Max("position"))["position__max"]
+                            else:
+                                max_position = nested_instance.row.field_set.aggregate(Max("position"))["position__max"]
+                            nested_instance.position = 0 if max_position is None else max_position + 1
+                        nested_instance.save()    
+        formset.save()
+
 
 class GroupInline(TabularInline):
     model = Group
@@ -225,6 +272,18 @@ class SubsectionAdmin(ModelAdmin):
     @admin.display(description="Section", ordering="subsection__section__name")
     def section(self, obj):
         return obj.section
+
+    def save_formset(self, request, form, formset, change):
+        # Set the correct position on new Group item (Unfold creates with default value zero)
+        instances = formset.save(commit=False)
+        for obj in formset.deleted_objects:
+            obj.delete()
+        for instance in instances:
+            if not instance.pk and instance.position == 0:
+                max_position = instance.subsection.group_set.aggregate(Max("position"))["position__max"]
+                instance.position = 0 if max_position is None else max_position + 1
+            instance.save()    
+        formset.save_m2m()
 
 
 class SubsectionInline(StackedInline):
