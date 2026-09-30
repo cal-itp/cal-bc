@@ -27,8 +27,8 @@ class TestApp:
             app, ["download", "cal-bc-8-1-sketch", "--output-dir", tmp_path]
         )
         assert result.exit_code == 0
-        assert "cal-bc-8-1-sketch.xlsm" in result.output
-        assert (tmp_path / "cal-bc-8-1-sketch.xlsm").exists()
+        assert "cal-bc-8-1-sketch-a11y.xlsm" in result.output
+        assert (tmp_path / "cal-bc-8-1-sketch-a11y.xlsm").exists()
 
     @pytest.mark.vcr
     def test_complete(self, tmp_path: Path, runner: CliRunner):
@@ -40,7 +40,7 @@ class TestApp:
             app,
             [
                 "complete",
-                str(tmp_path / "cal-bc-8-1-sketch.xlsm"),
+                str(tmp_path / "cal-bc-8-1-sketch-a11y.xlsm"),
                 "--cell",
                 "ProjName",
                 "--value",
@@ -48,7 +48,7 @@ class TestApp:
             ],
         )
         assert result.exit_code == 0
-        assert (tmp_path / "cal-bc-8-1-sketch-complete.xlsm").exists()
+        assert (tmp_path / "cal-bc-8-1-sketch-a11y-complete.xlsm").exists()
 
     @pytest.mark.vcr
     def test_evaluate(self, tmp_path: Path, runner: CliRunner):
@@ -60,7 +60,7 @@ class TestApp:
             app,
             [
                 "complete",
-                str(tmp_path / "cal-bc-8-1-sketch.xlsm"),
+                str(tmp_path / "cal-bc-8-1-sketch-a11y.xlsm"),
                 "--cell",
                 "ProjName",
                 "--value",
@@ -72,10 +72,10 @@ class TestApp:
             app,
             [
                 "evaluate",
-                str(tmp_path / "cal-bc-8-1-sketch-complete.xlsm"),
+                str(tmp_path / "cal-bc-8-1-sketch-a11y-complete.xlsm"),
                 "--cell",
                 "ProjName",
             ],
         )
         assert result.exit_code == 0
-        assert "Testing Project" in result.output
+        assert "ProjName = Testing Project" in result.output

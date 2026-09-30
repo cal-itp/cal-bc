@@ -1,4 +1,3 @@
-import io
 import urllib.request
 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -7,7 +6,7 @@ from django_downloadview import VirtualDownloadView
 
 from cal_bc.models.models.model import FieldDisplayType
 from cal_bc.projects.models.project import Project
-from cal_bc_calculator.calculator import Calculator
+from cal_bc_calculator.calculator import BytesCalculator
 
 
 class ProjectDownloadView(LoginRequiredMixin, VirtualDownloadView):
@@ -20,10 +19,6 @@ class ProjectDownloadView(LoginRequiredMixin, VirtualDownloadView):
         url = version.url
         req = urllib.request.Request(url)
         resp = urllib.request.urlopen(req)
-        calculator = Calculator(io.BytesIO(resp.read()))
+        calculator = BytesCalculator(resp.read())
         calculator.write(value_map)
-        with io.BytesIO() as buffer:
-            calculator.save(buffer)
-            buffer.seek(0)
-            content = buffer.read()
-        return ContentFile(content, name="cal-bc-sketch-8-1.xlsm")
+        return ContentFile(calculator.to_bytes(), name="cal-bc-sketch-8-1.xlsm")
