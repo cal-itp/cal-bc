@@ -42,16 +42,16 @@ class TestProjectSystem:
         }
 
     @pytest.fixture
-    def first_page(self, page: Page, cookie: dict) -> Page:
-        first_page = page
-        first_page.context.add_cookies([cookie])
-        return first_page
+    def first_window(self, page: Page, cookie: dict) -> Page:
+        first_window = page
+        first_window.context.add_cookies([cookie])
+        return first_window
 
     @pytest.fixture
-    def second_page(self, cookie: dict, new_context: CreateContextCallback) -> Page:
-        second_page = new_context().new_page()
-        second_page.context.add_cookies([cookie])
-        return second_page
+    def second_window(self, cookie: dict, new_context: CreateContextCallback) -> Page:
+        second_window = new_context().new_page()
+        second_window.context.add_cookies([cookie])
+        return second_window
 
     @pytest.fixture
     def model(self) -> Model:
@@ -257,100 +257,101 @@ class TestProjectSystem:
     def summary_life_cycle_field(self, summary_3_row: Row) -> Field:
         return summary_3_row.field_set.create(name="Life-Cycle Costs (mil. $)", cell="3) Results!H13", unit="$")
 
-    def test_projects(self, first_page: Page, second_page: Page, channels_live_server: ChannelsLiveServer):
-        first_page.goto(channels_live_server.http_url)
-        expect(first_page.locator("body")).to_contain_text("My Cal B/C Projects")
+    def test_projects(self, first_window: Page, second_window: Page, channels_live_server: ChannelsLiveServer):
+        first_window.goto(channels_live_server.http_url)
+        expect(first_window.locator("body")).to_contain_text("My Cal B/C Projects")
 
-        second_page.goto(channels_live_server.http_url)
-        expect(second_page.locator("body")).to_contain_text("My Cal B/C Projects")
-        expect(first_page.locator("body")).to_contain_text("0 projects")
+        second_window.goto(channels_live_server.http_url)
+        expect(second_window.locator("body")).to_contain_text("My Cal B/C Projects")
+        expect(first_window.locator("body")).to_contain_text("0 projects")
 
-        first_page.get_by_role("link", name="New project").click()
-        first_page.get_by_role("button", name="Start project").click()
-        expect(first_page.locator("h1")).to_contain_text("1A. Project Data")
-        expect(first_page.locator("h2").first).to_contain_text("General Information")
-        expect(first_page.locator("body")).to_contain_text("This subsection contains the project data.")
-        expect(first_page.locator("body")).to_contain_text("All fields in this step are required.")
-        expect(first_page.locator("h2").nth(1)).to_contain_text("Project Data")
-        expect(first_page.locator("body")).to_contain_text("Configure project analysis settings.")
+        first_window.get_by_role("link", name="New project").click()
+        first_window.get_by_role("button", name="Start project").click()
+        expect(first_window.get_by_label("B/C Ratio")).to_contain_text("N/A")
+        expect(first_window.locator("h1")).to_contain_text("1A. Project Data")
+        expect(first_window.locator("h2").first).to_contain_text("General Information")
+        expect(first_window.locator("body")).to_contain_text("This subsection contains the project data.")
+        expect(first_window.locator("body")).to_contain_text("All fields in this step are required.")
+        expect(first_window.locator("h2").nth(1)).to_contain_text("Project Data")
+        expect(first_window.locator("body")).to_contain_text("Configure project analysis settings.")
 
-        first_page.get_by_label("Project Name").click()
-        expect(first_page.locator("body")).to_contain_text("Enter a descriptive name for your project.")
-        expect(first_page.locator("dl dt").filter(has_text="Length of Peak Period(s)").locator("xpath=following-sibling::dd[1]")).to_contain_text("5 hours")
+        first_window.get_by_label("Project Name").click()
+        expect(first_window.locator("body")).to_contain_text("Enter a descriptive name for your project.")
+        expect(first_window.locator("dl dt").filter(has_text="Length of Peak Period(s)").locator("xpath=following-sibling::dd[1]")).to_contain_text("5 hours")
 
-        first_page.get_by_role("button", name="Save draft").click()
-        expect(first_page.locator("body")).to_contain_text("Select District.")
+        first_window.get_by_role("button", name="Save draft").click()
+        expect(first_window.locator("body")).to_contain_text("Select District.")
 
-        expect(second_page.locator("body")).to_contain_text("Hypothetical Project", timeout=10_000)
-        first_page.get_by_label("Project Name").fill("Geary Boulevard Light Rail")
-        first_page.get_by_label("District").select_option("District 4 - Bay Area / Oakland")
-        first_page.get_by_role("button", name="Save draft").click()
-        expect(first_page.locator("body")).to_contain_text("Project successfully saved!")
-        expect(second_page.locator("body")).to_contain_text("Geary Boulevard Light Rail")
+        expect(second_window.locator("body")).to_contain_text("Hypothetical Project", timeout=10_000)
+        first_window.get_by_label("Project Name").fill("Geary Boulevard Light Rail")
+        first_window.get_by_label("District").select_option("District 4 - Bay Area / Oakland")
+        first_window.get_by_role("button", name="Save draft").click()
+        expect(first_window.locator("body")).to_contain_text("Project successfully saved!")
+        expect(second_window.locator("body")).to_contain_text("Geary Boulevard Light Rail")
 
-        first_page.get_by_label("Project Name").fill("New Geary Boulevard Light Rail", timeout=10_000)
-        first_page.get_by_role("button", name="Continue to Subsection 1E").click()
-        expect(first_page.locator("body")).to_contain_text("Project successfully saved!")
+        first_window.get_by_label("Project Name").fill("New Geary Boulevard Light Rail", timeout=10_000)
+        first_window.get_by_role("button", name="Continue to Subsection 1E").click()
+        expect(first_window.locator("body")).to_contain_text("Project successfully saved!")
 
-        expect(second_page.locator("body")).to_contain_text("1 projects")
-        second_page.get_by_role("link", name="Edit").click()
-        expect(second_page.get_by_label("Project Name")).to_have_value("New Geary Boulevard Light Rail")
+        expect(second_window.locator("body")).to_contain_text("1 projects")
+        second_window.get_by_role("link", name="Edit").click()
+        expect(second_window.get_by_label("Project Name")).to_have_value("New Geary Boulevard Light Rail")
 
-        expect(first_page.get_by_text("Subsection 1E Help")).not_to_be_visible()
-        first_page.get_by_role("button", name="Show subsection guide").click()
-        expect(first_page.get_by_text("Subsection 1E Help")).to_be_visible()
-        first_page.get_by_role("button", name="close").click()
+        expect(first_window.get_by_text("Subsection 1E Help")).not_to_be_visible()
+        first_window.get_by_role("button", name="Show subsection guide").click()
+        expect(first_window.get_by_text("Subsection 1E Help")).to_be_visible()
+        first_window.get_by_role("button", name="close").click()
 
-        expect(first_page.get_by_text("Construction Period Costs Instructions")).not_to_be_visible()
-        first_page.get_by_role("button", name="Show group Construction Period Costs guide").click()
-        expect(first_page.get_by_text("Construction Period Costs Instructions")).to_be_visible()
-        first_page.get_by_role("button", name="close").click()
+        expect(first_window.get_by_text("Construction Period Costs Instructions")).not_to_be_visible()
+        first_window.get_by_role("button", name="Show group Construction Period Costs guide").click()
+        expect(first_window.get_by_text("Construction Period Costs Instructions")).to_be_visible()
+        first_window.get_by_role("button", name="close").click()
 
-        expect(first_page.locator("dl dt").filter(has_text="Total Project Support").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
-        expect(first_page.locator("dl dt").filter(has_text="Total Construction").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
-        expect(first_page.locator("body")).to_contain_text("Yr 1*")
-        expect(first_page.locator("dl dt").filter(has_text="Constant Dollars Year 1").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
-        expect(first_page.locator("dl dt").filter(has_text="Present Value Year 1").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
-        expect(first_page.locator("body")).to_contain_text("Yr 2")
-        expect(first_page.locator("dl dt").filter(has_text="Constant Dollars Year 2").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
-        expect(first_page.locator("dl dt").filter(has_text="Present Value Year 2").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
+        expect(first_window.locator("dl dt").filter(has_text="Total Project Support").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
+        expect(first_window.locator("dl dt").filter(has_text="Total Construction").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
+        expect(first_window.locator("body")).to_contain_text("Yr 1*")
+        expect(first_window.locator("dl dt").filter(has_text="Constant Dollars Year 1").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
+        expect(first_window.locator("dl dt").filter(has_text="Present Value Year 1").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
+        expect(first_window.locator("body")).to_contain_text("Yr 2")
+        expect(first_window.locator("dl dt").filter(has_text="Constant Dollars Year 2").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
+        expect(first_window.locator("dl dt").filter(has_text="Present Value Year 2").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
 
-        first_page.get_by_role("button", name="Back to Subsection 1A").click()
-        expect(first_page.locator("body")).to_contain_text("Enter Project Support Year 1, Enter Construction Year 1.")
+        first_window.get_by_role("button", name="Back to Subsection 1A").click()
+        expect(first_window.locator("body")).to_contain_text("Enter Project Support Year 1, Enter Construction Year 1.")
 
-        first_page.get_by_label("Project Support Year 1").fill("10000")
-        first_page.get_by_label("Construction Year 1").fill("12000")
-        first_page.get_by_label("Project Support Year 2").fill("15000")
-        first_page.get_by_role("button", name="Save draft").click()
-        expect(first_page.locator("body")).to_contain_text("Project successfully saved!")
-        expect(first_page.locator("dl dt").filter(has_text="Total Project Support").locator("xpath=following-sibling::dd[1]")).to_contain_text("$25,000")
-        expect(first_page.locator("dl dt").filter(has_text="Total Construction").locator("xpath=following-sibling::dd[1]")).to_contain_text("$12,000")
-        expect(first_page.locator("dl dt").filter(has_text="Constant Dollars Year 1").locator("xpath=following-sibling::dd[1]")).to_contain_text("$22,000,000")
-        expect(first_page.locator("dl dt").filter(has_text="Present Value Year 1").locator("xpath=following-sibling::dd[1]")).to_contain_text("$22,000,000")
-        expect(first_page.locator("dl dt").filter(has_text="Constant Dollars Year 2").locator("xpath=following-sibling::dd[1]")).to_contain_text("$15,000,000")
-        expect(first_page.locator("dl dt").filter(has_text="Present Value Year 2").locator("xpath=following-sibling::dd[1]")).to_contain_text("$14,423,076.92")
+        first_window.get_by_label("Project Support Year 1").fill("10000")
+        first_window.get_by_label("Construction Year 1").fill("12000")
+        first_window.get_by_label("Project Support Year 2").fill("15000")
+        first_window.get_by_role("button", name="Save draft").click()
+        expect(first_window.locator("body")).to_contain_text("Project successfully saved!")
+        expect(first_window.locator("dl dt").filter(has_text="Total Project Support").locator("xpath=following-sibling::dd[1]")).to_contain_text("$25,000")
+        expect(first_window.locator("dl dt").filter(has_text="Total Construction").locator("xpath=following-sibling::dd[1]")).to_contain_text("$12,000")
+        expect(first_window.locator("dl dt").filter(has_text="Constant Dollars Year 1").locator("xpath=following-sibling::dd[1]")).to_contain_text("$22,000,000")
+        expect(first_window.locator("dl dt").filter(has_text="Present Value Year 1").locator("xpath=following-sibling::dd[1]")).to_contain_text("$22,000,000")
+        expect(first_window.locator("dl dt").filter(has_text="Constant Dollars Year 2").locator("xpath=following-sibling::dd[1]")).to_contain_text("$15,000,000")
+        expect(first_window.locator("dl dt").filter(has_text="Present Value Year 2").locator("xpath=following-sibling::dd[1]")).to_contain_text("$14,423,076.92")
 
-        first_page.get_by_role("button", name="Back to Subsection 1A").click()
-        expect(first_page.locator("body")).to_contain_text("Project successfully saved!")
+        first_window.get_by_role("button", name="Back to Subsection 1A").click()
+        expect(first_window.locator("body")).to_contain_text("Project successfully saved!")
 
-        first_page.get_by_role("button", name="1A - Project Data").click()
-        first_page.get_by_role("menuitem", name="1E. Project Costs").click()
-        expect(first_page.locator("dl dt").filter(has_text="Total Project Support").locator("xpath=following-sibling::dd[1]")).to_contain_text("25,000")
+        first_window.get_by_role("button", name="1A - Project Data").click()
+        first_window.get_by_role("menuitem", name="1E. Project Costs").click()
+        expect(first_window.locator("dl dt").filter(has_text="Total Project Support").locator("xpath=following-sibling::dd[1]")).to_contain_text("25,000")
 
-        first_page.get_by_role("button", name="Continue to Subsection 3").click()
-        expect(first_page.locator("body")).to_contain_text("Investment Analysis")
-        expect(first_page.locator("dl dt").filter(has_text="Life-Cycle Costs (mil. $)").locator(
+        first_window.get_by_role("button", name="Continue to Subsection 3").click()
+        expect(first_window.locator("body")).to_contain_text("Investment Analysis")
+        expect(first_window.locator("dl dt").filter(has_text="Life-Cycle Costs (mil. $)").locator(
             "xpath=following-sibling::dd[1]")).to_contain_text("$36.42")
 
-        first_page.get_by_role("link", name="Exit Project").click()
-        expect(first_page.locator("body")).to_contain_text("New Geary Boulevard Light Rail")
-        expect(first_page.locator("body")).to_contain_text("1 projects")
-        first_page.on("dialog", lambda dialog: dialog.accept())
-        first_page.get_by_role("button", name="Delete").click()
-        expect(first_page.locator("body")).to_contain_text("0 projects")
+        first_window.get_by_role("link", name="Exit Project").click()
+        expect(first_window.locator("body")).to_contain_text("New Geary Boulevard Light Rail")
+        expect(first_window.locator("body")).to_contain_text("1 projects")
+        first_window.on("dialog", lambda dialog: dialog.accept())
+        first_window.get_by_role("button", name="Delete").click()
+        expect(first_window.locator("body")).to_contain_text("0 projects")
 
-        first_page.get_by_role("button", name="User").click()
-        first_page.get_by_text("Sign out").click()
-        expect(first_page.locator("body")).to_contain_text("Sign in with Microsoft")
-        second_page.close()
-        first_page.close()
+        first_window.get_by_role("button", name="User").click()
+        first_window.get_by_text("Sign out").click()
+        expect(first_window.locator("body")).to_contain_text("Sign in with Microsoft")
+        second_window.close()
+        first_window.close()
