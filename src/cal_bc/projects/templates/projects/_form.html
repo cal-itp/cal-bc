@@ -66,7 +66,7 @@
 
         {% if subsection.column_count >= column_threshold or subsection.summary_group_set.count > 0 or subsection.benefitsgroup_set.count > 0 and group.guide %}
         <c-modal-dialog modal_id="group-guide">
-            {% include "groups/guides/_guide.html" %}
+            {% include "_guide.html" with target=group %}
         </c-modal-dialog>
         <button type="button" command="show-modal" commandfor="modal-dialog-group-guide" class="cursor-pointer flex items-center mt-2 text-lg font-semibold text-dds-teal-600 hover:shadow-[inset_0_0_200px_0_rgba(0,0,0,0.10)] focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400"><span class="pr-1">{% svg "projects/guide" %}</span><span class="sr-only">Show group {{ group.name }} guide</span><span>Show Guide</span></button>
         {% endif %}
