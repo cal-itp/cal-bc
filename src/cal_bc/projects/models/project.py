@@ -23,6 +23,10 @@ class Project(models.Model):
         return self.value_set.filter(field__name="Project Name").first()
 
     @property
+    def benefit_cost_ratio(self):
+        return self.value_set.filter(field__name="Benefit/Cost Ratio").first()
+
+    @property
     def summary_value_set(self):
         return self.value_set.filter(field__row__group__is_summary=True).all()
 

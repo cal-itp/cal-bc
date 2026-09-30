@@ -247,7 +247,7 @@ class TestProjectSystem:
 
     @pytest.fixture
     def summary_3_group(self, subsection_3: Subsection) -> Group:
-        return subsection_3.group_set.create(name="Summary", is_summary=True)
+        return subsection_3.group_set.create(name="Investment Analysis Summary", is_summary=True)
 
     @pytest.fixture
     def summary_3_row(self, summary_3_group: Group) -> Row:
@@ -255,7 +255,11 @@ class TestProjectSystem:
 
     @pytest.fixture(autouse=True)
     def summary_life_cycle_field(self, summary_3_row: Row) -> Field:
-        return summary_3_row.field_set.create(name="Life-Cycle Costs (mil. $)", cell="3) Results!H13", unit="$")
+        return summary_3_row.field_set.create(name="Life-Cycle Costs (mil. $)", cell="3) Results!H13", unit="$", display_type=FieldDisplayType.READ_ONLY)
+
+    @pytest.fixture(autouse=True)
+    def benefit_cost_ratio_field(self, summary_3_row: Row) -> Field:
+        return summary_3_row.field_set.create(name="Benefit / Cost Ratio", cell="BeneCostRatio", display_type=FieldDisplayType.READ_ONLY)
 
     def test_projects(self, first_window: Page, second_window: Page, channels_live_server: ChannelsLiveServer):
         first_window.goto(channels_live_server.http_url)
@@ -342,6 +346,7 @@ class TestProjectSystem:
         expect(first_window.locator("body")).to_contain_text("Investment Analysis")
         expect(first_window.locator("dl dt").filter(has_text="Life-Cycle Costs (mil. $)").locator(
             "xpath=following-sibling::dd[1]")).to_contain_text("$36.42")
+        expect(first_window.get_by_label("B/C Ratio")).to_contain_text("N/A")
 
         first_window.get_by_role("link", name="Exit Project").click()
         expect(first_window.locator("body")).to_contain_text("New Geary Boulevard Light Rail")
