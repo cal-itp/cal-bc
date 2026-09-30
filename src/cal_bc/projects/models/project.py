@@ -24,7 +24,7 @@ class Project(models.Model):
 
     @property
     def benefit_cost_ratio(self):
-        return self.value_set.filter(field__name="Benefit/Cost Ratio").first()
+        return self.value_set.filter(field__name="Benefit / Cost Ratio").first()
 
     @property
     def summary_value_set(self):
