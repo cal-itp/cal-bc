@@ -183,29 +183,29 @@ class TestModel:
         assert list(subsection_1_a.non_summary_group_set) == [group]
 
     def test_group_string_representation(self, group: Group):
-        assert str(group) == "General Information"
+        assert str(group) == "2 - General Information"
 
     def test_group_description(self, group: Group) -> None:
         assert group.description == "General description"
 
     def test_column_group_string_representation(self, group: Group):
         column_group = group.columngroup_set.create()
-        assert str(column_group) == "Position 0"
+        assert str(column_group) == "Column Group 1"
 
     def test_column_group_with_name_string_representation(self, group: Group):
         column_group_with_name = group.columngroup_set.create(position=1, name="Initial Costs")
-        assert str(column_group_with_name) == "Initial Costs - Position 1"
+        assert str(column_group_with_name) == "Column Group: 2 - Initial Costs"
 
     def test_column_string_representation(self, group: Group):
         column_group = group.columngroup_set.create()
         column = column_group.column_set.create(position=1, name="Project Support")
-        assert str(column) == "Project Support"
+        assert str(column) == "2 - Project Support"
 
     def test_field_column_string_representation(self, group: Group, field: Field):
         column_group = group.columngroup_set.create()
         column = column_group.column_set.create(position=1, name="Project Support")
         field_column = column.fieldcolumn_set.create(field=field)
-        assert str(field_column) == f"Field #{field_column.field_id} - Column #{field_column.column_id}"
+        assert str(field_column) == "Field: Highway Free-Flow Speed - Column: Project Support"
 
     def test_group_table_row_set_empty(self, group: Group):
         assert list(group.table_row_set.all()) == []
@@ -226,16 +226,16 @@ class TestModel:
         assert list(group.non_table_row_set.all()) == []
 
     def test_row_string_representation(self, row: Row):
-        assert str(row) == "Position 0"
+        assert str(row) == "1"
 
     def test_row_with_name_string_representation(self, row2: Row):
-        assert str(row2) == "Roadway Type - Position 0"
+        assert str(row2) == "1 - Roadway Type"
 
     def test_field_string_representation(self, field: Field):
-        assert str(field) == "Highway Free-Flow Speed - Position 0"
+        assert str(field) == "1 - Highway Free-Flow Speed"
 
     def test_field_with_unit(self, field_with_unit: Field):
-        assert str(field_with_unit) == "Highway Free-Flow Speed (mph) - Position 1"
+        assert str(field_with_unit) == "2 - Highway Free-Flow Speed (mph)"
 
     def test_field_required(self, field: Field):
         assert field.required == True
@@ -265,7 +265,7 @@ class TestModel:
         assert field_not_required.required == False
 
     def test_value_string_representation(self, value: Value):
-        assert str(value) == "District 4 - Bay Area: District 4"
+        assert str(value) == "2 - District 4 - Bay Area"
 
     def test_subsection_column_count(self, subsection_1_a: Subsection, group: Group, field: Field, field_with_unit: Field) -> None:
         column_group = group.columngroup_set.create()
@@ -277,11 +277,11 @@ class TestModel:
         assert subsection_1_a.column_count == 2
 
     def test_benefits_group_string_representation(self, benefits_group: BenefitsGroup):
-        assert str(benefits_group) == "Summary"
+        assert str(benefits_group) == "2 - Summary"
 
     def test_benefits_row_string_representation(self, benefits_row: BenefitsRow):
-        assert str(benefits_row) == "YR 1 - Position 0"
+        assert str(benefits_row) == "1 - YR 1"
 
     def test_benefits_field_string_representation(self, benefits_row: BenefitsRow):
         benefits_field = benefits_row.benefitsfield_set.create(name="Life-Cycle Cost")
-        assert str(benefits_field) == "Life-Cycle Cost - Position 0"
+        assert str(benefits_field) == "1 - Life-Cycle Cost"
