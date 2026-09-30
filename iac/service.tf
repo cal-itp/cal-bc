@@ -56,10 +56,10 @@ resource "google_cloud_run_v2_service" "cal-bc-staging" {
       }
 
       env {
-        name = "AZURE_AUTH__CLIENT_ID"
+        name = "AZURE_AUTH__APPLICATION_ID"
         value_source {
           secret_key_ref {
-            secret  = google_secret_manager_secret.cal-bc-staging-azure-auth-client-id.secret_id
+            secret  = google_secret_manager_secret.cal-bc-staging-azure-auth-application-id.secret_id
             version = "latest"
           }
         }

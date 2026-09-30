@@ -206,7 +206,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 TEST_RUNNER = "pytest_django.runner.TestRunner"
 
 AZURE_AUTH = {
-    "CLIENT_ID": env("AZURE_AUTH__CLIENT_ID", default=None),
+    "CLIENT_ID": env("AZURE_AUTH__APPLICATION_ID", default=None),
     "CLIENT_TYPE": "confidential_client",  # Optional, pick "public_client" or "confidential_client" (default)
     "CLIENT_SECRET": env(
         "AZURE_AUTH__CLIENT_SECRET", default=None
