@@ -16,6 +16,7 @@ from cal_bc.models.models.model import (
     Version,
 )
 
+admin.AdminSite.site_header = "Cal B/C Admin"
 
 class ValueInline(nested_admin.SortableHiddenMixin, nested_admin.NestedTabularInline):
     model = Value
