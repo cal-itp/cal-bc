@@ -281,7 +281,7 @@ class TestProjectSystem:
 
         first_window.get_by_label("Project Name").click()
         expect(first_window.locator("body")).to_contain_text("Enter a descriptive name for your project.")
-        expect(first_window.locator("dl dt").filter(has_text="Length of Peak Period(s)").locator("xpath=following-sibling::dd[1]")).to_contain_text("5 hours")
+        expect(first_window.get_by_label("Length of Peak Period(s)")).to_contain_text("5 hours")
 
         first_window.get_by_role("button", name="Save draft").click()
         expect(first_window.locator("body")).to_contain_text("Select District.")
@@ -311,14 +311,14 @@ class TestProjectSystem:
         expect(first_window.get_by_text("Construction Period Costs Instructions")).to_be_visible()
         first_window.get_by_role("button", name="close").click()
 
-        expect(first_window.locator("dl dt").filter(has_text="Total Project Support").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
-        expect(first_window.locator("dl dt").filter(has_text="Total Construction").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
+        expect(first_window.get_by_label("Total Project Support")).to_contain_text("$0")
+        expect(first_window.get_by_label("Total Construction")).to_contain_text("$0")
         expect(first_window.locator("body")).to_contain_text("Yr 1*")
-        expect(first_window.locator("dl dt").filter(has_text="Constant Dollars Year 1").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
-        expect(first_window.locator("dl dt").filter(has_text="Present Value Year 1").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
+        expect(first_window.get_by_label("Constant Dollars Year 1")).to_contain_text("$0")
+        expect(first_window.get_by_label("Present Value Year 1")).to_contain_text("$0")
         expect(first_window.locator("body")).to_contain_text("Yr 2")
-        expect(first_window.locator("dl dt").filter(has_text="Constant Dollars Year 2").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
-        expect(first_window.locator("dl dt").filter(has_text="Present Value Year 2").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
+        expect(first_window.get_by_label("Constant Dollars Year 2")).to_contain_text("$0")
+        expect(first_window.get_by_label("Present Value Year 2")).to_contain_text("$0")
 
         first_window.get_by_role("button", name="Back to Subsection 1A").click()
         expect(first_window.locator("body")).to_contain_text("Enter Project Support Year 1, Enter Construction Year 1.")
@@ -328,24 +328,23 @@ class TestProjectSystem:
         first_window.get_by_label("Project Support Year 2").fill("15000")
         first_window.get_by_role("button", name="Save draft").click()
         expect(first_window.locator("body")).to_contain_text("Project successfully saved!")
-        expect(first_window.locator("dl dt").filter(has_text="Total Project Support").locator("xpath=following-sibling::dd[1]")).to_contain_text("$25,000")
-        expect(first_window.locator("dl dt").filter(has_text="Total Construction").locator("xpath=following-sibling::dd[1]")).to_contain_text("$12,000")
-        expect(first_window.locator("dl dt").filter(has_text="Constant Dollars Year 1").locator("xpath=following-sibling::dd[1]")).to_contain_text("$22,000,000")
-        expect(first_window.locator("dl dt").filter(has_text="Present Value Year 1").locator("xpath=following-sibling::dd[1]")).to_contain_text("$22,000,000")
-        expect(first_window.locator("dl dt").filter(has_text="Constant Dollars Year 2").locator("xpath=following-sibling::dd[1]")).to_contain_text("$15,000,000")
-        expect(first_window.locator("dl dt").filter(has_text="Present Value Year 2").locator("xpath=following-sibling::dd[1]")).to_contain_text("$14,423,076.92")
+        expect(first_window.get_by_label("Total Project Support")).to_contain_text("$25,000")
+        expect(first_window.get_by_label("Total Construction")).to_contain_text("$12,000")
+        expect(first_window.get_by_label("Constant Dollars Year 1")).to_contain_text("$22,000,000")
+        expect(first_window.get_by_label("Present Value Year 1")).to_contain_text("$22,000,000")
+        expect(first_window.get_by_label("Constant Dollars Year 2")).to_contain_text("$15,000,000")
+        expect(first_window.get_by_label("Present Value Year 2")).to_contain_text("$14,423,076.92")
 
         first_window.get_by_role("button", name="Back to Subsection 1A").click()
         expect(first_window.locator("body")).to_contain_text("Project successfully saved!")
 
         first_window.get_by_role("button", name="1A - Project Data").click()
         first_window.get_by_role("menuitem", name="1E. Project Costs").click()
-        expect(first_window.locator("dl dt").filter(has_text="Total Project Support").locator("xpath=following-sibling::dd[1]")).to_contain_text("25,000")
+        expect(first_window.get_by_label("Total Project Support")).to_contain_text("25,000")
 
         first_window.get_by_role("button", name="Continue to Subsection 3").click()
         expect(first_window.locator("body")).to_contain_text("Investment Analysis")
-        expect(first_window.locator("dl dt").filter(has_text="Life-Cycle Costs (mil. $)").locator(
-            "xpath=following-sibling::dd[1]")).to_contain_text("$36.42")
+        expect(first_window.get_by_label("Life-Cycle Costs")).to_contain_text("$36.42")
         expect(first_window.get_by_label("B/C Ratio")).to_contain_text("N/A")
 
         first_window.get_by_role("link", name="Exit Project").click()
