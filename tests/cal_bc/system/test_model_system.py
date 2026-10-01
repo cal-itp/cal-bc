@@ -37,7 +37,8 @@ class TestModelSystem:
 
     def test_models(self, first_page: Page, channels_live_server: ChannelsLiveServer) -> None:
         first_page.goto(f"{channels_live_server.http_url}{reverse_lazy('admin:index')}")
-        first_page.wait_for_selector("text=Django administration")
+        first_page.wait_for_selector("text=Cal B/C Admin")
+        first_page.wait_for_selector("text=Site administration")
 
         first_page.locator(".app-models").get_by_role(
             "rowheader", name="Models"
@@ -49,7 +50,6 @@ class TestModelSystem:
         first_page.get_by_role("button", name="Save", exact=True).click()
         first_page.wait_for_selector("text=The model “Sketch” was added successfully")
 
-        first_page.get_by_role("link", name="Home").click()
         first_page.locator(".app-models").get_by_role(
             "link", name="Versions", exact=True
         ).click()
@@ -62,23 +62,22 @@ class TestModelSystem:
             "text=The version “8.1” was added successfully"
         )
 
-        first_page.get_by_role("link", name="Home").click()
         first_page.locator(".app-models").get_by_role(
             "link", name="Versions", exact=True
         ).click()
         first_page.get_by_role("link", name="8.1", exact=True).click()
-        first_page.locator(":text('Section: #1') + fieldset").get_by_label("Name").nth(
-            0
-        ).fill("Project Information")
         first_page.locator(":text('Section: #1') + fieldset").get_by_label("Code").nth(
             0
         ).fill("1")
-        first_page.locator(":text('Subsection: #1') + fieldset").get_by_label(
-            "Name"
-        ).nth(0).fill("Project Data")
+        first_page.locator(":text('Section: #1') + fieldset").get_by_label("Name").nth(
+            0
+        ).fill("Project Information")
         first_page.locator(":text('Subsection: #1') + fieldset").get_by_label(
             "Code"
         ).nth(0).fill("A")
+        first_page.locator(":text('Subsection: #1') + fieldset").get_by_label(
+            "Name"
+        ).nth(0).fill("Project Data")
         first_page.locator(":text('Subsection: #1') + fieldset").get_by_label(
             "Description"
         ).nth(0).fill("This is the main info.")
@@ -138,7 +137,7 @@ class TestModelSystem:
         ).locator("input").press_sequentially("50")
         first_page.get_by_role("button", name="Save", exact=True).click()
         first_page.wait_for_selector(
-            "text=The group “General Information” was changed successfully"
+            "text=The group “1 - General Information” was changed successfully"
         )
         
         first_page.get_by_role("link", name="Add group").click()
@@ -184,7 +183,7 @@ class TestModelSystem:
         ).select_option("Read-Only")
         first_page.get_by_role("button", name="Save", exact=True).click()
         first_page.wait_for_selector(
-            "text=The group “Project Data” was added successfully"
+            "text=The group “1 - Project Data” was added successfully"
         )
 
         first_page.close()
