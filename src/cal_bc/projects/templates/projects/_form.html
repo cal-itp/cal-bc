@@ -75,16 +75,37 @@
 
     <div class="space-y-6 mt-6">
         {% for row in group.non_table_row_set.all %}
-            {% if row.field_set.count == 1 %}
+            {% if row.field_set.count == 1 and subsection.column_count == 0 %}
             <div class="grid grid-cols-2 gap-6">
+            {% elif row.field_set.count == 1 and subsection.column_count > 0 %}
+            <div class="grid grid-cols-{{ subsection.column_count|add:1 }} gap-x-3 items-baseline-last">
             {% else %}
             <div class="grid grid-cols-{{ row.field_set.count }} gap-6">
             {% endif %}
-            {% with show_errors="True" %}
-                {% for field in row.field_set.all %}
-                    {% partial form-cell--new %}
-                {% endfor %}
-            {% endwith %}
+            
+            {% if row.field_set.count == 1 and subsection.column_count > 0 %}
+                {% with label_classes="sr-only" input_classes="text-center" %}
+                    {% for field in row.field_set.all %}
+                        <div>{{ field.name }}{% if field.required %}<span class="text-red-700 ml-1">*</span>{% endif %}</div>
+                        {% partial form-cell--new %}
+                    {% endfor %}
+                {% endwith %}
+                {% with formset|find_formset_row_errors:row as errors %}
+                    {% if errors %}
+                        <div></div>
+                        <div class="mt-1 mb-2 text-red-700 col-start-2 col-span-{{ subsection.column_count }} flex items-start">
+                            {% svg 'projects/warning' alt="error" class="h-6 w-auto" %}<span class="ml-2">{{ errors }}</span>
+                        </div>
+                    {% else %}
+                    {% endif %}
+                {% endwith %}
+            {% else %}
+                {% with show_errors="True" %}
+                    {% for field in row.field_set.all %}
+                        {% partial form-cell--new %}
+                    {% endfor %}
+                {% endwith %}
+            {% endif %}
             </div>
         {% endfor %}
 
