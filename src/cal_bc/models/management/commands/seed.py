@@ -3,8 +3,6 @@ import logging
 from django.core.management.base import BaseCommand
 
 from cal_bc.models.models.model import (
-    BenefitsGroup,
-    BenefitsRow,
     ColumnGroup,
     Field,
     FieldColumn,
@@ -115,24 +113,6 @@ def create_field_column(field: Field, column):
     field_column = FieldColumn.objects.create(field=field, column=column)
     logger.info(f"{field_column} field column created.")
     return field_column
-
-
-def create_benefits_group(subsection: Subsection, name="", description="", is_summary=True, position=0):
-    benefits_group = subsection.benefitsgroup_set.create(name=name, description=description, is_summary=is_summary, position=position)
-    logger.info(f"{benefits_group} benefits group created.")
-    return benefits_group
-
-
-def create_benefits_row(benefits_group: BenefitsGroup, position=0):
-    benefits_row = benefits_group.benefitsrow_set.create(position=position)
-    logger.info(f"{benefits_row} benefits row created.")
-    return benefits_row
-
-
-def create_benefits_field(benefits_row: BenefitsRow, cell, name="", unit="", position=0):
-    benefits_field = benefits_row.benefitsfield_set.create(name=name, cell=cell, unit=unit, position=position)
-    logger.info(f"{benefits_field} benefits field created.")
-    return benefits_field
 
 
 def seed(self, mode):

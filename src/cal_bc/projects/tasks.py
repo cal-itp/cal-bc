@@ -5,12 +5,11 @@ from django.db import transaction
 from django.tasks import task
 
 from cal_bc.models.models.model import (
-    BenefitsField,
     Field,
     FieldDisplayType,
     Subsection,
 )
-from cal_bc.projects.models.project import BenefitsValue, Project, Value
+from cal_bc.projects.models.project import Project, Value
 from cal_bc.tasks import refresh_channel
 from cal_bc_calculator.calculator import BytesCalculator
 from cal_bc_calculator.downloader import Downloader
@@ -50,13 +49,8 @@ def refresh_project_fields(project_pk: int) -> None:
     calculated_values = remote_workbook.read_cell_values([f.cell for f in field_set.all()])
     value_set = [Value(project=project, field=f, value=calculated_values[f.cell]) for f in field_set.all() if calculated_values[f.cell] is not None]
 
-    benefits_field_set = BenefitsField.objects.filter(benefits_row__benefits_group__subsection__section__version=project.version).exclude(cell="")
-    calculated_benefit_values = remote_workbook.read_cell_values([f.cell for f in benefits_field_set.all()])
-    benefits_value_set = [BenefitsValue(project=project, benefits_field=f, value=calculated_benefit_values[f.cell]) for f in benefits_field_set.all() if calculated_benefit_values[f.cell] is not None]
-
     with transaction.atomic():
         Value.objects.bulk_create(value_set, update_conflicts=True, update_fields=("value",), unique_fields=("project", "field"))
-        BenefitsValue.objects.bulk_create(benefits_value_set, update_conflicts=True, update_fields=("value",),unique_fields=("project", "benefits_field"))
 
         transaction.on_commit(partial(refresh_channel.enqueue, channel_name=f"user_{project.user_id}_projects"))
 
