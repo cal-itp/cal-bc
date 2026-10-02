@@ -265,3 +265,23 @@ class TestModel:
         column_2.fieldcolumn_set.create(field=field_with_unit)
         subsection_1_a.group_set.create(name="Other Group")
         assert subsection_1_a.column_count == 2
+
+    def test_subsection_read_only_false(self, subsection_1_a: Subsection, field: Field):
+        assert subsection_1_a.read_only is False
+
+    def test_null_subsection_read_only_true(self, subsection_2_a: Subsection, field: Field):
+        assert subsection_2_a.read_only is True
+
+    def test_subsection_read_only_true(self, section_2: Section):
+        read_only_subsection = section_2.subsection_set.create(code="A", name="Investiment Analysis")
+        review_group = read_only_subsection.group_set.create(name="Results", is_summary=False)
+        review_row = review_group.row_set.create()
+        review_row.field_set.create(name="Life-Cycle Costs", cell="1) Results!H13", display_type=FieldDisplayType.READ_ONLY)
+        assert read_only_subsection.read_only is True
+
+    def test_subsection_read_only_summary_group_true(self, section_2: Section):
+        read_only_subsection = section_2.subsection_set.create(code="A", name="Investiment Analysis")
+        review_group = read_only_subsection.group_set.create(name="Summary", is_summary=True)
+        review_row = review_group.row_set.create()
+        review_row.field_set.create(name="Life-Cycle Costs", cell="1) Results!H13")
+        assert read_only_subsection.read_only is True
