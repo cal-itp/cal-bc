@@ -6,16 +6,19 @@ register = template.Library()
 
 @register.filter
 def decorate_value(value, unit):
-     try:
-         val = intcomma(floatformat(float(value), -2))
-     except ValueError:
-         val = value
+    if "'type': 'Error'" in value:
+        return "-"
+    
+    try:
+        val = intcomma(floatformat(float(value), -2))
+    except ValueError:
+        val = value
 
-     if value == "N/A":
-         return val
-     elif unit == "$":
-         return f"${val}"
-     elif unit:
-         return f"{val} {unit}"
+    if value == "N/A":
+        return val
+    elif unit == "$":
+        return f"${val}"
+    elif unit:
+        return f"{val} {unit}"
 
-     return val
+    return val
