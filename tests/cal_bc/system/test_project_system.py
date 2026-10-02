@@ -297,12 +297,12 @@ class TestProjectSystem:
         expect(second_page.get_by_label("Project Name")).to_have_value("New Geary Boulevard Light Rail")
 
         expect(first_page.get_by_text("Subsection 1E Help")).not_to_be_visible()
-        first_page.get_by_role("button", name="Show subsection guide").click()
+        first_page.get_by_role("button", name="Show Subsection Guide").click()
         expect(first_page.get_by_text("Subsection 1E Help")).to_be_visible()
         first_page.get_by_role("button", name="close").click()
 
         expect(first_page.get_by_text("Construction Period Costs Instructions")).not_to_be_visible()
-        first_page.get_by_role("button", name="Show group Construction Period Costs guide").click()
+        first_page.get_by_role("button", name="Show Construction Period Costs Guide").click()
         expect(first_page.get_by_text("Construction Period Costs Instructions")).to_be_visible()
         first_page.get_by_role("button", name="close").click()
 
@@ -341,7 +341,8 @@ class TestProjectSystem:
         expect(first_page.locator("body")).to_contain_text("Investment Analysis")
         expect(first_page.locator("dl dt").filter(has_text="Life-Cycle Costs (mil. $)").locator(
             "xpath=following-sibling::dd[1]")).to_contain_text("$36.42")
-
+        
+        expect(first_page.get_by_role("link", name="Download Excel")).to_be_visible()
         first_page.get_by_role("link", name="Exit Project").click()
         expect(first_page.locator("body")).to_contain_text("New Geary Boulevard Light Rail")
         expect(first_page.locator("body")).to_contain_text("1 projects")
