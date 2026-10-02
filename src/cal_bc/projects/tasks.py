@@ -35,13 +35,22 @@ class RemoteWorkbook:
     def read_cell_values(self, cells: list[str]) -> dict[str, any]:
         return {k: v for k, v in zip(cells, self.calculator.evaluate(cells))}
 
+def coerce_value(value: any) -> any:
+    try:
+        return int(value)
+    except ValueError:
+        try:
+            return float(value)
+        except ValueError:
+            return value
+
 @task
 def refresh_project_fields(project_pk: int) -> None:
     project = Project.objects.get(id=project_pk)
 
     remote_workbook = RemoteWorkbook(url=project.version.url)
     cell_values = {
-        value.field.cell: value.value
+        value.field.cell: coerce_value(value.value)
         for value in project.value_set.exclude(field__cell="").exclude(value="").exclude(field__display_type=FieldDisplayType.READ_ONLY).exclude(field__row__group__is_summary=True).select_related("field")
     }
     remote_workbook.set_cell_values(cell_values)

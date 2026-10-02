@@ -103,18 +103,40 @@ class TestProjectSystem:
         return general_info_1A_group_row_1.field_set.create(name="Project Name", cell="ProjName")
 
     @pytest.fixture
-    def general_info_1A_group_row_2(self, general_info_1A_group: Group) -> Row:
-        return general_info_1A_group.row_set.create(position=2)
-
-    @pytest.fixture
-    def district_field(self, general_info_1A_group_row_2: Row) -> Field:
-        return general_info_1A_group_row_2.field_set.create(name="District", cell="ProjLoc")
+    def district_field(self, general_info_1A_group_row_1: Row) -> Field:
+        return general_info_1A_group_row_1.field_set.create(name="District", cell="1) Project Information!E2")
 
     @pytest.fixture(autouse=True)
     def district_4_value(self, district_field: Field) -> Value:
         return district_field.value_set.create(
             name="District 4 - Bay Area / Oakland",
             value="District 4",
+        )
+
+    @pytest.fixture
+    def general_info_1A_group_row_2(self, general_info_1A_group: Group) -> Row:
+        return general_info_1A_group.row_set.create(position=2)
+
+    @pytest.fixture
+    def project_type(self, general_info_1A_group_row_2: Row) -> Field:
+        return general_info_1A_group_row_2.field_set.create(name="Project Type", cell="ProjType")
+
+    @pytest.fixture(autouse=True)
+    def general_highway(self, project_type: Field) -> Value:
+        return project_type.value_set.create(
+            name="General Highway",
+            value="    General Highway",
+        )
+
+    @pytest.fixture
+    def project_location(self, general_info_1A_group_row_2: Row) -> Field:
+        return general_info_1A_group_row_2.field_set.create(name="Project Location", cell="ProjLoc")
+
+    @pytest.fixture(autouse=True)
+    def norcal(self, project_location: Field) -> Value:
+        return project_location.value_set.create(
+            name="NorCal",
+            value="2",
         )
 
     @pytest.fixture
@@ -254,8 +276,12 @@ class TestProjectSystem:
         return summary_3_group.row_set.create()
 
     @pytest.fixture(autouse=True)
-    def summary_life_cycle_field(self, summary_3_row: Row) -> Field:
+    def summary_cost_field(self, summary_3_row: Row) -> Field:
         return summary_3_row.field_set.create(name="Life-Cycle Costs (mil. $)", cell="3) Results!H13", unit="$", display_type=FieldDisplayType.READ_ONLY)
+
+    @pytest.fixture(autouse=True)
+    def summary_benefit_field(self, summary_3_row: Row) -> Field:
+        return summary_3_row.field_set.create(name="Life-Cycle Benefits (mil. $)", cell="3) Results!H14", unit="$", display_type=FieldDisplayType.READ_ONLY)
 
     @pytest.fixture(autouse=True)
     def benefit_cost_ratio_field(self, summary_3_row: Row) -> Field:
@@ -289,6 +315,8 @@ class TestProjectSystem:
         expect(second_window.locator("body")).to_contain_text("Hypothetical Project", timeout=10_000)
         first_window.get_by_label("Project Name").fill("Geary Boulevard Light Rail")
         first_window.get_by_label("District").select_option("District 4 - Bay Area / Oakland")
+        first_window.get_by_label("Project Type").select_option("General Highway")
+        first_window.get_by_label("Project Location").select_option("NorCal")
         first_window.get_by_role("button", name="Save draft").click()
         expect(first_window.locator("body")).to_contain_text("Project successfully saved!")
         expect(second_window.locator("body")).to_contain_text("Geary Boulevard Light Rail")
@@ -344,6 +372,7 @@ class TestProjectSystem:
 
         first_window.get_by_role("button", name="Continue to Subsection 3").click()
         expect(first_window.locator("body")).to_contain_text("Investment Analysis")
+        expect(first_window.get_by_label("Life-Cycle Benefits")).to_contain_text("xxx")
         expect(first_window.get_by_label("Life-Cycle Costs")).to_contain_text("$36.42")
         expect(first_window.get_by_label("B/C Ratio")).to_contain_text("N/A")
 
