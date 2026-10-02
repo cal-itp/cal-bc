@@ -2,6 +2,19 @@
 {% load svg %}
 {% block main %}
 
+{% partialdef subsection-header %}
+    <div class="flex justify-between">
+        <h1 class="text-4xl font-bold tracking-tight text-dds-teal-950">{{ subsection.section.code }}{{ subsection.code }}. {{ subsection.name }}</h1>
+        {% if subsection.guide %}
+        <c-modal-dialog modal_id="subsection-guide">
+            {% include "_guide.html" with target=subsection %}
+        </c-modal-dialog>
+        <button type="button" command="show-modal" commandfor="modal-dialog-subsection-guide" class="cursor-pointer flex items-center mt-2 text-lg font-semibold text-dds-teal-600 hover:shadow-(--button-hover) focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400"><span class="pr-1">{% svg "projects/guide" %}</span><span class="sr-only">Show subsection guide</span><span>Show Guide</span></button>
+        {% endif %}
+    </div>
+    {% if subsection.description %}<p class="mt-1 text-lg/8 font-light text-gray-700">{{ subsection.description }}</p>{% endif %}
+{% endpartialdef %}
+
 <div class="min-h-full bg-gray-100 flex flex-col">
     {% include "projects/_header_nav.html" %}
 
@@ -26,44 +39,49 @@
     </header>
     {% endif %}
 
-    <main class="grow">
-        <form method="post" class="mx-auto max-w-7xl pt-16 pb-20 px-6 lg:px-8">
-            {% csrf_token %}
+    {% with column_threshold=4 %}
+        <main class="grow">
+            <form method="post" class="mx-auto max-w-7xl pt-16 pb-20 px-6 lg:px-8">
+                {% csrf_token %}
 
-            {% if subsection.column_count < 4 and subsection.summary_group_set.count == 0 %}
-            <div class="md:grid md:grid-cols-7 md:gap-4">
-                <section class="md:col-span-4">
-                    <div hx-ext="ws" hx-ws:connect="/ws{% url 'project_subsection' project_pk=object.pk pk=subsection.pk %}" hx-target="this" hx-swap="innerMorph">
-                        {% include "projects/_form.html" with title="Edit Project" %}
+                {% if subsection.column_count < column_threshold and subsection.summary_group_set.count == 0 %}
+                <div class="md:grid md:grid-cols-7 md:gap-4">
+                    <section class="md:col-span-4">
+                        <div hx-ext="ws" hx-ws:connect="/ws{% url 'project_subsection' project_pk=object.pk pk=subsection.pk %}" hx-target="this" hx-swap="innerMorph">
+                            {% partial subsection-header %}
+                            {% include "projects/_form.html" with title="Edit Project" %}
+                        </div>
+                    </section>
+                    <section class="md:block md:self-start md:sticky md:top-0 md:col-span-3">
+                        <aside id="guide" hx-get="{% url 'model_version_section_subsection_guide' model_pk=subsection.section.version.model.pk version_pk=subsection.section.version.pk section_pk=subsection.section.pk pk=subsection.pk %}" hx-params="none" hx-swap="innerMorph" hx-trigger="load"></aside>
+                    </section>
+                </div>
+                {% else %}
+                <div>{% partial subsection-header %}</div>
+
+                <section hx-ext="ws" hx-ws:connect="/ws{% url 'project_subsection' project_pk=object.pk pk=subsection.pk %}" hx-target="this" hx-swap="innerMorph">
+                    {% include "projects/_form.html" with title="Edit Project" %}
+                </section>
+                {% endif %}
+
+                <div class="mt-12 pt-12 border-t border-gray-300 flex flex-row-reverse items-center justify-between gap-x-6">
+                    <div class="flex flex-row-reverse items-center justify-end gap-x-6">
+                        {% if subsection.next_subsection %}
+                            <button type="submit" name="step" value="next" hx-disable="this" class="cursor-pointer rounded-md bg-dds-teal-600 px-7 py-3 text-lg font-semibold text-white shadow hover:shadow-(--button-hover) focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Continue<span class="sr-only sm:not-sr-only"> to Subsection {{ subsection.next_subsection.section.code }}{{ subsection.next_subsection.code }}</span></button>
+                        {% else %}
+                            <a href="{% url 'projects' %}" class="cursor-pointer rounded-md bg-dds-teal-600 px-7 py-3 text-lg font-semibold text-white shadow hover:shadow-(--button-hover) focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Exit<span class="sr-only sm:not-sr-only"> Project</span></a>
+                        {% endif %}
                     </div>
-                </section>
-                <section class="md:block md:self-start md:sticky md:top-0 md:col-span-3">
-                    <aside id="guide" hx-get="{% url 'model_version_section_subsection_guide' model_pk=subsection.section.version.model.pk version_pk=subsection.section.version.pk section_pk=subsection.section.pk pk=subsection.pk %}" hx-params="none" hx-swap="innerMorph" hx-trigger="load"></aside>
-                </section>
-            </div>
-            {% else %}
-            <section hx-ext="ws" hx-ws:connect="/ws{% url 'project_subsection' project_pk=object.pk pk=subsection.pk %}" hx-target="this" hx-swap="innerMorph">
-                {% include "projects/_form.html" with title="Edit Project" %}
-            </section>
-            {% endif %}
-
-            <div class="mt-12 pt-12 border-t border-gray-300 flex flex-row-reverse items-center justify-between gap-x-6">
-                <div class="flex flex-row-reverse items-center justify-end gap-x-6">
-                    {% if subsection.next_subsection %}
-                        <button type="submit" name="step" value="next" hx-disable="this" class="cursor-pointer rounded-md bg-dds-teal-600 px-7 py-3 text-lg font-semibold text-white shadow hover:shadow-(--button-hover) focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Continue<span class="sr-only sm:not-sr-only"> to Subsection {{ subsection.next_subsection.section.code }}{{ subsection.next_subsection.code }}</span></button>
-                    {% else %}
-                        <a href="{% url 'projects' %}" class="cursor-pointer rounded-md bg-dds-teal-600 px-7 py-3 text-lg font-semibold text-white shadow hover:shadow-(--button-hover) focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Exit<span class="sr-only sm:not-sr-only"> Project</span></a>
-                    {% endif %}
+                    <div class="flex items-center justify-end gap-x-6">
+                        {% if subsection.previous_subsection %}
+                            <button type="submit" name="step" value="previous" hx-disable="this" class="cursor-pointer rounded-md bg-white px-7 py-3 text-lg font-semibold text-dds-teal-600 border-1 border-dds-teal-600 shadow hover:shadow-(--button-hover) focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Back<span class="sr-only sm:not-sr-only"> to Subsection {{ subsection.previous_subsection.section.code }}{{ subsection.previous_subsection.code }}</span></button>
+                        {% endif %}
+                        <button type="submit" name="step" value="current" hx-disable="this" class="cursor-pointer rounded-md bg-white px-7 py-3 text-lg font-semibold text-dds-teal-600 border-1 border-dds-teal-600 shadow hover:shadow-(--button-hover) focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Save draft</button>
+                    </div>
                 </div>
-                <div class="flex items-center justify-end gap-x-6">
-                    {% if subsection.previous_subsection %}
-                        <button type="submit" name="step" value="previous" hx-disable="this" class="cursor-pointer rounded-md bg-white px-7 py-3 text-lg font-semibold text-dds-teal-600 border-1 border-dds-teal-600 shadow hover:shadow-(--button-hover) focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Back<span class="sr-only sm:not-sr-only"> to Subsection {{ subsection.previous_subsection.section.code }}{{ subsection.previous_subsection.code }}</span></button>
-                    {% endif %}
-                    <button type="submit" name="step" value="current" hx-disable="this" class="cursor-pointer rounded-md bg-white px-7 py-3 text-lg font-semibold text-dds-teal-600 border-1 border-dds-teal-600 shadow hover:shadow-(--button-hover) focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Save draft</button>
-                </div>
-            </div>
-        </form>
-    </main>
+            </form>
+        </main>
+    {% endwith %}
 
     {% include "_footer.html" %}
 </div>
