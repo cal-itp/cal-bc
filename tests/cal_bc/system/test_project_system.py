@@ -254,8 +254,12 @@ class TestProjectSystem:
         return summary_3_group.row_set.create()
 
     @pytest.fixture(autouse=True)
-    def summary_life_cycle_field(self, summary_3_row: Row) -> Field:
+    def summary_life_cycle_costs_field(self, summary_3_row: Row) -> Field:
         return summary_3_row.field_set.create(name="Life-Cycle Costs (mil. $)", cell="3) Results!H13", unit="$")
+
+    @pytest.fixture(autouse=True)
+    def summary_life_cycle_benefits_field(self, summary_3_row: Row) -> Field:
+        return summary_3_row.field_set.create(name="Life-Cycle Benefits (mil. $)", cell="3) Results!H14", unit="$")
 
     def test_projects(self, first_page: Page, second_page: Page, channels_live_server: ChannelsLiveServer):
         first_page.goto(channels_live_server.http_url)
@@ -341,6 +345,8 @@ class TestProjectSystem:
         expect(first_page.locator("body")).to_contain_text("Investment Analysis")
         expect(first_page.locator("dl dt").filter(has_text="Life-Cycle Costs (mil. $)").locator(
             "xpath=following-sibling::dd[1]")).to_contain_text("$36.42")
+        expect(first_page.locator("dl dt").filter(has_text="Life-Cycle Benefits (mil. $)").locator(
+            "xpath=following-sibling::dd[1]")).to_contain_text("-")
 
         first_page.get_by_role("link", name="Exit Project").click()
         expect(first_page.locator("body")).to_contain_text("New Geary Boulevard Light Rail")
