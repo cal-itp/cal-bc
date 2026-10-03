@@ -281,5 +281,5 @@ class TestProjectSubsectionViews:
         )
 
         assert ProjectValue.objects.filter(field=name_field)[0].value == "Testing"
-        assert ProjectValue.objects.filter(field=district_field)[0].value == "1.0"
+        assert ProjectValue.objects.filter(field=district_field)[0].value == "1"
         assert ProjectValue.objects.filter(field=length_peak_period_field)[0].value == "5.0"
