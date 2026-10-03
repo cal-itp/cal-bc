@@ -59,7 +59,7 @@ class BytesCalculator:
                 sheet, cell = next(iter(wb.defined_names[address].destinations))
             else:
                 sheet, cell = address.split("!")
-            wb[sheet][cell] = value
+            wb[sheet][cell].value = value
         output = BytesIO()
         wb.save(output)
         output.seek(0)
