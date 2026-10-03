@@ -58,8 +58,8 @@
     <div class="flex space-x-0.5 mt-12">
         {% for field in row.field_set.all %}
         <dl class="flex-1 flex flex-col max-w-sm justify-between bg-white rounded-sm px-5 py-6 text-dds-teal-950">
-            <dt class="text-sm uppercase">{{ field.name }}</dt>
-            <dd class="flex font-bold text-2xl">
+            <dt id="field-{{ field.pk }}-name" class="text-sm uppercase">{{ field.name }}</dt>
+            <dd aria-labelledby="field-{{ field.pk }}-name" class="flex font-bold text-2xl">
                 {% with object.value_set.all|find_valueset_field:field as value %}
                 <c-value-read-only-value blank="-" />
                 {% endwith %}
