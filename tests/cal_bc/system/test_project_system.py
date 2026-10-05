@@ -341,7 +341,8 @@ class TestProjectSystem:
         expect(first_page.locator("body")).to_contain_text("Investment Analysis")
         expect(first_page.locator("dl dt").filter(has_text="Life-Cycle Costs (mil. $)").locator(
             "xpath=following-sibling::dd[1]")).to_contain_text("$36.42")
-
+        expect(first_page.get_by_role("link", name="Download Excel")).to_be_visible()
+        
         first_page.get_by_role("link", name="Exit Project").click()
         expect(first_page.locator("body")).to_contain_text("New Geary Boulevard Light Rail")
         expect(first_page.locator("body")).to_contain_text("1 projects")
