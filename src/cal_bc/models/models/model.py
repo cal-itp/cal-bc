@@ -116,6 +116,12 @@ class Subsection(models.Model):
             .order_by("-column_count")[0]["column_count"]
         )
 
+    @property
+    def read_only(self):
+        return Field.objects.filter(
+            row__group__id__in=self.group_set.exclude(is_summary=True)
+        ).exclude(display_type=FieldDisplayType.READ_ONLY).count() == 0
+
 
 class Group(models.Model):
     subsection = models.ForeignKey(Subsection, null=False, on_delete=models.CASCADE)
