@@ -164,7 +164,12 @@ class Group(models.Model):
 
     @property
     def column_count(self):
-        return self.columngroup_set.aggregate(column_count=models.Count("column__id"))
+        return self.columngroup_set.aggregate(column_count=models.Count("column__id"))["column_count"]
+
+    @property
+    def empty_column_count(self):
+        diff_columns = self.subsection.column_count - self.column_count
+        return range(0) if diff_columns < 0 else range(diff_columns)
 
 
 class Row(models.Model):
