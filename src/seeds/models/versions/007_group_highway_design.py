@@ -64,7 +64,7 @@ class Seed(seeds.seed.Seed):
         field_no_build_hov_restriction.value_set.get_or_create(value="2", defaults={"name": "2"})
         self.column_no_build.fieldcolumn_set.get_or_create(field=field_no_build_hov_restriction)
 
-        row_5, _ = self.group.row_set.get_or_create(position=5, defaults={"name": "HOV Restriction"})
+        row_5, _ = self.group.row_set.get_or_create(position=5, defaults={"name": "Exclusive ROW for Buses"})
         field_no_build_exclusive_buses, _ = row_5.field_set.get_or_create(name="Exclusive ROW for Buses No Build", defaults={"cell": "Exclusive"})
         field_no_build_exclusive_buses.value_set.get_or_create(value="y", defaults={"name": "Yes"})
         self.column_no_build.fieldcolumn_set.get_or_create(field=field_no_build_exclusive_buses)
