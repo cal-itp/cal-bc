@@ -15,8 +15,8 @@
         </div>
     </header>
 
-    <main class="mx-auto max-w-7xl pt-6 pb-20 px-6 lg:px-8 grow">
-        <ul role="list" class="grid grid-cols-1 grid-flow-row gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <main class="pt-6 pb-20 grow">
+        <ul role="list" class="mx-auto max-w-7xl px-6 lg:px-8 grid grid-cols-1 grid-flow-row gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {% for model in model_list %}
             {% with model.latest_version as version %}
                 {% if version %}
