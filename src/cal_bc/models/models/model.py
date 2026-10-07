@@ -3,6 +3,12 @@ from django_prose_editor.fields import ProseEditorField
 from taggit.managers import TaggableManager
 
 
+class GroupDisplayType(models.IntegerChoices):
+    DEFAULT = 1, "Default"
+    SUMMARY = 2, "Summary"
+    SETTINGS = 3, "Settings"
+
+
 class FieldDisplayType(models.IntegerChoices):
     REQUIRED = 1, "Required"
     NOT_REQUIRED = 2, "Not Required"
@@ -99,12 +105,16 @@ class Subsection(models.Model):
         return query.last()
 
     @property
-    def summary_group_set(self):
-        return self.group_set.filter(is_summary=True).all()
+    def settings_group_set(self):
+        return self.group_set.filter(display_type=GroupDisplayType.SETTINGS).all()
 
     @property
-    def non_summary_group_set(self):
-        return self.group_set.filter(is_summary=False).all()
+    def summary_group_set(self):
+        return self.group_set.filter(display_type=GroupDisplayType.SUMMARY).all()
+
+    @property
+    def default_group_set(self):
+        return self.group_set.filter(display_type=GroupDisplayType.DEFAULT).all()
 
     @property
     def column_count(self):
@@ -119,7 +129,7 @@ class Subsection(models.Model):
     @property
     def read_only(self):
         return Field.objects.filter(
-            row__group__id__in=self.group_set.exclude(is_summary=True)
+            row__group__id__in=self.group_set.filter(display_type=GroupDisplayType.DEFAULT)
         ).exclude(display_type=FieldDisplayType.READ_ONLY).count() == 0
 
 
@@ -140,7 +150,7 @@ class Group(models.Model):
         },
     )
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
-    is_summary = models.BooleanField(default=False, db_index=True)
+    display_type = models.IntegerField(choices=GroupDisplayType.choices, null=False, default=GroupDisplayType.DEFAULT, db_index=True)
 
     class Meta:
         ordering = ["position"]
@@ -203,9 +213,9 @@ class Row(models.Model):
 
     @property
     def required(self):
-        input_fields = self.field_set.exclude(display_type=FieldDisplayType.READ_ONLY).exclude(row__group__is_summary=True).count()
+        input_fields = self.field_set.exclude(display_type=FieldDisplayType.READ_ONLY).filter(row__group__display_type=GroupDisplayType.DEFAULT).count()
         if input_fields > 0:
-            return self.field_set.filter(display_type=FieldDisplayType.REQUIRED).exclude(row__group__is_summary=True).count() == input_fields
+            return self.field_set.filter(display_type=FieldDisplayType.REQUIRED).filter(row__group__display_type=GroupDisplayType.DEFAULT).count() == input_fields
         return False
 
 
@@ -280,11 +290,11 @@ class Field(models.Model):
 
     @property
     def required(self):
-        return (self.display_type == FieldDisplayType.REQUIRED and self.row.group.is_summary == False)
+        return (self.display_type == FieldDisplayType.REQUIRED and self.row.group.display_type == GroupDisplayType.DEFAULT)
 
     @property
     def read_only(self):
-        return self.display_type == FieldDisplayType.READ_ONLY or self.row.group.is_summary == True
+        return self.display_type == FieldDisplayType.READ_ONLY or self.row.group.display_type == GroupDisplayType.SUMMARY
 
 
 class Value(models.Model):

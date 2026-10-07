@@ -4,6 +4,7 @@ from cal_bc.models.models.model import (
     Field,
     FieldDisplayType,
     Group,
+    GroupDisplayType,
     Model,
     Row,
     Section,
@@ -53,7 +54,7 @@ class TestModel:
 
     @pytest.fixture()
     def summary_group(self, subsection_1_a: Subsection) -> Group:
-        return subsection_1_a.group_set.create(name="Summary", is_summary=True)
+        return subsection_1_a.group_set.create(name="Summary", display_type=GroupDisplayType.SUMMARY)
 
     @pytest.fixture()
     def row(self, group: Group) -> Row:
@@ -163,14 +164,14 @@ class TestModel:
         assert subsection_2_a.previous_subsection == subsection_1_b
 
     def test_summary_group_set(self, subsection_1_a: Subsection, subsection_1_b: Subsection, summary_group: Group):
-        subsection_1_a.group_set.create(name="Summary", is_summary=False)
-        subsection_1_b.group_set.create(name="Summary", is_summary=True)
+        subsection_1_a.group_set.create(name="Summary", display_type=GroupDisplayType.DEFAULT)
+        subsection_1_b.group_set.create(name="Summary", display_type=GroupDisplayType.SUMMARY)
         assert list(subsection_1_a.summary_group_set) == [summary_group]
 
-    def test_non_summary_group_set(self, subsection_1_a: Subsection, subsection_1_b: Subsection, group: group):
-        subsection_1_a.group_set.create(name="Summary", is_summary=True)
-        subsection_1_b.group_set.create(name="Summary", is_summary=False)
-        assert list(subsection_1_a.non_summary_group_set) == [group]
+    def test_default_group_set(self, subsection_1_a: Subsection, subsection_1_b: Subsection, group: group):
+        subsection_1_a.group_set.create(name="Summary", display_type=GroupDisplayType.SUMMARY)
+        subsection_1_b.group_set.create(name="Summary", display_type=GroupDisplayType.DEFAULT)
+        assert list(subsection_1_a.default_group_set) == [group]
 
     def test_group_string_representation(self, group: Group):
         assert str(group) == "2 - General Information"
@@ -274,14 +275,14 @@ class TestModel:
 
     def test_subsection_read_only_true(self, section_2: Section):
         read_only_subsection = section_2.subsection_set.create(code="A", name="Investiment Analysis")
-        review_group = read_only_subsection.group_set.create(name="Results", is_summary=False)
+        review_group = read_only_subsection.group_set.create(name="Results", display_type=GroupDisplayType.DEFAULT)
         review_row = review_group.row_set.create()
         review_row.field_set.create(name="Life-Cycle Costs", cell="1) Results!H13", display_type=FieldDisplayType.READ_ONLY)
         assert read_only_subsection.read_only is True
 
     def test_subsection_read_only_summary_group_true(self, section_2: Section):
         read_only_subsection = section_2.subsection_set.create(code="A", name="Investiment Analysis")
-        review_group = read_only_subsection.group_set.create(name="Summary", is_summary=True)
+        review_group = read_only_subsection.group_set.create(name="Summary", display_type=GroupDisplayType.SUMMARY)
         review_row = review_group.row_set.create()
         review_row.field_set.create(name="Life-Cycle Costs", cell="1) Results!H13")
         assert read_only_subsection.read_only is True

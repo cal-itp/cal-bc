@@ -8,6 +8,7 @@ from cal_bc.models.models.model import (
     FieldColumn,
     FieldDisplayType,
     Group,
+    GroupDisplayType,
     Model,
     Row,
     Section,
@@ -73,8 +74,8 @@ def create_subsection(section: Section, name, code, description="", guide=None):
     return subsection
 
 
-def create_group(subsection: Subsection, name, description="", is_summary=False, position=0):
-    group = subsection.group_set.create(name=name, description=description, is_summary=is_summary, position=position)
+def create_group(subsection: Subsection, name, description="", display_type=GroupDisplayType.DEFAULT, position=0):
+    group = subsection.group_set.create(name=name, description=description, display_type=display_type, position=position)
     logger.info(f"{group} group created.")
     return group
 
@@ -447,7 +448,7 @@ def seed(self, mode):
     create_field_column(field=create_field(row=row_ops_maint_expenditure, name="Ops. & Maint. Expenditure No Build", unit="$", cell="1) Project Information!P53"), column=column_annual_agency_costs_no_build)
     create_field_column(field=create_field(row=row_ops_maint_expenditure, name="Ops. & Maint. Expenditure Build", unit="$", cell="1) Project Information!Q53"), column=column_annual_agency_costs_build)
 
-    group_costs_summary = create_group(subsection=subsection_project_costs, name="Summary", is_summary=True)
+    group_costs_summary = create_group(subsection=subsection_project_costs, name="Summary", display_type=GroupDisplayType.SUMMARY)
     row_costs_summary = create_row(group=group_costs_summary)
     create_field(row=row_costs_summary, name="Total Mitigation", cell="1) Project Information!AB44", display_type=FieldDisplayType.READ_ONLY)
     create_field(row=row_costs_summary, name="Total Transit Agency Cost Savings", cell="1) Project Information!AC44", display_type=FieldDisplayType.READ_ONLY, position=1)
@@ -508,7 +509,7 @@ def seed(self, mode):
                                            cell="1) Project Information!AE44", display_type=FieldDisplayType.READ_ONLY),
                         column=column_present_value)
 
-    results_group_summary = create_group(subsection=subsection_investment_analysis, name="Summary", is_summary=True)
+    results_group_summary = create_group(subsection=subsection_investment_analysis, name="Summary", display_type=GroupDisplayType.SUMMARY)
     results_row_summary = create_row(group=results_group_summary)
     create_field(row=results_row_summary, name="Life-Cycle Costs (mil. $)", cell="3) Results!H13", unit="$")
     create_field(row=results_row_summary, name="Life-Cycle Benefits (mil. $)", cell="3) Results!H14", unit="$")

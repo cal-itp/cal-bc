@@ -7,7 +7,12 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from extra_views import FormSetSuccessMessageMixin, InlineFormSetView
 
-from cal_bc.models.models.model import Field, FieldDisplayType, Subsection
+from cal_bc.models.models.model import (
+    Field,
+    FieldDisplayType,
+    GroupDisplayType,
+    Subsection,
+)
 from cal_bc.projects.forms.project import ValueForm
 from cal_bc.projects.models.project import Project, Value
 from cal_bc.projects.tasks import refresh_project_fields
@@ -58,7 +63,7 @@ class ProjectSubsectionView(
         return (
             Field.objects.filter(row__group__subsection_id=self.kwargs["pk"])
             .exclude(display_type=FieldDisplayType.READ_ONLY)
-            .exclude(row__group__is_summary=True)
+            .exclude(row__group__display_type=GroupDisplayType.SUMMARY)
             .exclude(project_value__project_id=self.kwargs["project_pk"])
             .select_related("row", "row__group")
         )
@@ -72,7 +77,7 @@ class ProjectSubsectionView(
             Value.objects.filter(project_id=self.kwargs["project_pk"])
             .filter(field__row__group__subsection_id=self.kwargs["pk"])
             .exclude(field__display_type=FieldDisplayType.READ_ONLY)
-            .exclude(field__row__group__is_summary=True)
+            .exclude(field__row__group__display_type=GroupDisplayType.SUMMARY)
         )
         return kwargs
 

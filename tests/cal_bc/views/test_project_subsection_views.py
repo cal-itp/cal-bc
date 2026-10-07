@@ -10,6 +10,7 @@ from cal_bc.models.models.model import (
     Field,
     FieldDisplayType,
     Group,
+    GroupDisplayType,
     Model,
     Row,
     Section,
@@ -109,7 +110,7 @@ class TestProjectSubsectionViews:
 
     @pytest.fixture
     def summary_1E_group(self, subsection_1E: Subsection) -> Group:
-        return subsection_1E.group_set.create(name="Summary", is_summary=True)
+        return subsection_1E.group_set.create(name="Summary", display_type=GroupDisplayType.SUMMARY)
 
     @pytest.fixture
     def summary_1E_group_row(self, summary_1E_group: Group) -> Row:

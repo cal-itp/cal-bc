@@ -72,7 +72,7 @@
     {% endfor %}
 {% endfor %}
 
-{% for group in subsection.non_summary_group_set.all %}
+{% for group in subsection.default_group_set.all %}
     <div>{% partial group-header %}</div>
 
     <div class="space-y-6 mt-6">

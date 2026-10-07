@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.base import ContentFile
 from django_downloadview import VirtualDownloadView
 
-from cal_bc.models.models.model import FieldDisplayType
+from cal_bc.models.models.model import FieldDisplayType, GroupDisplayType
 from cal_bc.projects.models.project import Project
 from cal_bc_calculator.calculator import BytesCalculator
 
@@ -15,7 +15,10 @@ class ProjectDownloadView(LoginRequiredMixin, VirtualDownloadView):
     def get_file(self):
         project = Project.objects.get(pk=self.kwargs["pk"])
         version = project.version
-        value_map = {v.field.cell: v.value for v in project.value_set.exclude(value="").exclude(field__cell="").exclude(field__display_type=FieldDisplayType.READ_ONLY).exclude(field__row__group__is_summary=True)}
+        value_map = {
+            v.field.cell: v.value for v in project.value_set.exclude(value="").exclude(field__cell="").exclude(
+                field__display_type=FieldDisplayType.READ_ONLY).exclude(field__row__group__display_type=GroupDisplayType.SUMMARY)
+        }
         url = version.url
         req = urllib.request.Request(url)
         resp = urllib.request.urlopen(req)

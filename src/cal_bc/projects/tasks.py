@@ -7,6 +7,7 @@ from django.tasks import task
 from cal_bc.models.models.model import (
     Field,
     FieldDisplayType,
+    GroupDisplayType,
     Subsection,
 )
 from cal_bc.projects.models.project import Project, Value
@@ -42,7 +43,7 @@ def refresh_project_fields(project_pk: int) -> None:
     remote_workbook = RemoteWorkbook(url=project.version.url)
     cell_values = {
         value.field.cell: value.value
-        for value in project.value_set.exclude(field__cell="").exclude(value="").exclude(field__display_type=FieldDisplayType.READ_ONLY).exclude(field__row__group__is_summary=True).select_related("field")
+        for value in project.value_set.exclude(field__cell="").exclude(value="").exclude(field__display_type=FieldDisplayType.READ_ONLY).exclude(field__row__group__display_type=GroupDisplayType.SUMMARY).select_related("field")
     }
     remote_workbook.set_cell_values(cell_values)
     field_set = Field.objects.filter(row__group__subsection__section__version=project.version).exclude(cell="")

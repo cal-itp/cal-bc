@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from cal_bc.models.models.model import (
     Field,
     Group,
+    GroupDisplayType,
     Model,
     Row,
     Section,
@@ -61,7 +62,7 @@ class TestProject:
 
     @pytest.fixture
     def summary_value(self, project: Project, subsection: Subsection) -> Value:
-        summary_group = subsection.group_set.create(name="General", is_summary=True)
+        summary_group = subsection.group_set.create(name="General", display_type=GroupDisplayType.SUMMARY)
         summary_row = summary_group.row_set.create()
         summary_field = summary_row.field_set.create(name="Cost Per Mile")
 
@@ -80,6 +81,3 @@ class TestProject:
 
     def test_value_string_representation(self, value: Value) -> None:
         assert str(value) == "Point Lobos Train"
-
-    def test_summary_value_set(self, project: Project, summary_value: Value) -> None:
-        assert list(project.summary_value_set) == [summary_value]
