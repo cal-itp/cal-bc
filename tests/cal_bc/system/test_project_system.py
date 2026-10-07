@@ -5,18 +5,13 @@ from playwright.sync_api import Page, expect
 from pytest_playwright.pytest_playwright import CreateContextCallback
 
 from cal_bc.models.models.model import (
-    Column,
-    ColumnGroup,
-    Field,
     FieldDisplayType,
     Group,
     Model,
-    Row,
     Section,
     Subsection,
     Version,
 )
-from cal_bc.projects.models.project import Value
 from tests.channels_live_server_helper import ChannelsLiveServer
 
 
@@ -42,16 +37,16 @@ class TestProjectSystem:
         }
 
     @pytest.fixture
-    def first_page(self, page: Page, cookie: dict) -> Page:
-        first_page = page
-        first_page.context.add_cookies([cookie])
-        return first_page
+    def first_window(self, page: Page, cookie: dict) -> Page:
+        first_window = page
+        first_window.context.add_cookies([cookie])
+        return first_window
 
     @pytest.fixture
-    def second_page(self, cookie: dict, new_context: CreateContextCallback) -> Page:
-        second_page = new_context().new_page()
-        second_page.context.add_cookies([cookie])
-        return second_page
+    def second_window(self, cookie: dict, new_context: CreateContextCallback) -> Page:
+        second_window = new_context().new_page()
+        second_window.context.add_cookies([cookie])
+        return second_window
 
     @pytest.fixture
     def model(self) -> Model:
@@ -74,168 +69,131 @@ class TestProjectSystem:
             name="Project Data",
             code="A",
             description="This subsection contains the project data.",
-            guide="""
-                # Setup Help
-                All fields in this step are required.
-            """,
+            guide="All fields in this step are required."
         )
 
-    @pytest.fixture
-    def general_info_1A_group(self, subsection_1A: Subsection) -> Group:
-        return subsection_1A.group_set.create(
+    @pytest.fixture(autouse=True)
+    def group_1A_general_info(self, subsection_1A: Subsection) -> None:
+        group = subsection_1A.group_set.create(
             name="General Information",
             description="This is the general information group.",
             position=1
         )
-
-    @pytest.fixture
-    def general_info_1A_group_row_1(self, general_info_1A_group: Group) -> Row:
-        return general_info_1A_group.row_set.create(
+        row_1 = group.row_set.create(
             position=1,
-            guide="""
-                # Project Name
-                Enter a descriptive name for your project.
-            """
+            guide="Enter a descriptive name for your project."
         )
-
-    @pytest.fixture(autouse=True)
-    def project_name_field(self, general_info_1A_group_row_1: Row) -> Field:
-        return general_info_1A_group_row_1.field_set.create(name="Project Name", cell="ProjName")
-
-    @pytest.fixture
-    def general_info_1A_group_row_2(self, general_info_1A_group: Group) -> Row:
-        return general_info_1A_group.row_set.create(position=2)
-
-    @pytest.fixture
-    def district_field(self, general_info_1A_group_row_2: Row) -> Field:
-        return general_info_1A_group_row_2.field_set.create(name="District", cell="ProjLoc")
-
-    @pytest.fixture(autouse=True)
-    def district_4_value(self, district_field: Field) -> Value:
-        return district_field.value_set.create(
+        row_1.field_set.create(name="Project Name", cell="ProjName")
+        field_district = row_1.field_set.create(name="District", cell="1) Project Information!E2")
+        field_district.value_set.create(
             name="District 4 - Bay Area / Oakland",
             value="District 4",
         )
 
-    @pytest.fixture
-    def project_data_1A_group(self, subsection_1A: Subsection) -> Group:
-        return subsection_1A.group_set.create(
+    @pytest.fixture(autouse=True)
+    def group_1A_project_data(self, subsection_1A: Subsection) -> Group:
+        group = subsection_1A.group_set.create(
             name="Project Data",
             description="Configure project analysis settings.",
             position=2
         )
+        row_1 = group.row_set.create(position=1)
+        field_project_type = row_1.field_set.create(name="Project Type", cell="ProjType")
+        field_project_type.value_set.create(
+            name="General Highway",
+            value="    General Highway",
+        )
+
+        row_2 = group.row_set.create(position=2)
+        field_project_location = row_2.field_set.create(name="Project Location", cell="ProjLoc")
+        field_project_location.value_set.create(
+            name="NorCal",
+            value="2",
+        )
+
+        row_3 = group.row_set.create(position=3)
+        row_3.field_set.create(name="Length of Construction Period", cell="Construct", unit="years")
+
 
     @pytest.fixture
-    def project_data_1A_group_row(self, project_data_1A_group: Group) -> Row:
-        return project_data_1A_group.row_set.create(position=5)
+    def subsection_1B(self, section: Section) -> Subsection:
+        return section.subsection_set.create(
+            name="Highway Design and Traffic Data",
+            code="B",
+        )
 
     @pytest.fixture(autouse=True)
-    def length_peak_period_field(self, project_data_1A_group_row: Row) -> Field:
-        return project_data_1A_group_row.field_set.create(name="Length of Peak Period(s)", cell="1) Project Information!F17", unit="hours", position=1, display_type=FieldDisplayType.READ_ONLY)
+    def group_1B_highway_design(self, subsection_1B: Subsection) -> None:
+        group = subsection_1B.group_set.create(name="Highway Design", position=1)
+        column_group = group.columngroup_set.create()
+        column_no_build = column_group.column_set.create(name="No Build")
+        column_build = column_group.column_set.create(name="Build")
+
+        row_number_general_traffic_lanes = group.row_set.create(name="Number of General Traffic Lanes", position=1)
+        column_no_build.fieldcolumn_set.create(field = row_number_general_traffic_lanes.field_set.create(name="Number of General Traffic Lanes No Build", cell="GenLanesNB"))
+        column_build.fieldcolumn_set.create(field=row_number_general_traffic_lanes.field_set.create(name="Number of General Traffic Lanes Build", cell="GenLanesB"))
+
+        row_number_hov = group.row_set.create(name="Number of HOV/HOT Lanes", position=2)
+        column_no_build.fieldcolumn_set.create(field=row_number_hov.field_set.create(name="Number of HOV/HOT Lanes No Build", cell="HOVLanesNB"))
+        column_build.fieldcolumn_set.create(field=row_number_hov.field_set.create(name="Number of HOV/HOT Lanes Build", cell="HOVLanesB"))
+
+        row_hov_restriction = group.row_set.create(name="HOV Restriction", position=3)
+        column_no_build.fieldcolumn_set.create(field=row_hov_restriction.field_set.create(name="HOV Restriction No Build", cell="HOVRest"))
+
+        row_highway_freeflow = group.row_set.create(name="Highway Free-Flow Speed", position=4)
+        column_no_build.fieldcolumn_set.create(field=row_highway_freeflow.field_set.create(name="Highway Free-Flow Speed No Build", cell="FFSpeedNB"))
+
+        row_highway_segment_length = group.row_set.create(name="Highway Segment Length", position=5)
+        column_no_build.fieldcolumn_set.create(field=row_highway_segment_length.field_set.create(name="Highway Segment Length No Build", cell="SegmentNB"))
+
+    @pytest.fixture(autouse=True)
+    def group_1B_average_daily_traffic(self, subsection_1B: Subsection) -> None:
+        group = subsection_1B.group_set.create(name="Average Daily Traffic", position=2)
+        column_group = group.columngroup_set.create()
+        column_no_build = column_group.column_set.create(name="No Build")
+        column_build = column_group.column_set.create(name="Build")
+
+        row_current = group.row_set.create(name="Current", position=1)
+        row_current.field_set.create(name="Current", cell="ADT0")
+
+        row_base = group.row_set.create(name="Base (Year 1)", position=2)
+        column_no_build.fieldcolumn_set.create(field=row_base.field_set.create(name="Base No Build", cell="ADT1NB"))
+        column_build.fieldcolumn_set.create(field=row_base.field_set.create(name="Base Build", cell="ADT1B"))
+
+        row_forecast = group.row_set.create(name="Forecast (Year 20)", position=3)
+        column_no_build.fieldcolumn_set.create(field=row_forecast.field_set.create(name="Forecast No Build", cell="ADT20NB"))
+        column_build.fieldcolumn_set.create(field=row_forecast.field_set.create(name="Forecast Build", cell="ADT20B"))
 
     @pytest.fixture
     def subsection_1E(self, section: Section) -> Subsection:
         return section.subsection_set.create(name="Project Costs", code="E", guide="Subsection 1E Help")
 
-    @pytest.fixture
-    def summary_1E_group(self, subsection_1E: Subsection) -> Group:
-        return subsection_1E.group_set.create(name="Summary", is_summary=True)
-
-    @pytest.fixture
-    def summary_1E_group_row(self, summary_1E_group: Group) -> Row:
-        return summary_1E_group.row_set.create()
+    @pytest.fixture(autouse=True)
+    def group_1E_summary(self, subsection_1E: Subsection) -> None:
+        group = subsection_1E.group_set.create(name="Summary", is_summary=True)
+        row = group.row_set.create()
+        row.field_set.create(name="Total Project Support", cell="1) Project Information!W44", unit="$", position=1)
+        row.field_set.create(name="Total Construction", cell="1) Project Information!Y44", unit="$", position=2)
 
     @pytest.fixture(autouse=True)
-    def total_project_support_summary_field(self, summary_1E_group_row: Row) -> Field:
-        return summary_1E_group_row.field_set.create(name="Total Project Support", cell="1) Project Information!W44", unit="$", position=1)
+    def group_1E_costs(self, subsection_1E: Subsection) -> None:
+        group = subsection_1E.group_set.create(name="Construction Period Costs", guide="Construction Period Costs Instructions")
+        column_group_direct_initial = group.columngroup_set.create(name="Direct Project Initial Costs", position=1)
+        column_project_support = column_group_direct_initial.column_set.create(name="Project Support", position=1)
+        column_construction = column_group_direct_initial.column_set.create(name="Construction", position=2)
+        column_group_costs = group.columngroup_set.create(name="Costs (in Dollars)", position=2)
+        column_constant_dollars = column_group_costs.column_set.create(name="Constant Dollars", position=1)
+        column_present_value = column_group_costs.column_set.create(name="Present Value", position=2)
 
-    @pytest.fixture(autouse=True)
-    def total_construction_summary_field(self, summary_1E_group_row: Row) -> Field:
-        return summary_1E_group_row.field_set.create(name="Total Construction", cell="1) Project Information!Y44", unit="$", position=2)
-
-    @pytest.fixture
-    def costs_1E_group(self, subsection_1E: Subsection) -> Group:
-        return subsection_1E.group_set.create(name="Construction Period Costs", guide="Construction Period Costs Instructions")
-
-    @pytest.fixture(autouse=True)
-    def costs_1E_group_project_column_group(self, costs_1E_group: Group) -> ColumnGroup:
-        return costs_1E_group.columngroup_set.create(name="Direct Project Initial Costs", position=1)
-
-    @pytest.fixture
-    def costs_1E_group_project_column(self, costs_1E_group_project_column_group: ColumnGroup) -> Column:
-        return costs_1E_group_project_column_group.column_set.create(name="Project Support", position=1)
-
-    @pytest.fixture
-    def costs_1E_group_construction_column(self, costs_1E_group_project_column_group: ColumnGroup) -> Column:
-        return costs_1E_group_project_column_group.column_set.create(name="Construction", position=2)
-
-    @pytest.fixture
-    def costs_1E_group_costs_column_group(self, costs_1E_group: Group) -> ColumnGroup:
-        return costs_1E_group.columngroup_set.create(name="Costs (in Dollars)", position=2)
-
-    @pytest.fixture
-    def costs_1E_group_constant_column(self, costs_1E_group_costs_column_group: ColumnGroup) -> Column:
-        return costs_1E_group_costs_column_group.column_set.create(name="Constant Dollars", position=1)
-
-    @pytest.fixture
-    def costs_1E_group_present_column(self, costs_1E_group_costs_column_group: ColumnGroup) -> Column:
-        return costs_1E_group_costs_column_group.column_set.create(name="Present Value", position=2)
-
-    @pytest.fixture
-    def costs_1E_group_year_1_row(self, costs_1E_group: Group) -> Row:
-        return costs_1E_group.row_set.create(name="Yr 1", position=1)
-
-    @pytest.fixture(autouse=True)
-    def year_one_project_support_field(self, costs_1E_group_year_1_row: Row, costs_1E_group_project_column: Column) -> Field:
-        field = costs_1E_group_year_1_row.field_set.create(name="Project Support Year 1", cell="1) Project Information!W15", position=1, display_type=FieldDisplayType.REQUIRED)
-        costs_1E_group_project_column.fieldcolumn_set.create(field=field)
-        return field
-
-    @pytest.fixture(autouse=True)
-    def year_one_construction_field(self, costs_1E_group_year_1_row: Row, costs_1E_group_construction_column: Column) -> Field:
-        field = costs_1E_group_year_1_row.field_set.create(name="Construction Year 1", cell="1) Project Information!Y15", position=2, display_type=FieldDisplayType.REQUIRED)
-        costs_1E_group_construction_column.fieldcolumn_set.create(field=field)
-        return field
-
-    @pytest.fixture(autouse=True)
-    def year_one_constant_field(self, costs_1E_group_year_1_row: Row, costs_1E_group_constant_column: Column) -> Field:
-        field = costs_1E_group_year_1_row.field_set.create(name="Constant Dollars Year 1", cell="1) Project Information!AD15", position=3, unit="$", display_type=FieldDisplayType.READ_ONLY)
-        costs_1E_group_constant_column.fieldcolumn_set.create(field=field)
-        return field
-
-    @pytest.fixture(autouse=True)
-    def year_one_present_field(self, costs_1E_group_year_1_row: Row, costs_1E_group_present_column: Column) -> Field:
-        field = costs_1E_group_year_1_row.field_set.create(name="Present Value Year 1", cell="1) Project Information!AE15", position=4, unit="$", display_type=FieldDisplayType.READ_ONLY)
-        costs_1E_group_present_column.fieldcolumn_set.create(field=field)
-        return field
-
-    @pytest.fixture
-    def costs_1E_group_year_2_row(self, costs_1E_group: Group) -> Row:
-        return costs_1E_group.row_set.create(name="Yr 2", position=2)
-
-    @pytest.fixture(autouse=True)
-    def year_two_project_support_field(self, costs_1E_group_year_2_row: Row, costs_1E_group_project_column: Column) -> Field:
-        field = costs_1E_group_year_2_row.field_set.create(name="Project Support Year 2", cell="1) Project Information!W16", position=1, display_type=FieldDisplayType.NOT_REQUIRED)
-        costs_1E_group_project_column.fieldcolumn_set.create(field=field)
-        return field
-
-    @pytest.fixture(autouse=True)
-    def year_two_construction_field(self, costs_1E_group_year_2_row: Row, costs_1E_group_construction_column: Column) -> Field:
-        field = costs_1E_group_year_2_row.field_set.create(name="Construction Year 2", cell="1) Project Information!Y16", position=2, display_type=FieldDisplayType.NOT_REQUIRED)
-        costs_1E_group_construction_column.fieldcolumn_set.create(field=field)
-        return field
-
-    @pytest.fixture(autouse=True)
-    def year_two_constant_field(self, costs_1E_group_year_2_row: Row, costs_1E_group_constant_column: Column) -> Field:
-        field = costs_1E_group_year_2_row.field_set.create(name="Constant Dollars Year 2", cell="1) Project Information!AD16", position=3, unit="$", display_type=FieldDisplayType.READ_ONLY)
-        costs_1E_group_constant_column.fieldcolumn_set.create(field=field)
-        return field
-
-    @pytest.fixture(autouse=True)
-    def year_two_present_field(self, costs_1E_group_year_2_row: Row, costs_1E_group_present_column: Column) -> Field:
-        field = costs_1E_group_year_2_row.field_set.create(name="Present Value Year 2", cell="1) Project Information!AE16", position=4, unit="$", display_type=FieldDisplayType.READ_ONLY)
-        costs_1E_group_present_column.fieldcolumn_set.create(field=field)
-        return field
+        row = group.row_set.create(name="Yr 1", position=1)
+        field_project_support_yr_1 = row.field_set.create(name="Project Support Year 1", cell="1) Project Information!W15", position=1, display_type=FieldDisplayType.REQUIRED)
+        column_project_support.fieldcolumn_set.create(field=field_project_support_yr_1)
+        field_construction_yr_1 = row.field_set.create(name="Construction Year 1", cell="1) Project Information!Y15", position=2, display_type=FieldDisplayType.REQUIRED)
+        column_construction.fieldcolumn_set.create(field=field_construction_yr_1)
+        field_constant_dollars_yr_1 = row.field_set.create(name="Constant Dollars Year 1", cell="1) Project Information!AD15", position=3, unit="$", display_type=FieldDisplayType.READ_ONLY)
+        column_constant_dollars.fieldcolumn_set.create(field=field_constant_dollars_yr_1)
+        field_present_value_yr_1 = row.field_set.create(name="Present Value Year 1", cell="1) Project Information!AE15", position=4, unit="$", display_type=FieldDisplayType.READ_ONLY)
+        column_present_value.fieldcolumn_set.create(field=field_present_value_yr_1)
 
     @pytest.fixture
     def section_3(self, version: Version) -> Section:
@@ -245,113 +203,124 @@ class TestProjectSystem:
     def subsection_3(self, section_3: Section) -> Subsection:
         return section_3.subsection_set.create(code=" ", name="Investment Analysis")
 
-    @pytest.fixture
-    def summary_3_group(self, subsection_3: Subsection) -> Group:
-        return subsection_3.group_set.create(name="Summary", is_summary=True)
-
-    @pytest.fixture
-    def summary_3_row(self, summary_3_group: Group) -> Row:
-        return summary_3_group.row_set.create()
-
     @pytest.fixture(autouse=True)
-    def summary_life_cycle_field(self, summary_3_row: Row) -> Field:
-        return summary_3_row.field_set.create(name="Life-Cycle Costs (mil. $)", cell="3) Results!H13", unit="$")
+    def group_3_summary(self, subsection_3: Subsection) -> None:
+        group = subsection_3.group_set.create(name="Investment Analysis Summary", is_summary=True)
+        row = group.row_set.create()
+        row.field_set.create(name="Life-Cycle Costs (mil. $)", cell="3) Results!H13", unit="$", display_type=FieldDisplayType.READ_ONLY)
+        row.field_set.create(name="Life-Cycle Benefits (mil. $)", cell="3) Results!H14", unit="$", display_type=FieldDisplayType.READ_ONLY)
+        row.field_set.create(name="Benefit / Cost Ratio", cell="BeneCostRatio", display_type=FieldDisplayType.READ_ONLY)
 
-    def test_projects(self, first_page: Page, second_page: Page, channels_live_server: ChannelsLiveServer):
-        first_page.goto(channels_live_server.http_url)
-        expect(first_page.locator("body")).to_contain_text("My Cal B/C Projects")
+    def test_projects(self, first_window: Page, second_window: Page, channels_live_server: ChannelsLiveServer):
+        first_window.goto(channels_live_server.http_url)
+        expect(first_window.locator("body")).to_contain_text("My Cal B/C Projects")
 
-        second_page.goto(channels_live_server.http_url)
-        expect(second_page.locator("body")).to_contain_text("My Cal B/C Projects")
-        expect(first_page.locator("body")).to_contain_text("0 projects")
+        second_window.goto(channels_live_server.http_url)
+        expect(second_window.locator("body")).to_contain_text("My Cal B/C Projects")
+        expect(first_window.locator("body")).to_contain_text("0 projects")
 
-        first_page.get_by_role("link", name="New project").click()
-        first_page.get_by_role("button", name="Start project").click()
-        expect(first_page.locator("h1")).to_contain_text("1A. Project Data")
-        expect(first_page.locator("h2").first).to_contain_text("General Information")
-        expect(first_page.locator("body")).to_contain_text("This subsection contains the project data.")
-        expect(first_page.locator("body")).to_contain_text("All fields in this step are required.")
-        expect(first_page.locator("h2").nth(1)).to_contain_text("Project Data")
-        expect(first_page.locator("body")).to_contain_text("Configure project analysis settings.")
+        first_window.get_by_role("link", name="New project").click()
+        first_window.get_by_role("button", name="Start project").click()
+        expect(first_window.get_by_label("B/C Ratio")).to_contain_text("N/A")
+        expect(first_window.locator("h1")).to_contain_text("1A. Project Data")
+        expect(first_window.locator("h2").first).to_contain_text("General Information")
+        expect(first_window.locator("body")).to_contain_text("This subsection contains the project data.")
+        expect(first_window.locator("body")).to_contain_text("All fields in this step are required.")
+        expect(first_window.locator("h2").nth(1)).to_contain_text("Project Data")
+        expect(first_window.locator("body")).to_contain_text("Configure project analysis settings.")
 
-        first_page.get_by_label("Project Name").click()
-        expect(first_page.locator("body")).to_contain_text("Enter a descriptive name for your project.")
-        expect(first_page.locator("dl dt").filter(has_text="Length of Peak Period(s)").locator("xpath=following-sibling::dd[1]")).to_contain_text("5 hours")
+        first_window.get_by_label("Project Name").click()
+        expect(first_window.locator("body")).to_contain_text("Enter a descriptive name for your project.")
 
-        first_page.get_by_role("button", name="Save draft").click()
-        expect(first_page.locator("body")).to_contain_text("Select District.")
+        first_window.get_by_role("button", name="Save draft").click()
+        expect(first_window.locator("body")).to_contain_text("Select District.")
 
-        expect(second_page.locator("body")).to_contain_text("Hypothetical Project", timeout=10_000)
-        first_page.get_by_label("Project Name").fill("Geary Boulevard Light Rail")
-        first_page.get_by_label("District").select_option("District 4 - Bay Area / Oakland")
-        first_page.get_by_role("button", name="Save draft").click()
-        expect(first_page.locator("body")).to_contain_text("Project successfully saved!")
-        expect(second_page.locator("body")).to_contain_text("Geary Boulevard Light Rail")
+        expect(second_window.locator("body")).to_contain_text("Hypothetical Project", timeout=10_000)
+        first_window.get_by_label("Project Name").fill("Geary Boulevard Light Rail")
+        first_window.get_by_label("District").select_option("District 4 - Bay Area / Oakland")
+        first_window.get_by_label("Project Type").select_option("General Highway")
+        first_window.get_by_label("Project Location").select_option("NorCal")
+        first_window.get_by_label("Length of Construction Period").fill("1")
+        first_window.get_by_role("button", name="Save draft").click()
+        expect(first_window.locator("body")).to_contain_text("Project successfully saved!")
+        expect(second_window.locator("body")).to_contain_text("Geary Boulevard Light Rail")
 
-        first_page.get_by_label("Project Name").fill("New Geary Boulevard Light Rail", timeout=10_000)
-        first_page.get_by_role("button", name="Continue to Subsection 1E").click()
-        expect(first_page.locator("body")).to_contain_text("Project successfully saved!")
+        first_window.get_by_label("Project Name").fill("New Geary Boulevard Light Rail", timeout=10_000)
+        first_window.get_by_role("button", name="Continue to Subsection 1B").click()
+        expect(first_window.locator("body")).to_contain_text("Project successfully saved!")
 
-        expect(second_page.locator("body")).to_contain_text("1 projects")
-        second_page.get_by_role("link", name="Edit").click()
-        expect(second_page.get_by_label("Project Name")).to_have_value("New Geary Boulevard Light Rail")
+        expect(second_window.locator("body")).to_contain_text("1 projects")
+        second_window.get_by_role("link", name="Edit").click()
+        expect(second_window.get_by_label("Project Name")).to_have_value("New Geary Boulevard Light Rail")
 
-        expect(first_page.get_by_text("Subsection 1E Help")).not_to_be_visible()
-        first_page.get_by_role("button", name="Show subsection guide").click()
-        expect(first_page.get_by_text("Subsection 1E Help")).to_be_visible()
-        first_page.get_by_role("button", name="close").click()
+        first_window.get_by_label("Number of General Traffic Lanes No Build").fill("10")
+        first_window.get_by_label("Number of General Traffic Lanes Build").fill("4")
+        first_window.get_by_label("Number of HOV/HOT Lanes No Build").fill("0")
+        first_window.get_by_label("Number of HOV/HOT Lanes Build").fill("2")
+        first_window.get_by_label("HOV Restriction No Build").fill("3")
+        first_window.get_by_label("Highway Free-Flow Speed No Build").fill("55")
+        first_window.get_by_label("Highway Segment Length No Build").fill("30")
 
-        expect(first_page.get_by_text("Construction Period Costs Instructions")).not_to_be_visible()
-        first_page.get_by_role("button", name="Show group Construction Period Costs guide").click()
-        expect(first_page.get_by_text("Construction Period Costs Instructions")).to_be_visible()
-        first_page.get_by_role("button", name="close").click()
+        first_window.get_by_label("Current").fill("500000")
+        first_window.get_by_label("Base No Build").fill("500000")
+        first_window.get_by_label("Base Build").fill("300000")
+        first_window.get_by_label("Forecast No Build").fill("600000")
+        first_window.get_by_label("Forecast Build").fill("400000")
 
-        expect(first_page.locator("dl dt").filter(has_text="Total Project Support").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
-        expect(first_page.locator("dl dt").filter(has_text="Total Construction").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
-        expect(first_page.locator("body")).to_contain_text("Yr 1*")
-        expect(first_page.locator("dl dt").filter(has_text="Constant Dollars Year 1").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
-        expect(first_page.locator("dl dt").filter(has_text="Present Value Year 1").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
-        expect(first_page.locator("body")).to_contain_text("Yr 2")
-        expect(first_page.locator("dl dt").filter(has_text="Constant Dollars Year 2").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
-        expect(first_page.locator("dl dt").filter(has_text="Present Value Year 2").locator("xpath=following-sibling::dd[1]")).to_contain_text("$0")
+        first_window.get_by_role("button", name="Continue to Subsection 1E").click()
+        expect(first_window.locator("body")).to_contain_text("Project successfully saved!")
 
-        first_page.get_by_role("button", name="Back to Subsection 1A").click()
-        expect(first_page.locator("body")).to_contain_text("Enter Project Support Year 1, Enter Construction Year 1.")
+        expect(first_window.get_by_text("Subsection 1E Help")).not_to_be_visible()
+        first_window.get_by_role("button", name="Show subsection guide").click()
+        expect(first_window.get_by_text("Subsection 1E Help")).to_be_visible()
+        first_window.get_by_role("button", name="close").click()
 
-        first_page.get_by_label("Project Support Year 1").fill("10000")
-        first_page.get_by_label("Construction Year 1").fill("12000")
-        first_page.get_by_label("Project Support Year 2").fill("15000")
-        first_page.get_by_role("button", name="Save draft").click()
-        expect(first_page.locator("body")).to_contain_text("Project successfully saved!")
-        expect(first_page.locator("dl dt").filter(has_text="Total Project Support").locator("xpath=following-sibling::dd[1]")).to_contain_text("$25,000")
-        expect(first_page.locator("dl dt").filter(has_text="Total Construction").locator("xpath=following-sibling::dd[1]")).to_contain_text("$12,000")
-        expect(first_page.locator("dl dt").filter(has_text="Constant Dollars Year 1").locator("xpath=following-sibling::dd[1]")).to_contain_text("$22,000,000")
-        expect(first_page.locator("dl dt").filter(has_text="Present Value Year 1").locator("xpath=following-sibling::dd[1]")).to_contain_text("$22,000,000")
-        expect(first_page.locator("dl dt").filter(has_text="Constant Dollars Year 2").locator("xpath=following-sibling::dd[1]")).to_contain_text("$15,000,000")
-        expect(first_page.locator("dl dt").filter(has_text="Present Value Year 2").locator("xpath=following-sibling::dd[1]")).to_contain_text("$14,423,076.92")
+        expect(first_window.get_by_text("Construction Period Costs Instructions")).not_to_be_visible()
+        first_window.get_by_role("button", name="Show group Construction Period Costs guide").click()
+        expect(first_window.get_by_text("Construction Period Costs Instructions")).to_be_visible()
+        first_window.get_by_role("button", name="close").click()
 
-        first_page.get_by_role("button", name="Back to Subsection 1A").click()
-        expect(first_page.locator("body")).to_contain_text("Project successfully saved!")
+        expect(first_window.get_by_label("Total Project Support")).to_contain_text("$0")
+        expect(first_window.get_by_label("Total Construction")).to_contain_text("$0")
+        expect(first_window.locator("body")).to_contain_text("Yr 1*")
+        expect(first_window.get_by_label("Constant Dollars Year 1")).to_contain_text("$0")
+        expect(first_window.get_by_label("Present Value Year 1")).to_contain_text("$0")
 
-        first_page.get_by_role("button", name="1A - Project Data").click()
-        first_page.get_by_role("menuitem", name="1E. Project Costs").click()
-        expect(first_page.locator("dl dt").filter(has_text="Total Project Support").locator("xpath=following-sibling::dd[1]")).to_contain_text("25,000")
+        first_window.get_by_role("button", name="Back to Subsection 1B").click()
+        expect(first_window.locator("body")).to_contain_text("Enter Project Support Year 1, Enter Construction Year 1.")
 
-        first_page.get_by_role("button", name="Continue to Subsection 3").click()
-        expect(first_page.locator("body")).to_contain_text("Investment Analysis")
-        expect(first_page.locator("dl dt").filter(has_text="Life-Cycle Costs (mil. $)").locator(
-            "xpath=following-sibling::dd[1]")).to_contain_text("$36.42")
-        expect(first_page.get_by_role("link", name="Download Excel")).to_be_visible()
-        
-        first_page.get_by_role("link", name="Exit Project").click()
-        expect(first_page.locator("body")).to_contain_text("New Geary Boulevard Light Rail")
-        expect(first_page.locator("body")).to_contain_text("1 projects")
-        first_page.on("dialog", lambda dialog: dialog.accept())
-        first_page.get_by_role("button", name="Delete").click()
-        expect(first_page.locator("body")).to_contain_text("0 projects")
+        first_window.get_by_label("Project Support Year 1").fill("3000000")
+        first_window.get_by_label("Construction Year 1").fill("1")
 
-        first_page.get_by_role("button", name="User").click()
-        first_page.get_by_text("Sign out").click()
-        expect(first_page.locator("body")).to_contain_text("Sign in with Microsoft")
-        second_page.close()
-        first_page.close()
+        first_window.get_by_role("button", name="Save draft").click()
+        expect(first_window.locator("body")).to_contain_text("Project successfully saved!")
+
+        expect(first_window.get_by_label("Constant Dollars Year 1")).to_contain_text("$3,000,001,000")
+        expect(first_window.get_by_label("Present Value Year 1")).to_contain_text("$3,000,001,000")
+        expect(first_window.get_by_label("Total Project Support")).to_contain_text("$3,000,000")
+
+        first_window.get_by_role("button", name="1E - Project Costs").click()
+        first_window.get_by_role("menuitem", name="1A. Project Data").click()
+        first_window.get_by_role("button", name="1A - Project Data").click()
+        first_window.get_by_role("menuitem", name="1E. Project Costs").click()
+        first_window.get_by_role("button", name="Continue to Subsection 3").click()
+
+        expect(first_window.locator("body")).to_contain_text("Investment Analysis")
+        expect(first_window.get_by_label("Life-Cycle Costs")).to_contain_text("$3,000")
+        expect(first_window.get_by_label("Life-Cycle Benefits")).to_contain_text("$17,262.92")
+        expect(first_window.get_by_label("B/C Ratio")).to_contain_text("5.8")
+
+        expect(first_window.get_by_role("link", name="Download Excel")).to_be_visible()
+
+        first_window.get_by_role("link", name="Exit Project").click()
+        expect(first_window.locator("body")).to_contain_text("New Geary Boulevard Light Rail")
+        expect(first_window.locator("body")).to_contain_text("1 projects")
+        first_window.on("dialog", lambda dialog: dialog.accept())
+        first_window.get_by_role("button", name="Delete").click()
+        expect(first_window.locator("body")).to_contain_text("0 projects")
+
+        first_window.get_by_role("button", name="User").click()
+        first_window.get_by_text("Sign out").click()
+        expect(first_window.locator("body")).to_contain_text("Sign in with Microsoft")
+        second_window.close()
+        first_window.close()

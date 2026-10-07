@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models, transaction
+from django.tasks.base import TaskResultStatus
+from django_tasks_db.models import DBTaskResult
 
 from cal_bc.models.models.model import Field, Version
 
@@ -21,6 +23,10 @@ class Project(models.Model):
     @property
     def name(self):
         return self.value_set.filter(field__name="Project Name").first()
+
+    @property
+    def benefit_cost_ratio(self):
+        return self.value_set.filter(field__name="Benefit / Cost Ratio").first()
 
     @property
     def summary_value_set(self):
@@ -60,3 +66,22 @@ class Value(models.Model):
         with transaction.atomic():
             super().save(*args, **kwargs)
             transaction.on_commit(self.project.save)
+
+
+class RefreshTaskManager(models.Manager):
+   def active(self):
+     return self.filter(db_task_result__status=TaskResultStatus.READY) | self.filter(db_task_result__status=TaskResultStatus.RUNNING)
+
+
+class RefreshTask(models.Model):
+    project = models.ForeignKey(
+        Project, null=False, db_index=True, on_delete=models.CASCADE
+    )
+    db_task_result = models.ForeignKey(
+        DBTaskResult, null=False, db_index=True, on_delete=models.CASCADE
+    )
+
+    objects = RefreshTaskManager()
+
+    def __str__(self) -> None:
+        return f"RefreshTask #{self.id}"

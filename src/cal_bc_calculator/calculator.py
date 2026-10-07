@@ -67,7 +67,15 @@ class BytesCalculator:
 
     def write(self, cell_values: dict[str, any]) -> None:
         for key, value in cell_values.items():
-            self._values[key] = value
+            if type(value) is not str:
+                self._values[key] = value
+            elif value.isdigit():
+                self._values[key] = int(value)
+            else:
+                try:
+                    self._values[key] = float(value)
+                except ValueError:
+                    self._values[key] = value
 
     def evaluate(self, cells: list[str]) -> list[any]:
         workbook = formualizer.load_workbook_bytes(self.to_bytes(), backend="umya")

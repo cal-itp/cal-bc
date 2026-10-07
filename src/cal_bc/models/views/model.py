@@ -31,6 +31,12 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
     model = Project
     fields = []
 
+    def refresh_project(self) -> None:
+        with transaction.atomic():
+            result = refresh_project_fields.enqueue(project_pk=self.object.pk)
+            if hasattr(result, 'db_result'):
+                transaction.on_commit(partial(self.object.refreshtask_set.create, db_task_result=result.db_result))
+
     def form_valid(self, form):
         form.instance.user = self.request.user
         form.instance.version = Version.objects.get(pk=self.kwargs["pk"])
@@ -41,7 +47,7 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
             ).exclude(display_type=FieldDisplayType.READ_ONLY).exclude(row__group__is_summary=True)
             objs = [Value(project=self.object, field=f) for f in field_set]
             transaction.on_commit(partial(Value.objects.bulk_create, objs=objs, ignore_conflicts=True))
-            transaction.on_commit(partial(refresh_project_fields.enqueue, project_pk=self.object.pk))
+            transaction.on_commit(self.refresh_project)
             return result
 
     def get_success_url(self):
