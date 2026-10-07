@@ -2,7 +2,15 @@ import pytest
 from django.contrib.auth.models import User
 from django.test.client import Client
 from django.urls import reverse_lazy
-from unbrowsed import parse_html, query_by_label_text, query_by_role, query_by_text
+from django_tasks import TaskResultStatus
+from django_tasks_db.models import DBTaskResult
+from unbrowsed import (
+    Result,
+    parse_html,
+    query_by_label_text,
+    query_by_role,
+    query_by_text,
+)
 
 from cal_bc.models.models.model import (
     Column,
@@ -16,9 +24,16 @@ from cal_bc.models.models.model import (
     Subsection,
     Version,
 )
-from cal_bc.projects.models.project import Project
+from cal_bc.projects.models.project import Project, RefreshTask
 from cal_bc.projects.models.project import Value as ProjectValue
 
+
+def query_by_aria_label(dom, text: str):
+    matches = [
+        e for e in dom.css('[aria-labelledby]')
+        if dom.css_first(f"#{e.attributes['aria-labelledby']}").text() == text
+    ]
+    return Result(matches[0])
 
 @pytest.mark.django_db(transaction=True)
 class TestProjectSubsectionViews:
@@ -180,15 +195,15 @@ class TestProjectSubsectionViews:
         return field
 
     def test_subsection_edit(
-        self,
-        client: Client,
-        user: User,
-        project: Project,
-        version: Version,
-        subsection_1A: Subsection,
-        name_field: Field,
-        district_field: Field,
-        length_peak_period_field: Field,
+            self,
+            client: Client,
+            user: User,
+            project: Project,
+            version: Version,
+            subsection_1A: Subsection,
+            name_field: Field,
+            district_field: Field,
+            length_peak_period_field: Field,
     ):
         client.force_login(user)
         response = client.get(
@@ -210,18 +225,18 @@ class TestProjectSubsectionViews:
         assert query_by_text(dom, "Length of Peak Period(s)")
 
     def test_summary_table_subsection_edit(
-        self,
-        client: Client,
-        user: User,
-        project: Project,
-        version: Version,
-        subsection_1E: Subsection,
-        total_project_support_summary_field: Field,
-        total_construction_summary_field: Field,
-        year_one_project_support_field: Field,
-        year_one_construction_field: Field,
-        year_one_constant_field: Field,
-        year_one_present_field: Field,
+            self,
+            client: Client,
+            user: User,
+            project: Project,
+            version: Version,
+            subsection_1E: Subsection,
+            total_project_support_summary_field: Field,
+            total_construction_summary_field: Field,
+            year_one_project_support_field: Field,
+            year_one_construction_field: Field,
+            year_one_constant_field: Field,
+            year_one_present_field: Field,
     ):
         client.force_login(user)
         response = client.get(
@@ -246,15 +261,15 @@ class TestProjectSubsectionViews:
         assert query_by_text(dom, "Present Value Year 1")
 
     def test_subsection_edit_submission(
-        self,
-        client: Client,
-        user: User,
-        project: Project,
-        version: Version,
-        subsection_1A: Subsection,
-        name_field: Field,
-        district_field: Field,
-        length_peak_period_field: Field,
+            self,
+            client: Client,
+            user: User,
+            project: Project,
+            version: Version,
+            subsection_1A: Subsection,
+            name_field: Field,
+            district_field: Field,
+            length_peak_period_field: Field,
     ):
         client.force_login(user)
         response = client.post(
@@ -281,5 +296,47 @@ class TestProjectSubsectionViews:
         )
 
         assert ProjectValue.objects.filter(field=name_field)[0].value == "Testing"
-        assert ProjectValue.objects.filter(field=district_field)[0].value == "1.0"
+        assert ProjectValue.objects.filter(field=district_field)[0].value == "1"
         assert ProjectValue.objects.filter(field=length_peak_period_field)[0].value == "5.0"
+
+    def test_refreshing_project_has_a_spinner(self, client: Client, user: User, project: Project, subsection_1E: Subsection):
+        client.force_login(user)
+
+        db_task_result = DBTaskResult.objects.create(
+            args_kwargs={"args": [], "kwargs": {}},
+        )
+        db_task_result.status = TaskResultStatus.RUNNING
+        db_task_result.save()
+        RefreshTask.objects.create(project=project, db_task_result=db_task_result)
+
+        response = client.get(
+            reverse_lazy(
+                "project_subsection",
+                kwargs={"project_pk": project.pk, "pk": subsection_1E.pk},
+            )
+        )
+
+        assert response.status_code == 200
+        dom = parse_html(str(response.content))
+        assert query_by_aria_label(dom, "B/C Ratio").to_have_text_content("Running", exact=False)
+
+    def test_refreshed_project_has_updated_bc_value(self, client: Client, user: User, project: Project, subsection_1E: Subsection):
+        client.force_login(user)
+
+        db_task_result = DBTaskResult.objects.create(
+            args_kwargs={"args": [], "kwargs": {}},
+        )
+        db_task_result.status = TaskResultStatus.SUCCESSFUL
+        db_task_result.save()
+        RefreshTask.objects.create(project=project, db_task_result=db_task_result)
+
+        response = client.get(
+            reverse_lazy(
+                "project_subsection",
+                kwargs={"project_pk": project.pk, "pk": subsection_1E.pk},
+            )
+        )
+
+        assert response.status_code == 200
+        dom = parse_html(str(response.content))
+        assert query_by_aria_label(dom, "B/C Ratio").to_have_text_content("N/A", exact=False)

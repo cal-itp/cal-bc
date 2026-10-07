@@ -1,0 +1,8 @@
+{% load svg %}
+
+{% if project.refreshtask_set.active.count > 0 %}
+    <span class="sr-only">{{ project.refreshtask_set.active.first.db_task_result.status|title }}</span>
+    {% svg "projects/progress_circle" class="inline-block size-6 animate-spin text-white"  %}
+{% else %}
+    {% firstof project.benefit_cost_ratio|floatformat:-1 "N/A" %}
+{% endif %}

@@ -81,13 +81,20 @@ class ProjectSubsectionView(
         kwargs["extra"] = self.extra_field_set().count()
         return kwargs
 
+    def refresh_project(self, project: Project, subsection: Subsection) -> None:
+        with transaction.atomic():
+            transaction.on_commit(partial(refresh_channel.enqueue, channel_name=f"user_{project.user_id}_projects"))
+            transaction.on_commit(partial(refresh_channel.enqueue, channel_name=f"user_{project.user_id}_project_{project.pk}_subsection_{subsection.pk}"))
+            result = refresh_project_fields.enqueue(project_pk=project.pk)
+            if hasattr(result, 'db_result'):
+                transaction.on_commit(partial(self.object.refreshtask_set.create, db_task_result=result.db_result))
+            result = refresh_project_fields.enqueue(project_pk=project.pk)
+
     def formset_valid(self, formset):
         project = get_object_or_404(Project, pk=self.kwargs["project_pk"])
         subsection = get_object_or_404(Subsection, pk=self.kwargs["pk"])
         with transaction.atomic():
-            transaction.on_commit(partial(refresh_channel.enqueue, channel_name=f"user_{project.user_id}_projects"))
-            transaction.on_commit(partial(refresh_channel.enqueue, channel_name=f"user_{project.user_id}_project_{project.pk}_subsection_{subsection.pk}"))
-            transaction.on_commit(partial(refresh_project_fields.enqueue, project_pk=project.pk))
+            transaction.on_commit(partial(self.refresh_project, project=project, subsection=subsection))
             return super().formset_valid(formset)
 
     def get_success_url(self):

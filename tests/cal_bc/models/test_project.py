@@ -1,5 +1,7 @@
 import pytest
 from django.contrib.auth.models import User
+from django.tasks.base import TaskResultStatus
+from django_tasks_db.models import DBTaskResult
 
 from cal_bc.models.models.model import (
     Field,
@@ -10,7 +12,7 @@ from cal_bc.models.models.model import (
     Subsection,
     Version,
 )
-from cal_bc.projects.models.project import Project, Value
+from cal_bc.projects.models.project import Project, RefreshTask, Value
 
 
 @pytest.mark.django_db(transaction=True)
@@ -25,7 +27,7 @@ class TestProject:
 
     @pytest.fixture
     def version(self, model: Model) -> Version:
-        return model.version_set.create(name="1", url="https://example.com")
+        return model.version_set.create(name="1", url="https://dot.ca.gov/-/media/dot-media/programs/transportation-planning/documents/new-state-planning/transportation-economics/cal-bc/2023-cal-bc/2023-non-federal-model/cal-bc-8-1-sketch-a11y.xlsm")
 
     @pytest.fixture
     def project(self, user: User, version: Version) -> Project:
@@ -83,3 +85,37 @@ class TestProject:
 
     def test_summary_value_set(self, project: Project, summary_value: Value) -> None:
         assert list(project.summary_value_set) == [summary_value]
+
+    def test_ready_project_refresh_task_is_active(self, project: Project) -> None:
+        db_task_result = DBTaskResult.objects.create(
+            args_kwargs={"args": [["exit", "1"]], "kwargs": {}},
+        )
+        refresh_task = RefreshTask.objects.create(project=project, db_task_result=db_task_result)
+        assert list(project.refreshtask_set.active().all()) == [refresh_task]
+
+    def test_processing_project_refresh_task_is_active(self, project: Project) -> None:
+        db_task_result = DBTaskResult.objects.create(
+            args_kwargs={"args": [["exit", "1"]], "kwargs": {}},
+        )
+        db_task_result.status = TaskResultStatus.RUNNING
+        db_task_result.save()
+        refresh_task = RefreshTask.objects.create(project=project, db_task_result=db_task_result)
+        assert list(project.refreshtask_set.active().all()) == [refresh_task]
+
+    def test_failed_project_refresh_task_is_not_active(self, project: Project) -> None:
+        db_task_result = DBTaskResult.objects.create(
+            args_kwargs={"args": [["exit", "1"]], "kwargs": {}},
+        )
+        db_task_result.status = TaskResultStatus.FAILED
+        db_task_result.save()
+        RefreshTask.objects.create(project=project, db_task_result=db_task_result)
+        assert list(project.refreshtask_set.active().all()) == []
+
+    def test_successful_project_refresh_task_is_not_active(self, project: Project) -> None:
+        db_task_result = DBTaskResult.objects.create(
+            args_kwargs={"args": [["exit", "1"]], "kwargs": {}},
+        )
+        db_task_result.status = TaskResultStatus.SUCCESSFUL
+        db_task_result.save()
+        RefreshTask.objects.create(project=project, db_task_result=db_task_result)
+        assert list(project.refreshtask_set.active().all()) == []

@@ -92,7 +92,15 @@ class TestProjectTasks:
         assert result.status == TaskResultStatus.SUCCESSFUL
         assert project.value_set.get(field=formula_field).value == "35.0"
 
-    def test_refresh_project_fields_does_not_write_summary_values(self, project: Project, row: Row, summary_row: Row) -> None:
+    def test_refresh_project_fields_preserves_choices(self, project: Project, row: Row) -> None:
+        location_field = row.field_set.create(name="Project Location", cell="ProjLoc")
+        location_field.value_set.create(name="name", value="2")
+        project.value_set.create(field=location_field, value="2")
+        result = refresh_project_fields.enqueue(project.pk)
+        assert result.status == TaskResultStatus.SUCCESSFUL
+        assert project.value_set.get(field=location_field).value == "2"
+
+    def test_refresh_project_fields_recalculates_readonly_fields(self, project: Project, row: Row, summary_row: Row) -> None:
         year1_field = row.field_set.create(name="Mitigation Year 1", cell="1) Project Information!AB15", display_type=FieldDisplayType.REQUIRED)
         year2_field = row.field_set.create(name="Mitigation Year 2", cell="1) Project Information!AB16", display_type=FieldDisplayType.NOT_REQUIRED)
         summary_field = summary_row.field_set.create(name="Mitigation Total", cell="1) Project Information!AB44", display_type=FieldDisplayType.REQUIRED)

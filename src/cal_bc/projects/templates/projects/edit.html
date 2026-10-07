@@ -77,8 +77,10 @@
                     {% partial subsection-description %}
                 </div>
 
-                <section hx-ext="ws" hx-ws:connect="/ws{% url 'project_subsection' project_pk=object.pk pk=subsection.pk %}" hx-target="this" hx-swap="innerMorph">
-                    {% include "projects/_form.html" with title="Edit Project" %}
+                <section>
+                    <div hx-ext="ws" hx-ws:connect="/ws{% url 'project_subsection' project_pk=object.pk pk=subsection.pk %}" hx-target="this" hx-swap="innerMorph">
+                        {% include "projects/_form.html" with title="Edit Project" %}
+                    </div>
                 </section>
                 {% endif %}
 
