@@ -88,7 +88,6 @@ class ProjectSubsectionView(
             result = refresh_project_fields.enqueue(project_pk=project.pk)
             if hasattr(result, 'db_result'):
                 transaction.on_commit(partial(self.object.refreshtask_set.create, db_task_result=result.db_result))
-            result = refresh_project_fields.enqueue(project_pk=project.pk)
 
     def formset_valid(self, formset):
         project = get_object_or_404(Project, pk=self.kwargs["project_pk"])
