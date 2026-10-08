@@ -82,6 +82,7 @@ INSTALLED_APPS = [
     "extra_views",
     "django_prose_editor",
     "django_tasks_db",
+    "django_tasks_db_async",
     "channels_postgres",
     "taggit",
     "django_cotton",
