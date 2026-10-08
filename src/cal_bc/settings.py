@@ -81,7 +81,6 @@ INSTALLED_APPS = [
     "nested_admin",
     "extra_views",
     "django_prose_editor",
-    "django_tasks",
     "django_tasks_db",
     "channels_postgres",
     "taggit",

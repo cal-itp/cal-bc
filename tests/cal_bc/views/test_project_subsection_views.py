@@ -1,8 +1,8 @@
 import pytest
 from django.contrib.auth.models import User
+from django.tasks import TaskResultStatus
 from django.test.client import Client
 from django.urls import reverse_lazy
-from django_tasks import TaskResultStatus
 from django_tasks_db.models import DBTaskResult
 from unbrowsed import (
     Result,
