@@ -71,3 +71,4 @@ class TestProjectValueViews:
         assert response.status_code == 200
         dom = parse_html(response.content)
         assert query_by_text(dom, "Monterey LRT")
+        
