@@ -5,7 +5,7 @@ start:
 	uv run manage.py runserver
 
 worker:
-	uv run manage.py db_worker
+	uv run manage.py db_async_worker
 
 tailwind:
 	uv run manage.py tailwind build

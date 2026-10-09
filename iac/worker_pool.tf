@@ -16,7 +16,7 @@ resource "google_cloud_run_v2_worker_pool" "cal-bc-staging-tasks" {
 
     containers {
       image   = "us-west2-docker.pkg.dev/cal-itp-data-infra-staging/ghcr/cal-itp/cal-bc/cal-bc:${var.image_tag}"
-      command = ["uv", "run", "--no-sync", "manage.py", "db_worker"]
+      command = ["uv", "run", "--no-sync", "manage.py", "db_async_worker"]
 
       resources {
         limits = {
