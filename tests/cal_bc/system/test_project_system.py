@@ -201,7 +201,7 @@ class TestProjectSystem:
 
     @pytest.fixture
     def subsection_3(self, section_3: Section) -> Subsection:
-        return section_3.subsection_set.create(code=" ", name="Investment Analysis")
+        return section_3.subsection_set.create(code="A", name="Investment Analysis")
 
     @pytest.fixture(autouse=True)
     def group_3_summary(self, subsection_3: Subsection) -> None:
@@ -210,6 +210,9 @@ class TestProjectSystem:
         row.field_set.create(name="Life-Cycle Costs (mil. $)", cell="3) Results!H13", unit="$", display_type=FieldDisplayType.READ_ONLY)
         row.field_set.create(name="Life-Cycle Benefits (mil. $)", cell="3) Results!H14", unit="$", display_type=FieldDisplayType.READ_ONLY)
         row.field_set.create(name="Benefit / Cost Ratio", cell="BeneCostRatio", display_type=FieldDisplayType.READ_ONLY)
+        group_2 = subsection_3.group_set.create(name="Emissions Reduction")
+        row_2 = group_2.row_set.create()
+        row_2.field_set.create(name="Emission Cost Savings Passenger", cell="3) Results!O18", display_type=FieldDisplayType.READ_ONLY)
 
     def test_projects(self, first_window: Page, second_window: Page, channels_live_server: ChannelsLiveServer):
         first_window.goto(channels_live_server.http_url)
@@ -228,6 +231,16 @@ class TestProjectSystem:
         expect(first_window.locator("body")).to_contain_text("All fields in this step are required.")
         expect(first_window.locator("h2").nth(1)).to_contain_text("Project Data")
         expect(first_window.locator("body")).to_contain_text("Configure project analysis settings.")
+
+        first_window.get_by_role("button", name="1A - Project Data").click()
+        first_window.get_by_role("menuitem", name="3A. Investment Analysis").click()
+        expect(first_window.get_by_label("Life-Cycle Costs")).to_contain_text("$0")
+        expect(first_window.get_by_label("Life-Cycle Benefits")).to_contain_text("DIV/0")
+        expect(first_window.get_by_label("Benefit / Cost Ratio")).to_contain_text("N/A")
+        expect(first_window.get_by_label("Emission Cost Savings Passenger")).to_contain_text("N/A")
+
+        first_window.get_by_role("button", name="3A - Investment Analysis").click()
+        first_window.get_by_role("menuitem", name="1A. Project Data").click()
 
         first_window.get_by_label("Project Name").click()
         expect(first_window.locator("body")).to_contain_text("Enter a descriptive name for your project.")
