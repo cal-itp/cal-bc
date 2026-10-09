@@ -22,7 +22,13 @@ class Project(models.Model):
 
     @property
     def name(self):
-        return self.value_set.filter(field__name="Project Name").first()
+        if hasattr(self, "project_names"):
+            names = self.project_names
+        else:
+            names = self.value_set.project_names()
+
+        return names[0] if len(names) else {}
+
 
     @property
     def benefit_cost_ratio(self):
@@ -31,6 +37,11 @@ class Project(models.Model):
     @property
     def summary_value_set(self):
         return self.value_set.filter(field__row__group__is_summary=True).all()
+
+
+class ValueManager(models.Manager):
+    def project_names(self):
+        return self.filter(field__name="Project Name")
 
 
 class Value(models.Model):
@@ -47,6 +58,8 @@ class Value(models.Model):
     value = models.CharField(null=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    objects = ValueManager()
 
     class Meta:
         constraints = [

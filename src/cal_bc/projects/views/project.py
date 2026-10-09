@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Prefetch
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
@@ -6,7 +7,7 @@ from django.views.generic import DeleteView, ListView
 from django.views.generic.base import RedirectView
 
 from cal_bc.models.models.model import Subsection
-from cal_bc.projects.models.project import Project
+from cal_bc.projects.models.project import Project, Value
 
 
 class ProjectsView(LoginRequiredMixin, ListView):
@@ -15,7 +16,9 @@ class ProjectsView(LoginRequiredMixin, ListView):
     model = Project
 
     def get_queryset(self):
-        return self.request.user.project_set.all()
+        return self.request.user.project_set.select_related('version__model').prefetch_related(
+            Prefetch("value_set", queryset=Value.objects.project_names(), to_attr="project_names")
+        ).all()
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
