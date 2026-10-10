@@ -5,6 +5,9 @@ from django_tasks_db.models import DBTaskResult
 
 from cal_bc.models.models.model import Field, Version
 
+class ProjectManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().fetch_mode(models.FETCH_RAISE)
 
 class Project(models.Model):
     version = models.ForeignKey(
@@ -13,6 +16,8 @@ class Project(models.Model):
     user = models.ForeignKey(User, null=False, db_index=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, db_index=True)
+
+    objects = ProjectManager()
 
     class Meta:
         ordering = ["-updated_at"]
@@ -40,6 +45,9 @@ class Project(models.Model):
 
 
 class ValueManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().fetch_mode(models.FETCH_RAISE)
+
     def project_names(self):
         return self.filter(field__name="Project Name")
 
@@ -82,8 +90,11 @@ class Value(models.Model):
 
 
 class RefreshTaskManager(models.Manager):
-   def active(self):
-     return self.filter(db_task_result__status=TaskResultStatus.READY) | self.filter(db_task_result__status=TaskResultStatus.RUNNING)
+    def get_queryset(self):
+        return super().get_queryset().fetch_mode(models.FETCH_RAISE)
+
+    def active(self):
+      return self.filter(db_task_result__status=TaskResultStatus.READY) | self.filter(db_task_result__status=TaskResultStatus.RUNNING)
 
 
 class RefreshTask(models.Model):

@@ -2,6 +2,7 @@ from functools import partial
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
+from django.db.models import Prefetch
 from django.forms import BaseInlineFormSet
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
@@ -9,7 +10,7 @@ from extra_views import FormSetSuccessMessageMixin, InlineFormSetView
 
 from cal_bc.models.models.model import Field, FieldDisplayType, Subsection
 from cal_bc.projects.forms.project import ValueForm
-from cal_bc.projects.models.project import Project, Value
+from cal_bc.projects.models.project import Project, Value, RefreshTask
 from cal_bc.projects.tasks import refresh_project_fields
 from cal_bc.tasks import refresh_channel
 
@@ -47,11 +48,19 @@ class ProjectSubsectionView(
     success_message = "Project successfully saved!"
 
     def get_object(self):
-        return get_object_or_404(Project, pk=self.kwargs["project_pk"])
+        return get_object_or_404(
+            Project.objects.prefetch_related(
+                Prefetch('refreshtask_set', queryset=RefreshTask.objects.select_related('db_task_result'))
+            ),
+            pk=self.kwargs["project_pk"]
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["subsection"] = get_object_or_404(Subsection, pk=self.kwargs["pk"])
+        context["subsection"] = get_object_or_404(
+            Subsection.objects.prefetch_related('section__version__model'),
+            pk=self.kwargs["pk"]
+        )
         return context
 
     def extra_field_set(self):
@@ -69,7 +78,8 @@ class ProjectSubsectionView(
     def get_formset_kwargs(self):
         kwargs = super().get_formset_kwargs()
         kwargs["queryset"] = (
-            Value.objects.filter(project_id=self.kwargs["project_pk"])
+            Value.objects.select_related('field__fieldrange', 'field__row__group')
+            .filter(project_id=self.kwargs["project_pk"])
             .filter(field__row__group__subsection_id=self.kwargs["pk"])
             .exclude(field__display_type=FieldDisplayType.READ_ONLY)
             .exclude(field__row__group__is_summary=True)

@@ -2,6 +2,9 @@ from django.db import models
 from django_prose_editor.fields import ProseEditorField
 from taggit.managers import TaggableManager
 
+class Manager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().fetch_mode(models.FETCH_RAISE)
 
 class FieldDisplayType(models.IntegerChoices):
     REQUIRED = 1, "Required"
@@ -13,6 +16,8 @@ class Model(models.Model):
     name = models.CharField(null=False, blank=False, db_index=True)
     description = models.CharField(blank=True)
     tags = TaggableManager(ordering=["name"])
+
+    objects = Manager()
 
     class Meta:
         ordering = ["name"]
@@ -30,6 +35,8 @@ class Version(models.Model):
     name = models.CharField(null=False, blank=False, db_index=True)
     url = models.CharField(null=False, blank=False)
 
+    objects = Manager()
+
     class Meta:
         ordering = ["name"]
 
@@ -44,6 +51,8 @@ class Section(models.Model):
     version = models.ForeignKey(Version, null=False, on_delete=models.CASCADE)
     name = models.CharField(null=False, blank=False, db_index=True)
     code = models.CharField(null=False, blank=False, db_index=True)
+
+    objects = Manager()
 
     class Meta:
         ordering = ["code"]
@@ -77,6 +86,8 @@ class Subsection(models.Model):
             "ListItem": True,
         },
     )
+
+    objects = Manager()
 
     class Meta:
         ordering = ["section__code", "code"]
@@ -142,6 +153,8 @@ class Group(models.Model):
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
     is_summary = models.BooleanField(default=False, db_index=True)
 
+    objects = Manager()
+
     class Meta:
         ordering = ["position"]
 
@@ -194,6 +207,8 @@ class Row(models.Model):
             "ListItem": True,
         },
     )
+
+    objects = Manager()
 
     class Meta:
         ordering = ["position"]

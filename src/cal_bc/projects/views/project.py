@@ -33,7 +33,7 @@ class ProjectView(LoginRequiredMixin, RedirectView):
     permanent = False
 
     def get_redirect_url(self, *args, **kwargs):
-        project = get_object_or_404(Project, pk=kwargs["pk"])
+        project = get_object_or_404(Project.objects.select_related('version'), pk=kwargs["pk"])
         try:
             subsection = Subsection.objects.filter(section__version=project.version)[
                 0:1

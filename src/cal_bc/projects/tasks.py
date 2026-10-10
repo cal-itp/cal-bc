@@ -39,7 +39,7 @@ class RemoteWorkbook:
 
 @task
 def refresh_project_fields(project_pk: int) -> None:
-    project = Project.objects.get(id=project_pk)
+    project = Project.objects.select_related('version').get(id=project_pk)
 
     remote_workbook = RemoteWorkbook(url=project.version.url)
     cell_values = {
