@@ -24,8 +24,7 @@ from cal_bc.models.models.model import (
     Subsection,
     Version,
 )
-from cal_bc.projects.models.project import Project, RefreshTask
-from cal_bc.projects.models.project import Value as ProjectValue
+from cal_bc.projects.models.project import Calculation, Input, Project, RefreshTask
 
 
 def query_by_aria_label(dom, text: str):
@@ -87,6 +86,7 @@ class TestProjectSubsectionViews:
                 Enter a descriptive name for your project.
             """
         )
+
     @pytest.fixture
     def name_field(self, general_info_1A_group_row_1: Row) -> Field:
         return general_info_1A_group_row_1.field_set.create(name="Project Name", cell="ProjName")
@@ -98,8 +98,8 @@ class TestProjectSubsectionViews:
     @pytest.fixture
     def district_field(self, general_info_1A_group_row_2: Row) -> Field:
         field = general_info_1A_group_row_2.field_set.create(name="District", cell="ProjLoc")
-        field.value_set.create(name="District 1", value="1")
-        field.value_set.create(name="District 4", value="4")
+        field.choice_set.create(name="District 1", value="1")
+        field.choice_set.create(name="District 4", value="4")
         return field
 
     @pytest.fixture
@@ -295,9 +295,10 @@ class TestProjectSubsectionViews:
             kwargs={"project_pk": project.pk, "pk": subsection_1A.pk},
         )
 
-        assert ProjectValue.objects.filter(field=name_field)[0].value == "Testing"
-        assert ProjectValue.objects.filter(field=district_field)[0].value == "1"
-        assert ProjectValue.objects.filter(field=length_peak_period_field)[0].value == "5.0"
+        assert Input.objects.filter(field=name_field)[0].value == "Testing"
+        assert Input.objects.filter(field=district_field)[0].value == "1"
+        assert Input.objects.filter(field=length_peak_period_field).first() is None
+        assert Calculation.objects.filter(field=length_peak_period_field)[0].value == "5.0"
 
     def test_refreshing_project_has_a_spinner(self, client: Client, user: User, project: Project, subsection_1E: Subsection):
         client.force_login(user)

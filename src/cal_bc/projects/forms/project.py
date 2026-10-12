@@ -2,12 +2,12 @@ from django.core.exceptions import ValidationError
 from django.forms import CharField, ChoiceField, DecimalField, HiddenInput, ModelForm
 from django.utils.translation import gettext as _
 
-from cal_bc.projects.models.project import Value
+from cal_bc.projects.models.project import Input
 
 
-class ValueForm(ModelForm):
+class InputForm(ModelForm):
     class Meta:
-        model = Value
+        model = Input
         fields = ["value", "field"]
 
         labels = {
@@ -38,11 +38,11 @@ class ValueForm(ModelForm):
             field = kwargs["instance"].field
 
         if field:
-            values = field.value_set.all()
+            choices = field.choice_set.all()
 
-            if len(values):
+            if len(choices):
                 self.fields["value"] = ChoiceField(
-                    choices=[(None, ""), *[(v.value, v.name) for v in values]],
+                    choices=[(None, ""), *[(i.value, i.name) for i in choices]],
                     required=field.required,
                     error_messages={'required': f'Select {field.name}.'},
                 )

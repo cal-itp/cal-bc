@@ -12,7 +12,7 @@ from cal_bc.models.models.model import (
     Subsection,
     Version,
 )
-from cal_bc.projects.models.project import Project, RefreshTask, Value
+from cal_bc.projects.models.project import Calculation, Input, Project, RefreshTask
 
 
 @pytest.mark.django_db(transaction=True)
@@ -28,18 +28,6 @@ class TestProject:
     @pytest.fixture
     def version(self, model: Model) -> Version:
         return model.version_set.create(name="1", url="https://dot.ca.gov/-/media/dot-media/programs/transportation-planning/documents/new-state-planning/transportation-economics/cal-bc/2023-cal-bc/2023-non-federal-model/cal-bc-8-1-sketch-a11y.xlsm")
-
-    @pytest.fixture
-    def project(self, user: User, version: Version) -> Project:
-        return version.project_set.create(user=user)
-
-    @pytest.fixture
-    def value(self, project: Project, field: Field) -> Value:
-        return Value.objects.create(
-            project=project,
-            field=field,
-            value="Point Lobos Train"
-        )
 
     @pytest.fixture
     def section(self, version: Version) -> Section:
@@ -58,33 +46,52 @@ class TestProject:
         return group.row_set.create()
 
     @pytest.fixture
-    def field(self, row: Row) -> Field:
+    def project_name_field(self, row: Row) -> Field:
         return row.field_set.create(name="Project Name")
 
     @pytest.fixture
-    def summary_value(self, project: Project, subsection: Subsection) -> Value:
-        summary_group = subsection.group_set.create(name="General", is_summary=True)
-        summary_row = summary_group.row_set.create()
-        summary_field = summary_row.field_set.create(name="Cost Per Mile")
+    def summary_group(self, subsection: Subsection) -> Group:
+        return subsection.group_set.create(name="General", is_summary=True)
 
-        return Value.objects.create(
+    @pytest.fixture
+    def summary_row(self, summary_group: Group) -> Row:
+        return summary_group.row_set.create()
+
+    @pytest.fixture
+    def summary_field(self, summary_row: Row) -> Field:
+        return summary_row.field_set.create(name="Cost Per Mile")
+
+    @pytest.fixture
+    def summary_calculation(self, project: Project, summary_field: Field) -> Calculation:
+        return project.calculation_set.create(
             project=project,
             field=summary_field,
             value="333"
         )
 
+    @pytest.fixture
+    def project(self, user: User, version: Version) -> Project:
+        return version.project_set.create(user=user)
+
+    @pytest.fixture
+    def input(self, project: Project, project_name_field: Field) -> Input:
+        return project.input_set.create(
+            field=project_name_field,
+            value="Point Lobos Train"
+        )
+
     def test_default_name(self, project: Project) -> None:
         assert str(project) == "New Project"
 
-    def test_named_by_field(self, project: Project, field: Field) -> None:
-        Value.objects.create(project=project, field=field, value="Trails to Rails")
+    def test_named_by_field(self, project: Project, project_name_field: Field) -> None:
+        project.calculation_set.create(field=project_name_field, value="Trails to Rails")
         assert str(project) == "Trails to Rails"
 
-    def test_value_string_representation(self, value: Value) -> None:
-        assert str(value) == "Point Lobos Train"
+    def test_value_string_representation(self, input: Input) -> None:
+        assert str(input) == "Point Lobos Train"
 
-    def test_summary_value_set(self, project: Project, summary_value: Value) -> None:
-        assert list(project.summary_value_set) == [summary_value]
+    def test_summary_calculation_set(self, project: Project, summary_calculation: Calculation) -> None:
+        assert list(project.calculation_set.summary()) == [summary_calculation]
 
     def test_ready_project_refresh_task_is_active(self, project: Project) -> None:
         db_task_result = DBTaskResult.objects.create(

@@ -83,7 +83,7 @@ class TestProjectViews:
     @pytest.fixture
     def district_field(self, row: Row) -> Field:
         field = Field.objects.create(row=row, cell="ProjLoc", name="District")
-        field.value_set.create(name="District 1", value="1")
+        field.choice_set.create(name="District 1", value="1")
         return field
 
     def test_index(self, client: Client, user: User):

@@ -46,5 +46,5 @@ class Seed(seeds.seed.Seed):
 
         row_2, _ = self.group.row_set.get_or_create(position=2, defaults={"name": "Metering Strategy"})
         field_metering_strategy_peak, _ = row_2.field_set.get_or_create(name="Metering Strategy", defaults={"cell": "MeterStrat"})
-        field_metering_strategy_peak.value_set.get_or_create(value="1", defaults={"name": "1"})
+        field_metering_strategy_peak.choice_set.get_or_create(value="1", defaults={"name": "1"})
         self.column_peak.fieldcolumn_set.get_or_create(field=field_metering_strategy_peak)

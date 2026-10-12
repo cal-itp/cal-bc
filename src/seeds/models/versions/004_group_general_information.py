@@ -28,7 +28,7 @@ class Seed(seeds.seed.Seed):
 
         row_2, _ = self.group.row_set.get_or_create(position=2)
         field_state, _ = row_2.field_set.get_or_create(name="State", defaults={"cell": "1) Project Information!F2"})
-        field_state.value_set.get_or_create(name="California", defaults={"value": "California"})
+        field_state.choice_set.get_or_create(name="California", defaults={"value": "California"})
 
         field_district, _ = row_2.field_set.get_or_create(name="District", defaults={"cell": "1) Project Information!E2"})
-        field_district.value_set.get_or_create(name="District 1", defaults={"value": "1"})
+        field_district.choice_set.get_or_create(name="District 1", defaults={"value": "1"})

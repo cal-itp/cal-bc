@@ -287,7 +287,7 @@ class Field(models.Model):
         return self.display_type == FieldDisplayType.READ_ONLY or self.row.group.is_summary == True
 
 
-class Value(models.Model):
+class Choice(models.Model):
     field = models.ForeignKey(Field, null=False, on_delete=models.CASCADE)
     name = models.CharField(null=False, blank=False)
     value = models.CharField(null=False, blank=False)

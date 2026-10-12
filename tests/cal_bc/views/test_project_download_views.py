@@ -1,3 +1,4 @@
+from email.message import Message
 from io import BytesIO
 
 import pytest
@@ -15,9 +16,14 @@ from cal_bc.models.models.model import (
     Subsection,
     Version,
 )
-from cal_bc.projects.models.project import Project
-from cal_bc.projects.models.project import Value as ProjectValue
+from cal_bc.projects.models.project import Input, Project
 from cal_bc_calculator.calculator import BytesCalculator
+
+
+def get_filename(content_disposition_header: str) -> str:
+    msg = Message()
+    msg['content-disposition'] = content_disposition_header
+    return msg.get_filename()
 
 
 @pytest.mark.django_db(transaction=True)
@@ -158,35 +164,30 @@ class TestProjectDownloadViews:
         project_support_year_1_field: Field,
         total_costs_field: Field,
     ) -> None:
-        ProjectValue.objects.create(
+        Input.objects.create(
             project=project, field=name_field, value="Monterey LRT"
         )
-        ProjectValue.objects.create(
+        Input.objects.create(
             project=project, field=project_location_field, value="2"
         )
-        ProjectValue.objects.create(
+        Input.objects.create(
             project=project, field=construction_period_field, value="5"
         )
-        ProjectValue.objects.create(
+        Input.objects.create(
             project=project, field=one_two_way_field, value=""
         )
-        ProjectValue.objects.create(
+        Input.objects.create(
             project=project, field=roadway_no_build_field, value="C"
         )
-        ProjectValue.objects.create(
-            project=project, field=roadway_build_field, value="E"
-        )
-        ProjectValue.objects.create(
+        Input.objects.create(
             project=project, field=project_support_year_1_field, value="222"
-        )
-        ProjectValue.objects.create(
-            project=project, field=total_costs_field, value="333"
         )
         client.force_login(user)
         response = client.get(
             reverse_lazy("project_download", kwargs={"pk": project.pk})
         )
         assert response.status_code == 200
+        assert get_filename(response.headers['Content-Disposition']) == "cal-bc-8-1-sketch-a11y.xlsm"
         with BytesIO(b"".join(response.streaming_content)) as buffer:
             calculator = BytesCalculator(buffer.read())
         assert calculator.evaluate([

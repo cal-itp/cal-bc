@@ -2,6 +2,7 @@ import nested_admin
 from django.contrib import admin
 
 from cal_bc.models.models.model import (
+    Choice,
     Column,
     ColumnGroup,
     Field,
@@ -11,14 +12,13 @@ from cal_bc.models.models.model import (
     Row,
     Section,
     Subsection,
-    Value,
     Version,
 )
 
 admin.AdminSite.site_header = "Cal B/C Admin"
 
-class ValueInline(nested_admin.SortableHiddenMixin, nested_admin.NestedTabularInline):
-    model = Value
+class ChoiceInline(nested_admin.SortableHiddenMixin, nested_admin.NestedTabularInline):
+    model = Choice
     extra = 0
 
 
@@ -41,7 +41,7 @@ class FieldRangeInline(nested_admin.NestedTabularInline):
 
 class FieldInline(nested_admin.SortableHiddenMixin, nested_admin.NestedStackedInline):
     model = Field
-    inlines = [FieldColumnInline, FieldRangeInline, ValueInline]
+    inlines = [FieldColumnInline, FieldRangeInline, ChoiceInline]
 
     def get_extra(self, request, obj=None, **kwargs):
         if obj is not None and obj.pk is not None and obj.field_set.count():
@@ -144,7 +144,7 @@ class SectionInline(nested_admin.NestedStackedInline):
     model = Section
     inlines = [SubsectionInline]
     fields = ["code", "name"]
-    
+
     def get_extra(self, request, obj=None, **kwargs):
         if obj is not None and obj.pk is not None and obj.section_set.count():
             return 0
