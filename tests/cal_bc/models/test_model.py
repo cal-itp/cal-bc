@@ -1,6 +1,7 @@
 import pytest
 
 from cal_bc.models.models.model import (
+    Choice,
     Field,
     FieldDisplayType,
     Group,
@@ -8,7 +9,6 @@ from cal_bc.models.models.model import (
     Row,
     Section,
     Subsection,
-    Value,
     Version,
 )
 
@@ -80,53 +80,53 @@ class TestModel:
         return row.field_set.create(name="Highway Free-Flow Speed", cell="FFSpeedNB", display_type=FieldDisplayType.READ_ONLY)
 
     @pytest.fixture()
-    def value(self, field: Field) -> Value:
-        return field.value_set.create(
+    def choice(self, field: Field) -> Choice:
+        return field.choice_set.create(
             name="District 4 - Bay Area",
             value="District 4",
             position=1
         )
 
-    def test_model_string_representation(self, model: Model):
+    def test_model_string_representation(self, model: Model) -> None:
         assert str(model) == "Cal-B/C Sketch"
 
-    def test_model_description_string_representation(self, model: Model):
+    def test_model_description_string_representation(self, model: Model) -> None:
         assert str(model.description) == "Best for early-stage highway or transit projects."
 
-    def test_model_tags_list_representation(self, model: Model):
+    def test_model_tags_list_representation(self, model: Model) -> None:
         assert list(model.tags) == ["Transit", "Commuter Rail"]
 
-    def test_model_latest_version(self, model: Model, version: Version):
+    def test_model_latest_version(self, model: Model, version: Version) -> None:
         assert model.latest_version() == version
 
-    def test_model_latest_version_no_versions(self, model: Model):
+    def test_model_latest_version_no_versions(self, model: Model) -> None:
         assert model.latest_version() is None
 
-    def test_version_string_representation(self, version: Version):
+    def test_version_string_representation(self, version: Version) -> None:
         assert str(version) == "8.1"
 
-    def test_version_has_form_link(self, version: Version, subsection_1_a: Subsection):
+    def test_version_has_form_link(self, version: Version, subsection_1_a: Subsection) -> None:
         assert version.has_form_link() is True
 
-    def test_version_has_form_link_false(self, version: Version):
+    def test_version_has_form_link_false(self, version: Version) -> None:
         assert version.has_form_link() is False
 
-    def test_section_string_representation(self, section_1: Section):
+    def test_section_string_representation(self, section_1: Section) -> None:
         assert str(section_1) == "1 - Project Information"
 
-    def test_next_section(self, section_1: Section, section_2: Section):
+    def test_next_section(self, section_1: Section, section_2: Section) -> None:
         assert section_1.next_section == section_2
 
-    def test_null_next_section(self, section_2: Section):
+    def test_null_next_section(self, section_2: Section) -> None:
         assert section_2.next_section is None
 
-    def test_previous_section(self, section_1: Section, section_2: Section):
+    def test_previous_section(self, section_1: Section, section_2: Section) -> None:
         assert section_2.previous_section == section_1
 
-    def test_null_previous_section(self, section_1: Section):
+    def test_null_previous_section(self, section_1: Section) -> None:
         assert section_1.previous_section is None
 
-    def test_subsection_string_representation(self, subsection_1_a: Subsection):
+    def test_subsection_string_representation(self, subsection_1_a: Subsection) -> None:
         assert str(subsection_1_a) == "A - Project Data"
 
     def test_subsection_description(
@@ -136,107 +136,107 @@ class TestModel:
 
     def test_next_subsection(
         self, subsection_1_a: Subsection, subsection_1_b: Subsection
-    ):
+    ) -> None:
         assert subsection_1_a.next_subsection == subsection_1_b
 
-    def test_null_next_subsection(self, subsection_2_a: Subsection):
+    def test_null_next_subsection(self, subsection_2_a: Subsection) -> None:
         assert subsection_2_a.next_subsection is None
 
     def test_previous_subsection(
         self, subsection_1_a: Subsection, subsection_1_b: Subsection
-    ):
+    ) -> None:
         assert subsection_1_b.previous_subsection == subsection_1_a
 
     def test_null_previous_subsection(
         self, subsection_1_a: Subsection, subsection_1_b: Subsection
-    ):
+    ) -> None:
         assert subsection_1_a.previous_subsection is None
 
     def test_next_section_subsection(
         self, subsection_1_b: Subsection, subsection_2_a: Subsection
-    ):
+    ) -> None:
         assert subsection_1_b.next_subsection == subsection_2_a
 
     def test_previous_section_subsection(
         self, subsection_1_b: Subsection, subsection_2_a: Subsection
-    ):
+    ) -> None:
         assert subsection_2_a.previous_subsection == subsection_1_b
 
-    def test_summary_group_set(self, subsection_1_a: Subsection, subsection_1_b: Subsection, summary_group: Group):
+    def test_summary_group_set(self, subsection_1_a: Subsection, subsection_1_b: Subsection, summary_group: Group) -> None:
         subsection_1_a.group_set.create(name="Summary", is_summary=False)
         subsection_1_b.group_set.create(name="Summary", is_summary=True)
         assert list(subsection_1_a.summary_group_set) == [summary_group]
 
-    def test_non_summary_group_set(self, subsection_1_a: Subsection, subsection_1_b: Subsection, group: group):
+    def test_non_summary_group_set(self, subsection_1_a: Subsection, subsection_1_b: Subsection, group: group) -> None:
         subsection_1_a.group_set.create(name="Summary", is_summary=True)
         subsection_1_b.group_set.create(name="Summary", is_summary=False)
         assert list(subsection_1_a.non_summary_group_set) == [group]
 
-    def test_group_string_representation(self, group: Group):
+    def test_group_string_representation(self, group: Group) -> None:
         assert str(group) == "2 - General Information"
 
     def test_group_description(self, group: Group) -> None:
         assert group.description == "General description"
 
-    def test_column_group_string_representation(self, group: Group):
+    def test_column_group_string_representation(self, group: Group) -> None:
         column_group = group.columngroup_set.create()
         assert str(column_group) == "Column Group 1"
 
-    def test_column_group_with_name_string_representation(self, group: Group):
+    def test_column_group_with_name_string_representation(self, group: Group) -> None:
         column_group_with_name = group.columngroup_set.create(position=1, name="Initial Costs")
         assert str(column_group_with_name) == "Column Group: 2 - Initial Costs"
 
-    def test_column_string_representation(self, group: Group):
+    def test_column_string_representation(self, group: Group) -> None:
         column_group = group.columngroup_set.create()
         column = column_group.column_set.create(position=1, name="Project Support")
         assert str(column) == "2 - Project Support"
 
-    def test_field_column_string_representation(self, group: Group, field: Field):
+    def test_field_column_string_representation(self, group: Group, field: Field) -> None:
         column_group = group.columngroup_set.create()
         column = column_group.column_set.create(position=1, name="Project Support")
         field_column = column.fieldcolumn_set.create(field=field)
         assert str(field_column) == "Field: Highway Free-Flow Speed - Column: Project Support"
 
-    def test_group_table_row_set_empty(self, group: Group):
+    def test_group_table_row_set_empty(self, group: Group) -> None:
         assert list(group.table_row_set.all()) == []
 
-    def test_group_table_row_set(self, group: Group, row: Row, field: Field):
+    def test_group_table_row_set(self, group: Group, row: Row, field: Field) -> None:
         column_group = group.columngroup_set.create()
         column = column_group.column_set.create(name="Test")
         column.fieldcolumn_set.create(field=field)
         assert list(group.table_row_set.all()) == [row]
 
-    def test_group_non_table_row_set(self, group: Group, row: Row):
+    def test_group_non_table_row_set(self, group: Group, row: Row) -> None:
         assert list(group.non_table_row_set.all()) == [row]
 
-    def test_group_non_table_row_set_empty(self, group: Group, field: Field):
+    def test_group_non_table_row_set_empty(self, group: Group, field: Field) -> None:
         column_group = group.columngroup_set.create()
         column = column_group.column_set.create(name="Test")
         column.fieldcolumn_set.create(field=field)
         assert list(group.non_table_row_set.all()) == []
 
-    def test_row_string_representation(self, row: Row):
+    def test_row_string_representation(self, row: Row) -> None:
         assert str(row) == "1"
 
-    def test_row_with_name_string_representation(self, row2: Row):
+    def test_row_with_name_string_representation(self, row2: Row) -> None:
         assert str(row2) == "1 - Roadway Type"
 
-    def test_field_string_representation(self, field: Field):
+    def test_field_string_representation(self, field: Field) -> None:
         assert str(field) == "1 - Highway Free-Flow Speed"
 
-    def test_field_with_unit(self, field_with_unit: Field):
+    def test_field_with_unit(self, field_with_unit: Field) -> None:
         assert str(field_with_unit) == "2 - Highway Free-Flow Speed (mph)"
 
-    def test_field_required(self, field: Field):
+    def test_field_required(self, field: Field) -> None:
         assert field.required == True
 
-    def test_field_not_required(self, field_not_required: Field):
+    def test_field_not_required(self, field_not_required: Field) -> None:
         assert field_not_required.required == False
 
-    def test_field_read_only(self, field_read_only: Field):
+    def test_field_read_only(self, field_read_only: Field) -> None:
         assert field_read_only.read_only == True
 
-    def test_summary_field_read_only(self, summary_group: Group):
+    def test_summary_field_read_only(self, summary_group: Group) -> None:
         row = summary_group.row_set.create()
         field_read_only = row.field_set.create(name="Highway Free-Flow Speed", cell="FFSpeedNB", display_type=FieldDisplayType.READ_ONLY)
         field_required = row.field_set.create(name="Highway Free-Flow Speed", cell="FFSpeedNB", display_type=FieldDisplayType.REQUIRED)
@@ -245,7 +245,7 @@ class TestModel:
         assert field_required.read_only == True
         assert field_not_required.read_only == True
 
-    def test_summary_field_not_required(self, summary_group: Group):
+    def test_summary_field_not_required(self, summary_group: Group) -> None:
         row = summary_group.row_set.create()
         field_read_only = row.field_set.create(name="Highway Free-Flow Speed", cell="FFSpeedNB", display_type=FieldDisplayType.READ_ONLY)
         field_required = row.field_set.create(name="Highway Free-Flow Speed", cell="FFSpeedNB", display_type=FieldDisplayType.REQUIRED)
@@ -254,8 +254,8 @@ class TestModel:
         assert field_required.required == False
         assert field_not_required.required == False
 
-    def test_value_string_representation(self, value: Value):
-        assert str(value) == "2 - District 4 - Bay Area"
+    def test_choice_string_representation(self, choice: Choice) -> None:
+        assert str(choice) == "2 - District 4 - Bay Area"
 
     def test_subsection_column_count(self, subsection_1_a: Subsection, group: Group, field: Field, field_with_unit: Field) -> None:
         column_group = group.columngroup_set.create()
@@ -266,20 +266,20 @@ class TestModel:
         subsection_1_a.group_set.create(name="Other Group")
         assert subsection_1_a.column_count == 2
 
-    def test_subsection_read_only_false(self, subsection_1_a: Subsection, field: Field):
+    def test_subsection_read_only_false(self, subsection_1_a: Subsection, field: Field) -> None:
         assert subsection_1_a.read_only is False
 
-    def test_null_subsection_read_only_true(self, subsection_2_a: Subsection, field: Field):
+    def test_null_subsection_read_only_true(self, subsection_2_a: Subsection, field: Field) -> None:
         assert subsection_2_a.read_only is True
 
-    def test_subsection_read_only_true(self, section_2: Section):
+    def test_subsection_read_only_true(self, section_2: Section) -> None:
         read_only_subsection = section_2.subsection_set.create(code="A", name="Investiment Analysis")
         review_group = read_only_subsection.group_set.create(name="Results", is_summary=False)
         review_row = review_group.row_set.create()
         review_row.field_set.create(name="Life-Cycle Costs", cell="1) Results!H13", display_type=FieldDisplayType.READ_ONLY)
         assert read_only_subsection.read_only is True
 
-    def test_subsection_read_only_summary_group_true(self, section_2: Section):
+    def test_subsection_read_only_summary_group_true(self, section_2: Section) -> None:
         read_only_subsection = section_2.subsection_set.create(code="A", name="Investiment Analysis")
         review_group = read_only_subsection.group_set.create(name="Summary", is_summary=True)
         review_row = review_group.row_set.create()

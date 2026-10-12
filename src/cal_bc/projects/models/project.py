@@ -22,28 +22,16 @@ class Project(models.Model):
 
     @property
     def name(self):
-        return self.value_set.filter(field__name="Project Name").first()
+        return self.calculation_set.filter(field__name="Project Name").first()
 
     @property
     def benefit_cost_ratio(self):
-        return self.value_set.filter(field__name="Benefit / Cost Ratio").first()
-
-    @property
-    def summary_value_set(self):
-        return self.value_set.filter(field__row__group__is_summary=True).all()
+        return self.calculation_set.filter(field__name="Benefit / Cost Ratio").first()
 
 
-class Value(models.Model):
-    project = models.ForeignKey(
-        Project, null=False, db_index=True, on_delete=models.CASCADE
-    )
-    field = models.ForeignKey(
-        Field,
-        null=False,
-        db_index=True,
-        related_name="project_value",
-        on_delete=models.CASCADE,
-    )
+class Input(models.Model):
+    project = models.ForeignKey(Project, null=False, db_index=True, on_delete=models.CASCADE)
+    field = models.ForeignKey(Field, null=False, db_index=True, on_delete=models.CASCADE)
     value = models.CharField(null=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -55,7 +43,7 @@ class Value(models.Model):
                     "project",
                     "field",
                 ],
-                name="unique_project_field",
+                name="unique_project_field_input",
             ),
         ]
 
@@ -68,7 +56,36 @@ class Value(models.Model):
             transaction.on_commit(self.project.save)
 
 
-class RefreshTaskManager(models.Manager):
+class CalculationQuerySet(models.QuerySet):
+    def summary(self):
+        return self.filter(field__row__group__is_summary=True)
+
+
+class Calculation(models.Model):
+    project = models.ForeignKey(Project, null=False, db_index=True, on_delete=models.CASCADE)
+    field = models.ForeignKey(Field, null=False, db_index=True, on_delete=models.CASCADE)
+    value = models.CharField(null=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    objects = CalculationQuerySet.as_manager()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "project",
+                    "field",
+                ],
+                name="unique_project_field_calculation",
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return self.value
+
+
+class RefreshTaskQuerySet(models.QuerySet):
    def active(self):
      return self.filter(db_task_result__status=TaskResultStatus.READY) | self.filter(db_task_result__status=TaskResultStatus.RUNNING)
 
@@ -81,7 +98,7 @@ class RefreshTask(models.Model):
         DBTaskResult, null=False, db_index=True, on_delete=models.CASCADE
     )
 
-    objects = RefreshTaskManager()
+    objects = RefreshTaskQuerySet.as_manager()
 
     def __str__(self) -> None:
         return f"RefreshTask #{self.id}"

@@ -6,6 +6,7 @@ from playwright.sync_api import Page
 from pytest_playwright_axe import Axe
 
 from cal_bc.models.models.model import (
+    Choice,
     Column,
     ColumnGroup,
     Field,
@@ -17,7 +18,6 @@ from cal_bc.models.models.model import (
     Subsection,
     Version,
 )
-from cal_bc.projects.models.project import Value
 from tests.channels_live_server_helper import ChannelsLiveServer
 
 
@@ -106,8 +106,8 @@ class TestAccessibilitySystem:
         return general_info_1A_group_row_2.field_set.create(name="District", cell="ProjLoc")
 
     @pytest.fixture(autouse=True)
-    def district_4_value(self, district_field: Field) -> Value:
-        return district_field.value_set.create(
+    def district_4_choice(self, district_field: Field) -> Choice:
+        return district_field.choice_set.create(
             name="District 4 - Bay Area / Oakland",
             value="District 4",
         )
@@ -119,7 +119,7 @@ class TestAccessibilitySystem:
             description="Configure project analysis settings.",
             position=2
         )
-    
+
     @pytest.fixture
     def project_data_1A_group_row(self, project_data_1A_group: Group) -> Row:
         return project_data_1A_group.row_set.create(position=5)

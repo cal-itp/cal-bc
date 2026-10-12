@@ -8,8 +8,8 @@ from django.urls import reverse_lazy
 from extra_views import FormSetSuccessMessageMixin, InlineFormSetView
 
 from cal_bc.models.models.model import Field, FieldDisplayType, Subsection
-from cal_bc.projects.forms.project import ValueForm
-from cal_bc.projects.models.project import Project, Value
+from cal_bc.projects.forms.project import InputForm
+from cal_bc.projects.models.project import Input, Project
 from cal_bc.projects.tasks import refresh_project_fields
 from cal_bc.tasks import refresh_channel
 
@@ -21,7 +21,7 @@ def get_field(form):
         return form.initial["field"].pk
 
 
-class SortedValueInlineFormSet(BaseInlineFormSet):
+class SortedInputInlineFormSet(BaseInlineFormSet):
     def __iter__(self):
         field_id_forms = {get_field(f): f for f in self.forms}
         sorted_field_ids = (
@@ -38,9 +38,9 @@ class ProjectSubsectionView(
     LoginRequiredMixin, FormSetSuccessMessageMixin, InlineFormSetView
 ):
     model = Project
-    inline_model = Value
-    form_class = ValueForm
-    formset_class = SortedValueInlineFormSet
+    inline_model = Input
+    form_class = InputForm
+    formset_class = SortedInputInlineFormSet
     prefix = "value"
     factory_kwargs = {"can_delete": False}
     template_name = "projects/edit.html"
@@ -59,7 +59,8 @@ class ProjectSubsectionView(
             Field.objects.filter(row__group__subsection_id=self.kwargs["pk"])
             .exclude(display_type=FieldDisplayType.READ_ONLY)
             .exclude(row__group__is_summary=True)
-            .exclude(project_value__project_id=self.kwargs["project_pk"])
+            .exclude(input__project_id=self.kwargs["project_pk"])
+            .exclude(calculation__project_id=self.kwargs["project_pk"])
             .select_related("row", "row__group")
         )
 
@@ -69,7 +70,7 @@ class ProjectSubsectionView(
     def get_formset_kwargs(self):
         kwargs = super().get_formset_kwargs()
         kwargs["queryset"] = (
-            Value.objects.filter(project_id=self.kwargs["project_pk"])
+            Input.objects.filter(project_id=self.kwargs["project_pk"])
             .filter(field__row__group__subsection_id=self.kwargs["pk"])
             .exclude(field__display_type=FieldDisplayType.READ_ONLY)
             .exclude(field__row__group__is_summary=True)

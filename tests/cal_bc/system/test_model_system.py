@@ -110,11 +110,11 @@ class TestModelSystem:
         first_page.locator(":text('Field: #1') + fieldset").get_by_label("Cell").nth(
             0
         ).fill("ProjLoc")
-        first_page.get_by_role("link", name="Add another Value").click()
-        first_page.locator(":text('Values') ~ table tbody tr").nth(0).locator("td").nth(
+        first_page.get_by_role("link", name="Add another Choice").click()
+        first_page.locator(":text('Choices') ~ table tbody tr").nth(0).locator("td").nth(
             1
         ).locator("input").fill("District 4 - Bay Area")
-        first_page.locator(":text('Values') ~ table tbody tr").nth(0).locator("td").nth(
+        first_page.locator(":text('Choices') ~ table tbody tr").nth(0).locator("td").nth(
             2
         ).locator("input").fill("District 4")
 
@@ -139,7 +139,7 @@ class TestModelSystem:
         first_page.wait_for_selector(
             "text=The group “1 - General Information” was changed successfully"
         )
-        
+
         first_page.get_by_role("link", name="Add group").click()
         first_page.get_by_label("subsection").select_option("A - Project Data")
         first_page.get_by_label("Name").nth(0).fill("Project Data")
@@ -156,7 +156,7 @@ class TestModelSystem:
         expect(first_page.locator(":text('Field: #1') + fieldset").get_by_label("Display Type").nth(
             0
         )).to_contain_text("Required")
-        
+
         first_page.get_by_role("link", name="Add another row").click()
         first_page.locator(":text('Field: #1') + fieldset").nth(1).get_by_label("Name").nth(
             0

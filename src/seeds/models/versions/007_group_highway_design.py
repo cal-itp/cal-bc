@@ -40,11 +40,11 @@ class Seed(seeds.seed.Seed):
     def load(self) -> None:
         row_1, _ = self.group.row_set.get_or_create(position=1, defaults={"name": "Roadway Type"})
         field_no_build_type, _ = row_1.field_set.get_or_create(name="Roadway Type No Build", defaults={"cell": "RoadTypeNB"})
-        field_no_build_type.value_set.get_or_create(value="F", defaults={"name": "Freeway"})
+        field_no_build_type.choice_set.get_or_create(value="F", defaults={"name": "Freeway"})
         self.column_no_build.fieldcolumn_set.get_or_create(field=field_no_build_type)
 
         field_build_type, _ = row_1.field_set.get_or_create(name="Roadway Type Build", defaults={"cell": "RoadTypeB"})
-        field_build_type.value_set.get_or_create(value="E", defaults={"name": "Expressway"})
+        field_build_type.choice_set.get_or_create(value="E", defaults={"name": "Expressway"})
         self.column_build.fieldcolumn_set.get_or_create(field=field_build_type)
 
         row_2, _ = self.group.row_set.get_or_create(position=2, defaults={"name": "No. of General Traffic Lanes"})
@@ -61,12 +61,12 @@ class Seed(seeds.seed.Seed):
 
         row_4, _ = self.group.row_set.get_or_create(position=4, defaults={"name": "HOV Restriction"})
         field_no_build_hov_restriction, _ = row_4.field_set.get_or_create(name="HOV Restriction No Build", defaults={"cell": "HOVRest"})
-        field_no_build_hov_restriction.value_set.get_or_create(value="2", defaults={"name": "2"})
+        field_no_build_hov_restriction.choice_set.get_or_create(value="2", defaults={"name": "2"})
         self.column_no_build.fieldcolumn_set.get_or_create(field=field_no_build_hov_restriction)
 
         row_5, _ = self.group.row_set.get_or_create(position=5, defaults={"name": "Exclusive ROW for Buses"})
         field_no_build_exclusive_buses, _ = row_5.field_set.get_or_create(name="Exclusive ROW for Buses No Build", defaults={"cell": "Exclusive"})
-        field_no_build_exclusive_buses.value_set.get_or_create(value="y", defaults={"name": "Yes"})
+        field_no_build_exclusive_buses.choice_set.get_or_create(value="y", defaults={"name": "Yes"})
         self.column_no_build.fieldcolumn_set.get_or_create(field=field_no_build_exclusive_buses)
 
         row_6, _ = self.group.row_set.get_or_create(position=6, defaults={"name": "Highway Free-Flow Speed"})

@@ -85,7 +85,7 @@ class TestProjectSystem:
         )
         row_1.field_set.create(name="Project Name", cell="ProjName")
         field_district = row_1.field_set.create(name="District", cell="1) Project Information!E2")
-        field_district.value_set.create(
+        field_district.choice_set.create(
             name="District 4 - Bay Area / Oakland",
             value="District 4",
         )
@@ -99,14 +99,14 @@ class TestProjectSystem:
         )
         row_1 = group.row_set.create(position=1)
         field_project_type = row_1.field_set.create(name="Project Type", cell="ProjType")
-        field_project_type.value_set.create(
+        field_project_type.choice_set.create(
             name="General Highway",
             value="    General Highway",
         )
 
         row_2 = group.row_set.create(position=2)
         field_project_location = row_2.field_set.create(name="Project Location", cell="ProjLoc")
-        field_project_location.value_set.create(
+        field_project_location.choice_set.create(
             name="NorCal",
             value="2",
         )

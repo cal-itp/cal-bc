@@ -14,7 +14,7 @@ from cal_bc.models.models.model import (
     Subsection,
     Version,
 )
-from cal_bc.projects.models.project import Project, Value
+from cal_bc.projects.models.project import Input, Project
 from cal_bc.projects.tasks import refresh_project_fields
 
 
@@ -45,8 +45,8 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
             field_set = Field.objects.filter(
                 row__group__subsection__section__version=self.object.version
             ).exclude(display_type=FieldDisplayType.READ_ONLY).exclude(row__group__is_summary=True)
-            objs = [Value(project=self.object, field=f) for f in field_set]
-            transaction.on_commit(partial(Value.objects.bulk_create, objs=objs, ignore_conflicts=True))
+            objs = [Input(project=self.object, field=f) for f in field_set]
+            transaction.on_commit(partial(Input.objects.bulk_create, objs=objs, ignore_conflicts=True))
             transaction.on_commit(self.refresh_project)
             return result
 

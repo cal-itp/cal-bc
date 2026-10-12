@@ -10,8 +10,11 @@ def find_formset_field(formset, field):
             return form
 
 @register.filter
-def find_valueset_field(value_set, field):
-    for value in value_set:
+def find_project_field(project, field):
+    for value in project.input_set.all():
+        if hasattr(value, "field") and value.field == field:
+            return value
+    for value in project.calculation_set.all():
         if hasattr(value, "field") and value.field == field:
             return value
 
