@@ -32,6 +32,7 @@ urlpatterns = [
     path("", include("cal_bc.landings.urls")),
     path("projects/", include("cal_bc.projects.urls")),
     path("models/", include("cal_bc.models.urls")),
+    path(r"", include("binary_database_files.urls")),
     re_path(r"^static/(?P<path>.*)$", serve, {"document_root": settings.STATIC_ROOT}),
     path('favicon.ico',RedirectView.as_view(url=staticfiles_storage.url('shared/favicon.png')),name='favicon'),
 ]

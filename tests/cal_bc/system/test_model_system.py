@@ -1,3 +1,4 @@
+from pathlib import Path
 
 import pytest
 from django.contrib.auth.models import User
@@ -30,160 +31,170 @@ class TestModelSystem:
         }
 
     @pytest.fixture
-    def first_page(self, session_cookie: dict, new_context: CreateContextCallback) -> Page:
+    def page(self, session_cookie: dict, new_context: CreateContextCallback) -> Page:
         page = new_context().new_page()
         page.context.add_cookies([session_cookie])
         return page
 
-    def test_models(self, first_page: Page, channels_live_server: ChannelsLiveServer) -> None:
-        first_page.goto(f"{channels_live_server.http_url}{reverse_lazy('admin:index')}")
-        first_page.wait_for_selector("text=Cal B/C Admin")
-        first_page.wait_for_selector("text=Site administration")
+    @pytest.fixture
+    def cal_bc_sketch_xls(self) -> str:
+        return str(Path(__file__).resolve().parent.parent.parent / "fixtures" / "cal-bc-8-1-sketch-a11y.xlsm")
 
-        first_page.locator(".app-models").get_by_role(
+    def test_models(self, page: Page, channels_live_server: ChannelsLiveServer, cal_bc_sketch_xls: str) -> None:
+        page.goto(f"{channels_live_server.http_url}{reverse_lazy('admin:index')}")
+        page.wait_for_selector("text=Cal-B/C Admin")
+        page.wait_for_selector("text=Site administration")
+
+        page.locator(".app-models").get_by_role(
             "rowheader", name="Models"
         ).get_by_role("link", name="Models", exact=True).click()
-        first_page.get_by_role("link", name="Add model").click()
-        first_page.get_by_label("Name").fill("Sketch")
-        first_page.get_by_label("Description").fill("Caltrans’s California Benefit/Cost Analysis tool")
-        first_page.get_by_label("Tags").fill("Highway, Transit")
-        first_page.get_by_role("button", name="Save", exact=True).click()
-        first_page.wait_for_selector("text=The model “Sketch” was added successfully")
+        page.get_by_role("link", name="Add model").click()
+        page.get_by_label("Name").fill("Sketch")
+        page.get_by_label("Description").fill("Caltrans’s California Benefit/Cost Analysis tool")
+        page.get_by_label("Tags").fill("Highway, Transit")
+        page.get_by_role("button", name="Save", exact=True).click()
+        page.wait_for_selector("text=The model “Sketch” was added successfully")
 
-        first_page.locator(".app-models").get_by_role(
+        page.locator(".app-models").get_by_role(
             "link", name="Versions", exact=True
         ).click()
-        first_page.get_by_role("link", name="Add version").click()
-        first_page.get_by_label("Name").first.fill("8.1")
-        first_page.get_by_label("Url").fill("https://example.com")
-        first_page.get_by_label("Model").select_option("Sketch")
-        first_page.get_by_role("button", name="Save", exact=True).click()
-        first_page.wait_for_selector(
+        page.get_by_role("link", name="Add version").click()
+        page.get_by_label("Model").select_option("Sketch")
+        page.get_by_label("Name").first.fill("8.1")
+        page.get_by_label("Url").fill("https://dot.ca.gov/-/media/dot-media/programs/transportation-planning/documents/new-state-planning/transportation-economics/cal-bc/2023-cal-bc/2023-non-federal-model/cal-bc-8-1-sketch-a11y.xlsm")
+
+        page.get_by_role("link", name="Add another Version File").click()
+        with page.expect_file_chooser() as file_chooser:
+            page.get_by_role("button", name="Choose File").click()
+            file_chooser.value.set_files(cal_bc_sketch_xls)
+
+        page.get_by_role("button", name="Save", exact=True).click()
+        page.wait_for_selector(
             "text=The version “8.1” was added successfully"
         )
 
-        first_page.locator(".app-models").get_by_role(
+        page.locator(".app-models").get_by_role(
             "link", name="Versions", exact=True
         ).click()
-        first_page.get_by_role("link", name="8.1", exact=True).click()
-        first_page.locator(":text('Section: #1') + fieldset").get_by_label("Code").nth(
+        page.get_by_role("link", name="8.1", exact=True).click()
+        page.locator(":text('Section: #1') + fieldset").get_by_label("Code").nth(
             0
         ).fill("1")
-        first_page.locator(":text('Section: #1') + fieldset").get_by_label("Name").nth(
+        page.locator(":text('Section: #1') + fieldset").get_by_label("Name").nth(
             0
         ).fill("Project Information")
-        first_page.locator(":text('Subsection: #1') + fieldset").get_by_label(
+        page.locator(":text('Subsection: #1') + fieldset").get_by_label(
             "Code"
         ).nth(0).fill("A")
-        first_page.locator(":text('Subsection: #1') + fieldset").get_by_label(
+        page.locator(":text('Subsection: #1') + fieldset").get_by_label(
             "Name"
         ).nth(0).fill("Project Data")
-        first_page.locator(":text('Subsection: #1') + fieldset").get_by_label(
+        page.locator(":text('Subsection: #1') + fieldset").get_by_label(
             "Description"
         ).nth(0).fill("This is the main info.")
-        first_page.locator(":text('Subsection: #1') + fieldset").get_by_label(
+        page.locator(":text('Subsection: #1') + fieldset").get_by_label(
             "Guide"
         ).locator("~ [contenteditable]").nth(0).fill(
             "Add basic project information here"
         )
-        first_page.locator(":text('Groups') ~ table tbody tr").nth(0).locator("td").nth(
+        page.locator(":text('Groups') ~ table tbody tr").nth(0).locator("td").nth(
             1
         ).locator("input").fill("General Information")
-        first_page.get_by_role("button", name="Save", exact=True).click()
-        first_page.wait_for_selector(
+        page.get_by_role("button", name="Save", exact=True).click()
+        page.wait_for_selector(
             "text=The version “8.1” was changed successfully"
         )
 
-        first_page.get_by_role("link", name="Home").click()
-        first_page.locator(".app-models").get_by_role(
+        page.get_by_role("link", name="Home").click()
+        page.locator(".app-models").get_by_role(
             "link", name="Groups", exact=True
         ).click()
-        first_page.get_by_role(
+        page.get_by_role(
             "link", name="General Information", exact=True
         ).click()
-        first_page.locator(":text('Row: #1') + fieldset").get_by_label("Guide").locator(
+        page.locator(":text('Row: #1') + fieldset").get_by_label("Guide").locator(
             "~ [contenteditable]"
         ).fill("Complete this section")
-        first_page.locator(":text('Field: #1') + fieldset").get_by_label("Name").nth(
+        page.locator(":text('Field: #1') + fieldset").get_by_label("Name").nth(
             0
         ).fill("District")
-        first_page.locator(":text('Field: #1') + fieldset").get_by_label("Cell").nth(
+        page.locator(":text('Field: #1') + fieldset").get_by_label("Cell").nth(
             0
         ).fill("ProjLoc")
-        first_page.get_by_role("link", name="Add another Choice").click()
-        first_page.locator(":text('Choices') ~ table tbody tr").nth(0).locator("td").nth(
+        page.get_by_role("link", name="Add another Choice").click()
+        page.locator(":text('Choices') ~ table tbody tr").nth(0).locator("td").nth(
             1
         ).locator("input").fill("District 4 - Bay Area")
-        first_page.locator(":text('Choices') ~ table tbody tr").nth(0).locator("td").nth(
+        page.locator(":text('Choices') ~ table tbody tr").nth(0).locator("td").nth(
             2
         ).locator("input").fill("District 4")
 
-        first_page.get_by_role("link", name="Add another Field", exact=True).click()
-        first_page.locator(":text('Field: #2') + fieldset").get_by_label("Name").nth(
+        page.get_by_role("link", name="Add another Field", exact=True).click()
+        page.locator(":text('Field: #2') + fieldset").get_by_label("Name").nth(
             0
         ).fill("Project Name")
-        first_page.locator(":text('Field: #2') + fieldset").get_by_label("Cell").nth(
+        page.locator(":text('Field: #2') + fieldset").get_by_label("Cell").nth(
             0
         ).fill("ProjName")
-        first_page.get_by_role("link", name="Add another Field Range").nth(1).click()
-        expect(first_page.locator(":text('Field range') ~ table tbody tr").nth(0).locator("td").nth(
+        page.get_by_role("link", name="Add another Field Range").nth(1).click()
+        expect(page.locator(":text('Field range') ~ table tbody tr").nth(0).locator("td").nth(
             1
         ).locator("input")).to_have_value("0")
-        first_page.locator(":text('Field range') ~ table tbody tr").nth(0).locator("td").nth(
+        page.locator(":text('Field range') ~ table tbody tr").nth(0).locator("td").nth(
             1
         ).locator("input").press_sequentially("20")
-        first_page.locator(":text('Field range') ~ table tbody tr").nth(0).locator("td").nth(
+        page.locator(":text('Field range') ~ table tbody tr").nth(0).locator("td").nth(
             2
         ).locator("input").press_sequentially("50")
-        first_page.get_by_role("button", name="Save", exact=True).click()
-        first_page.wait_for_selector(
+        page.get_by_role("button", name="Save", exact=True).click()
+        page.wait_for_selector(
             "text=The group “1 - General Information” was changed successfully"
         )
 
-        first_page.get_by_role("link", name="Add group").click()
-        first_page.get_by_label("subsection").select_option("A - Project Data")
-        first_page.get_by_label("Name").nth(0).fill("Project Data")
-        first_page.get_by_label("Description").fill("Configure project analysis settings.")
-        first_page.locator(":text('Field: #1') + fieldset").get_by_label("Name").nth(
+        page.get_by_role("link", name="Add group").click()
+        page.get_by_label("subsection").select_option("A - Project Data")
+        page.get_by_label("Name").nth(0).fill("Project Data")
+        page.get_by_label("Description").fill("Configure project analysis settings.")
+        page.locator(":text('Field: #1') + fieldset").get_by_label("Name").nth(
             0
         ).fill("Length of Construction Period")
-        first_page.locator(":text('Field: #1') + fieldset").get_by_label("Cell").nth(
+        page.locator(":text('Field: #1') + fieldset").get_by_label("Cell").nth(
             0
         ).fill("1) Project Information!F14")
-        first_page.locator(":text('Field: #1') + fieldset").get_by_label("Unit").nth(
+        page.locator(":text('Field: #1') + fieldset").get_by_label("Unit").nth(
             0
         ).fill("years")
-        expect(first_page.locator(":text('Field: #1') + fieldset").get_by_label("Display Type").nth(
+        expect(page.locator(":text('Field: #1') + fieldset").get_by_label("Display Type").nth(
             0
         )).to_contain_text("Required")
 
-        first_page.get_by_role("link", name="Add another row").click()
-        first_page.locator(":text('Field: #1') + fieldset").nth(1).get_by_label("Name").nth(
+        page.get_by_role("link", name="Add another row").click()
+        page.locator(":text('Field: #1') + fieldset").nth(1).get_by_label("Name").nth(
             0
         ).fill("One- or Two-Way Data")
-        first_page.locator(":text('Field: #1') + fieldset").nth(1).get_by_label("Cell").nth(
+        page.locator(":text('Field: #1') + fieldset").nth(1).get_by_label("Cell").nth(
             0
         ).fill("1) Project Information!F15")
-        first_page.locator(":text('Field: #1') + fieldset").nth(1).get_by_label("Display Type").nth(
+        page.locator(":text('Field: #1') + fieldset").nth(1).get_by_label("Display Type").nth(
             0
         ).select_option("Not Required")
 
-        first_page.get_by_role("link", name="Add another row").click()
-        first_page.locator(":text('Field: #1') + fieldset").nth(2).get_by_label("Name").nth(
+        page.get_by_role("link", name="Add another row").click()
+        page.locator(":text('Field: #1') + fieldset").nth(2).get_by_label("Name").nth(
             0
         ).fill("Length of Peak Period(s)")
-        first_page.locator(":text('Field: #1') + fieldset").nth(2).get_by_label("Cell").nth(
+        page.locator(":text('Field: #1') + fieldset").nth(2).get_by_label("Cell").nth(
             0
         ).fill("1) Project Information!F17")
-        first_page.locator(":text('Field: #1') + fieldset").nth(2).get_by_label("Unit").nth(
+        page.locator(":text('Field: #1') + fieldset").nth(2).get_by_label("Unit").nth(
             0
         ).fill("hours")
-        first_page.locator(":text('Field: #1') + fieldset").nth(2).get_by_label("Display Type").nth(
+        page.locator(":text('Field: #1') + fieldset").nth(2).get_by_label("Display Type").nth(
             0
         ).select_option("Read-Only")
-        first_page.get_by_role("button", name="Save", exact=True).click()
-        first_page.wait_for_selector(
+        page.get_by_role("button", name="Save", exact=True).click()
+        page.wait_for_selector(
             "text=The group “1 - Project Data” was added successfully"
         )
 
-        first_page.close()
+        page.close()

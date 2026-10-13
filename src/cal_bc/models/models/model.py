@@ -3,12 +3,6 @@ from django_prose_editor.fields import ProseEditorField
 from taggit.managers import TaggableManager
 
 
-class FieldDisplayType(models.IntegerChoices):
-    REQUIRED = 1, "Required"
-    NOT_REQUIRED = 2, "Not Required"
-    READ_ONLY = 3, "Read-Only"
-
-
 class Model(models.Model):
     name = models.CharField(null=False, blank=False, db_index=True)
     description = models.CharField(blank=True)
@@ -38,6 +32,19 @@ class Version(models.Model):
 
     def has_form_link(self):
         return Subsection.objects.filter(section__in=self.section_set.all()).exists()
+
+
+class VersionFile(models.Model):
+    version = models.OneToOneField("Version", on_delete=models.CASCADE, unique=True)
+    file = models.FileField(null=False, blank=False)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["version"], name="unique_version"),
+        ]
+
+    def __str__(self) -> str:
+        return f"VersionFile #{self.pk}"
 
 
 class Section(models.Model):
@@ -239,6 +246,13 @@ class FieldRange(models.Model):
     def __str__(self):
         return f"{self.min_value!s} to {self.max_value!s}"
 
+
+class FieldDisplayType(models.IntegerChoices):
+    REQUIRED = 1, "Required"
+    NOT_REQUIRED = 2, "Not Required"
+    READ_ONLY = 3, "Read-Only"
+
+
 class FieldManager(models.Manager):
     def non_summary(self):
         return self.filter(row__group__is_summary=False)
@@ -248,6 +262,7 @@ class FieldManager(models.Manager):
 
     def required(self):
         return self.non_summary().filter(display_type=FieldDisplayType.REQUIRED)
+
 
 class Field(models.Model):
     row = models.ForeignKey(Row, null=False, on_delete=models.CASCADE)
