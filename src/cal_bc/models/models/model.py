@@ -99,14 +99,6 @@ class Subsection(models.Model):
         return query.last()
 
     @property
-    def summary_group_set(self):
-        return self.group_set.filter(is_summary=True).all()
-
-    @property
-    def non_summary_group_set(self):
-        return self.group_set.filter(is_summary=False).all()
-
-    @property
     def column_count(self):
         return (
             self.group_set
@@ -121,6 +113,14 @@ class Subsection(models.Model):
         return Field.objects.filter(
             row__group__id__in=self.group_set.exclude(is_summary=True)
         ).exclude(display_type=FieldDisplayType.READ_ONLY).count() == 0
+
+
+class GroupManager(models.Manager):
+    def summary(self):
+        return self.filter(is_summary=True)
+
+    def non_summary(self):
+        return self.filter(is_summary=False)
 
 
 class Group(models.Model):
@@ -142,31 +142,13 @@ class Group(models.Model):
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
     is_summary = models.BooleanField(default=False, db_index=True)
 
+    objects = GroupManager()
+
     class Meta:
         ordering = ["position"]
 
     def __str__(self):
         return f"{self.position + 1!s} - {self.name}"
-
-    @property
-    def table_row_set(self):
-        return Row.objects.filter(
-            id__in=self.row_set.filter(
-                field__column__column_group__in=self.columngroup_set.all()
-            ).all()
-        )
-
-    @property
-    def non_table_row_set(self):
-        return Row.objects.filter(
-            id__in=self.row_set.exclude(
-                field__column__column_group__in=self.columngroup_set.all()
-            ).all()
-        )
-
-    @property
-    def nonempty_column_group_set(self):
-        return self.columngroup_set.exclude(name="").all()
 
     @property
     def column_count(self):
@@ -176,6 +158,25 @@ class Group(models.Model):
     def empty_column_count(self):
         diff_columns = self.subsection.column_count - self.column_count
         return range(0) if diff_columns < 0 else range(diff_columns)
+
+
+class RowManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().fetch_mode(models.FETCH_RAISE)
+
+    def table(self):
+        return self.filter(
+            id__in=Row.objects.filter(
+                field__column__column_group__in=ColumnGroup.objects.all()
+            )
+        )
+
+    def non_table(self):
+        return self.exclude(
+            id__in=Row.objects.filter(
+                field__column__column_group__in=ColumnGroup.objects.all()
+            )
+        )
 
 
 class Row(models.Model):
@@ -194,6 +195,8 @@ class Row(models.Model):
             "ListItem": True,
         },
     )
+
+    objects = RowManager()
 
     class Meta:
         ordering = ["position"]

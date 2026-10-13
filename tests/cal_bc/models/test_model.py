@@ -165,12 +165,12 @@ class TestModel:
     def test_summary_group_set(self, subsection_1_a: Subsection, subsection_1_b: Subsection, summary_group: Group) -> None:
         subsection_1_a.group_set.create(name="Summary", is_summary=False)
         subsection_1_b.group_set.create(name="Summary", is_summary=True)
-        assert list(subsection_1_a.summary_group_set) == [summary_group]
+        assert list(subsection_1_a.group_set.summary()) == [summary_group]
 
     def test_non_summary_group_set(self, subsection_1_a: Subsection, subsection_1_b: Subsection, group: group) -> None:
         subsection_1_a.group_set.create(name="Summary", is_summary=True)
         subsection_1_b.group_set.create(name="Summary", is_summary=False)
-        assert list(subsection_1_a.non_summary_group_set) == [group]
+        assert list(subsection_1_a.group_set.non_summary()) == [group]
 
     def test_group_string_representation(self, group: Group) -> None:
         assert str(group) == "2 - General Information"
@@ -197,23 +197,23 @@ class TestModel:
         field_column = column.fieldcolumn_set.create(field=field)
         assert str(field_column) == "Field: Highway Free-Flow Speed - Column: Project Support"
 
-    def test_group_table_row_set_empty(self, group: Group) -> None:
-        assert list(group.table_row_set.all()) == []
+    def test_group_table_row_set_empty(self, group: Group):
+        assert list(group.row_set.table().all()) == []
 
     def test_group_table_row_set(self, group: Group, row: Row, field: Field) -> None:
         column_group = group.columngroup_set.create()
         column = column_group.column_set.create(name="Test")
         column.fieldcolumn_set.create(field=field)
-        assert list(group.table_row_set.all()) == [row]
+        assert list(group.row_set.table().all()) == [row]
 
-    def test_group_non_table_row_set(self, group: Group, row: Row) -> None:
-        assert list(group.non_table_row_set.all()) == [row]
+    def test_group_non_table_row_set(self, group: Group, row: Row):
+        assert list(group.row_set.non_table().all()) == [row]
 
     def test_group_non_table_row_set_empty(self, group: Group, field: Field) -> None:
         column_group = group.columngroup_set.create()
         column = column_group.column_set.create(name="Test")
         column.fieldcolumn_set.create(field=field)
-        assert list(group.non_table_row_set.all()) == []
+        assert list(group.row_set.non_table().all()) == []
 
     def test_row_string_representation(self, row: Row) -> None:
         assert str(row) == "1"

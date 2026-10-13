@@ -7,7 +7,7 @@ from django.views.generic import DeleteView, ListView
 from django.views.generic.base import RedirectView
 
 from cal_bc.models.models.model import Subsection
-from cal_bc.projects.models.project import Project, Value
+from cal_bc.projects.models.project import Project, Input, Calculation
 
 
 class ProjectsView(LoginRequiredMixin, ListView):
@@ -16,8 +16,8 @@ class ProjectsView(LoginRequiredMixin, ListView):
     model = Project
 
     def get_queryset(self):
-        return self.request.user.project_set.select_related('version__model').prefetch_related(
-            Prefetch("value_set", queryset=Value.objects.project_names(), to_attr="project_name_values")
+        return self.request.user.project_set.select_related("version__model").prefetch_related(
+            Prefetch("calculation_set", queryset=Calculation.objects.project_name(), to_attr="project_name_calculations")
         ).all()
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -33,7 +33,7 @@ class ProjectView(LoginRequiredMixin, RedirectView):
     permanent = False
 
     def get_redirect_url(self, *args, **kwargs):
-        project = get_object_or_404(Project, pk=kwargs["pk"])
+        project = get_object_or_404(Project.objects.select_related("version"), pk=kwargs["pk"])
         try:
             subsection = Subsection.objects.filter(section__version=project.version)[
                 0:1
