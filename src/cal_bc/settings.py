@@ -85,6 +85,7 @@ INSTALLED_APPS = [
     "channels_postgres",
     "taggit",
     "django_cotton",
+    "binary_database_files",
 ]
 
 if importlib.util.find_spec("django_extensions"):
@@ -130,6 +131,23 @@ TEMPLATES = [
 
 ASGI_APPLICATION = "cal_bc.asgi.application"
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 2000
+
+DB_FILES_AUTO_EXPORT_DB_TO_FS = False
+DATABASE_FILES_URL_METHOD = 'URL_METHOD_2'
+
+STORAGES = {
+    "default": {
+        "BACKEND": "binary_database_files.storage.DatabaseStorage"
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+
+MIGRATION_MODULES = {
+    "binary_database_files": "cal_bc.binary_database_files.migrations"
+}
+
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
