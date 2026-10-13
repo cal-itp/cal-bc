@@ -1,0 +1,100 @@
+{% load widget_tweaks svg find_formset_field %}
+
+{% partialdef form-cell--new %}
+    {% if field.read_only %}
+        {% with object.value_set.all|find_valueset_field:field as value %}
+            <div>
+                <c-value-read-only blank="" field=field value=value />
+            </div>
+        {% endwith %}
+    {% else %}
+        {% with formset|find_formset_field:field as form %}
+            {% if form %}
+                <div>
+                    {% url 'model_version_section_subsection_group_row_guide' model_pk=row.group.subsection.section.version.model.pk version_pk=row.group.subsection.section.version.pk section_pk=row.group.subsection.section.pk subsection_pk=row.group.subsection.pk group_pk=row.group.pk pk=row.pk as row_url %}
+                    {{ form.id }}
+                    {{ form.field }}
+                    {% for field in form.visible_fields %}
+                        {% if field.widget_type == 'select' %}
+                            <c-value-select
+                                form=form
+                                field=field
+                            />
+                        {% elif field.widget_type == 'checkbox' %}
+                            <div class="flex items-center justify-between gap-3">
+                              <div class="group relative inline-flex w-11 shrink-0 rounded-full bg-gray-500 p-0.5 inset-ring inset-ring-gray-900/5 outline-offset-2 outline-dds-teal-400 transition-colors duration-200 ease-in-out has-checked:bg-dds-teal-600 has-focus-visible:outline-2">
+                                <span class="size-5 rounded-full bg-white shadow-xs ring-1 ring-gray-900/5 transition-transform duration-200 ease-in-out group-has-checked:translate-x-5"></span>
+                                {% render_field field class+="absolute inset-0 size-full appearance-none focus:outline-hidden" %}
+                              </div>
+
+                              <div>
+                                <label for="{{ field.id_for_label }}" class="text-lg font-medium">{{ field.label }}</label>
+                              </div>
+                            </div>
+                        {% else %}
+                            <c-value-textbox
+                                form=form
+                                field=field
+                            />
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    {% endif %}
+{% endpartialdef %}
+
+
+<aside class="border border-dds-teal-600 rounded-lg bg-dds-teal-100 shadow-sm">
+    <section class="rounded-t-md text-white bg-dds-teal-600 px-7 py-3.5">
+        <h3 class="text-lg uppercase font-bold">{{ subsection.name }} Settings</h3>
+    </section>
+    <article class="px-4 py-5 sm:p-6">
+        <form method="post" class="">
+            {% csrf_token %}
+            {{ formset.management_form }}
+            {{ formset.non_form_errors }}
+            here
+            {% for group in subsection.settings_group_set.all %}
+                <div>
+                    <h2 class="text-3xl font-semibold text-gray-900">{{ group.name }}</h2>
+                    {% if group.description %}<p class="mt-1 text-lg/8 font-light text-gray-700">{{ group.description }}</p>{% endif %}
+                </div>
+                {% for row in group.non_table_row_set.all %}
+                    {% if row.field_set.count == 1 and subsection.column_count == 0 %}
+                    <div class="grid grid-cols-2 gap-6">
+                    {% elif row.field_set.count == 1 and subsection.column_count > 0 %}
+                    <div class="grid grid-cols-{{ subsection.column_count|add:1 }} gap-x-3 items-center">
+                    {% else %}
+                    <div class="grid grid-cols-{{ row.field_set.count }} gap-6">
+                    {% endif %}
+                    
+                    {% if row.field_set.count == 1 and subsection.column_count > 0 %}
+                        {% with label_classes="sr-only" input_classes="text-center" %}
+                            {% for field in row.field_set.all %}
+                                <div>{{ field.name }}{% if field.required %}<span class="text-red-700 ml-1">*</span>{% endif %}</div>
+                                {% partial form-cell--new %}
+                            {% endfor %}
+                        {% endwith %}
+                        {% with formset|find_formset_row_errors:row as errors %}
+                            {% if errors %}
+                                <div></div>
+                                <div class="mt-1 mb-2 text-red-700 col-start-2 col-span-{{ subsection.column_count }} flex items-start">
+                                    {% svg 'projects/warning' alt="error" class="h-6 w-auto" %}<span class="ml-2">{{ errors }}</span>
+                                </div>
+                            {% else %}
+                            {% endif %}
+                        {% endwith %}
+                    {% else %}
+                        {% with show_errors="True" %}
+                            {% for field in row.field_set.all %}
+                                {% partial form-cell--new %}
+                            {% endfor %}
+                        {% endwith %}
+                    {% endif %}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </form>
+    </article>
+</aside>
