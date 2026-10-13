@@ -193,7 +193,7 @@ To reset your local database, run:
 $ uv run manage.py reset_db
 ```
 
-You can seed your local database with a basic sketch model with `uv run manage.py seed`. You can clear all model and associated data with `uv run manage.py seed --mode=clear`.  
+You can seed your local database with a basic sketch model with `uv run manage.py seed`. You can clear all model and associated data with `uv run manage.py clear_models`.  
 
 
 ## License
