@@ -11,6 +11,7 @@ dependencies = [
     "dj-svg>=0.3.1",
     "django>=6.0.7",
     "django-azure-auth>=2.4.0",
+    "django-binary-database-files",
     "django-cotton>=2.7.2",
     "django-debug-toolbar>=6.3.0",
     "django-downloadview>=2.4.0",
@@ -42,6 +43,9 @@ build-backend = "uv_build"
 
 [tool.uv]
 package = true
+
+[tool.uv.sources]
+django-binary-database-files = { git = "https://github.com/kimetrica/django-binary-database-files", branch = "pyup-pin-django-6.1.2" }
 
 [tool.ruff.lint]
 ignore = ["RUF012"]

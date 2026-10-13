@@ -1,5 +1,8 @@
+from functools import partial
+
 import nested_admin
 from django.contrib import admin
+from django.db import transaction
 
 from cal_bc.models.models.model import (
     Choice,
@@ -13,9 +16,11 @@ from cal_bc.models.models.model import (
     Section,
     Subsection,
     Version,
+    VersionFile,
 )
+from cal_bc.models.tasks import refresh_version_file
 
-admin.AdminSite.site_header = "Cal B/C Admin"
+admin.AdminSite.site_header = "Cal-B/C Admin"
 
 class ChoiceInline(nested_admin.SortableHiddenMixin, nested_admin.NestedTabularInline):
     model = Choice
@@ -152,14 +157,25 @@ class SectionInline(nested_admin.NestedStackedInline):
             return 1
 
 
+class VersionFileInline(nested_admin.NestedTabularInline):
+    model = VersionFile
+    extra = 0
+
+
 @admin.register(Version)
 class VersionAdmin(nested_admin.NestedModelAdmin):
     model = Version
-    inlines = [SectionInline]
+    inlines = [VersionFileInline, SectionInline]
     list_display = ["name", "model", "url"]
     search_fields = ["name", "model__name", "url"]
     search_help_text = "Search by Name, Model, and URL"
     fields = ["name", "url", "model"]
+
+    def save_model(self, request, obj, form, change):
+        with transaction.atomic():
+            super().save_model(request, obj, form, change)
+            if obj is not None and obj.url is not None:
+                transaction.on_commit(partial(refresh_version_file.enqueue, version_pk=obj.pk))
 
 
 @admin.register(Subsection)
