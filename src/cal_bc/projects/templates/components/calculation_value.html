@@ -1,7 +1,7 @@
 {% load humanize decorate_value %}
 
-{% if value.value %}
-    {{ value.value|decorate_value:field.unit }}
+{% if calculation.value %}
+    {{ calculation.value|decorate_value:field.unit }}
 {% else %}
     {% firstof blank "&nbsp;" %}
 {% endif %}

@@ -18,38 +18,40 @@
 {% endpartialdef %}
 
 {% partialdef form-cell--new %}
-    {% if field.read_only %}
-        {% with object|find_project_field:field as value %}
+    {% with object|find_calculation_field:field as calculation %}
+        {% if field.read_only %}
             <div>
-                <c-value-read-only blank="" field=field value=value />
+                <c-calculation blank="" field=field calculation=calculation />
             </div>
-        {% endwith %}
-    {% else %}
-        {% with formset|find_formset_field:field as form %}
-            {% if form %}
-                <div class="{% if row_field_count == 1 and not form.initial.field.unit and not form.instance.field.unit %}col-span-2{% endif %}">
-                    {% url 'model_version_section_subsection_group_row_guide' model_pk=row.group.subsection.section.version.model.pk version_pk=row.group.subsection.section.version.pk section_pk=row.group.subsection.section.pk subsection_pk=row.group.subsection.pk group_pk=row.group.pk pk=row.pk as row_url %}
-                    {{ form.id }}
-                    {{ form.field }}
-                    {% for field in form.visible_fields %}
-                        {% if field.widget_type == 'select' %}
-                            <c-value-select
-                                form=form
-                                field=field
-                                input_error_classes="{% if form.errors %} border-red-700 focus:border-red-700 focus:outline-red-400 {% endif %}"
-                            />
-                        {% else %}
-                            <c-value-textbox
-                                form=form
-                                field=field
-                                input_error_classes="{% if form.errors %} border-red-700 focus-within:border-red-700 focus-within:outline-red-400 {% endif %}"
-                            />
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
-    {% endif %}
+        {% else %}
+            {% with formset|find_formset_field:field as form %}
+                {% if form %}
+                    <div class="{% if row_field_count == 1 and not form.initial.field.unit and not form.instance.field.unit %}col-span-2{% endif %}">
+                        {% url 'model_version_section_subsection_group_row_guide' model_pk=row.group.subsection.section.version.model.pk version_pk=row.group.subsection.section.version.pk section_pk=row.group.subsection.section.pk subsection_pk=row.group.subsection.pk group_pk=row.group.pk pk=row.pk as row_url %}
+                        {{ form.id }}
+                        {{ form.field }}
+                        {% for field in form.visible_fields %}
+                            {% if field.widget_type == 'select' %}
+                                <c-input-select
+                                    form=form
+                                    field=field
+                                    calculation=calculation
+                                    input_error_classes="{% if form.errors %} border-red-700 focus:border-red-700 focus:outline-red-400 {% endif %}"
+                                />
+                            {% else %}
+                                <c-input-textbox
+                                    form=form
+                                    field=field
+                                    calculation=calculation
+                                    input_error_classes="{% if form.errors %} border-red-700 focus-within:border-red-700 focus-within:outline-red-400 {% endif %}"
+                                />
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+        {% endif %}
+    {% endwith %}
 {% endpartialdef %}
 
 {{ formset.management_form }}
@@ -62,8 +64,8 @@
         <dl class="flex-1 flex flex-col max-w-sm justify-between bg-white rounded-sm px-5 py-6 text-dds-teal-950">
             <dt id="field-{{ field.pk }}-name" class="text-sm uppercase">{{ field.name }}</dt>
             <dd aria-labelledby="field-{{ field.pk }}-name" class="flex font-bold text-2xl">
-                {% with object|find_project_field:field as value %}
-                <c-value-read-only-value blank="-" />
+                {% with object|find_calculation_field:field as calculation %}
+                <c-calculation-value field=field calculation=calculation blank="-" />
                 {% endwith %}
             </dd>
         </dl>

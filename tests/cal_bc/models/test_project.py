@@ -12,7 +12,7 @@ from cal_bc.models.models.model import (
     Subsection,
     Version,
 )
-from cal_bc.projects.models.project import Calculation, Input, Project, RefreshTask
+from cal_bc.projects.models.project import Input, Project, RefreshTask
 
 
 @pytest.mark.django_db(transaction=True)
@@ -50,26 +50,6 @@ class TestProject:
         return row.field_set.create(name="Project Name")
 
     @pytest.fixture
-    def summary_group(self, subsection: Subsection) -> Group:
-        return subsection.group_set.create(name="General", is_summary=True)
-
-    @pytest.fixture
-    def summary_row(self, summary_group: Group) -> Row:
-        return summary_group.row_set.create()
-
-    @pytest.fixture
-    def summary_field(self, summary_row: Row) -> Field:
-        return summary_row.field_set.create(name="Cost Per Mile")
-
-    @pytest.fixture
-    def summary_calculation(self, project: Project, summary_field: Field) -> Calculation:
-        return project.calculation_set.create(
-            project=project,
-            field=summary_field,
-            value="333"
-        )
-
-    @pytest.fixture
     def project(self, user: User, version: Version) -> Project:
         return version.project_set.create(user=user)
 
@@ -89,9 +69,6 @@ class TestProject:
 
     def test_value_string_representation(self, input: Input) -> None:
         assert str(input) == "Point Lobos Train"
-
-    def test_summary_calculation_set(self, project: Project, summary_calculation: Calculation) -> None:
-        assert list(project.calculation_set.summary()) == [summary_calculation]
 
     def test_ready_project_refresh_task_is_active(self, project: Project) -> None:
         db_task_result = DBTaskResult.objects.create(

@@ -49,7 +49,7 @@ class ProjectAdmin(admin.ModelAdmin):
 
     @admin.display(description="Project", ordering="id")
     def project_name(self, obj):
-        name = obj.input_set.project_name.first()
+        name = obj.calculation_set.project_name().first()
         return f"{obj.id!s} - {name.value}" if name and name.value else f"{obj.id!s} - <New Project>"
 
     @admin.display(description="Model", ordering="version__model__name")

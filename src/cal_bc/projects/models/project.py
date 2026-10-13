@@ -22,11 +22,11 @@ class Project(models.Model):
 
     @property
     def name(self):
-        return self.calculation_set.filter(field__name="Project Name").first()
+        return self.calculation_set.project_name().first()
 
     @property
     def benefit_cost_ratio(self):
-        return self.calculation_set.filter(field__name="Benefit / Cost Ratio").first()
+        return self.calculation_set.benefit_cost_ratio().first()
 
 
 class Input(models.Model):
@@ -35,6 +35,7 @@ class Input(models.Model):
     value = models.CharField(null=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
 
     class Meta:
         constraints = [
@@ -57,8 +58,14 @@ class Input(models.Model):
 
 
 class CalculationQuerySet(models.QuerySet):
-    def summary(self):
-        return self.filter(field__row__group__is_summary=True)
+    # def summary(self):
+    #     return self.filter(field__row__group__is_summary=True)
+
+    def project_name(self):
+        return self.filter(field__name="Project Name")
+
+    def benefit_cost_ratio(self):
+        return self.filter(field__name="Benefit / Cost Ratio")
 
 
 class Calculation(models.Model):
