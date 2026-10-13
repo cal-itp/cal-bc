@@ -2,7 +2,7 @@ from functools import partial
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
-from django.db.models import Prefetch
+from django.db.models import Count, Prefetch
 from django.forms import BaseInlineFormSet
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
@@ -20,6 +20,7 @@ from cal_bc.models.models.model import (
 from cal_bc.projects.forms.project import InputForm
 from cal_bc.projects.models.project import Calculation, Input, Project, RefreshTask
 from cal_bc.projects.tasks import refresh_project_fields
+from cal_bc.projects.templatetags.max_attr import max_attr
 from cal_bc.tasks import refresh_channel
 
 
@@ -70,8 +71,8 @@ class ProjectSubsectionView(
             Subsection.objects.prefetch_related(
                 "section__version__model",
                 Prefetch("group_set", queryset=Group.objects.non_summary().prefetch_related(
-                    Prefetch("row_set", queryset=Row.objects.non_table(), to_attr="non_table_row_set"),
-                    Prefetch("row_set", queryset=Row.objects.table(), to_attr="table_row_set"),
+                    Prefetch("row_set", queryset=Row.objects.non_table().annotate(Count("field")), to_attr="non_table_row_set"),
+                    Prefetch("row_set", queryset=Row.objects.table().annotate(Count("field")), to_attr="table_row_set"),
                     Prefetch("columngroup_set", queryset=ColumnGroup.objects.prefetch_related(
                         Prefetch("column_set", queryset=Column.objects.prefetch_related("field_set__row__group"))
                     ))
@@ -80,6 +81,7 @@ class ProjectSubsectionView(
             ),
             pk=self.kwargs["pk"]
         )
+        context["subsection_column_count"] = max_attr(context["subsection"].non_summary_group_set, "column_count")
         return context
 
     def extra_field_set(self):
@@ -90,7 +92,7 @@ class ProjectSubsectionView(
             .exclude(input__project_id=self.kwargs["project_pk"])
             .exclude(calculation__project_id=self.kwargs["project_pk"])
             .select_related("row", "row__group")
-            .prefetch_related("fieldrange")
+            .prefetch_related("fieldrange", "input_set", "calculation_set")
         )
 
     def get_initial(self):
@@ -105,6 +107,7 @@ class ProjectSubsectionView(
             .exclude(field__display_type=FieldDisplayType.READ_ONLY)
             .exclude(field__row__group__is_summary=True)
             .select_related("field__fieldrange", "field__row", "field__row__group")
+            .prefetch_related("field__input_set", "field__calculation_set")
         )
         return kwargs
 

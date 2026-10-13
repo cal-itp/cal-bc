@@ -7,7 +7,7 @@ from django.views.generic import DeleteView, ListView
 from django.views.generic.base import RedirectView
 
 from cal_bc.models.models.model import Subsection
-from cal_bc.projects.models.project import Project, Input, Calculation
+from cal_bc.projects.models.project import Calculation, Project
 
 
 class ProjectsView(LoginRequiredMixin, ListView):
