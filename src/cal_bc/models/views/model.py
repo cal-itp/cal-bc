@@ -9,6 +9,7 @@ from django.views.generic.edit import CreateView
 from cal_bc.models.models.model import (
     Field,
     FieldDisplayType,
+    GroupDisplayType,
     Model,
     Row,
     Subsection,
@@ -44,7 +45,7 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
             result = super().form_valid(form)
             field_set = Field.objects.filter(
                 row__group__subsection__section__version=self.object.version
-            ).exclude(display_type=FieldDisplayType.READ_ONLY).exclude(row__group__is_summary=True)
+            ).exclude(display_type=FieldDisplayType.READ_ONLY).exclude(row__group__display_type=GroupDisplayType.SUMMARY)
             objs = [Input(project=self.object, field=f) for f in field_set]
             transaction.on_commit(partial(Input.objects.bulk_create, objs=objs, ignore_conflicts=True))
             transaction.on_commit(self.refresh_project)

@@ -13,6 +13,7 @@ from cal_bc.models.models.model import (
     Field,
     FieldDisplayType,
     Group,
+    GroupDisplayType,
     Row,
     Subsection,
 )
@@ -85,7 +86,7 @@ class ProjectSubsectionView(
         return (
             Field.objects.filter(row__group__subsection_id=self.kwargs["pk"])
             .exclude(display_type=FieldDisplayType.READ_ONLY)
-            .exclude(row__group__is_summary=True)
+            .exclude(row__group__display_type=GroupDisplayType.SUMMARY)
             .exclude(input__project=self.object)
             .select_related("row", "row__group")
             .prefetch_related("fieldrange", "input_set", "calculation_set", "choice_set")
@@ -101,7 +102,7 @@ class ProjectSubsectionView(
             .filter(project=self.object)
             .filter(field__row__group__subsection_id=self.kwargs["pk"])
             .exclude(field__display_type=FieldDisplayType.READ_ONLY)
-            .exclude(field__row__group__is_summary=True)
+            .exclude(field__row__group__display_type=GroupDisplayType.SUMMARY)
             .select_related("field__fieldrange", "field__row", "field__row__group")
             .prefetch_related("field__input_set", "field__calculation_set", "field__choice_set")
         )

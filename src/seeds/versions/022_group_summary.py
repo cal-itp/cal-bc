@@ -1,7 +1,7 @@
 from functools import cached_property
 
 import seeds.seed
-from cal_bc.models.models.model import Group, Subsection
+from cal_bc.models.models.model import Group, GroupDisplayType, Subsection
 
 
 class Seed(seeds.seed.Seed):
@@ -18,7 +18,7 @@ class Seed(seeds.seed.Seed):
     def group(self) -> Group:
         group, _ = self.subsection.group_set.get_or_create(
             name="Summary",
-            defaults={"position": 1, "is_summary": True}
+            defaults={"position": 1, "display_type": GroupDisplayType.SUMMARY}
         )
         return group
 

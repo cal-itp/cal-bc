@@ -8,6 +8,7 @@ from pytest_playwright_axe import Axe
 from cal_bc.models.models.model import (
     FieldDisplayType,
     Group,
+    GroupDisplayType,
     Model,
     Section,
     Subsection,
@@ -200,7 +201,7 @@ class TestAccessibilitySystem:
 
     @pytest.fixture(autouse=True)
     def group_3_summary(self, subsection_3: Subsection) -> None:
-        group = subsection_3.group_set.create(name="Investment Analysis Summary", is_summary=True)
+        group = subsection_3.group_set.create(name="Investment Analysis Summary", display_type=GroupDisplayType.SUMMARY)
         row = group.row_set.create()
         row.field_set.create(name="Life-Cycle Costs (mil. $)", cell="3) Results!H13", unit="$", display_type=FieldDisplayType.READ_ONLY)
         row.field_set.create(name="Life-Cycle Benefits (mil. $)", cell="3) Results!H14", unit="$", display_type=FieldDisplayType.READ_ONLY)

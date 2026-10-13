@@ -67,6 +67,12 @@ class Section(models.Model):
         return self.version.section_set.filter(code__lt=self.code).last()
 
 
+class GroupDisplayType(models.IntegerChoices):
+    STANDARD = 1, "Standard"
+    SUMMARY = 2, "Summary"
+    SETTINGS = 3, "Settings"
+
+
 class Subsection(models.Model):
     section = models.ForeignKey(Section, null=False, on_delete=models.CASCADE)
     name = models.CharField(null=False, blank=False, db_index=True)
@@ -109,16 +115,16 @@ class Subsection(models.Model):
     @property
     def read_only(self):
         return Field.objects.filter(
-            row__group__id__in=self.group_set.exclude(is_summary=True)
+            row__group__id__in=self.group_set.exclude(display_type=GroupDisplayType.SUMMARY)
         ).exclude(display_type=FieldDisplayType.READ_ONLY).count() == 0
 
 
 class GroupManager(models.Manager):
     def summary(self):
-        return self.filter(is_summary=True)
+        return self.filter(display_type=GroupDisplayType.SUMMARY)
 
     def non_summary(self):
-        return self.filter(is_summary=False)
+        return self.filter(display_type=GroupDisplayType.STANDARD)
 
 
 class Group(models.Model):
@@ -139,7 +145,7 @@ class Group(models.Model):
         },
     )
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
-    is_summary = models.BooleanField(default=False, db_index=True)
+    display_type = models.IntegerField(choices=GroupDisplayType.choices, null=False, default=GroupDisplayType.STANDARD, db_index=True)
 
     objects = GroupManager()
 
@@ -258,10 +264,10 @@ class FieldDisplayType(models.IntegerChoices):
 
 class FieldManager(models.Manager):
     def non_summary(self):
-        return self.filter(row__group__is_summary=False)
+        return self.filter(row__group__display_type=GroupDisplayType.STANDARD)
 
     def input(self):
-        return  self.non_summary().exclude(display_type=FieldDisplayType.READ_ONLY)
+        return self.non_summary().exclude(display_type=FieldDisplayType.READ_ONLY)
 
     def required(self):
         return self.non_summary().filter(display_type=FieldDisplayType.REQUIRED)
@@ -286,11 +292,11 @@ class Field(models.Model):
 
     @property
     def required(self):
-        return (self.display_type == FieldDisplayType.REQUIRED and self.row.group.is_summary == False)
+        return (self.display_type == FieldDisplayType.REQUIRED and self.row.group.display_type != GroupDisplayType.SUMMARY)
 
     @property
     def read_only(self):
-        return self.display_type == FieldDisplayType.READ_ONLY or self.row.group.is_summary == True
+        return self.display_type == FieldDisplayType.READ_ONLY or self.row.group.display_type == GroupDisplayType.SUMMARY
 
 
 class Choice(models.Model):
