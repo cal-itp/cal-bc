@@ -6,6 +6,7 @@ from django_tasks_db.models import DBTaskResult
 from cal_bc.models.models.model import (
     Field,
     Group,
+    GroupDisplayType,
     Model,
     Row,
     Section,

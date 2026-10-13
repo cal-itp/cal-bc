@@ -7,6 +7,7 @@ from pytest_playwright.pytest_playwright import CreateContextCallback
 from cal_bc.models.models.model import (
     FieldDisplayType,
     Group,
+    GroupDisplayType,
     Model,
     Section,
     Subsection,
@@ -170,7 +171,7 @@ class TestProjectSystem:
 
     @pytest.fixture(autouse=True)
     def group_1E_summary(self, subsection_1E: Subsection) -> None:
-        group = subsection_1E.group_set.create(name="Summary", is_summary=True)
+        group = subsection_1E.group_set.create(name="Summary", display_type=GroupDisplayType.SUMMARY)
         row = group.row_set.create()
         row.field_set.create(name="Total Project Support", cell="1) Project Information!W44", unit="$", position=1)
         row.field_set.create(name="Total Construction", cell="1) Project Information!Y44", unit="$", position=2)
@@ -205,7 +206,7 @@ class TestProjectSystem:
 
     @pytest.fixture(autouse=True)
     def group_3_summary(self, subsection_3: Subsection) -> None:
-        group = subsection_3.group_set.create(name="Investment Analysis Summary", is_summary=True)
+        group = subsection_3.group_set.create(name="Investment Analysis Summary", display_type=GroupDisplayType.SUMMARY)
         row = group.row_set.create()
         row.field_set.create(name="Life-Cycle Costs (mil. $)", cell="3) Results!H13", unit="$", display_type=FieldDisplayType.READ_ONLY)
         row.field_set.create(name="Life-Cycle Benefits (mil. $)", cell="3) Results!H14", unit="$", display_type=FieldDisplayType.READ_ONLY)

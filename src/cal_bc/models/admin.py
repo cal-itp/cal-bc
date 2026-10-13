@@ -87,7 +87,7 @@ class GroupAdmin(nested_admin.NestedModelAdmin):
     model = Group
     inlines = [RowInline, ColumnGroupInline]
     ordering = ["name"]
-    list_display = ["name", "is_summary", "subsection", "section", "version_name", "model_name"]
+    list_display = ["name", "display_type", "subsection", "section", "version_name", "model_name"]
     list_select_related = ["subsection", "subsection__section", "subsection__section__version", "subsection__section__version__model"]
     search_fields = ["name", "subsection__code", "subsection__name", "subsection__code", "subsection__section__name", "subsection__section__version__name", "subsection__section__version__model__name"]
     search_help_text = "Search by Name, Model, Version, Section, and Subsection"
@@ -99,7 +99,7 @@ class GroupAdmin(nested_admin.NestedModelAdmin):
         ),
         (
             "GROUP",
-            { "fields": ["name", "description", "guide", "is_summary"] },
+            { "fields": ["name", "description", "guide", "display_type"] },
         ),
     )
 

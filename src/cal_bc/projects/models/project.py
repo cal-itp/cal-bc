@@ -3,7 +3,7 @@ from django.db import models, transaction
 from django.tasks.base import TaskResultStatus
 from django_tasks_db.models import DBTaskResult
 
-from cal_bc.models.models.model import Field, Version
+from cal_bc.models.models.model import Field, GroupDisplayType, Version
 
 
 class Project(models.Model):
@@ -27,6 +27,10 @@ class Project(models.Model):
     @property
     def benefit_cost_ratio(self):
         return self.calculation_set.benefit_cost_ratio().first()
+
+    @property
+    def summary_value_set(self):
+        return self.value_set.filter(field__row__group__display_type=GroupDisplayType.SUMMARY).all()
 
 
 class Input(models.Model):
