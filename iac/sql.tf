@@ -1,6 +1,6 @@
 resource "google_sql_database_instance" "cal-bc-staging" {
   name             = "cal-bc-staging"
-  database_version = "POSTGRES_14"
+  database_version = "POSTGRES_18"
   region           = "us-west2"
   settings {
     tier = "db-f1-micro"
