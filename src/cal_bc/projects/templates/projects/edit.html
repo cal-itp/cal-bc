@@ -41,7 +41,7 @@
             <form method="post" class="mx-auto max-w-7xl pt-16 pb-20 px-6 lg:px-8">
                 {% csrf_token %}
 
-                {% if subsection.column_count < column_threshold and subsection.summary_group_set.count == 0 %}
+                {% if subsection_column_count < column_threshold and subsection.summary_group_set|length == 0 %}
                 <div class="md:grid md:grid-cols-7 md:gap-4">
                     <section class="md:col-span-4">
                         {% partial subsection-header %}

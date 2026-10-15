@@ -1,17 +1,20 @@
-{% load static widget_tweaks svg define find_formset_field humanize %}
+{% load static widget_tweaks svg define find_formset_field humanize subtract %}
 
 {% partialdef group-header %}
     <div class="flex flex-col-reverse mt-16 lg:flex-row lg:justify-between lg:items-center">
         <h2 class="text-3xl font-semibold text-gray-900">{{ group.name }}</h2>
-        {% if subsection.column_count >= column_threshold or subsection.summary_group_set.count > 0 %}
-        {% if group.guide %}
-        <div>
-            <c-modal-dialog modal_id="group-guide">
-                {% include "_guide.html" with target=group %}
-            </c-modal-dialog>
-            <button type="button" command="show-modal" commandfor="modal-dialog-group-guide" class="mb-2 lg:mb-0 cursor-pointer flex items-center text-lg font-semibold text-dds-teal-600 hover:text-dds-teal-700 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">{% svg "projects/guide" class="h-6 w-auto" %}<span class="sr-only">Show group {{ group.name }} guide</span><span class="ml-2">Show Guide</span></button>
-        </div>
-        {% endif %}
+        {% if subsection_column_count >= column_threshold or subsection.summary_group_set|length > 0 %}
+            {% if group.guide %}
+            <div>
+                <c-modal-dialog modal_id="group-guide">
+                    {% include "_guide.html" with target=group %}
+                </c-modal-dialog>
+                <button type="button" command="show-modal" commandfor="modal-dialog-group-guide" class="mb-2 lg:mb-0 cursor-pointer flex items-center text-lg font-semibold text-dds-teal-600 hover:text-dds-teal-700 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+                    {% svg "projects/guide" class="h-6 w-auto" %}
+                    <span class="sr-only">Show group {{ group.name }} guide</span><span class="ml-2">Show Guide</span>
+                </button>
+            </div>
+            {% endif %}
         {% endif %}
     </div>
     {% if group.description %}<p class="mt-1 text-lg/8 font-light text-gray-700">{{ group.description }}</p>{% endif %}
@@ -57,8 +60,8 @@
 {{ formset.management_form }}
 {{ formset.non_form_errors }}
 
-{% for group in subsection.summary_group_set.all %}
-    {% for row in group.non_table_row_set.all %}
+{% for group in subsection.summary_group_set %}
+    {% for row in group.non_table_row_set %}
     <div class="flex space-x-0.5 mt-12">
         {% for field in row.field_set.all %}
         <dl class="flex-1 flex flex-col max-w-sm justify-between bg-white rounded-sm px-5 py-6 text-dds-teal-950">
@@ -74,20 +77,20 @@
     {% endfor %}
 {% endfor %}
 
-{% for group in subsection.non_summary_group_set.all %}
+{% for group in subsection.non_summary_group_set %}
     <div>{% partial group-header %}</div>
 
     <div class="space-y-6 mt-6">
-        {% for row in group.non_table_row_set.all %}
-            {% if row.field_set.count == 1 and subsection.column_count == 0 %}
+        {% for row in group.non_table_row_set %}
+            {% if row.field__count == 1 and subsection_column_count == 0 %}
             <div class="grid grid-cols-2 gap-6">
-            {% elif row.field_set.count == 1 and subsection.column_count > 0 %}
-            <div class="grid grid-cols-{{ subsection.column_count|add:1 }} gap-x-3 items-center">
+            {% elif row.field__count == 1 and subsection_column_count > 0 %}
+            <div class="grid grid-cols-{{ subsection_column_count|add:1 }} gap-x-3 items-center">
             {% else %}
-            <div class="grid grid-cols-{{ row.field_set.count }} gap-6">
+            <div class="grid grid-cols-{{ row.field__count }} gap-6">
             {% endif %}
 
-            {% if row.field_set.count == 1 and subsection.column_count > 0 %}
+            {% if row.field__count == 1 and subsection_column_count > 0 %}
                 {% with label_classes="sr-only" input_classes="text-center" %}
                     {% for field in row.field_set.all %}
                         <div>{{ field.name }}{% if field.required %}<span class="text-red-700 ml-1">*</span>{% endif %}</div>
@@ -97,7 +100,7 @@
                 {% with formset|find_formset_row_errors:row as errors %}
                     {% if errors %}
                         <div></div>
-                        <div class="mt-1 mb-2 text-red-700 col-start-2 col-span-{{ subsection.column_count }} flex items-start">
+                        <div class="mt-1 mb-2 text-red-700 col-start-2 col-span-{{ subsection_column_count }} flex items-start">
                             {% svg 'projects/warning' alt="error" class="h-6 w-auto" %}<span class="ml-2">{{ errors }}</span>
                         </div>
                     {% else %}
@@ -113,8 +116,8 @@
             </div>
         {% endfor %}
 
-        {% if group.table_row_set.count > 0 %}
-            <div class="grid {% if subsection.column_count < 6 %}grid-cols-{{ subsection.column_count|add:1 }}{% else %}grid-cols-[50px_repeat({{ subsection.column_count }},minmax(0,1fr))]{% endif %} gap-3 items-baseline-last">
+        {% if group.table_row_set|length > 0 %}
+            <div class="grid {% if subsection_column_count < 6 %}grid-cols-{{ subsection_column_count|add:1 }}{% else %}grid-cols-[50px_repeat({{ subsection_column_count }},minmax(0,1fr))]{% endif %} gap-3 items-baseline-last">
                 <div></div>
                 {% for column_group in group.columngroup_set.all %}
                     {% if column_group.name %}
@@ -126,9 +129,11 @@
                     {% endif %}
                 {% endfor %}
 
-                {% for i in group.empty_column_count %}
-                <div></div>
-                {% endfor %}
+                {% with subsection_column_count|subtract:group.column_count as empty_column_count %}
+                    {% if empty_column_count > 0 %}
+                        <div class="col-span-{{ empty_column_count }}"></div>
+                    {% endif %}
+                {% endwith %}
 
                 <div></div>
                 {% for column_group in group.columngroup_set.all %}
@@ -138,9 +143,16 @@
                 {% endfor %}
             </div>
 
-            <div class="grid {% if subsection.column_count < 6 %}grid-cols-{{ subsection.column_count|add:1 }}{% else %}grid-cols-[50px_repeat({{ subsection.column_count }},minmax(0,1fr))]{% endif %} gap-x-3 items-center">
-                {% for row in group.table_row_set.all %}
-                    <div>{{ row.name }}{% if row.required %}<span class="text-red-700 ml-1">*</span>{% endif %}</div>
+            <div class="grid {% if subsection_column_count < 6 %}grid-cols-{{ subsection_column_count|add:1 }}{% else %}grid-cols-[50px_repeat({{ subsection_column_count }},minmax(0,1fr))]{% endif %} gap-x-3 items-center">
+                {% for row in group.table_row_set %}
+                    <div>
+                        {% spaceless %}
+                        <span>{{ row.name }}</span>
+                        {% if row.input_field_set|length > 0 and row.input_field_set|length == row.required_field_set|length %}
+                            <span class="text-red-700 ml-1">*</span>
+                        {% endif %}
+                        {% endspaceless %}
+                    </div>
                     {% for column_group in group.columngroup_set.all %}
                         {% for column in column_group.column_set.all %}
                             {% with column.field_set.all|find_fieldset_row:row as field %}
@@ -158,12 +170,12 @@
                     {% with formset|find_formset_row_errors:row as errors %}
                         {% if errors %}
                             <div></div>
-                            <div class="mt-1 mb-2 text-red-700 col-start-2 col-span-{{ subsection.column_count }} flex items-start">
+                            <div class="mt-1 mb-2 text-red-700 col-start-2 col-span-{{ subsection_column_count }} flex items-start">
                                 {% svg 'projects/warning' alt="error" class="h-6 w-auto" %}<span class="ml-2">{{ errors }}</span>
                             </div>
                         {% else %}
                             <div></div>
-                            <div class="mt-3 col-start-2 col-span-{{ subsection.column_count }}"></div>
+                            <div class="mt-3 col-start-2 col-span-{{ subsection_column_count }}"></div>
                         {% endif %}
                     {% endwith %}
                 {% endfor %}
