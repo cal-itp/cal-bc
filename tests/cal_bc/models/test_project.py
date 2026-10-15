@@ -12,7 +12,7 @@ from cal_bc.models.models.model import (
     Subsection,
     Version,
 )
-from cal_bc.projects.models.project import Input, Project, RefreshTask
+from cal_bc.projects.models.project import Calculation, Input, Project, RefreshTask
 
 
 @pytest.mark.django_db(transaction=True)
@@ -60,6 +60,13 @@ class TestProject:
             value="Point Lobos Train"
         )
 
+    @pytest.fixture
+    def calculation(self, project: Project, project_name_field: Field) -> Calculation:
+        return project.calculation_set.create(
+            field=project_name_field,
+            value="Point Lobos Train"
+        )
+
     def test_default_name(self, project: Project) -> None:
         assert str(project) == "New Project"
 
@@ -67,8 +74,11 @@ class TestProject:
         project.calculation_set.create(field=project_name_field, value="Trails to Rails")
         assert str(project) == "Trails to Rails"
 
-    def test_value_string_representation(self, input: Input) -> None:
+    def test_input_string_representation(self, input: Input) -> None:
         assert str(input) == "Point Lobos Train"
+
+    def test_calculation_string_representation(self, calculation: Calculation) -> None:
+        assert str(calculation) == "Point Lobos Train"
 
     def test_ready_project_refresh_task_is_active(self, project: Project) -> None:
         db_task_result = DBTaskResult.objects.create(

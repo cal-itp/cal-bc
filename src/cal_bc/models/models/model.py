@@ -99,28 +99,18 @@ class Subsection(models.Model):
         return query.last()
 
     @property
-    def summary_group_set(self):
-        return self.group_set.filter(is_summary=True).all()
-
-    @property
-    def non_summary_group_set(self):
-        return self.group_set.filter(is_summary=False).all()
-
-    @property
-    def column_count(self):
-        return (
-            self.group_set
-            .values("id")
-            .annotate(column_count=models.Count("columngroup__column__id"))
-            .values("id", "column_count")
-            .order_by("-column_count")[0]["column_count"]
-        )
-
-    @property
     def read_only(self):
         return Field.objects.filter(
             row__group__id__in=self.group_set.exclude(is_summary=True)
         ).exclude(display_type=FieldDisplayType.READ_ONLY).count() == 0
+
+
+class GroupManager(models.Manager):
+    def summary(self):
+        return self.filter(is_summary=True)
+
+    def non_summary(self):
+        return self.filter(is_summary=False)
 
 
 class Group(models.Model):
@@ -142,40 +132,32 @@ class Group(models.Model):
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
     is_summary = models.BooleanField(default=False, db_index=True)
 
+    objects = GroupManager()
+
     class Meta:
         ordering = ["position"]
 
     def __str__(self):
         return f"{self.position + 1!s} - {self.name}"
 
-    @property
-    def table_row_set(self):
-        return Row.objects.filter(
-            id__in=self.row_set.filter(
-                field__column__column_group__in=self.columngroup_set.all()
-            ).all()
+
+class RowManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().fetch_mode(models.FETCH_RAISE)
+
+    def table(self):
+        return self.filter(
+            id__in=Row.objects.filter(
+                field__column__column_group__in=ColumnGroup.objects.all()
+            )
         )
 
-    @property
-    def non_table_row_set(self):
-        return Row.objects.filter(
-            id__in=self.row_set.exclude(
-                field__column__column_group__in=self.columngroup_set.all()
-            ).all()
+    def non_table(self):
+        return self.exclude(
+            id__in=Row.objects.filter(
+                field__column__column_group__in=ColumnGroup.objects.all()
+            )
         )
-
-    @property
-    def nonempty_column_group_set(self):
-        return self.columngroup_set.exclude(name="").all()
-
-    @property
-    def column_count(self):
-        return self.columngroup_set.aggregate(column_count=models.Count("column__id"))["column_count"]
-
-    @property
-    def empty_column_count(self):
-        diff_columns = self.subsection.column_count - self.column_count
-        return range(0) if diff_columns < 0 else range(diff_columns)
 
 
 class Row(models.Model):
@@ -195,18 +177,13 @@ class Row(models.Model):
         },
     )
 
+    objects = RowManager()
+
     class Meta:
         ordering = ["position"]
 
     def __str__(self):
         return f"{self.position + 1!s} - {self.name}" if self.name else f"{self.position + 1!s}"
-
-    @property
-    def required(self):
-        input_fields = self.field_set.exclude(display_type=FieldDisplayType.READ_ONLY).exclude(row__group__is_summary=True).count()
-        if input_fields > 0:
-            return self.field_set.filter(display_type=FieldDisplayType.REQUIRED).exclude(row__group__is_summary=True).count() == input_fields
-        return False
 
 
 class ColumnGroup(models.Model):
@@ -262,6 +239,15 @@ class FieldRange(models.Model):
     def __str__(self):
         return f"{self.min_value!s} to {self.max_value!s}"
 
+class FieldManager(models.Manager):
+    def non_summary(self):
+        return self.filter(row__group__is_summary=False)
+
+    def input(self):
+        return  self.non_summary().exclude(display_type=FieldDisplayType.READ_ONLY)
+
+    def required(self):
+        return self.non_summary().filter(display_type=FieldDisplayType.REQUIRED)
 
 class Field(models.Model):
     row = models.ForeignKey(Row, null=False, on_delete=models.CASCADE)
@@ -271,6 +257,8 @@ class Field(models.Model):
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
     unit = models.CharField(blank=True)
     display_type = models.IntegerField(choices=FieldDisplayType.choices, null=False, default=FieldDisplayType.REQUIRED, db_index=True)
+
+    objects = FieldManager()
 
     class Meta:
         ordering = ["position"]

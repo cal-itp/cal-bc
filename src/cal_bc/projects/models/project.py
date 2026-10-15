@@ -58,9 +58,6 @@ class Input(models.Model):
 
 
 class CalculationQuerySet(models.QuerySet):
-    # def summary(self):
-    #     return self.filter(field__row__group__is_summary=True)
-
     def project_name(self):
         return self.filter(field__name="Project Name")
 
