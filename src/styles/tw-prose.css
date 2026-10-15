@@ -10,8 +10,8 @@
   line-height: calc(var(--leading-normal) + 0.25);
 
   & :where(p):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-    margin-top: 1.25em;
-    margin-bottom: 1.25em;
+    margin-top: 0.75em;
+    margin-bottom: 0.75em;
   }
 
   & :where([class~='lead']):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
@@ -162,7 +162,7 @@
     font-weight: var(--font-weight-bold);
     font-size: 1.5em;
     margin-top: 2em;
-    margin-bottom: 1em;
+    margin-bottom: 0.5em;
     line-height: 1.3333333;
   }
 
@@ -175,8 +175,7 @@
     color: var(--tw-prose-headings);
     font-weight: var(--font-weight-semibold);
     font-size: 1.25em;
-    margin-top: 1.6em;
-    margin-bottom: 0.6em;
+    margin-top: 1.2em;
     line-height: 1.6;
   }
 
@@ -376,8 +375,8 @@
   }
 
   & :where(li):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
+    margin-top: 0;
+    margin-bottom: 0;
   }
 
   & :where(ol > li):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
@@ -389,22 +388,22 @@
   }
 
   & :where(.prose > ul > li p):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-    margin-top: 0.75em;
-    margin-bottom: 0.75em;
+    margin-top: 0;
+    margin-bottom: 0;
   }
 
   &
     :where(.prose > ul > li > p:first-child):not(
       :where([class~='not-prose'], [class~='not-prose'] *)
     ) {
-    margin-top: 1.25em;
+    margin-top: 0;
   }
 
   &
     :where(.prose > ul > li > p:last-child):not(
       :where([class~='not-prose'], [class~='not-prose'] *)
     ) {
-    margin-bottom: 1.25em;
+    margin-bottom: 0;
   }
 
   &
