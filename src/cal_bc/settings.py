@@ -85,6 +85,8 @@ INSTALLED_APPS = [
     "channels_postgres",
     "taggit",
     "django_cotton",
+    "hijack",
+    "hijack.contrib.admin",
 ]
 
 if importlib.util.find_spec("django_extensions"):
@@ -109,6 +111,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
+    "hijack.middleware.HijackUserMiddleware"
 ]
 
 ROOT_URLCONF = "cal_bc.urls"
