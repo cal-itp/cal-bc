@@ -40,6 +40,19 @@ class Version(models.Model):
         return Subsection.objects.filter(section__in=self.section_set.all()).exists()
 
 
+class VersionFile(models.Model):
+    version = models.OneToOneField("Version", on_delete=models.CASCADE, unique=True)
+    file = models.FileField(null=False, blank=False)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["version"], name="unique_version"),
+        ]
+
+    def __str__(self) -> str:
+        return f"VersionFile #{self.pk}"
+
+
 class Section(models.Model):
     version = models.ForeignKey(Version, null=False, on_delete=models.CASCADE)
     name = models.CharField(null=False, blank=False, db_index=True)
