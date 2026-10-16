@@ -1,6 +1,7 @@
 import nested_admin
 from django.contrib import admin
 
+from cal_bc.models.forms.model import ChoiceForm
 from cal_bc.models.models.model import (
     Choice,
     Column,
@@ -19,6 +20,7 @@ admin.AdminSite.site_header = "Cal B/C Admin"
 
 class ChoiceInline(nested_admin.SortableHiddenMixin, nested_admin.NestedTabularInline):
     model = Choice
+    form = ChoiceForm
     extra = 0
 
 
