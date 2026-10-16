@@ -47,11 +47,13 @@ class ProjectSubsectionView(
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        non_table_row_prefetch = Prefetch("row_set", queryset=Row.objects.non_table().order_by("position").annotate(Count("field")), to_attr="non_table_row_set")
+        non_table_row_prefetch = Prefetch("row_set", queryset=Row.objects.non_table().prefetch_related(
+            Prefetch("field_set", queryset=Field.objects.prefetch_related("input_set", "calculation_set")),
+        ).order_by("position").annotate(Count("field")), to_attr="non_table_row_set")
         table_row_prefetch = Prefetch(
     "row_set",
             queryset=Row.objects.table().prefetch_related(
-                Prefetch("field_set", queryset=Field.objects.input(), to_attr="input_field_set"),
+                Prefetch("field_set", queryset=Field.objects.input().prefetch_related("input_set"), to_attr="input_field_set"),
                 Prefetch("field_set", queryset=Field.objects.required(), to_attr="required_field_set"),
             )
             .order_by("position")
