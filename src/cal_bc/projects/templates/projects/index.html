@@ -4,6 +4,28 @@
 
 <div class="min-h-full bg-gray-100 flex flex-col">
     {% include "_header_nav.html" %}
+
+    {% if messages %}
+    <header class="relative">
+        <div class="mx-auto max-w-7xl pt-4 px-6 lg:px-8">
+            <div class="bg-success-100 border-l-4 border-success-700 rounded text-dds-teal-900 shadow-md min-w-md md:float-top md:float-right" role="alert">
+                <div class="flex items-center px-2 py-4">
+                    <div class="shrink-0">
+                        {% svg 'projects/alert_resolved' class="h-8 w-8" %}
+                    </div>
+                    <div class="ml-3">
+                        <ul class="messages">
+                            {% for message in messages %}
+                            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    {% endif %}
+
     <header class="relative">
         <div class="mx-auto max-w-7xl py-6 px-6 lg:px-8">
             <p class="mt-4 uppercase text-base font-light text-pretty text-dds-teal-700">Welcome, {% if user.get_short_name != "" %}{{ user.get_short_name }}{% endif %}</p>
