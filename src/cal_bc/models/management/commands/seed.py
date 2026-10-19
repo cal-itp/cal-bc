@@ -2,7 +2,7 @@ import logging
 
 from django.core.management.base import BaseCommand
 
-import seeds.models.versions
+import seeds.versions
 from seeds.seed_loader import SeedLoader
 
 logger = logging.getLogger(__name__)
@@ -20,5 +20,5 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         logger.info("Loading seeds...")
-        SeedLoader(seeds.models.versions).load_seeds(targets=kwargs["target"])
+        SeedLoader(seeds.versions).load_seeds(targets=kwargs["target"])
         logger.info("Finished loading seeds!")
