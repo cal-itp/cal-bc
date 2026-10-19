@@ -7,7 +7,7 @@ interactions:
       Host:
       - dot.ca.gov
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://dot.ca.gov/-/media/dot-media/programs/transportation-planning/documents/new-state-planning/transportation-economics/cal-bc/2023-cal-bc/2023-non-federal-model/cal-bc-8-1-sketch-a11y.xlsm
   response:
@@ -13208,13 +13208,13 @@ interactions:
       Content-Type:
       - application/vnd.ms-excel.sheet.macroEnabled.12
       Date:
-      - Wed, 22 Oct 2025 03:53:52 GMT
+      - Mon, 19 Oct 2026 19:12:30 GMT
       Last-Modified:
       - Sat, 26 Oct 2024 23:30:45 GMT
       Set-Cookie:
       - BIGipServer~A~Pool_SiteCore_ContentDelivery=rd1o00000000000000000000ffff95881545o443;
         path=/; Httponly; Secure
-      - TS0115e638=01ccba8e7f3ec88e5e31ed74e567d6f3ba7bb22ef0d9c420608bcf7e7cf0134a6233b254b4e30d6eae221e1cb7d7984a3520477e05ddfa62e9f70e353ecc667dd738603eb2;
+      - TS0115e638=01ccba8e7f00bba0b3f3d6c4b80ad3d89dee1e5a7ee3ff481c7024fb27be9ead32dc6c39fe5ca82645cc2491a855051a0d9888c35124d9cbedd793be06fbd951286537804b;
         Path=/; Domain=.dot.ca.gov
     status:
       code: 200

@@ -1,32 +1,38 @@
 import logging
 from functools import cached_property, partial
 
+from django.core.files import File
 from django.db import transaction
 from django.tasks import task
 
 from cal_bc.models.models.model import (
     Field,
     Subsection,
+    Version,
 )
+from cal_bc.models.tasks import refresh_version_file
 from cal_bc.projects.models.project import Calculation, Project
 from cal_bc.tasks import refresh_channel
 from cal_bc_calculator.calculator import BytesCalculator
-from cal_bc_calculator.downloader import Downloader
 
 logger = logging.getLogger(__name__)
 
 
 class RemoteWorkbook:
-    def __init__(self, url: str) -> None:
-        self.url = url
+    def __init__(self, version: Version) -> None:
+        self.version = version
 
-    @property
-    def downloader(self) -> Downloader:
-        return Downloader(url=self.url)
+    @cached_property
+    def file(self) -> File:
+        if not hasattr(self.version, "versionfile"):
+            refresh_version_file.func(version_pk=self.version.pk)
+            self.version.refresh_from_db()
+        with self.version.versionfile.file.open() as f:
+            return f.read()
 
     @cached_property
     def calculator(self) -> BytesCalculator:
-        return BytesCalculator(self.downloader.to_bytes())
+        return BytesCalculator(self.file)
 
     def set_cell_values(self, cell_values: dict[str, any]) -> None:
         self.calculator.write(cell_values)
@@ -39,7 +45,7 @@ class RemoteWorkbook:
 def refresh_project_fields(project_pk: int) -> None:
     project = Project.objects.select_related('version').get(id=project_pk)
 
-    remote_workbook = RemoteWorkbook(url=project.version.url)
+    remote_workbook = RemoteWorkbook(version=project.version)
     cell_values = {
         input.field.cell: input.value
         for input in project.input_set.exclude(field__cell="").exclude(value="").select_related("field")
