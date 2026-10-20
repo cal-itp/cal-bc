@@ -324,14 +324,14 @@ class TestProjectSubsectionViews:
                 kwargs={"project_pk": project.pk, "pk": subsection_1A.pk},
             ),
             data={
-                "value-0-field": name_field.pk,
-                "value-0-value": "Testing",
-                "value-1-field": district_field.pk,
-                "value-1-value": "1",
-                "value-2-field": length_peak_period_field.pk,
-                "value-2-value": "",
-                "value-TOTAL_FORMS": 3,
-                "value-INITIAL_FORMS": 0,
+                f"subsection-{subsection_1A.pk}-input-0-field": name_field.pk,
+                f"subsection-{subsection_1A.pk}-input-0-value": "Testing",
+                f"subsection-{subsection_1A.pk}-input-1-field": district_field.pk,
+                f"subsection-{subsection_1A.pk}-input-1-value": "1",
+                f"subsection-{subsection_1A.pk}-input-2-field": length_peak_period_field.pk,
+                f"subsection-{subsection_1A.pk}-input-2-value": "",
+                f"subsection-{subsection_1A.pk}-input-TOTAL_FORMS": 3,
+                f"subsection-{subsection_1A.pk}-input-INITIAL_FORMS": 0,
             },
         )
 
