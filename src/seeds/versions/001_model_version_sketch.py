@@ -1,4 +1,5 @@
 import pathlib
+from io import BytesIO
 
 from django.core.files import File
 
@@ -29,6 +30,6 @@ class Seed(seeds.seed.Seed):
         VersionFile.objects.get_or_create(
             version=version,
             defaults={
-                "file": File(workbook_bytes, name="cal-bc-8-1-sketch-a11y.xlsm"),
+                "file": File(BytesIO(workbook_bytes), name="cal-bc-8-1-sketch-a11y.xlsm"),
             }
         )
