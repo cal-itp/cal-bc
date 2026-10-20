@@ -14,7 +14,7 @@
     <link rel="apple-touch-icon" href="{% static 'shared/favicon.png' %}">
 </head>
 
-<body class="h-full" hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'>
+<body class="h-full" hx-boost="true" hx-headers:inherited='{"x-csrftoken": "{{ csrf_token }}"}'>
     {% block main %}{% endblock %}
 </body>
 </html>
