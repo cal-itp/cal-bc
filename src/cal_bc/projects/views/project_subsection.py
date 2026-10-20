@@ -29,10 +29,12 @@ class ProjectSubsectionView(
     model = Project
     inline_model = Input
     form_class = InputForm
-    prefix = "value"
     factory_kwargs = {"can_delete": False}
     template_name = "projects/edit.html"
     success_message = "Project successfully saved!"
+
+    def get_prefix(self) -> str:
+        return f"subsection-{self.kwargs['pk']}-input"
 
     def get_object(self):
         return get_object_or_404(
@@ -84,7 +86,7 @@ class ProjectSubsectionView(
             Field.objects.filter(row__group__subsection_id=self.kwargs["pk"])
             .exclude(display_type=FieldDisplayType.READ_ONLY)
             .exclude(row__group__is_summary=True)
-            .exclude(input__project_id=self.kwargs["project_pk"])
+            .exclude(input__project=self.object)
             .select_related("row", "row__group")
             .prefetch_related("fieldrange", "input_set", "calculation_set", "choice_set")
         )
@@ -96,7 +98,7 @@ class ProjectSubsectionView(
         kwargs = super().get_formset_kwargs()
         kwargs["queryset"] = (
             Input.objects
-            .filter(project_id=self.kwargs["project_pk"])
+            .filter(project=self.object)
             .filter(field__row__group__subsection_id=self.kwargs["pk"])
             .exclude(field__display_type=FieldDisplayType.READ_ONLY)
             .exclude(field__row__group__is_summary=True)
@@ -116,17 +118,15 @@ class ProjectSubsectionView(
             transaction.on_commit(partial(refresh_channel.enqueue, channel_name=f"user_{project.user_id}_project_{project.pk}_subsection_{subsection.pk}"))
             result = refresh_project_fields.enqueue(project_pk=project.pk)
             if hasattr(result, "db_result"):
-                transaction.on_commit(partial(self.object.refreshtask_set.create, db_task_result=result.db_result))
+                transaction.on_commit(partial(project.refreshtask_set.create, db_task_result=result.db_result))
 
     def formset_valid(self, formset):
-        project = get_object_or_404(Project, pk=self.kwargs["project_pk"])
         subsection = get_object_or_404(Subsection, pk=self.kwargs["pk"])
         with transaction.atomic():
-            transaction.on_commit(partial(self.refresh_project, project=project, subsection=subsection))
+            transaction.on_commit(partial(self.refresh_project, project=self.object, subsection=subsection))
             return super().formset_valid(formset)
 
     def get_success_url(self):
-        project = get_object_or_404(Project, pk=self.kwargs["project_pk"])
         subsection = get_object_or_404(Subsection.objects.select_related("section__version"), pk=self.kwargs["pk"])
         if (
             self.request.POST.get("step") == "previous"
@@ -137,5 +137,5 @@ class ProjectSubsectionView(
             subsection = subsection.next_subsection
         return reverse_lazy(
             "project_subsection",
-            kwargs={"project_pk": project.id, "pk": subsection.id},
+            kwargs={"project_pk": self.object.id, "pk": subsection.id},
         )
