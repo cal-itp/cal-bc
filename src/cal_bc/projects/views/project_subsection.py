@@ -85,7 +85,6 @@ class ProjectSubsectionView(
             .exclude(display_type=FieldDisplayType.READ_ONLY)
             .exclude(row__group__is_summary=True)
             .exclude(input__project_id=self.kwargs["project_pk"])
-            .exclude(calculation__project_id=self.kwargs["project_pk"])
             .select_related("row", "row__group")
             .prefetch_related("fieldrange", "input_set", "calculation_set", "choice_set")
         )

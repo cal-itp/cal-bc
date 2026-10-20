@@ -224,6 +224,52 @@ class TestProjectSubsectionViews:
         assert query_by_role(dom, "combobox", name="District*")
         assert query_by_text(dom, "Length of Peak Period(s)")
 
+    def test_subsection_edit_with_preexisting_calculation(
+            self,
+            client: Client,
+            user: User,
+            project: Project,
+            version: Version,
+            subsection_1A: Subsection,
+            name_field: Field,
+            district_field: Field,
+            length_peak_period_field: Field,
+    ):
+        project.calculation_set.create(field=name_field, value="This should show up")
+        client.force_login(user)
+        response = client.get(
+            reverse_lazy(
+                "project_subsection",
+                kwargs={"project_pk": project.pk, "pk": subsection_1A.pk},
+            )
+        )
+        assert response.status_code == 200
+        dom = parse_html(response.content)
+        assert query_by_label_text(dom, "Project Name*")
+
+    def test_subsection_edit_with_preexisting_input(
+            self,
+            client: Client,
+            user: User,
+            project: Project,
+            version: Version,
+            subsection_1A: Subsection,
+            name_field: Field,
+            district_field: Field,
+            length_peak_period_field: Field,
+    ):
+        project.input_set.create(field=name_field, value="This should also show up")
+        client.force_login(user)
+        response = client.get(
+            reverse_lazy(
+                "project_subsection",
+                kwargs={"project_pk": project.pk, "pk": subsection_1A.pk},
+            )
+        )
+        assert response.status_code == 200
+        dom = parse_html(response.content)
+        assert query_by_label_text(dom, "Project Name*")
+
     def test_summary_table_subsection_edit(
             self,
             client: Client,
