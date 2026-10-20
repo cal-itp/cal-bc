@@ -97,6 +97,8 @@ dependencies = [
     { name = "django-downloadview" },
     { name = "django-environ" },
     { name = "django-extra-views" },
+    { name = "django-hijack", version = "3.7.9", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.14'" },
+    { name = "django-hijack", version = "3.8.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.14'" },
     { name = "django-htmx" },
     { name = "django-nested-admin" },
     { name = "django-prose-editor", extra = ["sanitize"] },
@@ -141,6 +143,7 @@ requires-dist = [
     { name = "django-downloadview", specifier = ">=2.4.0" },
     { name = "django-environ", specifier = ">=0.12.0" },
     { name = "django-extra-views", specifier = ">=0.16.0" },
+    { name = "django-hijack", specifier = ">=3.7.9" },
     { name = "django-htmx", specifier = ">=1.28.0" },
     { name = "django-nested-admin", specifier = ">=4.1.6" },
     { name = "django-prose-editor", extras = ["sanitize"], specifier = ">=0.26.0" },
@@ -691,6 +694,38 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/ac/61/c6d2ced11fc4235d2aeb422ad5af3b516effd942e2be5a263a5d93dcb1e2/django_extra_views-0.16.0.tar.gz", hash = "sha256:7f8e07bd6c9388816a7c08d752661172d4078758c2079fc0cadddfcf5cd38ae3", size = 13235, upload-time = "2025-04-22T15:10:58.475Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/10/6a/511cf7ad5ac8d0890eb7ec374668759e9fbb263af98abb516fdc14be2633/django_extra_views-0.16.0-py2.py3-none-any.whl", hash = "sha256:af990d1779813b728231e94bcc703614fef60015c4c31d53185c5f4f898a37be", size = 15344, upload-time = "2025-04-22T15:10:56.814Z" },
+]
+
+[[package]]
+name = "django-hijack"
+version = "3.7.9"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version < '3.14' and platform_python_implementation == 'PyPy' and sys_platform == 'win32'",
+    "(python_full_version < '3.14' and platform_python_implementation != 'PyPy') or (python_full_version < '3.14' and sys_platform != 'win32')",
+]
+dependencies = [
+    { name = "django", marker = "python_full_version < '3.14'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/81/8c/7093814ce82d29034d339bdf660f6bc0276ccf8c2a31be26fcb0e378caf7/django_hijack-3.7.9.tar.gz", hash = "sha256:b43fb47b2501e230a7343aaae94e1748ee628a16161916e1edc83a52b3924347", size = 14559, upload-time = "2026-10-01T22:00:39.353Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/66/5a/c44e0453ff391f0052aeef49cb245b09e8df75eeede4cf20092d52abff29/django_hijack-3.7.9-py3-none-any.whl", hash = "sha256:76e451842684ad79ea27e79a1dea60518c845d239656c90735c2c5c6eb2f78a3", size = 31480, upload-time = "2026-10-01T22:00:38.097Z" },
+]
+
+[[package]]
+name = "django-hijack"
+version = "3.8.0"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.14' and platform_python_implementation == 'PyPy' and sys_platform == 'win32'",
+    "(python_full_version >= '3.14' and platform_python_implementation != 'PyPy') or (python_full_version >= '3.14' and sys_platform != 'win32')",
+]
+dependencies = [
+    { name = "django", marker = "python_full_version >= '3.14'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/23/74/bd2ff01bbc418fc0a1db1243c3bcd89abd26e39ff78bbe72a8cce9febaa8/django_hijack-3.8.0.tar.gz", hash = "sha256:77796c89d09911c9e62e217c167ccf4a859ca1aae1055b6bc205c7380d798fff", size = 14529, upload-time = "2026-10-10T22:11:27.397Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f1/cc/bf300537f024fbbb5787c47e142551507a430862d4e97d6049789b851533/django_hijack-3.8.0-py3-none-any.whl", hash = "sha256:9957deee60f902ae501619b1f01fd47cad89bc4cbb2dcd97ee4c0c9df94ba110", size = 31468, upload-time = "2026-10-10T22:11:26.144Z" },
 ]
 
 [[package]]
