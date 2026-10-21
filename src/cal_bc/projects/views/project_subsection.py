@@ -67,11 +67,16 @@ class ProjectSubsectionView(
         context["subsection"] = get_object_or_404(
             Subsection.objects.prefetch_related(
                 "section__version__model",
-                Prefetch("group_set", queryset=Group.objects.non_summary().prefetch_related(
+                Prefetch("group_set", queryset=Group.objects.standard().prefetch_related(
                     non_table_row_prefetch,
                     table_row_prefetch,
                     column_group_prefetch,
-                ).order_by("position").annotate(column_count=Count("columngroup__column__id")), to_attr="non_summary_group_set"),
+                ).order_by("position").annotate(column_count=Count("columngroup__column__id")), to_attr="standard_group_set"),
+                Prefetch("group_set", queryset=Group.objects.settings().prefetch_related(
+                    non_table_row_prefetch,
+                    table_row_prefetch,
+                    column_group_prefetch,
+                ).order_by("position").annotate(column_count=Count("columngroup__column__id")), to_attr="settings_group_set"),
                 Prefetch("group_set", queryset=Group.objects.summary().prefetch_related(
                     non_table_row_prefetch
                 ).order_by("position"), to_attr="summary_group_set")
@@ -79,7 +84,7 @@ class ProjectSubsectionView(
             pk=self.kwargs["pk"]
         )
 
-        context["subsection_column_count"] = max_attr(context["subsection"].non_summary_group_set, "column_count")
+        context["subsection_column_count"] = max_attr(context["subsection"].standard_group_set, "column_count")
         return context
 
     def extra_field_set(self):

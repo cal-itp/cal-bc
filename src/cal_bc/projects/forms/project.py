@@ -1,5 +1,13 @@
 from django.core.exceptions import ValidationError
-from django.forms import CharField, ChoiceField, DecimalField, HiddenInput, ModelForm
+from django.forms import (
+    CharField,
+    ChoiceField,
+    DecimalField,
+    HiddenInput,
+    ModelForm,
+    RadioSelect,
+    TypedChoiceField,
+)
 from django.utils.translation import gettext as _
 
 from cal_bc.projects.models.project import Input
@@ -40,7 +48,15 @@ class InputForm(ModelForm):
         if field:
             choices = field.choice_set.all()
 
-            if len(choices):
+            if len(choices) <= 2:
+                self.fields["value"] = TypedChoiceField(
+                    coerce=lambda x: x == 'True',
+                    choices=((True, 'Yes'), (False, 'No')),
+                    widget=RadioSelect,
+                    required=field.required,
+                    error_messages={'required': f'Select {field.name}.'},
+                )
+            elif len(choices) > 2:
                 self.fields["value"] = ChoiceField(
                     choices=[(None, ""), *[(i.value, i.name) for i in choices]],
                     required=field.required,

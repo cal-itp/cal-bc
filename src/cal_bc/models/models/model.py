@@ -118,14 +118,20 @@ class Subsection(models.Model):
             row__group__id__in=self.group_set.exclude(display_type=GroupDisplayType.SUMMARY)
         ).exclude(display_type=FieldDisplayType.READ_ONLY).count() == 0
 
+    @property
+    def has_settings(self):
+        return self.group_set.filter(display_type=GroupDisplayType.SETTINGS).count() > 0
+
 
 class GroupManager(models.Manager):
     def summary(self):
         return self.filter(display_type=GroupDisplayType.SUMMARY)
 
-    def non_summary(self):
+    def standard(self):
         return self.filter(display_type=GroupDisplayType.STANDARD)
 
+    def settings(self):
+        return self.filter(display_type=GroupDisplayType.SETTINGS)
 
 class Group(models.Model):
     subsection = models.ForeignKey(Subsection, null=False, on_delete=models.CASCADE)
@@ -263,14 +269,23 @@ class FieldDisplayType(models.IntegerChoices):
 
 
 class FieldManager(models.Manager):
-    def non_summary(self):
+    def standard(self):
         return self.filter(row__group__display_type=GroupDisplayType.STANDARD)
 
     def input(self):
-        return self.non_summary().exclude(display_type=FieldDisplayType.READ_ONLY)
+        return self.standard().exclude(display_type=FieldDisplayType.READ_ONLY)
 
     def required(self):
-        return self.non_summary().filter(display_type=FieldDisplayType.REQUIRED)
+        return self.standard().filter(display_type=FieldDisplayType.REQUIRED)
+
+    def settings(self):
+        return self.filter(row__group__display_type=GroupDisplayType.SETTINGS)
+
+    def input_settings(self):
+        return self.settings().exclude(display_type=FieldDisplayType.READ_ONLY)
+
+    def required_settings(self):
+        return self.settings().filter(display_type=FieldDisplayType.REQUIRED)
 
 
 class Field(models.Model):

@@ -57,6 +57,10 @@ class TestModel:
         return subsection_1_a.group_set.create(name="Summary", display_type=GroupDisplayType.SUMMARY)
 
     @pytest.fixture()
+    def settings_group(self, subsection_1_a: Subsection) -> Group:
+        return subsection_1_a.group_set.create(name="Settings", display_type=GroupDisplayType.SETTINGS)
+
+    @pytest.fixture()
     def row(self, group: Group) -> Row:
         return group.row_set.create()
 
@@ -163,11 +167,20 @@ class TestModel:
     ) -> None:
         assert subsection_2_a.previous_subsection == subsection_1_b
 
-    def test_summary_group_set(self, subsection_1_a: Subsection, summary_group: Group) -> None:
-        assert list(subsection_1_a.summary_group_set) == [summary_group]
+    def test_summary_group_set(self, subsection_1_a: Subsection, subsection_1_b: Subsection, summary_group: Group) -> None:
+        subsection_1_a.group_set.create(name="Standard", display_type=GroupDisplayType.STANDARD)
+        subsection_1_b.group_set.create(name="Summary", display_type=GroupDisplayType.SUMMARY)
+        assert list(subsection_1_a.group_set.summary()) == [summary_group]
 
-    def test_non_summary_group_set(self, subsection_1_a: Subsection, group: group) -> None:
-        assert list(subsection_1_a.non_summary_group_set) == [group]
+    def test_standard_group_set(self, subsection_1_a: Subsection, subsection_1_b: Subsection, group: group) -> None:
+        subsection_1_a.group_set.create(name="Summary", display_type=GroupDisplayType.SUMMARY)
+        subsection_1_b.group_set.create(name="Standard", display_type=GroupDisplayType.STANDARD)
+        assert list(subsection_1_a.group_set.standard()) == [group]
+
+    def test_settings_group_set(self, subsection_1_a: Subsection, subsection_1_b: Subsection, settings_group: group) -> None:
+        subsection_1_a.group_set.create(name="Standard", display_type=GroupDisplayType.STANDARD)
+        subsection_1_b.group_set.create(name="Settings", display_type=GroupDisplayType.SETTINGS)
+        assert list(subsection_1_a.group_set.settings()) == [settings_group]
 
     def test_group_string_representation(self, group: Group) -> None:
         assert str(group) == "2 - General Information"
