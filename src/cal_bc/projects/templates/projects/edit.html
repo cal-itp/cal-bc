@@ -37,7 +37,7 @@
     {% endif %}
 
     {% with column_threshold=3 %}
-        <main class="grow">
+        <main class="relative grow">
             <form method="post" hx-boost="true" class="mx-auto max-w-7xl pt-16 pb-20 px-6 lg:px-8">
                 {% csrf_token %}
 
@@ -69,7 +69,7 @@
                                     <c-modal-dialog modal_id="subsection-guide">
                                         {% include "_guide.html" with target=subsection %}
                                     </c-modal-dialog>
-                                    <button type="button" command="show-modal" commandfor="modal-dialog-subsection-guide" class="cursor-pointer flex items-center text-lg font-semibold text-dds-teal-600 hover:text-dds-teal-700 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">{% svg "projects/guide" class="h-6 w-auto" %}<span class="sr-only">Show subsection guide</span><span class="ml-2">Show Guide</span></button>
+                                    <button type="button" command="show-modal" commandfor="modal-dialog-subsection-guide" hx-on:click="htmx.find('#guide').innerHTML = ''" class="cursor-pointer flex items-center text-lg font-semibold text-dds-teal-600 hover:text-dds-teal-700 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">{% svg "projects/guide" class="h-6 w-auto" %}<span class="sr-only">Show subsection guide</span><span class="ml-2">Show Guide</span></button>
                                 </div>
                             {% endif %}
                         </div>
@@ -82,6 +82,8 @@
                         {% include "projects/_form.html" with title="Edit Project" %}
                     </div>
                 </section>
+
+                <section id="guide"></section>
                 {% endif %}
 
                 <div class="mt-12 pt-12 border-t border-gray-300 flex flex-row-reverse items-center justify-between gap-x-6">

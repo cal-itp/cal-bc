@@ -213,6 +213,11 @@ class TestProjectSystem:
         group_2 = subsection_3.group_set.create(name="Emissions Reduction")
         row_2 = group_2.row_set.create()
         row_2.field_set.create(name="Emission Cost Savings Passenger", cell="3) Results!O18", display_type=FieldDisplayType.READ_ONLY)
+        group_3 = subsection_3.group_set.create(name="Settings")
+        row_3 = group_3.row_set.create(guide="Settings Instructions")
+        emissions_field = row_3.field_set.create(name="Vehicle Emissions?", cell="Emissions", display_type=FieldDisplayType.NOT_REQUIRED)
+        emissions_field.choice_set.create(name="Yes", value="Y")
+        emissions_field.choice_set.create(name="No", value="N")
 
     def test_projects(self, first_window: Page, second_window: Page, channels_live_server: ChannelsLiveServer):
         first_window.goto(channels_live_server.http_url)
@@ -322,6 +327,15 @@ class TestProjectSystem:
         expect(first_window.get_by_label("Life-Cycle Costs")).to_contain_text("$3,000")
         expect(first_window.get_by_label("Life-Cycle Benefits")).to_contain_text("$17,262.92")
         expect(first_window.get_by_label("B/C Ratio")).to_contain_text("5.8")
+
+        expect(first_window.get_by_text("Settings Instructions")).not_to_be_visible()
+        expect(first_window.get_by_label("Vehicle Emissions?")).to_contain_text("Yes")
+        first_window.get_by_label("Vehicle Emissions?").click()
+        expect(first_window.get_by_text("Settings Instructions")).to_be_visible()
+        first_window.get_by_role("button", name="close").click()
+        first_window.get_by_label("Vehicle Emissions?").select_option("No")
+        first_window.get_by_role("button", name="Save draft").click()
+        expect(first_window.locator("body")).to_contain_text("Project successfully saved!")
 
         expect(first_window.get_by_role("link", name="Download Excel")).to_be_visible()
 
