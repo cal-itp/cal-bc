@@ -274,7 +274,7 @@ class Field(models.Model):
     cell = models.CharField(null=False)
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
     unit = models.CharField(blank=True)
-    display_type = models.IntegerField(choices=FieldDisplayType.choices, null=False, default=FieldDisplayType.REQUIRED, db_index=True)
+    display_type = models.IntegerField(choices=FieldDisplayType.choices, null=False, default=FieldDisplayType.NOT_REQUIRED, db_index=True)
 
     objects = FieldManager()
 
