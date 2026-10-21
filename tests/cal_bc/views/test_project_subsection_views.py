@@ -89,7 +89,7 @@ class TestProjectSubsectionViews:
 
     @pytest.fixture
     def name_field(self, general_info_1A_group_row_1: Row) -> Field:
-        return general_info_1A_group_row_1.field_set.create(name="Project Name", cell="ProjName")
+        return general_info_1A_group_row_1.field_set.create(name="Project Name", cell="ProjName", display_type=FieldDisplayType.REQUIRED)
 
     @pytest.fixture
     def general_info_1A_group_row_2(self, general_info_1A_group: Group) -> Row:
@@ -97,7 +97,7 @@ class TestProjectSubsectionViews:
 
     @pytest.fixture
     def district_field(self, general_info_1A_group_row_2: Row) -> Field:
-        field = general_info_1A_group_row_2.field_set.create(name="District", cell="ProjLoc")
+        field = general_info_1A_group_row_2.field_set.create(name="District", cell="ProjLoc", display_type=FieldDisplayType.REQUIRED)
         field.choice_set.create(name="District 1", value="1")
         field.choice_set.create(name="District 4", value="4")
         return field
@@ -132,11 +132,11 @@ class TestProjectSubsectionViews:
 
     @pytest.fixture
     def total_project_support_summary_field(self, summary_1E_group_row: Row) -> Field:
-        return summary_1E_group_row.field_set.create(name="Total Project Support", cell="1) Project Information!W44", unit="$", position=1)
+        return summary_1E_group_row.field_set.create(name="Total Project Support", cell="1) Project Information!W44", unit="$", position=1, display_type=FieldDisplayType.REQUIRED)
 
     @pytest.fixture
     def total_construction_summary_field(self, summary_1E_group_row: Row) -> Field:
-        return summary_1E_group_row.field_set.create(name="Total Construction", cell="1) Project Information!Y44", unit="$", position=2)
+        return summary_1E_group_row.field_set.create(name="Total Construction", cell="1) Project Information!Y44", unit="$", position=2, display_type=FieldDisplayType.REQUIRED)
 
     @pytest.fixture
     def costs_1E_group(self, subsection_1E: Subsection) -> Group:
