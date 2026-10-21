@@ -210,12 +210,15 @@ class TestProjectSystem:
         row.field_set.create(name="Life-Cycle Costs (mil. $)", cell="3) Results!H13", unit="$", display_type=FieldDisplayType.READ_ONLY)
         row.field_set.create(name="Life-Cycle Benefits (mil. $)", cell="3) Results!H14", unit="$", display_type=FieldDisplayType.READ_ONLY)
         row.field_set.create(name="Benefit / Cost Ratio", cell="BeneCostRatio", display_type=FieldDisplayType.READ_ONLY)
-        group_2 = subsection_3.group_set.create(name="Emissions Reduction")
-        row_2 = group_2.row_set.create()
-        row_2.field_set.create(name="Emission Cost Savings Passenger", cell="3) Results!O18", display_type=FieldDisplayType.READ_ONLY)
-        group_3 = subsection_3.group_set.create(name="Settings")
-        row_3 = group_3.row_set.create(guide="Settings Instructions")
-        emissions_field = row_3.field_set.create(name="Vehicle Emissions?", cell="Emissions", display_type=FieldDisplayType.NOT_REQUIRED)
+
+    @pytest.fixture(autouse=True)
+    def group_3(self, subsection_3: Subsection) -> None:
+        group_1 = subsection_3.group_set.create(name="Emissions Reduction", guide="This is the Emissions Reduction guide.")
+        row_1 = group_1.row_set.create()
+        row_1.field_set.create(name="Emission Cost Savings Passenger", cell="3) Results!O18", display_type=FieldDisplayType.READ_ONLY)
+        group_2 = subsection_3.group_set.create(name="Settings", guide="This is the Settings guide.")
+        row_2 = group_2.row_set.create(guide="Settings Instructions")
+        emissions_field = row_2.field_set.create(name="Vehicle Emissions?", cell="Emissions", display_type=FieldDisplayType.NOT_REQUIRED)
         emissions_field.choice_set.create(name="Yes", value="Y")
         emissions_field.choice_set.create(name="No", value="N")
 
@@ -327,6 +330,17 @@ class TestProjectSystem:
         expect(first_window.get_by_label("Life-Cycle Costs")).to_contain_text("$3,000")
         expect(first_window.get_by_label("Life-Cycle Benefits")).to_contain_text("$17,262.92")
         expect(first_window.get_by_label("B/C Ratio")).to_contain_text("5.8")
+
+
+        expect(first_window.get_by_text("This is the Emissions Reduction guide.")).not_to_be_visible()
+        first_window.get_by_role("button", name="Show group Emissions Reduction guide").click()
+        expect(first_window.get_by_text("This is the Emissions Reduction guide.")).to_be_visible()
+        first_window.get_by_role("button", name="close").click()
+
+        expect(first_window.get_by_text("This is the Settings guide.")).not_to_be_visible()
+        first_window.get_by_role("button", name="Show group Settings guide").click()
+        expect(first_window.get_by_text("This is the Settings guide.")).to_be_visible()
+        first_window.get_by_role("button", name="close").click()
 
         expect(first_window.get_by_text("Settings Instructions")).not_to_be_visible()
         expect(first_window.get_by_label("Vehicle Emissions?")).to_contain_text("Yes")
