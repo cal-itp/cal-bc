@@ -26,6 +26,14 @@ resource "google_cloud_run_v2_service" "cal-bc-staging" {
     containers {
       image = "us-west2-docker.pkg.dev/cal-itp-data-infra-staging/ghcr/cal-itp/cal-bc/cal-bc:${var.image_tag}"
 
+      resources {
+        cpu_idle = true
+        limits = {
+          cpu    = "2"
+          memory = "1Gi"
+        }
+      }
+
       ports {
         container_port = 8000
       }
