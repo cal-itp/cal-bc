@@ -82,6 +82,7 @@ class Subsection(models.Model):
             "Heading": {"levels": [1, 2, 3]},
             "BulletList": True,
             "ListItem": True,
+            "Link": True,
         },
     )
 
@@ -134,6 +135,7 @@ class Group(models.Model):
             "Heading": {"levels": [1, 2, 3]},
             "BulletList": True,
             "ListItem": True,
+            "Link": True,
         },
     )
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
@@ -181,6 +183,7 @@ class Row(models.Model):
             "Heading": {"levels": [1, 2, 3]},
             "BulletList": True,
             "ListItem": True,
+            "Link": True,
         },
     )
 
