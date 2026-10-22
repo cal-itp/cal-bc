@@ -1,0 +1,24 @@
+{% load svg %}
+<aside class="hidden sm:fixed sm:z-100 sm:right-0 sm:p-2 sm:mt-20 sm:block sm:w-sm md:w-md">
+    {% for message in messages %}
+    <div hx-on="load delay:10s -> this.remove();" class="rounded-md shadow-xs bg-dds-teal-100 p-4">
+        <div class="flex">
+            <div class="shrink-0">
+                {% svg "projects/alerts/check" class="size-5 text-dds-teal-600" %}
+            </div>
+            <div class="ml-3">
+                <p class="text-sm font-medium text-green-800">{{ message }}</p>
+            </div>
+            <div class="ml-auto pl-3">
+                <div class="-mx-1.5 -my-1.5">
+                    <button type="button" hx-on="click -> this.parentElement.parentElement.parentElement.parentElement.remove();" class="inline-flex rounded-md bg-dds-teal-100 p-1.5 text-dds-teal-600 hover:bg-dds-teal-200 focus-visible:ring-2 focus-visible:ring-dds-teal-600 focus-visible:ring-offset-2 focus-visible:ring-offset-dds-teal-100 focus-visible:outline-hidden">
+                        <span class="sr-only">Dismiss</span>
+                        {% svg "projects/alerts/x" class="size-5 text-dds-teal-600" %}
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class=""></div>
+    </div>
+    {% endfor %}
+</aside>

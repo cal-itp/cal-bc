@@ -12,33 +12,13 @@
     {% endif %}
 {% endpartialdef %}
 
-<div class="min-h-full bg-gray-100 flex flex-col">
-    {% include "projects/_header_nav.html" %}
+{% include "projects/_header_nav.html" %}
+{% include "_messages.html" %}
 
-    {% if messages %}
-    <header class="relative">
-        <div class="mx-auto max-w-7xl pt-4 px-6 lg:px-8">
-            <div class="bg-success-100 border-l-4 border-success-700 rounded text-dds-teal-900 shadow-md min-w-md md:float-top md:float-right" role="alert">
-                <div class="flex items-center px-2 py-4">
-                    <div class="shrink-0">
-                        {% svg 'projects/alert_resolved' class="h-8 w-8" %}
-                    </div>
-                    <div class="ml-3">
-                        <ul class="messages">
-                            {% for message in messages %}
-                            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-    {% endif %}
-
+<div class="pt-20 min-h-full bg-gray-100 flex flex-col">
     {% with column_threshold=3 %}
-        <main class="relative grow">
-            <form method="post" hx-boost="true" class="mx-auto max-w-7xl pt-16 pb-20 px-6 lg:px-8">
+        <main class="grow">
+            <form method="post" hx-boost="false" class="mx-auto max-w-7xl pt-16 pb-20 px-6 lg:px-8">
                 {% csrf_token %}
 
                 {% if subsection_column_count < column_threshold and subsection.summary_group_set|length == 0 %}
@@ -50,7 +30,7 @@
                             {% include "projects/_form.html" with title="Edit Project" %}
                         </div>
                     </section>
-                    <section class="md:self-start md:sticky md:top-0 md:col-span-3">
+                    <section class="md:self-start md:sticky md:top-20 md:col-span-3">
                         <aside id="guide" hx-get="{% url 'model_version_section_subsection_guide' model_pk=subsection.section.version.model.pk version_pk=subsection.section.version.pk section_pk=subsection.section.pk pk=subsection.pk %}" hx-params="none" hx-swap="innerMorph" hx-trigger="load"></aside>
                     </section>
                 </div>
@@ -107,7 +87,7 @@
                             {% if subsection.previous_subsection %}
                                 <button type="submit" name="step" value="previous" hx-disable="this" class="cursor-pointer rounded-md bg-white px-7 py-3 text-lg font-semibold text-dds-teal-600 border-1 border-dds-teal-600 shadow hover:shadow-(--button-hover) focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Back<span class="sr-only sm:not-sr-only"> to Subsection {{ subsection.previous_subsection.section.code }}{{ subsection.previous_subsection.code }}</span></button>
                             {% endif %}
-                            <button type="submit" name="step" value="current" hx-trigger="input delay:200ms from:'closest form'" hx-vals='{"draft":true}' hx-disable="this" class="cursor-pointer rounded-md bg-white px-7 py-3 text-lg font-semibold text-dds-teal-600 border-1 border-dds-teal-600 shadow hover:shadow-(--button-hover) focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Save draft</button>
+                            <button type="submit" name="step" value="current" hx-disable="this" class="cursor-pointer rounded-md bg-white px-7 py-3 text-lg font-semibold text-dds-teal-600 border-1 border-dds-teal-600 shadow hover:shadow-(--button-hover) focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Save draft</button>
                         {% endif %}
                     </div>
                 </div>
