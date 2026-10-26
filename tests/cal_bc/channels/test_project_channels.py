@@ -7,7 +7,10 @@ from channels.layers import get_channel_layer
 from channels.testing import WebsocketCommunicator
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy
-from unbrowsed import parse_html, query_by_text
+from selectolax.lexbor import LexborHTMLParser as Parser
+from unbrowsed import Result, parse_html, query_by_text
+from unbrowsed.matchers import TextMatch
+from unbrowsed.utils import get_selector
 
 from cal_bc.asgi import application
 from cal_bc.models.models.model import (
@@ -20,6 +23,19 @@ from cal_bc.models.models.model import (
     Version,
 )
 from cal_bc.projects.models.project import Project
+
+
+def query_all_by_text(dom: Parser, text: str, exact=True) -> list[Result]:
+    search_text = TextMatch(text, exact=exact)
+    matches = []
+
+    for element in dom.css(get_selector()):
+        element_text = element.text(deep=True, strip=True)
+
+        if search_text.matches(element_text):
+            matches.append(Result(element))
+
+    return matches
 
 
 class AuthWebsocketCommunicator(WebsocketCommunicator):
@@ -130,7 +146,7 @@ class TestProjectChannels:
         response = await communicator.receive_from()
         dom = await sync_to_async(parse_html)(response)
 
-        assert await sync_to_async(query_by_text)(dom, "New Project")
+        assert await sync_to_async(query_all_by_text)(dom, "New Project")
         assert await sync_to_async(query_by_text)(dom, "Testing v1")
 
         await communicator.disconnect()

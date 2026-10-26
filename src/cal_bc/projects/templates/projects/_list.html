@@ -1,5 +1,46 @@
 {% load svg %}
 
+{% partialdef project-delete-confirmation %}
+    <el-dialog>
+        <dialog id="modal-dialog-delete-project-{{ project.id }}" aria-labelledby="dialog-title" class="relative fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent">
+            <el-dialog-backdrop class="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"></el-dialog-backdrop>
+            <div tabindex="0" class="flex justify-center items-center h-full text-left focus:outline-none">
+                <el-dialog-panel class="relative p-10 rounded-lg bg-white shadow-sm transform overflow-hidden rounded-lg w-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in data-closed:sm:translate-y-0 data-closed:sm:scale-95">
+                    <div class="flex justify-between">
+                        <h3 class="text-3xl font-bold">Confirm Delete</h3>
+                        <button type="button" command="close" commandfor="modal-dialog-delete-project-{{ project.id }}" class="cursor-pointer border rounded text-dds-teal-600 text-center w-9 h-9 focus:outline-1 focus:-outline-offset-4 focus:outline-dds-teal-400 focus-visible:outline-1 focus-visible:outline-dds-teal-400">
+                            <span class="sr-only">Close</span>{% svg "projects/close" alt="close" class="m-auto w-5 h-5" %}
+                        </button>
+                    </div>
+                    <aside class="pt-6">
+                        <article class="flex flex-col text-lg">
+                            <div class="mb-4 truncate">
+                                Deleting Project <span class="font-bold">{{ project.project_name_calculations|first|stringformat:"s"|default:"New Project" }}</span>
+                            </div>
+                            <div class="text-red-700 mb-10">
+                                Warning: This action cannot be undone.
+                            </div>
+                            <div>
+                                <button type="button" command="close" commandfor="modal-dialog-delete-project-{{ project.id }}" class="cursor-pointer mr-2 text-dds-teal-600 font-semibold py-2 px-4 border border-dds-teal-600 rounded-md">
+                                    <span class="">Cancel</span>
+                                </button>
+                                <button
+                                    hx-post="{% url 'project_delete' project.id %}"
+                                    hx-target="body"
+                                    hx-push-url="true"
+                                    class="cursor-pointer bg-red-700 text-white font-bold py-2 px-4 rounded-md">
+                                    <span class="sr-only">Confirm Delete</span>
+                                    <span>Delete</span>
+                                </button>
+                            </div>
+                        </article>
+                    </aside>
+                </el-dialog-panel>
+            </div>
+        </dialog>
+    </el-dialog>
+{% endpartialdef %}
+
 <section class="mx-auto max-w-7xl pt-6 pb-20 px-6 lg:px-8 flow-root overflow-x-auto">
     {% if object_list %}
         <div class="grid grid-cols-[1fr_156px] gap-y-1 overflow-hidden md:grid-cols-[1fr_1fr_156px_156px] lg:grid-cols-[1fr_1fr_1fr_156px_156px]">
@@ -22,7 +63,10 @@
                     <span class="sr-only">Edit</span>
                     {% svg 'projects/edit' alt="Edit" class="h-6 w-6" %}
                 </a>
-                <button hx-post="{% url 'project_delete' project.id %}" hx-target="body" hx-push-url="true" hx-confirm="Are you sure you want to delete {{ project.project_name_calculations|first|stringformat:"s"|default:"New Project" }}?" class="text-dds-teal-600 hover:text-dds-teal-700 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+                <button
+                    command="show-modal"
+                    commandfor="modal-dialog-delete-project-{{ project.id }}"
+                    class="cursor-pointer text-dds-teal-600 hover:text-dds-teal-700 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
                     <span class="sr-only">Delete</span>
                     {% svg 'projects/delete' alt="Delete" class="h-6 w-6" %}
                 </button>
@@ -30,6 +74,7 @@
                     <span class="sr-only">Download</span>
                     {% svg 'projects/download' alt="Download" class="h-6 w-6" %}
                 </a>
+                {% partial project-delete-confirmation %}
             </div>
             {% endfor %}
         </div>

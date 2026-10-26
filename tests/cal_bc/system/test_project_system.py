@@ -356,8 +356,11 @@ class TestProjectSystem:
         first_window.get_by_role("link", name="Exit Project").click()
         expect(first_window.locator("body")).to_contain_text("New Geary Boulevard Light Rail")
         expect(first_window.locator("body")).to_contain_text("1 projects")
-        first_window.on("dialog", lambda dialog: dialog.accept())
         first_window.get_by_role("button", name="Delete").click()
+        expect(first_window.locator("body")).to_contain_text("Confirm Delete")
+        expect(first_window.locator("body")).to_contain_text("Deleting Project New Geary Boulevard Light Rail")
+        expect(first_window.locator("body")).to_contain_text("Warning: This action cannot be undone.")
+        first_window.get_by_role("button", name="Confirm Delete").click()
         expect(first_window.locator("body")).to_contain_text("0 projects")
 
         first_window.get_by_role("button", name="User").click()
