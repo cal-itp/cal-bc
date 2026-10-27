@@ -8,7 +8,11 @@
                 <el-dialog-panel class="relative p-10 rounded-lg bg-white shadow-sm transform overflow-hidden rounded-lg w-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in data-closed:sm:translate-y-0 data-closed:sm:scale-95">
                     <div class="flex justify-between">
                         <h3 class="text-3xl font-bold">Confirm Delete</h3>
-                        <button type="button" command="close" commandfor="modal-dialog-delete-project-{{ project.id }}" class="cursor-pointer border rounded text-dds-teal-600 text-center w-9 h-9 focus:outline-1 focus:-outline-offset-4 focus:outline-dds-teal-400 focus-visible:outline-1 focus-visible:outline-dds-teal-400">
+                        <button
+                            type="button"
+                            command="close"
+                            commandfor="modal-dialog-delete-project-{{ project.id }}"
+                            class="cursor-pointer border rounded text-dds-teal-600 text-center w-9 h-9 focus:outline-1 focus:-outline-offset-4 focus:outline-dds-teal-400 focus-visible:outline-1 focus-visible:outline-dds-teal-400">
                             <span class="sr-only">Close</span>{% svg "projects/close" alt="close" class="m-auto w-5 h-5" %}
                         </button>
                     </div>
@@ -21,14 +25,17 @@
                                 Warning: This action cannot be undone.
                             </div>
                             <div>
-                                <button type="button" command="close" commandfor="modal-dialog-delete-project-{{ project.id }}" class="cursor-pointer mr-2 text-dds-teal-600 font-semibold py-2 px-4 border border-dds-teal-600 rounded-md">
+                                <button type="button"
+                                    command="close"
+                                    commandfor="modal-dialog-delete-project-{{ project.id }}"
+                                    class="cursor-pointer rounded-md bg-white mr-2 px-4 py-2 text-lg font-semibold text-dds-teal-600 border-1 border-dds-teal-600 shadow hover:shadow-(--button-hover) focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
                                     <span class="">Cancel</span>
                                 </button>
                                 <button
                                     hx-post="{% url 'project_delete' project.id %}"
                                     hx-target="body"
                                     hx-push-url="true"
-                                    class="cursor-pointer bg-red-700 text-white font-bold py-2 px-4 rounded-md">
+                                    class="cursor-pointer rounded-md bg-danger-700 px-4 py-2 text-lg font-semibold text-white shadow hover:shadow-(--button-hover) focus:outline-4 focus:ring-offset-0 focus:ring-danger-400 focus-visible:outline-danger-400">
                                     <span class="sr-only">Confirm Delete</span>
                                     <span>Delete</span>
                                 </button>
