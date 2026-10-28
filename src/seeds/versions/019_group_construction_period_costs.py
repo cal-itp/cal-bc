@@ -24,7 +24,14 @@ class Seed(seeds.seed.Seed):
     def group(self) -> Group:
         group, _ = self.subsection.group_set.get_or_create(
             name="Construction Period Costs",
-            defaults={"position": 1}
+            defaults={
+                "position": 1,
+                "guide": """
+                    <h2><strong>Setup Help</strong></h2>
+                    <p>All values should be entered in thousands of dollars using today's constant dollars.</p>
+                    <p>Project costs (including maintenance and operating costs) should be net of costs without project.</p>
+                """
+            }
         )
         return group
 
@@ -96,7 +103,7 @@ class Seed(seeds.seed.Seed):
         ]
 
     def load(self) -> None:
-        row_1, _ = self.group.row_set.get_or_create(position=1, defaults={"name": "Yr 1"})
+        row_1, _ = self.group.row_set.get_or_create(position=1, defaults={"name": "Yr 1", "guide": "<p>The number of construction years with costs should match the construction period in Project Data.</p>"})
         self.columns[0].fieldcolumn_set.get_or_create(
             field=row_1.field_set.get_or_create(name="Project Support Yr 1", defaults={"cell": "1) Project Information!W15"})[0]
         )

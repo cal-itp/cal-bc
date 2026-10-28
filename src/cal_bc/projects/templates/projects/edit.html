@@ -12,57 +12,57 @@
     {% endif %}
 {% endpartialdef %}
 
+{% partialdef subsection-form %}
+    <div class="pt-16 flex flex-col-reverse lg:flex-row lg:justify-between lg:items-center">
+        {% partial subsection-header %}
+        <div class="flex items-center space-x-6 mb-2 lg:mb-0">
+            {% if subsection.next_subsection is None %}
+                <a href="{% url 'project_download' project.id %}" class="flex items-center text-lg font-semibold text-dds-teal-600 hover:text-dds-teal-700 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+                    {% svg 'projects/download' alt="Download" class="h-6 w-auto" %}<span class="ml-2">Download Excel</span>
+                </a>
+            {% endif %}
+            {% if subsection.guide %}
+                <button type="button" hx-get="{% url 'model_version_section_subsection_guide' model_pk=subsection.section.version.model.pk version_pk=subsection.section.version.pk section_pk=subsection.section.pk pk=subsection.pk %}" hx-params="none" hx-swap="innerMorph" hx-target="#guide" hx-trigger="click" class="cursor-pointer flex items-center text-lg font-semibold text-dds-teal-600 hover:text-dds-teal-700 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+                    {% svg "projects/guide" class="h-6 w-auto" %}
+                    <span class="sr-only">Show subsection guide</span><span class="ml-2">Show Guide</span>
+                </button>
+            {% endif %}
+        </div>
+    </div>
+    {% partial subsection-description %}
+
+    <div hx-ext="ws" hx-ws:connect="/ws{% url 'project_subsection' project_pk=object.pk pk=subsection.pk %}" hx-target="this" hx-swap="innerMorph">
+        {% include "projects/_form.html" with title="Edit Project" %}
+    </div>
+{% endpartialdef %}
+
 {% include "projects/_header_nav.html" %}
 
 <div class="pt-20 min-h-full bg-gray-100 flex flex-col">
     {% with column_threshold=3 %}
         <main class="grow">
-            <form method="post" hx-boost="false" class="mx-auto max-w-7xl pt-16 pb-20 px-6 lg:px-8">
+            {% if subsection_column_count >= column_threshold or subsection.summary_group_set|length > 0 %}
+                <section class="self-start sticky top-0">
+                    <div id="guide" class="mx-6 md:absolute md:top-0 md:right-6 md:w-lg md:mx-2"></div>
+                </section>
+            {% endif %}
+
+            <form method="post" hx-boost="true" class="mx-auto max-w-7xl pb-20 px-6 lg:px-8">
                 {% csrf_token %}
 
                 {% if subsection_column_count < column_threshold and subsection.summary_group_set|length == 0 %}
-                <div class="md:grid md:grid-cols-7 md:gap-4">
-                    <section class="md:col-span-4">
-                        {% partial subsection-header %}
-                        {% partial subsection-description %}
-                        <div hx-ext="ws" hx-ws:connect="/ws{% url 'project_subsection' project_pk=object.pk pk=subsection.pk %}" hx-target="this" hx-swap="innerMorph">
-                            {% include "projects/_form.html" with title="Edit Project" %}
-                        </div>
-                    </section>
-                    <section class="md:self-start md:sticky md:top-20 md:col-span-3">
-                        <aside id="guide" hx-get="{% url 'model_version_section_subsection_guide' model_pk=subsection.section.version.model.pk version_pk=subsection.section.version.pk section_pk=subsection.section.pk pk=subsection.pk %}" hx-params="none" hx-swap="innerMorph" hx-trigger="load"></aside>
-                    </section>
-                </div>
+                    <div class="md:grid md:grid-cols-7 md:gap-x-4">
+                        <section class="self-start sticky top-0 md:col-start-5 md:col-span-3">
+                            <aside id="guide" hx-get="{% url 'model_version_section_subsection_guide' model_pk=subsection.section.version.model.pk version_pk=subsection.section.version.pk section_pk=subsection.section.pk pk=subsection.pk %}" hx-params="none" hx-swap="innerMorph" hx-trigger="load" class="md:absolute md:top-0 md:right-4 md:w-md md:ml-8"></aside>
+                        </section>
+                        <section class="md:col-start-1 md:col-span-4">
+                            {% partial subsection-form %}
+                        </section>
+                    </div>
                 {% else %}
-                <div>
-                    <div class="flex flex-col-reverse lg:flex-row lg:justify-between lg:items-center">
-                        {% partial subsection-header %}
-                        <div class="flex items-center space-x-6 mb-2 lg:mb-0">
-                            {% if subsection.next_subsection is None %}
-                                <a href="{% url 'project_download' project.id %}" class="flex items-center text-lg font-semibold text-dds-teal-600 hover:text-dds-teal-700 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
-                                    {% svg 'projects/download' alt="Download" class="h-6 w-auto" %}<span class="ml-2">Download Excel</span>
-                                </a>
-                            {% endif %}
-                            {% if subsection.guide %}
-                                <div>
-                                    <c-modal-dialog modal_id="subsection-guide">
-                                        {% include "_guide.html" with target=subsection %}
-                                    </c-modal-dialog>
-                                    <button type="button" command="show-modal" commandfor="modal-dialog-subsection-guide" hx-on:click="htmx.find('#guide').innerHTML = ''" class="cursor-pointer flex items-center text-lg font-semibold text-dds-teal-600 hover:text-dds-teal-700 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">{% svg "projects/guide" class="h-6 w-auto" %}<span class="sr-only">Show subsection guide</span><span class="ml-2">Show Guide</span></button>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% partial subsection-description %}
-                </div>
-
-                <section>
-                    <div hx-ext="ws" hx-ws:connect="/ws{% url 'project_subsection' project_pk=object.pk pk=subsection.pk %}" hx-target="this" hx-swap="innerMorph">
-                        {% include "projects/_form.html" with title="Edit Project" %}
-                    </div>
-                </section>
-
-                <section id="guide"></section>
+                    <section>
+                        {% partial subsection-form %}
+                    </section>
                 {% endif %}
 
                 <div class="mt-12 pt-12 border-t border-gray-300 flex flex-row-reverse items-center justify-between gap-x-6">
