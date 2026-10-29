@@ -16,5 +16,12 @@ class Seed(seeds.seed.Seed):
     def load(self) -> None:
         self.section.subsection_set.get_or_create(
             name="Investment Analysis",
-            defaults={"code":"A"}
+            defaults={
+                "code":"A",
+                "description": "This is a summary section.",
+                "guide": """
+                    <h2><strong>Setup Help</strong></h2>
+                    <p>Summary Fields</p>
+                """
+            }
         )

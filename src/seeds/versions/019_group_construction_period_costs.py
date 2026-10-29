@@ -27,7 +27,7 @@ class Seed(seeds.seed.Seed):
             defaults={
                 "position": 1,
                 "guide": """
-                    <h2><strong>Setup Help</strong></h2>
+                    <h2><strong>Construction Period Costs Setup Help</strong></h2>
                     <p>All values should be entered in thousands of dollars using today's constant dollars.</p>
                     <p>Project costs (including maintenance and operating costs) should be net of costs without project.</p>
                 """

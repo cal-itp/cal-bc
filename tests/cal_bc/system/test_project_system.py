@@ -77,7 +77,8 @@ class TestProjectSystem:
         group = subsection_1A.group_set.create(
             name="General Information",
             description="This is the general information group.",
-            position=1
+            position=1,
+            guide="Enter the district, EA, and PPNO if available."
         )
         row_1 = group.row_set.create(
             position=1,
@@ -253,6 +254,16 @@ class TestProjectSystem:
         first_window.get_by_label("Project Name").click()
         expect(first_window.locator("body")).to_contain_text("Enter a descriptive name for your project.")
 
+        expect(first_window.get_by_text("All fields in this step are required.")).not_to_be_visible()
+        first_window.get_by_role("button", name="Show subsection guide").click()
+        expect(first_window.get_by_text("All fields in this step are required.")).to_be_visible()
+        first_window.get_by_role("button", name="close").click()
+
+        expect(first_window.get_by_text("Enter the district, EA, and PPNO if available.")).not_to_be_visible()
+        first_window.get_by_role("button", name="Show group General Information guide").click()
+        expect(first_window.get_by_text("Enter the district, EA, and PPNO if available.")).to_be_visible()
+        first_window.get_by_role("button", name="close").click()
+        
         first_window.get_by_role("button", name="Save draft").click()
         expect(first_window.locator("body")).to_contain_text("Select District.")
 

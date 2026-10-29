@@ -1,18 +1,43 @@
 {% load static widget_tweaks svg define find_formset_field humanize subtract %}
 
+{% partialdef guide-link %}
+    {% if group.guide %}
+        <button type="button" hx-get="{% url 'model_version_section_subsection_group_guide' model_pk=group.subsection.section.version.model.pk version_pk=group.subsection.section.version.pk section_pk=group.subsection.section.pk subsection_pk=group.subsection.pk pk=group.pk %}" hx-params="none" hx-swap="innerMorph" hx-target="#guide" hx-trigger="click" class="cursor-pointer flex items-center text-lg font-semibold text-dds-teal-600 hover:text-dds-teal-700 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+        {% svg "projects/guide" class="h-6 w-auto" %}
+            <span class="sr-only">Show group {{ group.name }} guide</span><span class="ml-2">Show Guide</span>
+        </button>
+    {% endif %}
+{% endpartialdef %}
+
+{% partialdef group-name %}
+    <h2 class="text-3xl font-semibold text-gray-900">{{ group.name }}</h2>
+{% endpartialdef %}
+
+{% partialdef group-description %}
+    {% if group.description %}
+        <p class="mt-1 text-lg/8 font-light text-gray-700">{{ group.description }}</p>
+    {% endif %}
+{% endpartialdef %}
+
 {% partialdef group-header %}
-    <div class="flex flex-col-reverse mt-16 lg:flex-row lg:justify-between lg:items-center">
-        <h2 class="text-3xl font-semibold text-gray-900">{{ group.name }}</h2>
-        {% if group.guide %}
-            <div class="mb-2 lg:mb-0">
-                <button type="button" hx-get="{% url 'model_version_section_subsection_group_guide' model_pk=group.subsection.section.version.model.pk version_pk=group.subsection.section.version.pk section_pk=group.subsection.section.pk subsection_pk=group.subsection.pk pk=group.pk %}" hx-params="none" hx-swap="innerMorph" hx-target="#guide" hx-trigger="click" class="cursor-pointer flex items-center text-lg font-semibold text-dds-teal-600 hover:text-dds-teal-700 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
-                {% svg "projects/guide" class="h-6 w-auto" %}
-                    <span class="sr-only">Show subsection guide</span><span class="ml-2">Show Guide</span>
-                </button>
+    {% if table_page %}
+        <div class="lg:flex lg:justify-between lg:items-center">
+            {% partial group-name %}
+            <div class="hidden lg:block">
+                {% partial guide-link %}
             </div>
-        {% endif %}
-    </div>
-    {% if group.description %}<p class="mt-1 text-lg/8 font-light text-gray-700">{{ group.description }}</p>{% endif %}
+        </div>
+        {% partial group-description %}
+        <div class="mt-1 lg:hidden">
+            {% partial guide-link %}
+        </div>
+    {% else %}
+        {% partial group-name %}
+        {% partial group-description %}
+        <div class="mt-1">
+            {% partial guide-link %}
+        </div>
+    {% endif %}
 {% endpartialdef %}
 
 {% partialdef form-cell--new %}
@@ -73,7 +98,7 @@
 {% endfor %}
 
 {% for group in subsection.non_summary_group_set %}
-    <div>{% partial group-header %}</div>
+    <div class="mt-16">{% partial group-header %}</div>
 
     <div class="space-y-6 mt-6">
         {% for row in group.non_table_row_set %}
