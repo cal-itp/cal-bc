@@ -9,6 +9,7 @@ from django.views.generic.edit import CreateView
 from cal_bc.models.models.model import (
     Field,
     FieldDisplayType,
+    Group,
     Model,
     Row,
     Subsection,
@@ -65,6 +66,19 @@ class RowGuideView(LoginRequiredMixin, DetailView):
             group__subsection__section_id=self.kwargs["section_pk"],
             group__subsection__section__version_id=self.kwargs["version_pk"],
             group__subsection__section__version__model_id=self.kwargs["model_pk"],
+        )
+
+
+class GroupGuideView(LoginRequiredMixin, DetailView):
+    model = Group
+    template_name = "group/guides/show.html"
+
+    def get_queryset(self, *args, **kwargs):
+        return Group.objects.filter(
+            subsection_id=self.kwargs["subsection_pk"],
+            subsection__section_id=self.kwargs["section_pk"],
+            subsection__section__version_id=self.kwargs["version_pk"],
+            subsection__section__version__model_id=self.kwargs["model_pk"],
         )
 
 

@@ -5,9 +5,9 @@
 <div class="min-h-full bg-gray-100 flex flex-col">
     {% include "_header_nav.html" %}
 
-    <header>
-        <div class="mx-auto max-w-7xl py-6 px-6 lg:px-8 space-y-2">
-            <p class="mt-4 uppercase text-base font-light text-pretty text-dds-teal-700">Welcome, {% if user.get_short_name != "" %}{{ user.get_short_name }}{% endif %}</p>
+    <header class="pt-20">
+        <div class="mx-auto max-w-7xl pt-16 px-6 lg:px-8 space-y-2">
+            <p class="uppercase text-base font-light text-pretty text-dds-teal-700">Welcome, {% if user.get_short_name != "" %}{{ user.get_short_name }}{% endif %}</p>
             <h1 class="mt-4 text-4xl font-bold tracking-tight text-dds-teal-950">Start a new benefit-cost project</h1>
             <p class="text-base font-light text-pretty text-gray-700">
                 Choose the Cal B/C model that matches your project type. Each model is tailored to a specific mode and uses California state-average defaults where applicable.
@@ -15,7 +15,7 @@
         </div>
     </header>
 
-    <main class="pt-6 pb-20 grow">
+    <main class="pt-12 pb-20 grow">
         <ul role="list" class="mx-auto max-w-7xl px-6 lg:px-8 grid grid-cols-1 grid-flow-row gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {% for model in model_list %}
             {% with model.latest_version as version %}
