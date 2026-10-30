@@ -46,7 +46,7 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
             field_set = Field.objects.filter(
                 row__group__subsection__section__version=self.object.version
             ).exclude(display_type=FieldDisplayType.READ_ONLY).exclude(row__group__is_summary=True)
-            objs = [Input(project=self.object, field=f) for f in field_set]
+            objs = [Input(project=self.object, field=f, value=f.selected_choice()) for f in field_set]
             transaction.on_commit(partial(Input.objects.bulk_create, objs=objs, ignore_conflicts=True))
             transaction.on_commit(self.refresh_project)
             return result
