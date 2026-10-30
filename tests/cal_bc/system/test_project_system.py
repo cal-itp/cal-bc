@@ -87,8 +87,13 @@ class TestProjectSystem:
         row_1.field_set.create(name="Project Name", cell="ProjName", display_type=FieldDisplayType.REQUIRED)
         field_district = row_1.field_set.create(name="District", cell="1) Project Information!E2", display_type=FieldDisplayType.REQUIRED)
         field_district.choice_set.create(
+            name="District 1 - Eureka",
+            value="District 1",
+        )
+        field_district.choice_set.create(
             name="District 4 - Bay Area / Oakland",
             value="District 4",
+            is_selected=True
         )
 
     @pytest.fixture(autouse=True)
@@ -265,25 +270,30 @@ class TestProjectSystem:
         first_window.get_by_role("button", name="close").click()
         
         first_window.get_by_role("button", name="Save draft").click()
-        expect(first_window.locator("body")).to_contain_text("Select District.")
 
         expect(second_window.locator("body")).to_contain_text("Hypothetical Project", timeout=10_000)
-        first_window.get_by_label("Project Name").fill("Geary Boulevard Light Rail")
-        first_window.get_by_label("District").select_option("District 4 - Bay Area / Oakland")
+        first_window.get_by_label("Project Name").fill("Third Street Light Rail")
+        expect(first_window.get_by_label("District")).to_contain_text("District 4 - Bay Area / Oakland")
+        first_window.get_by_label("District").select_option("")
+
+        first_window.get_by_role("button", name="Save draft").click()
+        expect(first_window.locator("body")).to_contain_text("Select District.")
+
+        first_window.get_by_label("District").select_option("District 1 - Eureka")
         first_window.get_by_label("Project Type").select_option("General Highway")
         first_window.get_by_label("Project Location").select_option("NorCal")
         first_window.get_by_label("Length of Construction Period").fill("1")
         first_window.get_by_role("button", name="Save draft").click()
         expect(first_window.locator("body")).to_contain_text("Project successfully saved!")
-        expect(second_window.locator("body")).to_contain_text("Geary Boulevard Light Rail")
+        expect(second_window.locator("body")).to_contain_text("Third Street Light Rail")
 
-        first_window.get_by_label("Project Name").fill("New Geary Boulevard Light Rail", timeout=10_000)
+        first_window.get_by_label("Project Name").fill("New Third Street Light Rail", timeout=10_000)
         first_window.get_by_role("button", name="Continue to Subsection 1B").click()
         expect(first_window.locator("body")).to_contain_text("Project successfully saved!")
 
         expect(second_window.locator("body")).to_contain_text("1 projects")
         second_window.get_by_role("link", name="Edit").click()
-        expect(second_window.get_by_label("Project Name")).to_have_value("New Geary Boulevard Light Rail")
+        expect(second_window.get_by_label("Project Name")).to_have_value("New Third Street Light Rail")
 
         first_window.get_by_label("Number of General Traffic Lanes No Build").fill("10")
         first_window.get_by_label("Number of General Traffic Lanes Build").fill("4")
@@ -365,11 +375,11 @@ class TestProjectSystem:
         expect(first_window.get_by_role("link", name="Download Excel")).to_be_visible()
 
         first_window.get_by_role("link", name="Exit Project").click()
-        expect(first_window.locator("body")).to_contain_text("New Geary Boulevard Light Rail")
+        expect(first_window.locator("body")).to_contain_text("New Third Street Light Rail")
         expect(first_window.locator("body")).to_contain_text("1 projects")
         first_window.get_by_role("button", name="Delete").click()
         expect(first_window.locator("body")).to_contain_text("Confirm Delete")
-        expect(first_window.locator("body")).to_contain_text("Deleting Project New Geary Boulevard Light Rail")
+        expect(first_window.locator("body")).to_contain_text("Deleting Project New Third Street Light Rail")
         expect(first_window.locator("body")).to_contain_text("Warning: This action cannot be undone.")
         first_window.get_by_role("button", name="Confirm Delete").click()
         expect(first_window.locator("body")).to_contain_text("0 projects")

@@ -128,6 +128,10 @@ class TestModelSystem:
         page.locator(":text('Choices') ~ table tbody tr").nth(0).locator("td").nth(
             2
         ).locator("input").fill("District 4")
+        page.pause()
+        page.locator(":text('Choices') ~ table tbody tr").nth(0).locator("td").nth(
+            3
+        ).locator("input").check()
 
         page.get_by_role("link", name="Add another Field", exact=True).click()
         page.locator(":text('Field: #2') + fieldset").get_by_label("Name").nth(
