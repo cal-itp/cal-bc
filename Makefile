@@ -16,3 +16,6 @@ clear:
 
 seed:
 	uv run manage.py seed
+
+test:
+	uv run manage.py test

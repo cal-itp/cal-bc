@@ -1,8 +1,8 @@
-{% load svg%}
+{% load svg %}
 
 {% if show_errors %}
     {% for error in errors %}
-        <p class="my-1 text-red-700 flex items-center {{ error_classes }} ">
+        <p class="my-1 text-red-700 flex items-center">
             {% svg 'projects/warning' alt="error" class="h-6 w-auto" %}<span class="ml-2">{{ error }}</span>
         </p>
     {% endfor %}
