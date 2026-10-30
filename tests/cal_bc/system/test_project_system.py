@@ -263,7 +263,7 @@ class TestProjectSystem:
         first_window.get_by_role("button", name="Show group General Information guide").click()
         expect(first_window.get_by_text("Enter the district, EA, and PPNO if available.")).to_be_visible()
         first_window.get_by_role("button", name="close").click()
-        
+
         first_window.get_by_role("button", name="Save draft").click()
         expect(first_window.locator("body")).to_contain_text("Select District.")
 
