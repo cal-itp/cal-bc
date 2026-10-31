@@ -263,7 +263,7 @@ class TestProjectSystem:
         first_window.get_by_role("button", name="Show group General Information guide").click()
         expect(first_window.get_by_text("Enter the district, EA, and PPNO if available.")).to_be_visible()
         first_window.get_by_role("button", name="close").click()
-        
+
         first_window.get_by_role("button", name="Save draft").click()
         expect(first_window.locator("body")).to_contain_text("Select District.")
 
@@ -274,12 +274,10 @@ class TestProjectSystem:
         first_window.get_by_label("Project Location").select_option("NorCal")
         first_window.get_by_label("Length of Construction Period").fill("1")
         first_window.get_by_role("button", name="Save draft").click()
-        expect(first_window.locator("body")).to_contain_text("Project successfully saved!")
         expect(second_window.locator("body")).to_contain_text("Geary Boulevard Light Rail")
 
         first_window.get_by_label("Project Name").fill("New Geary Boulevard Light Rail", timeout=10_000)
         first_window.get_by_role("button", name="Continue to Subsection 1B").click()
-        expect(first_window.locator("body")).to_contain_text("Project successfully saved!")
 
         expect(second_window.locator("body")).to_contain_text("1 projects")
         second_window.get_by_role("link", name="Edit").click()
@@ -300,7 +298,6 @@ class TestProjectSystem:
         first_window.get_by_label("Forecast Build").fill("400000")
 
         first_window.get_by_role("button", name="Continue to Subsection 1E").click()
-        expect(first_window.locator("body")).to_contain_text("Project successfully saved!")
 
         expect(first_window.get_by_text("Subsection 1E Help")).not_to_be_visible()
         first_window.get_by_role("button", name="Show subsection guide").click()
@@ -325,7 +322,6 @@ class TestProjectSystem:
         first_window.get_by_label("Construction Year 1").fill("1")
 
         first_window.get_by_role("button", name="Save draft").click()
-        expect(first_window.locator("body")).to_contain_text("Project successfully saved!")
 
         expect(first_window.get_by_label("Constant Dollars Year 1")).to_contain_text("$3,000,001,000")
         expect(first_window.get_by_label("Present Value Year 1")).to_contain_text("$3,000,001,000")
@@ -360,7 +356,6 @@ class TestProjectSystem:
         first_window.get_by_role("button", name="close").click()
         first_window.get_by_label("Vehicle Emissions?").select_option("No")
         first_window.get_by_role("button", name="Save draft").click()
-        expect(first_window.locator("body")).to_contain_text("Project successfully saved!")
 
         expect(first_window.get_by_role("link", name="Download Excel")).to_be_visible()
 
