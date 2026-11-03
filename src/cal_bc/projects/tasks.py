@@ -54,9 +54,8 @@ def refresh_project_fields(project_pk: int) -> None:
     field_set = Field.objects.filter(row__group__subsection__section__version=project.version).exclude(cell="")
     calculated_values = remote_workbook.read_cell_values([f.cell for f in field_set.all()])
     calculation_set = [
-        Calculation(project=project, field=f, value=calculated_values[f.cell])
+        Calculation(project=project, field=f, value=(calculated_values[f.cell] if calculated_values[f.cell] is not None else ""))
         for f in field_set.all()
-        if calculated_values[f.cell] is not None
     ]
 
     with transaction.atomic():

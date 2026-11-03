@@ -6,6 +6,7 @@ from pytest_playwright.pytest_playwright import CreateContextCallback
 
 from cal_bc.models.models.model import (
     FieldDisplayType,
+    FieldRange,
     Group,
     Model,
     Section,
@@ -120,6 +121,9 @@ class TestProjectSystem:
         row_3 = group.row_set.create(position=3)
         row_3.field_set.create(name="Length of Construction Period", cell="Construct", unit="years", display_type=FieldDisplayType.REQUIRED)
 
+        row_4 = group.row_set.create(position=4)
+        field_peak_period = row_4.field_set.create(name="Length of Peak Period", cell="PeakLngthNB", unit="hours", display_type=FieldDisplayType.NOT_REQUIRED)
+        FieldRange.objects.create(field=field_peak_period, min_value=0, max_value=24)
 
     @pytest.fixture
     def subsection_1B(self, section: Section) -> Subsection:
@@ -275,17 +279,24 @@ class TestProjectSystem:
         first_window.get_by_label("Project Name").fill("Third Street Light Rail")
         expect(first_window.get_by_label("District")).to_contain_text("District 4 - Bay Area / Oakland")
         first_window.get_by_label("District").select_option("")
+        first_window.get_by_label("Length of Peak Period").fill("25")
 
         first_window.get_by_role("button", name="Save draft").click()
         expect(first_window.locator("body")).to_contain_text("Select District.")
+        expect(first_window.locator("body")).to_contain_text("Enter a number between 0 and 24 on Length of Peak Period.")
 
         first_window.get_by_label("District").select_option("District 1 - Eureka")
+        first_window.get_by_label("Length of Peak Period").fill("21")
         first_window.get_by_label("Project Type").select_option("General Highway")
         first_window.get_by_label("Project Location").select_option("NorCal")
         first_window.get_by_label("Length of Construction Period").fill("1")
         first_window.get_by_role("button", name="Save draft").click()
         expect(first_window.locator("body")).to_contain_text("Project successfully saved!")
         expect(second_window.locator("body")).to_contain_text("Third Street Light Rail")
+
+        first_window.get_by_label("Length of Peak Period").fill("")
+        first_window.get_by_role("button", name="Save draft").click()
+        expect(first_window.get_by_label("Length of Peak Period")).to_have_value("")
 
         first_window.get_by_label("Project Name").fill("New Third Street Light Rail", timeout=10_000)
         first_window.get_by_role("button", name="Continue to Subsection 1B").click()
