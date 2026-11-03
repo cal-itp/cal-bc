@@ -111,12 +111,20 @@ class TestProjectSubsectionViews:
         )
 
     @pytest.fixture
-    def project_data_1A_group_row(self, project_data_1A_group: Group) -> Row:
+    def project_data_1A_group_row_1(self, project_data_1A_group: Group) -> Row:
         return project_data_1A_group.row_set.create(position=1)
 
     @pytest.fixture
-    def length_peak_period_field(self, project_data_1A_group_row: Row) -> Field:
-        return project_data_1A_group_row.field_set.create(name="Length of Peak Period(s)", cell="PeakLngthNB", display_type=FieldDisplayType.NOT_REQUIRED)
+    def length_construction_period_field(self, project_data_1A_group_row_1: Row) -> Field:
+        return project_data_1A_group_row_1.field_set.create(name="Length of Construction Period", cell="Construct", unit="years", display_type=FieldDisplayType.NOT_REQUIRED)
+
+    @pytest.fixture
+    def project_data_1A_group_row_2(self, project_data_1A_group: Group) -> Row:
+        return project_data_1A_group.row_set.create(position=2)
+
+    @pytest.fixture
+    def length_peak_period_field(self, project_data_1A_group_row_2: Row) -> Field:
+        return project_data_1A_group_row_2.field_set.create(name="Length of Peak Period(s)", cell="PeakLngthNB", display_type=FieldDisplayType.NOT_REQUIRED)
 
     @pytest.fixture
     def subsection_1E(self, section: Section) -> Subsection:
@@ -235,7 +243,7 @@ class TestProjectSubsectionViews:
             district_field: Field,
             length_peak_period_field: Field,
     ):
-        project.calculation_set.create(field=name_field, value="This should show up")
+        project.calculation_set.create(field=name_field, value="Hypothetical Project")
         client.force_login(user)
         response = client.get(
             reverse_lazy(
@@ -245,7 +253,7 @@ class TestProjectSubsectionViews:
         )
         assert response.status_code == 200
         dom = parse_html(response.content)
-        assert query_by_label_text(dom, "Project Name*")
+        assert query_by_label_text(dom, "Project Name*").element.attributes.get("placeholder") == "Hypothetical Project"
 
     def test_subsection_edit_with_preexisting_input(
             self,
@@ -258,7 +266,8 @@ class TestProjectSubsectionViews:
             district_field: Field,
             length_peak_period_field: Field,
     ):
-        project.input_set.create(field=name_field, value="This should also show up")
+        project.input_set.create(field=name_field, value="Roadway Project")
+        project.calculation_set.create(field=name_field, value="Hypothetical Project")
         client.force_login(user)
         response = client.get(
             reverse_lazy(
@@ -268,7 +277,45 @@ class TestProjectSubsectionViews:
         )
         assert response.status_code == 200
         dom = parse_html(response.content)
-        assert query_by_label_text(dom, "Project Name*")
+        project_name = query_by_label_text(dom, "Project Name*")
+        assert project_name.element.attributes.get("value") == "Roadway Project"
+        assert project_name.element.attributes.get("placeholder") == "Hypothetical Project"
+
+    def test_subsection_clear_preexisting_input(
+            self,
+            client: Client,
+            user: User,
+            project: Project,
+            version: Version,
+            subsection_1A: Subsection,
+            name_field: Field,
+            district_field: Field,
+            length_peak_period_field: Field,
+    ):
+        project.input_set.create(field=name_field, value="Roadway Project")
+        project.calculation_set.create(field=name_field, value="Hypothetical Project")
+        client.force_login(user)
+        response = client.get(
+            reverse_lazy(
+                "project_subsection",
+                kwargs={"project_pk": project.pk, "pk": subsection_1A.pk},
+            ),
+            data={
+                f"subsection-{subsection_1A.pk}-input-0-field": name_field.pk,
+                f"subsection-{subsection_1A.pk}-input-0-value": "",
+                f"subsection-{subsection_1A.pk}-input-1-field": district_field.pk,
+                f"subsection-{subsection_1A.pk}-input-1-value": "1",
+                f"subsection-{subsection_1A.pk}-input-2-field": length_peak_period_field.pk,
+                f"subsection-{subsection_1A.pk}-input-2-value": "",
+                f"subsection-{subsection_1A.pk}-input-TOTAL_FORMS": 3,
+                f"subsection-{subsection_1A.pk}-input-INITIAL_FORMS": 0,
+            },
+        )
+        assert response.status_code == 200
+        dom = parse_html(response.content)
+        project_name = query_by_label_text(dom, "Project Name*")
+        assert project_name.element.attributes.get("value") == ""
+        assert project_name.element.attributes.get("placeholder") == "Hypothetical Project"
 
     def test_summary_table_subsection_edit(
             self,

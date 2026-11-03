@@ -21,6 +21,9 @@ class InputForm(ModelForm):
 
     def clean_value(self):
         value = self.cleaned_data.get("value")
+        if value is None:
+            value = ""
+        
         if hasattr(self.instance, "field") and self.instance.field.read_only:
             return self.instance.value
         if value and hasattr(self.instance, "field") and hasattr(self.instance.field, "fieldrange") and not (self.instance.field.fieldrange.min_value <= float(value) <= self.instance.field.fieldrange.max_value):

@@ -49,7 +49,7 @@ class Input(models.Model):
         ]
 
     def __str__(self) -> str:
-        return self.value
+        return self.value if self.value is not None else "Blank Input"
 
     def save(self, *args, **kwargs):
         with transaction.atomic():
