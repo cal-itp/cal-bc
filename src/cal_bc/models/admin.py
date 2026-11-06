@@ -1,5 +1,6 @@
 from functools import partial
 
+import django_admin_tables
 import nested_admin
 from django.contrib import admin
 from django.db import transaction
@@ -23,10 +24,11 @@ from cal_bc.models.tasks import refresh_version_file
 
 admin.AdminSite.site_header = "Cal-B/C Admin"
 
-class ChoiceInline(nested_admin.SortableHiddenMixin, nested_admin.NestedTabularInline):
+class ChoiceInline(django_admin_tables.AdminTablesMixin, nested_admin.SortableHiddenMixin, nested_admin.NestedTabularInline):
     model = Choice
     form = ChoiceForm
     extra = 0
+    radio_select_exclusive_fields = ["is_selected"]
 
 
 class FieldColumnInline(nested_admin.NestedTabularInline):

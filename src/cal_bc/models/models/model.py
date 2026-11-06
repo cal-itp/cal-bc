@@ -311,8 +311,6 @@ class Choice(models.Model):
 
     class Meta:
         ordering = ["position"]
-        constraints = [models.UniqueConstraint(fields=["field"], condition=models.Q(is_selected=True), name="unique_field_choice_default", violation_error_message="Only one choice can be selected.")]
-
 
     def __str__(self):
         return f"{self.position + 1!s} - {self.name}"
