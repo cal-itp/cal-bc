@@ -79,6 +79,8 @@ class ProjectSubsectionView(
         )
 
         context["subsection_column_count"] = max_attr(context["subsection"].non_summary_group_set, "column_count")
+        context["table_page"] = (context["subsection_column_count"] >= 3 or len(context["subsection"].summary_group_set) > 0)
+
         return context
 
     def extra_field_set(self):

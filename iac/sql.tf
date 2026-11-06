@@ -3,7 +3,11 @@ resource "google_sql_database_instance" "cal-bc-staging" {
   database_version = "POSTGRES_18"
   region           = "us-west2"
   settings {
-    tier = "db-f1-micro"
+    tier = "db-g1-small"
+    maintenance_window {
+      day  = 1
+      hour = 0
+    }
   }
   deletion_protection = true
 }

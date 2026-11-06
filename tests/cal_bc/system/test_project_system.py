@@ -77,14 +77,15 @@ class TestProjectSystem:
         group = subsection_1A.group_set.create(
             name="General Information",
             description="This is the general information group.",
-            position=1
+            position=1,
+            guide="Enter the district, EA, and PPNO if available."
         )
         row_1 = group.row_set.create(
             position=1,
             guide="Enter a descriptive name for your project."
         )
-        row_1.field_set.create(name="Project Name", cell="ProjName")
-        field_district = row_1.field_set.create(name="District", cell="1) Project Information!E2")
+        row_1.field_set.create(name="Project Name", cell="ProjName", display_type=FieldDisplayType.REQUIRED)
+        field_district = row_1.field_set.create(name="District", cell="1) Project Information!E2", display_type=FieldDisplayType.REQUIRED)
         field_district.choice_set.create(
             name="District 4 - Bay Area / Oakland",
             value="District 4",
@@ -98,21 +99,21 @@ class TestProjectSystem:
             position=2
         )
         row_1 = group.row_set.create(position=1)
-        field_project_type = row_1.field_set.create(name="Project Type", cell="ProjType")
+        field_project_type = row_1.field_set.create(name="Project Type", cell="ProjType", display_type=FieldDisplayType.REQUIRED)
         field_project_type.choice_set.create(
             name="General Highway",
             value="    General Highway",
         )
 
         row_2 = group.row_set.create(position=2)
-        field_project_location = row_2.field_set.create(name="Project Location", cell="ProjLoc")
+        field_project_location = row_2.field_set.create(name="Project Location", cell="ProjLoc", display_type=FieldDisplayType.REQUIRED)
         field_project_location.choice_set.create(
             name="NorCal",
             value="2",
         )
 
         row_3 = group.row_set.create(position=3)
-        row_3.field_set.create(name="Length of Construction Period", cell="Construct", unit="years")
+        row_3.field_set.create(name="Length of Construction Period", cell="Construct", unit="years", display_type=FieldDisplayType.REQUIRED)
 
 
     @pytest.fixture
@@ -130,21 +131,21 @@ class TestProjectSystem:
         column_build = column_group.column_set.create(name="Build")
 
         row_number_general_traffic_lanes = group.row_set.create(name="Number of General Traffic Lanes", position=1)
-        column_no_build.fieldcolumn_set.create(field = row_number_general_traffic_lanes.field_set.create(name="Number of General Traffic Lanes No Build", cell="GenLanesNB"))
-        column_build.fieldcolumn_set.create(field=row_number_general_traffic_lanes.field_set.create(name="Number of General Traffic Lanes Build", cell="GenLanesB"))
+        column_no_build.fieldcolumn_set.create(field = row_number_general_traffic_lanes.field_set.create(name="Number of General Traffic Lanes No Build", cell="GenLanesNB", display_type=FieldDisplayType.REQUIRED))
+        column_build.fieldcolumn_set.create(field=row_number_general_traffic_lanes.field_set.create(name="Number of General Traffic Lanes Build", cell="GenLanesB", display_type=FieldDisplayType.REQUIRED))
 
         row_number_hov = group.row_set.create(name="Number of HOV/HOT Lanes", position=2)
-        column_no_build.fieldcolumn_set.create(field=row_number_hov.field_set.create(name="Number of HOV/HOT Lanes No Build", cell="HOVLanesNB"))
-        column_build.fieldcolumn_set.create(field=row_number_hov.field_set.create(name="Number of HOV/HOT Lanes Build", cell="HOVLanesB"))
+        column_no_build.fieldcolumn_set.create(field=row_number_hov.field_set.create(name="Number of HOV/HOT Lanes No Build", cell="HOVLanesNB", display_type=FieldDisplayType.REQUIRED))
+        column_build.fieldcolumn_set.create(field=row_number_hov.field_set.create(name="Number of HOV/HOT Lanes Build", cell="HOVLanesB", display_type=FieldDisplayType.REQUIRED))
 
         row_hov_restriction = group.row_set.create(name="HOV Restriction", position=3)
-        column_no_build.fieldcolumn_set.create(field=row_hov_restriction.field_set.create(name="HOV Restriction No Build", cell="HOVRest"))
+        column_no_build.fieldcolumn_set.create(field=row_hov_restriction.field_set.create(name="HOV Restriction No Build", cell="HOVRest", display_type=FieldDisplayType.REQUIRED))
 
         row_highway_freeflow = group.row_set.create(name="Highway Free-Flow Speed", position=4)
-        column_no_build.fieldcolumn_set.create(field=row_highway_freeflow.field_set.create(name="Highway Free-Flow Speed No Build", cell="FFSpeedNB"))
+        column_no_build.fieldcolumn_set.create(field=row_highway_freeflow.field_set.create(name="Highway Free-Flow Speed No Build", cell="FFSpeedNB", display_type=FieldDisplayType.REQUIRED))
 
         row_highway_segment_length = group.row_set.create(name="Highway Segment Length", position=5)
-        column_no_build.fieldcolumn_set.create(field=row_highway_segment_length.field_set.create(name="Highway Segment Length No Build", cell="SegmentNB"))
+        column_no_build.fieldcolumn_set.create(field=row_highway_segment_length.field_set.create(name="Highway Segment Length No Build", cell="SegmentNB", display_type=FieldDisplayType.REQUIRED))
 
     @pytest.fixture(autouse=True)
     def group_1B_average_daily_traffic(self, subsection_1B: Subsection) -> None:
@@ -154,15 +155,15 @@ class TestProjectSystem:
         column_build = column_group.column_set.create(name="Build")
 
         row_current = group.row_set.create(name="Current", position=1)
-        row_current.field_set.create(name="Current", cell="ADT0")
+        row_current.field_set.create(name="Current", cell="ADT0", display_type=FieldDisplayType.REQUIRED)
 
         row_base = group.row_set.create(name="Base (Year 1)", position=2)
-        column_no_build.fieldcolumn_set.create(field=row_base.field_set.create(name="Base No Build", cell="ADT1NB"))
-        column_build.fieldcolumn_set.create(field=row_base.field_set.create(name="Base Build", cell="ADT1B"))
+        column_no_build.fieldcolumn_set.create(field=row_base.field_set.create(name="Base No Build", cell="ADT1NB", display_type=FieldDisplayType.REQUIRED))
+        column_build.fieldcolumn_set.create(field=row_base.field_set.create(name="Base Build", cell="ADT1B", display_type=FieldDisplayType.REQUIRED))
 
         row_forecast = group.row_set.create(name="Forecast (Year 20)", position=3)
-        column_no_build.fieldcolumn_set.create(field=row_forecast.field_set.create(name="Forecast No Build", cell="ADT20NB"))
-        column_build.fieldcolumn_set.create(field=row_forecast.field_set.create(name="Forecast Build", cell="ADT20B"))
+        column_no_build.fieldcolumn_set.create(field=row_forecast.field_set.create(name="Forecast No Build", cell="ADT20NB", display_type=FieldDisplayType.REQUIRED))
+        column_build.fieldcolumn_set.create(field=row_forecast.field_set.create(name="Forecast Build", cell="ADT20B", display_type=FieldDisplayType.REQUIRED))
 
     @pytest.fixture
     def subsection_1E(self, section: Section) -> Subsection:
@@ -210,9 +211,17 @@ class TestProjectSystem:
         row.field_set.create(name="Life-Cycle Costs (mil. $)", cell="3) Results!H13", unit="$", display_type=FieldDisplayType.READ_ONLY)
         row.field_set.create(name="Life-Cycle Benefits (mil. $)", cell="3) Results!H14", unit="$", display_type=FieldDisplayType.READ_ONLY)
         row.field_set.create(name="Benefit / Cost Ratio", cell="BeneCostRatio", display_type=FieldDisplayType.READ_ONLY)
-        group_2 = subsection_3.group_set.create(name="Emissions Reduction")
-        row_2 = group_2.row_set.create()
-        row_2.field_set.create(name="Emission Cost Savings Passenger", cell="3) Results!O18", display_type=FieldDisplayType.READ_ONLY)
+
+    @pytest.fixture(autouse=True)
+    def group_3(self, subsection_3: Subsection) -> None:
+        group_1 = subsection_3.group_set.create(name="Emissions Reduction", guide="This is the Emissions Reduction guide.")
+        row_1 = group_1.row_set.create()
+        row_1.field_set.create(name="Emission Cost Savings Passenger", cell="3) Results!O18", display_type=FieldDisplayType.READ_ONLY)
+        group_2 = subsection_3.group_set.create(name="Settings", guide="This is the Settings guide.")
+        row_2 = group_2.row_set.create(guide="Settings Instructions")
+        emissions_field = row_2.field_set.create(name="Vehicle Emissions?", cell="Emissions", display_type=FieldDisplayType.NOT_REQUIRED)
+        emissions_field.choice_set.create(name="Yes", value="Y")
+        emissions_field.choice_set.create(name="No", value="N")
 
     def test_projects(self, first_window: Page, second_window: Page, channels_live_server: ChannelsLiveServer):
         first_window.goto(channels_live_server.http_url)
@@ -245,6 +254,16 @@ class TestProjectSystem:
         first_window.get_by_label("Project Name").click()
         expect(first_window.locator("body")).to_contain_text("Enter a descriptive name for your project.")
 
+        expect(first_window.get_by_text("All fields in this step are required.")).not_to_be_visible()
+        first_window.get_by_role("button", name="Show subsection guide").click()
+        expect(first_window.get_by_text("All fields in this step are required.")).to_be_visible()
+        first_window.get_by_role("button", name="close").click()
+
+        expect(first_window.get_by_text("Enter the district, EA, and PPNO if available.")).not_to_be_visible()
+        first_window.get_by_role("button", name="Show group General Information guide").click()
+        expect(first_window.get_by_text("Enter the district, EA, and PPNO if available.")).to_be_visible()
+        first_window.get_by_role("button", name="close").click()
+        
         first_window.get_by_role("button", name="Save draft").click()
         expect(first_window.locator("body")).to_contain_text("Select District.")
 
@@ -323,13 +342,36 @@ class TestProjectSystem:
         expect(first_window.get_by_label("Life-Cycle Benefits")).to_contain_text("$17,262.92")
         expect(first_window.get_by_label("B/C Ratio")).to_contain_text("5.8")
 
+
+        expect(first_window.get_by_text("This is the Emissions Reduction guide.")).not_to_be_visible()
+        first_window.get_by_role("button", name="Show group Emissions Reduction guide").click()
+        expect(first_window.get_by_text("This is the Emissions Reduction guide.")).to_be_visible()
+        first_window.get_by_role("button", name="close").click()
+
+        expect(first_window.get_by_text("This is the Settings guide.")).not_to_be_visible()
+        first_window.get_by_role("button", name="Show group Settings guide").click()
+        expect(first_window.get_by_text("This is the Settings guide.")).to_be_visible()
+        first_window.get_by_role("button", name="close").click()
+
+        expect(first_window.get_by_text("Settings Instructions")).not_to_be_visible()
+        expect(first_window.get_by_label("Vehicle Emissions?")).to_contain_text("Yes")
+        first_window.get_by_label("Vehicle Emissions?").click()
+        expect(first_window.get_by_text("Settings Instructions")).to_be_visible()
+        first_window.get_by_role("button", name="close").click()
+        first_window.get_by_label("Vehicle Emissions?").select_option("No")
+        first_window.get_by_role("button", name="Save draft").click()
+        expect(first_window.locator("body")).to_contain_text("Project successfully saved!")
+
         expect(first_window.get_by_role("link", name="Download Excel")).to_be_visible()
 
         first_window.get_by_role("link", name="Exit Project").click()
         expect(first_window.locator("body")).to_contain_text("New Geary Boulevard Light Rail")
         expect(first_window.locator("body")).to_contain_text("1 projects")
-        first_window.on("dialog", lambda dialog: dialog.accept())
         first_window.get_by_role("button", name="Delete").click()
+        expect(first_window.locator("body")).to_contain_text("Confirm Delete")
+        expect(first_window.locator("body")).to_contain_text("Deleting Project New Geary Boulevard Light Rail")
+        expect(first_window.locator("body")).to_contain_text("Warning: This action cannot be undone.")
+        first_window.get_by_role("button", name="Confirm Delete").click()
         expect(first_window.locator("body")).to_contain_text("0 projects")
 
         first_window.get_by_role("button", name="User").click()

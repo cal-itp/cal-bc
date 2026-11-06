@@ -26,7 +26,7 @@ class Seed(seeds.seed.Seed):
         row_1, _ = self.group.row_set.get_or_create(position=1)
         row_1.field_set.get_or_create(name="Project Name", defaults={"cell": "ProjName"})
 
-        row_2, _ = self.group.row_set.get_or_create(position=2)
+        row_2, _ = self.group.row_set.get_or_create(position=2, defaults={"guide": "<p>Enter the Caltrans district, if available.</p>"})
         field_state, _ = row_2.field_set.get_or_create(name="State", defaults={"cell": "1) Project Information!F2"})
         field_state.choice_set.get_or_create(name="California", defaults={"value": "California"})
 

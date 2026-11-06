@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views.model import (
+    GroupGuideView,
     ModelListView,
     ProjectCreateView,
     RowGuideView,
@@ -13,6 +14,11 @@ urlpatterns = [
         "<int:model_pk>/versions/<int:version_pk>/sections/<int:section_pk>/subsections/<int:pk>/guide",
         SubsectionGuideView.as_view(),
         name="model_version_section_subsection_guide",
+    ),
+    path(
+        "<int:model_pk>/versions/<int:version_pk>/sections/<int:section_pk>/subsections/<int:subsection_pk>/groups/<int:pk>/guide",
+        GroupGuideView.as_view(),
+        name="model_version_section_subsection_group_guide",
     ),
     path(
         "<int:model_pk>/versions/<int:version_pk>/sections/<int:section_pk>/subsections/<int:subsection_pk>/groups/<int:group_pk>/rows/<int:pk>/guide",
