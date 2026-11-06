@@ -34,6 +34,7 @@
                 {% if form %}
                     <div class="{% if row_field_count == 1 and not form.initial.field.unit and not form.instance.field.unit %}col-span-2{% endif %}">
                         {% url 'model_version_section_subsection_group_row_guide' model_pk=row.group.subsection.section.version.model.pk version_pk=row.group.subsection.section.version.pk section_pk=row.group.subsection.section.pk subsection_pk=row.group.subsection.pk group_pk=row.group.pk pk=row.pk as row_url %}
+                        {% url 'project_subsection_field' project_pk=object.pk subsection_pk=row.group.subsection.pk pk=field.pk as field_url %}
                         {{ form.id }}
                         {{ form.field }}
                         {% for field in form.visible_fields %}

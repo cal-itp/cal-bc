@@ -44,11 +44,11 @@ class InputForm(ModelForm):
                 self.fields["value"] = ChoiceField(
                     choices=[(None, ""), *[(i.value, i.name) for i in choices]],
                     required=field.required,
-                    error_messages={'required': f'Select {field.name}.'},
+                    error_messages={"required": f"Select {field.name}."},
                 )
             elif hasattr(field, "fieldrange") or field.unit:
-                self.fields["value"] = DecimalField(required=field.required, error_messages={'required': f'Enter {field.name}.'})
+                self.fields["value"] = DecimalField(required=field.required, error_messages={"required": f"Enter {field.name}."})
             else:
-                self.fields["value"] = CharField(required=field.required, error_messages={'required': f'Enter {field.name}.'})
+                self.fields["value"] = CharField(required=field.required, error_messages={"required": f"Enter {field.name}."})
 
             self.fields["value"].label = field.name

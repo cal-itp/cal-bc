@@ -1,0 +1,15 @@
+{% if form.errors %}
+  {% for field, errors in form.errors.items %}
+    {% for error in errors %}
+      <span class="text-red-600">{{ error }}</span>
+    {% endfor %}
+  {% endfor %}
+{% else %}
+  <span></span>
+{% endif %}
+
+{% with project=object.project %}
+<hx-partial hx-target="#project-bc-ratio-value" class="hidden">
+    {% include "projects/_bc_ratio.html" %}
+</hx-partial>
+{% endwith %}
