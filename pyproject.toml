@@ -10,6 +10,7 @@ dependencies = [
     "daphne>=4.2.3",
     "dj-svg>=0.3.1",
     "django>=6.0.7",
+    "django-admin-tables>=0.1.4",
     "django-azure-auth>=2.4.0",
     "django-binary-database-files",
     "django-cotton>=2.7.2",

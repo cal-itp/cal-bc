@@ -79,6 +79,7 @@ INSTALLED_APPS = [
     "django_htmx",
     "widget_tweaks",
     "nested_admin",
+    "django_admin_tables",
     "extra_views",
     "django_prose_editor",
     "django_tasks_db",

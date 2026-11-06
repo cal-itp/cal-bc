@@ -292,12 +292,22 @@ class Field(models.Model):
     def read_only(self):
         return self.display_type == FieldDisplayType.READ_ONLY or self.row.group.is_summary == True
 
+    def selected_choice(self):
+        choice = self.choice_set.selected().first()
+        return choice.value if choice else ''
+
+class ChoiceManager(models.Manager):
+    def selected(self):
+        return self.filter(is_selected=True)
 
 class Choice(models.Model):
     field = models.ForeignKey(Field, null=False, on_delete=models.CASCADE)
     name = models.CharField(null=False, blank=False)
     value = models.CharField(null=False, blank=False)
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)
+    is_selected = models.BooleanField(default=False, db_index=True)
+
+    objects = ChoiceManager()
 
     class Meta:
         ordering = ["position"]

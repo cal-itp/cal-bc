@@ -22,4 +22,4 @@ class ChoiceForm(ModelForm):
 
     class Meta:
         model = Choice
-        fields = ["name", "value", "position"]
+        fields = ["name", "value", "is_selected", "position"]
