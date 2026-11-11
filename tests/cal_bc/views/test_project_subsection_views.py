@@ -99,8 +99,10 @@ class TestProjectSubsectionViews:
     @pytest.fixture
     def district_field(self, general_info_1A_group_row_2: Row) -> Field:
         field = general_info_1A_group_row_2.field_set.create(name="District", cell="ProjLoc", display_type=FieldDisplayType.REQUIRED)
-        field.choice_set.create(name="District 1", value="1")
-        field.choice_set.create(name="District 4", value="4")
+        choice_group = field.choicegroup_set.create()
+        choice_group = field.choicegroup_set.create()
+        choice_group.choice_set.create(name="District 1", value="1")
+        choice_group.choice_set.create(name="District 4", value="4")
         return field
 
     @pytest.fixture

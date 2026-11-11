@@ -101,8 +101,9 @@ class TestProjectTasks:
 
     def test_refresh_project_fields_preserves_default_choices(self, project: Project, row: Row) -> None:
         one_two_way_field = row.field_set.create(name="One- or Two-Way Data", cell="NumDirections")
-        one_two_way_field.choice_set.create(name="one", value="1")
-        one_two_way_field.choice_set.create(name="two", value="2")
+        choice_group = one_two_way_field.choicegroup_set.create()
+        choice_group.choice_set.create(name="one", value="1")
+        choice_group.choice_set.create(name="two", value="2")
         project.calculation_set.create(field=one_two_way_field, value="1")
         result = refresh_project_fields.enqueue(project.pk)
         assert result.status == TaskResultStatus.SUCCESSFUL
@@ -110,7 +111,8 @@ class TestProjectTasks:
 
     def test_refresh_project_fields_clears_not_default_choices(self, project: Project, row: Row) -> None:
         location_field = row.field_set.create(name="Project Location", cell="ProjLoc")
-        location_field.choice_set.create(name="name", value="2")
+        choice_group = location_field.choicegroup_set.create()
+        choice_group.choice_set.create(name="name", value="2")
         project.calculation_set.create(field=location_field, value="2")
         result = refresh_project_fields.enqueue(project.pk)
         assert result.status == TaskResultStatus.SUCCESSFUL

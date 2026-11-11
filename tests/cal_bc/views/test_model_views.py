@@ -66,8 +66,9 @@ class TestModelViews:
 
     @pytest.mark.vcr
     def test_project_create(self, client: Client, model: Model, version: Version, field: Field) -> None:
-        field.choice_set.create(name="California", value="California", is_selected=True)
-        field.choice_set.create(name="Florida", value="Florida")
+        choice_group = field.choicegroup_set.create()
+        choice_group.choice_set.create(name="California", value="California", is_selected=True)
+        choice_group.choice_set.create(name="Florida", value="Florida")
 
         response = client.post(
             reverse_lazy(

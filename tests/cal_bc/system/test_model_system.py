@@ -121,7 +121,10 @@ class TestModelSystem:
         page.locator(":text('Field: #1') + fieldset").get_by_label("Cell").nth(
             0
         ).fill("ProjLoc")
-        page.get_by_role("link", name="Add another Choice").click()
+        page.get_by_role("link", name="Add another Choice", exact=True).click()
+        page.locator(":text('Choice Groups') ~ table tbody tr").nth(0).locator("td").nth(
+            1
+        ).locator("input").fill("Districts")
         page.locator(":text('Choices') ~ table tbody tr").nth(0).locator("td").nth(
             1
         ).locator("input").fill("District 4 - Bay Area")

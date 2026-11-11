@@ -81,7 +81,8 @@ class TestModel:
 
     @pytest.fixture()
     def choice(self, field: Field) -> Choice:
-        return field.choice_set.create(
+        choice_group = field.choicegroup_set.create()
+        return choice_group.choice_set.create(
             name="District 4 - Bay Area",
             value="District 4",
             position=1

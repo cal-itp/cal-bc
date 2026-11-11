@@ -8,6 +8,7 @@ from django.db import transaction
 from cal_bc.models.forms.model import ChoiceForm
 from cal_bc.models.models.model import (
     Choice,
+    ChoiceGroup,
     Column,
     ColumnGroup,
     Field,
@@ -24,11 +25,23 @@ from cal_bc.models.tasks import refresh_version_file
 
 admin.AdminSite.site_header = "Cal-B/C Admin"
 
+
 class ChoiceInline(django_admin_tables.AdminTablesMixin, nested_admin.SortableHiddenMixin, nested_admin.NestedTabularInline):
     model = Choice
     form = ChoiceForm
     extra = 0
     radio_select_exclusive_fields = ["is_selected"]
+
+
+class ChoiceGroupInline(nested_admin.SortableHiddenMixin, nested_admin.NestedTabularInline):
+    model = ChoiceGroup
+    inlines = [ChoiceInline]
+
+    def get_extra(self, request, obj=None, **kwargs):
+        if obj is not None and obj.pk is not None and obj.choicegroup_set.count():
+            return 0
+        else:
+            return 1
 
 
 class FieldColumnInline(nested_admin.NestedTabularInline):
@@ -50,7 +63,7 @@ class FieldRangeInline(nested_admin.NestedTabularInline):
 
 class FieldInline(nested_admin.SortableHiddenMixin, nested_admin.NestedStackedInline):
     model = Field
-    inlines = [FieldColumnInline, FieldRangeInline, ChoiceInline]
+    inlines = [FieldColumnInline, FieldRangeInline, ChoiceGroupInline]
 
     def get_extra(self, request, obj=None, **kwargs):
         if obj is not None and obj.pk is not None and obj.field_set.count():

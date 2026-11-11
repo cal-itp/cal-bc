@@ -132,7 +132,7 @@ class ProjectSubsectionView(
             .exclude(row__group__is_summary=True)
             .exclude(input__project=self.object)
             .select_related("row", "row__group")
-            .prefetch_related("fieldrange", "input_set", "calculation_set", "choice_set")
+            .prefetch_related("fieldrange", "input_set", "calculation_set", "choicegroup_set")
         )
 
     def get_initial(self):
@@ -147,7 +147,7 @@ class ProjectSubsectionView(
             .exclude(field__display_type=FieldDisplayType.READ_ONLY)
             .exclude(field__row__group__is_summary=True)
             .select_related("field__fieldrange", "field__row", "field__row__group")
-            .prefetch_related("field__input_set", "field__calculation_set", "field__choice_set")
+            .prefetch_related("field__input_set", "field__calculation_set",  "field__choicegroup_set")
         )
         return kwargs
 
