@@ -87,11 +87,12 @@ class TestProjectSystem:
         )
         row_1.field_set.create(name="Project Name", cell="ProjName", display_type=FieldDisplayType.REQUIRED)
         field_district = row_1.field_set.create(name="District", cell="1) Project Information!E2", display_type=FieldDisplayType.REQUIRED)
-        field_district.choice_set.create(
+        choice_group = field_district.choicegroup_set.create()
+        choice_group.choice_set.create(
             name="District 1 - Eureka",
             value="District 1",
         )
-        field_district.choice_set.create(
+        choice_group.choice_set.create(
             name="District 4 - Bay Area / Oakland",
             value="District 4",
             is_selected=True
@@ -106,14 +107,20 @@ class TestProjectSystem:
         )
         row_1 = group.row_set.create(position=1)
         field_project_type = row_1.field_set.create(name="Project Type", cell="ProjType", display_type=FieldDisplayType.REQUIRED)
-        field_project_type.choice_set.create(
+        choice_project_type = field_project_type.choicegroup_set.create(name="Highway Capacity Expansion")
+        choice_project_type.choice_set.create(
             name="General Highway",
             value="    General Highway",
         )
 
         row_2 = group.row_set.create(position=2)
         field_project_location = row_2.field_set.create(name="Project Location", cell="ProjLoc", display_type=FieldDisplayType.REQUIRED)
-        field_project_location.choice_set.create(
+        choice_group_project_location = field_project_location.choicegroup_set.create()
+        choice_group_project_location.choice_set.create(
+            name="SoCal",
+            value="1",
+        )
+        choice_group_project_location.choice_set.create(
             name="NorCal",
             value="2",
         )
@@ -235,8 +242,9 @@ class TestProjectSystem:
         group_2 = subsection_3.group_set.create(name="Settings", guide="This is the Settings guide.")
         row_2 = group_2.row_set.create(guide="Settings Instructions")
         emissions_field = row_2.field_set.create(name="Vehicle Emissions?", cell="Emissions", display_type=FieldDisplayType.NOT_REQUIRED)
-        emissions_field.choice_set.create(name="Yes", value="Y")
-        emissions_field.choice_set.create(name="No", value="N")
+        choice_group = emissions_field.choicegroup_set.create()
+        choice_group.choice_set.create(name="Yes", value="Y")
+        choice_group.choice_set.create(name="No", value="N")
 
     def test_projects(self, first_window: Page, second_window: Page, channels_live_server: ChannelsLiveServer):
         first_window.goto(channels_live_server.http_url)
