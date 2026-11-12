@@ -153,7 +153,7 @@
                     <div>
                         {% spaceless %}
                         <span>{{ row.name }}</span>
-                        {% if row.input_field_set|length > 0 and row.input_field_set|length == row.required_field_set|length %}
+                        {% if row.required_field_set|length > 0 and row.input_field_set|length == row.required_field_set|length %}
                             <span class="text-red-700 ml-1">*</span>
                         {% endif %}
                         {% endspaceless %}

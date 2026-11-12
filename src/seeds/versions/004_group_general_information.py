@@ -1,7 +1,7 @@
 from functools import cached_property
 
 import seeds.seed
-from cal_bc.models.models.model import Group, Subsection
+from cal_bc.models.models.model import FieldDisplayType, Group, Subsection
 
 
 class Seed(seeds.seed.Seed):
@@ -24,11 +24,15 @@ class Seed(seeds.seed.Seed):
 
     def load(self) -> None:
         row_1, _ = self.group.row_set.get_or_create(position=1)
-        row_1.field_set.get_or_create(name="Project Name", defaults={"cell": "ProjName"})
+        row_1.field_set.get_or_create(name="Project Name", defaults={"cell": "ProjName", "display_type": FieldDisplayType.REQUIRED})
 
         row_2, _ = self.group.row_set.get_or_create(position=2, defaults={"guide": "<p>Enter the Caltrans district, if available.</p>"})
-        field_state, _ = row_2.field_set.get_or_create(name="State", defaults={"cell": "1) Project Information!F2"})
-        field_state.choice_set.get_or_create(name="California", defaults={"value": "California"})
+        field_state, _ = row_2.field_set.get_or_create(name="State", defaults={"cell": "1) Project Information!F2", "display_type": FieldDisplayType.REQUIRED})
+        field_state.choice_set.get_or_create(name="California", defaults={"value": "California", "is_selected": True})
 
-        field_district, _ = row_2.field_set.get_or_create(name="District", defaults={"cell": "1) Project Information!E2"})
-        field_district.choice_set.get_or_create(name="District 1", defaults={"value": "1"})
+        field_district, _ = row_2.field_set.get_or_create(name="District", defaults={"cell": "1) Project Information!E2", "display_type": FieldDisplayType.REQUIRED})
+        field_district.choice_set.get_or_create(name="HQ", defaults={"value": "HQ", "is_selected": True})
+        field_district.choice_set.get_or_create(name="District-1 - Eureka", defaults={"value": "District-1 - Eureka"})
+        field_district.choice_set.get_or_create(name="District-2 - Redding", defaults={"value": "District-2 - Redding"})
+        field_district.choice_set.get_or_create(name="District-3 - Marysville / Sacramento", defaults={"value": "District-3 - Marysville / Sacramento"})
+        field_district.choice_set.get_or_create(name="District-4 - Bay Area / Oakland", defaults={"value": "District-4 - Bay Area / Oakland"})

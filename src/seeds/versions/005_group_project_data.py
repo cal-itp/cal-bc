@@ -1,7 +1,7 @@
 from functools import cached_property
 
 import seeds.seed
-from cal_bc.models.models.model import Group, Subsection
+from cal_bc.models.models.model import FieldDisplayType, FieldRange, Group, Subsection
 
 
 class Seed(seeds.seed.Seed):
@@ -27,19 +27,21 @@ class Seed(seeds.seed.Seed):
 
     def load(self) -> None:
         row_1, _ = self.group.row_set.get_or_create(position=1)
-        field_project_type, _ = row_1.field_set.get_or_create(name="Project Type", defaults={"cell": "ProjType"})
+        field_project_type, _ = row_1.field_set.get_or_create(name="Project Type", defaults={"cell": "ProjType", "display_type": FieldDisplayType.REQUIRED})
         field_project_type.choice_set.get_or_create(value="    General Highway", defaults={"name": "• General Highway"})
 
         row_2, _ = self.group.row_set.get_or_create(position=2)
-        field_project_location, _ = row_2.field_set.get_or_create(name="Project Location", defaults={"cell": "ProjLoc"})
+        field_project_location, _ = row_2.field_set.get_or_create(name="Project Location", defaults={"cell": "ProjLoc", "display_type": FieldDisplayType.REQUIRED})
+        field_project_location.choice_set.get_or_create(value="1", defaults={"name": "SoCal"})
         field_project_location.choice_set.get_or_create(value="2", defaults={"name": "NorCal"})
+        field_project_location.choice_set.get_or_create(value="3", defaults={"name": "Rural"})
 
         row_3, _ = self.group.row_set.get_or_create(position=3)
-        row_3.field_set.get_or_create(name="Length of Construction Period", defaults={"cell": "Construct", "unit": "years"})
-
-        _row_4, _ = self.group.row_set.get_or_create(position=4)
-        field_direction, _ = row_3.field_set.get_or_create(name="One- or Two-Way Data", defaults={"cell": "NumDirections"})
+        row_3.field_set.get_or_create(name="Length of Construction Period", defaults={"cell": "Construct", "unit": "years", "position": 0, "display_type": FieldDisplayType.REQUIRED})
+        field_direction, _ = row_3.field_set.get_or_create(name="One- or Two-Way Data", defaults={"cell": "NumDirections", "position": 1, "display_type": FieldDisplayType.REQUIRED})
         field_direction.choice_set.get_or_create(value="1", defaults={"name": "One-Way"})
+        field_direction.choice_set.get_or_create(value="2", defaults={"name": "Two-Way", "is_selected": True})
 
-        row_5, _ = self.group.row_set.get_or_create(position=5)
-        row_5.field_set.get_or_create(name="Length of Peak Period(s) (up to 24 hrs)", defaults={"cell": "PeakLngthNB", "unit": "hours"})
+        row_4, _ = self.group.row_set.get_or_create(position=4)
+        field_peak_period, _ = row_4.field_set.get_or_create(name="Length of Peak Period(s) (up to 24 hrs)", defaults={"cell": "PeakLngthNB", "unit": "hours"})
+        FieldRange.objects.get_or_create(field=field_peak_period, defaults={"min_value": 0, "max_value": 24})

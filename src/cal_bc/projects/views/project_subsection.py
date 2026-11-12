@@ -39,9 +39,21 @@ class ProjectSubsectionView(
     def get_object(self):
         return get_object_or_404(
             Project.objects.prefetch_related(
-                Prefetch("input_set", queryset=Input.objects.select_related("field")),
-                Prefetch("calculation_set", queryset=Calculation.objects.select_related("field")),
-                Prefetch("refreshtask_set", queryset=RefreshTask.objects.select_related("db_task_result"))
+                Prefetch("input_set",
+                    queryset=Input.objects
+                        .filter(field__row__group__subsection_id=self.kwargs['pk'])
+                        .select_related("field")
+                ),
+                Prefetch("calculation_set",
+                    queryset=Calculation.objects
+                        .filter(field__row__group__subsection_id=self.kwargs['pk'])
+                        .select_related("field")
+                ),
+                Prefetch("refreshtask_set",
+                    queryset=RefreshTask.objects.active()
+                        .filter(project_id=self.kwargs['project_pk'])
+                        .select_related("db_task_result")
+                )
             ),
             pk=self.kwargs["project_pk"]
         )
@@ -49,31 +61,61 @@ class ProjectSubsectionView(
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        non_table_row_prefetch = Prefetch("row_set", queryset=Row.objects.non_table().order_by("position").annotate(Count("field")), to_attr="non_table_row_set")
-        table_row_prefetch = Prefetch(
-    "row_set",
-            queryset=Row.objects.table().prefetch_related(
-                Prefetch("field_set", queryset=Field.objects.input(), to_attr="input_field_set"),
-                Prefetch("field_set", queryset=Field.objects.required(), to_attr="required_field_set"),
-            )
-            .order_by("position")
-            .annotate(Count("field"))
-        , to_attr="table_row_set")
-        column_group_prefetch = Prefetch("columngroup_set", queryset=ColumnGroup.objects.prefetch_related(
-            Prefetch("column_set", queryset=Column.objects.prefetch_related("field_set__row__group"))
-        ))
+        non_table_row_prefetch = Prefetch("row_set",
+            queryset=Row.objects.non_table()
+                .filter(group__subsection_id=self.kwargs['pk'])
+                .order_by("position")
+                .annotate(Count("field")),
+            to_attr="non_table_row_set"
+        )
+
+        table_row_prefetch = Prefetch("row_set",
+            queryset=Row.objects.table()
+                .filter(group__subsection_id=self.kwargs['pk']).prefetch_related(
+                    Prefetch("field_set",
+                        queryset=Field.objects.input()
+                            .filter(row__group__subsection_id=self.kwargs['pk']), to_attr="input_field_set"
+                    ),
+                    Prefetch("field_set",
+                        queryset=Field.objects.required()
+                            .filter(row__group__subsection_id=self.kwargs['pk']), to_attr="required_field_set"
+                    ),
+                )
+                .order_by("position")
+                .annotate(Count("field")),
+            to_attr="table_row_set"
+        )
+        
+        
+        column_group_prefetch = Prefetch("columngroup_set",
+            queryset=ColumnGroup.objects
+                .filter(group__subsection_id=self.kwargs['pk'])
+                .prefetch_related(
+                    Prefetch("column_set",
+                        queryset=Column.objects
+                            .filter(column_group__group__subsection_id=self.kwargs['pk'])
+                            .prefetch_related("field_set__row__group")
+                    )
+                )
+        )
 
         context["subsection"] = get_object_or_404(
-            Subsection.objects.prefetch_related(
-                "section__version__model",
-                Prefetch("group_set", queryset=Group.objects.non_summary().prefetch_related(
-                    non_table_row_prefetch,
-                    table_row_prefetch,
-                    column_group_prefetch,
-                ).order_by("position").annotate(column_count=Count("columngroup__column__id")), to_attr="non_summary_group_set"),
-                Prefetch("group_set", queryset=Group.objects.summary().prefetch_related(
-                    non_table_row_prefetch
-                ).order_by("position"), to_attr="summary_group_set")
+            Subsection.objects.prefetch_related("section__version__model",
+                Prefetch("group_set",
+                    queryset=Group.objects.non_summary()
+                        .filter(subsection_id=self.kwargs['pk'])
+                        .prefetch_related(non_table_row_prefetch, table_row_prefetch, column_group_prefetch)
+                        .order_by("position")
+                        .annotate(column_count=Count("columngroup__column__id")),
+                    to_attr="non_summary_group_set"
+                ),
+                Prefetch("group_set",
+                    queryset=Group.objects.summary()
+                        .filter(subsection_id=self.kwargs['pk'])
+                        .prefetch_related(non_table_row_prefetch)
+                        .order_by("position"),
+                    to_attr="summary_group_set"
+                )
             ),
             pk=self.kwargs["pk"]
         )

@@ -77,6 +77,13 @@ class TestProjectTasks:
         assert result.status == TaskResultStatus.SUCCESSFUL
         assert project.calculation_set.get(field=field).value == "Nombre"
 
+    def test_refresh_project_clears_input(self, project: Project, row: Row) -> None:
+        length_field = row.field_set.create(name="Length of Construction Period", cell="Construct", display_type=FieldDisplayType.NOT_REQUIRED)
+        project.input_set.create(field=length_field, value="")
+        result = refresh_project_fields.enqueue(project.pk)
+        assert result.status == TaskResultStatus.SUCCESSFUL
+        assert project.calculation_set.get(field=length_field).value == ""
+
     def test_refresh_project_fields_does_not_set_blank_calculations(self, project: Project, row: Row) -> None:
         formula_field = row.field_set.create(name="Ramp Design Speed (Build)", cell="RampFFSpdB", display_type=FieldDisplayType.NOT_REQUIRED)
         formula_dependency = row.field_set.create(name="Ramp Design Speed (No Build)", cell="RampFFSpdNB")
@@ -92,13 +99,22 @@ class TestProjectTasks:
         assert result.status == TaskResultStatus.SUCCESSFUL
         assert project.calculation_set.get(field=formula_field).value == "35.0"
 
-    def test_refresh_project_fields_preserves_choices(self, project: Project, row: Row) -> None:
+    def test_refresh_project_fields_preserves_default_choices(self, project: Project, row: Row) -> None:
+        one_two_way_field = row.field_set.create(name="One- or Two-Way Data", cell="NumDirections")
+        one_two_way_field.choice_set.create(name="one", value="1")
+        one_two_way_field.choice_set.create(name="two", value="2")
+        project.calculation_set.create(field=one_two_way_field, value="1")
+        result = refresh_project_fields.enqueue(project.pk)
+        assert result.status == TaskResultStatus.SUCCESSFUL
+        assert project.calculation_set.get(field=one_two_way_field).value == "2.0"
+
+    def test_refresh_project_fields_clears_not_default_choices(self, project: Project, row: Row) -> None:
         location_field = row.field_set.create(name="Project Location", cell="ProjLoc")
         location_field.choice_set.create(name="name", value="2")
         project.calculation_set.create(field=location_field, value="2")
         result = refresh_project_fields.enqueue(project.pk)
         assert result.status == TaskResultStatus.SUCCESSFUL
-        assert project.calculation_set.get(field=location_field).value == "2"
+        assert project.calculation_set.get(field=location_field).value == ""
 
     def test_refresh_project_fields_recalculates_readonly_fields(self, project: Project, row: Row, summary_row: Row) -> None:
         year1_field = row.field_set.create(name="Mitigation Year 1", cell="1) Project Information!AB15", display_type=FieldDisplayType.REQUIRED)
