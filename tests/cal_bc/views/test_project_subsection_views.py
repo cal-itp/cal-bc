@@ -17,12 +17,13 @@ from cal_bc.models.models.model import (
     ColumnGroup,
     Field,
     FieldDisplayType,
+    FieldRange,
     Group,
     Model,
     Row,
     Section,
     Subsection,
-    Version, FieldRange,
+    Version,
 )
 from cal_bc.projects.models.project import Calculation, Input, Project, RefreshTask
 
@@ -140,7 +141,7 @@ class TestProjectSubsectionViews:
     def induced_trips_field(self, highway_design_subsection: Subsection) -> Field:
         group = highway_design_subsection.group_set.create(name="HOV/HOT Lane Traffic")
         row = group.row_set.create()
-        return row.field_set.create(name="Induced Trips Build", cell="PerIndHOV", unit="%")
+        return row.field_set.create(name="Induced Trips", cell="PerIndHOV", unit="%")
 
     @pytest.fixture
     def subsection_1E(self, section: Section) -> Subsection:
@@ -459,7 +460,7 @@ class TestProjectSubsectionViews:
 
         assert response.status_code == 200
         dom = parse_html(str(response.content))
-        assert query_by_text(dom, "Enter a number between 0 and 100 on Induced Trips Build.")
+        assert query_by_text(dom, "Enter a number between 0 and 100 on Induced Trips.")
 
         assert Input.objects.filter(field=induced_trips_field).count() == 0
         assert Calculation.objects.filter(field=induced_trips_field).count() == 0

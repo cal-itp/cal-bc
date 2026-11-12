@@ -174,6 +174,12 @@ class TestProjectSystem:
         column_no_build.fieldcolumn_set.create(field=row_forecast.field_set.create(name="Forecast No Build", cell="ADT20NB", display_type=FieldDisplayType.REQUIRED))
         column_build.fieldcolumn_set.create(field=row_forecast.field_set.create(name="Forecast Build", cell="ADT20B", display_type=FieldDisplayType.REQUIRED))
 
+    @pytest.fixture(autouse=True)
+    def group_1B_hot_lane_traffic(self, subsection_1B: Subsection) -> None:
+        group = subsection_1B.group_set.create(name="HOV/HOT Lane Traffic", position=3)
+        row_induced_trips = group.row_set.create(name="Induced Trips", position=1)
+        row_induced_trips.field_set.create(name="Induced Trips", cell="PerIndHOV", unit="%")
+
     @pytest.fixture
     def subsection_1E(self, section: Section) -> Subsection:
         return section.subsection_set.create(name="Project Costs", code="E", guide="Subsection 1E Help")
@@ -320,8 +326,14 @@ class TestProjectSystem:
         first_window.get_by_label("Forecast No Build").fill("600000")
         first_window.get_by_label("Forecast Build").fill("400000")
 
+        first_window.get_by_label("Induced Trips").fill("28")
+
         first_window.get_by_role("button", name="Continue to Subsection 1E").click()
         expect(first_window.locator("body")).to_contain_text("Project successfully saved!")
+
+        second_window.get_by_role("button", name="1A - Project Data").click()
+        second_window.get_by_role("menuitem", name="1B. Highway Design and Traffic Data").click()
+        expect(second_window.get_by_label("Induced Trips")).to_have_value("28.00")
 
         expect(first_window.get_by_text("Subsection 1E Help")).not_to_be_visible()
         first_window.get_by_role("button", name="Show subsection guide").click()
