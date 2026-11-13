@@ -1,0 +1,15 @@
+{% load svg %}
+
+{% if form.errors %}
+    {% with show_errors="True" %}
+        {% for field, errors in form.errors.items %}
+            <c-input-error show_errors=show_errors errors=errors/>
+        {% endfor %}
+    {% endwith %}
+{% endif %}
+
+{% with project=object.project %}
+<hx-partial hx-target="#project-bc-ratio-value" class="hidden">
+    {% include "projects/_bc_ratio.html" %}
+</hx-partial>
+{% endwith %}

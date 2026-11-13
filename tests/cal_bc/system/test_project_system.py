@@ -38,8 +38,8 @@ class TestProjectSystem:
         }
 
     @pytest.fixture
-    def first_window(self, page: Page, cookie: dict) -> Page:
-        first_window = page
+    def first_window(self, cookie: dict, new_context: CreateContextCallback) -> Page:
+        first_window = new_context().new_page()
         first_window.context.add_cookies([cookie])
         return first_window
 
@@ -272,8 +272,9 @@ class TestProjectSystem:
         first_window.get_by_role("button", name="Show group General Information guide").click()
         expect(first_window.get_by_text("Enter the district, EA, and PPNO if available.")).to_be_visible()
         first_window.get_by_role("button", name="close").click()
-        
+
         first_window.get_by_role("button", name="Save draft").click()
+        expect(first_window.locator("body")).to_contain_text("Enter Project Name")
 
         expect(second_window.locator("body")).to_contain_text("Hypothetical Project", timeout=10_000)
         first_window.get_by_label("Project Name").fill("Third Street Light Rail")
@@ -291,14 +292,14 @@ class TestProjectSystem:
         first_window.get_by_label("Project Location").select_option("NorCal")
         first_window.get_by_label("Length of Construction Period").fill("1")
         first_window.get_by_role("button", name="Save draft").click()
-        expect(first_window.locator("body")).to_contain_text("Project successfully saved!")
+        expect(first_window.locator("body")).to_contain_text("Project successfully saved!", timeout=10_000)
         expect(second_window.locator("body")).to_contain_text("Third Street Light Rail")
 
         first_window.get_by_label("Length of Peak Period").fill("")
         first_window.get_by_role("button", name="Save draft").click()
         expect(first_window.get_by_label("Length of Peak Period")).to_have_value("")
 
-        first_window.get_by_label("Project Name").fill("New Third Street Light Rail", timeout=10_000)
+        first_window.get_by_label("Project Name").fill("New Third Street Light Rail")
         first_window.get_by_role("button", name="Continue to Subsection 1B").click()
         expect(first_window.locator("body")).to_contain_text("Project successfully saved!")
 
