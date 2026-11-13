@@ -17,6 +17,7 @@ from cal_bc.models.models.model import (
     ColumnGroup,
     Field,
     FieldDisplayType,
+    FieldRange,
     Group,
     Model,
     Row,
@@ -125,6 +126,22 @@ class TestProjectSubsectionViews:
     @pytest.fixture
     def length_peak_period_field(self, project_data_1A_group_row_2: Row) -> Field:
         return project_data_1A_group_row_2.field_set.create(name="Length of Peak Period(s)", cell="PeakLngthNB", display_type=FieldDisplayType.NOT_REQUIRED)
+
+    @pytest.fixture
+    def highway_design_subsection(self, section: Section) -> Subsection:
+        return section.subsection_set.create(name="Highway Design and Traffic Data", code="B")
+
+    @pytest.fixture
+    def general_traffic_lanes_field(self, highway_design_subsection: Subsection) -> Field:
+        group = highway_design_subsection.group_set.create(name="Highway Design")
+        row = group.row_set.create()
+        return row.field_set.create(name="No. of General Traffic Lanes No Build", cell="GenLanesNB")
+
+    @pytest.fixture
+    def induced_trips_field(self, highway_design_subsection: Subsection) -> Field:
+        group = highway_design_subsection.group_set.create(name="HOV/HOT Lane Traffic")
+        row = group.row_set.create()
+        return row.field_set.create(name="Induced Trips", cell="PerIndHOV", unit="%")
 
     @pytest.fixture
     def subsection_1E(self, section: Section) -> Subsection:
@@ -356,6 +373,97 @@ class TestProjectSubsectionViews:
         assert Input.objects.filter(field=district_field)[0].value == "1"
         assert Input.objects.filter(field=length_peak_period_field).first() is None
         assert Calculation.objects.filter(field=length_peak_period_field)[0].value == "5.0"
+
+    def test_subsection_edit_submission_field_with_field_range(
+            self,
+            client: Client,
+            user: User,
+            project: Project,
+            highway_design_subsection: Subsection,
+            general_traffic_lanes_field: Field,
+    ):
+        FieldRange.objects.create(field=general_traffic_lanes_field, min_value=1, max_value=20)
+        client.force_login(user)
+        response = client.post(
+            reverse_lazy(
+                "project_subsection",
+                kwargs={"project_pk": project.pk, "pk": highway_design_subsection.pk},
+            ),
+            data={
+                f"subsection-{highway_design_subsection.pk}-input-0-field": general_traffic_lanes_field.pk,
+                f"subsection-{highway_design_subsection.pk}-input-0-value": "0",
+                f"subsection-{highway_design_subsection.pk}-input-TOTAL_FORMS": 1,
+                f"subsection-{highway_design_subsection.pk}-input-INITIAL_FORMS": 0,
+            },
+        )
+
+        assert response.status_code == 200
+        dom = parse_html(str(response.content))
+        assert query_by_text(dom, "Enter a number between 1 and 20 on No. of General Traffic Lanes No Build.")
+
+        assert Input.objects.filter(field=general_traffic_lanes_field).count() == 0
+        assert Calculation.objects.filter(field=general_traffic_lanes_field).count() == 0
+
+    def test_subsection_edit_submission_percentage_field(
+            self,
+            client: Client,
+            user: User,
+            project: Project,
+            highway_design_subsection: Subsection,
+            induced_trips_field: Field,
+    ):
+        client.force_login(user)
+        response = client.post(
+            reverse_lazy(
+                "project_subsection",
+                kwargs={"project_pk": project.pk, "pk": highway_design_subsection.pk},
+            ),
+            data={
+                f"subsection-{highway_design_subsection.pk}-input-0-field": induced_trips_field.pk,
+                f"subsection-{highway_design_subsection.pk}-input-0-value": "33",
+                f"subsection-{highway_design_subsection.pk}-input-TOTAL_FORMS": 1,
+                f"subsection-{highway_design_subsection.pk}-input-INITIAL_FORMS": 0,
+            },
+        )
+
+        assert response.status_code == 302
+        assert response.url == reverse_lazy(
+            "project_subsection",
+            kwargs={"project_pk": project.pk, "pk": highway_design_subsection.pk},
+        )
+
+        assert Input.objects.filter(field=induced_trips_field)[0].value == "0.33"
+        assert Calculation.objects.filter(field=induced_trips_field)[0].value == "0.33"
+
+    def test_subsection_edit_submission_percentage_field_with_field_range(
+            self,
+            client: Client,
+            user: User,
+            project: Project,
+            highway_design_subsection: Subsection,
+            induced_trips_field: Field,
+    ):
+        FieldRange.objects.create(field=induced_trips_field, min_value=0, max_value=1)
+        client.force_login(user)
+        response = client.post(
+            reverse_lazy(
+                "project_subsection",
+                kwargs={"project_pk": project.pk, "pk": highway_design_subsection.pk},
+            ),
+            data={
+                f"subsection-{highway_design_subsection.pk}-input-0-field": induced_trips_field.pk,
+                f"subsection-{highway_design_subsection.pk}-input-0-value": "330",
+                f"subsection-{highway_design_subsection.pk}-input-TOTAL_FORMS": 1,
+                f"subsection-{highway_design_subsection.pk}-input-INITIAL_FORMS": 0,
+            },
+        )
+
+        assert response.status_code == 200
+        dom = parse_html(str(response.content))
+        assert query_by_text(dom, "Enter a number between 0 and 100 on Induced Trips.")
+
+        assert Input.objects.filter(field=induced_trips_field).count() == 0
+        assert Calculation.objects.filter(field=induced_trips_field).count() == 0
 
     def test_refreshing_project_has_a_spinner(self, client: Client, user: User, project: Project, subsection_1E: Subsection):
         client.force_login(user)
