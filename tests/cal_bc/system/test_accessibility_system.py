@@ -213,6 +213,11 @@ class TestAccessibilitySystem:
         axe = Axe()
         msg = "Accessibility violations found. Check the report in 'axe-reports/'."
 
+        first_window.goto(f"{channels_live_server.http_url}/projects/0/subsections/0/")
+        first_window.get_by_role("heading", name="We can’t find that page").click()
+        axe_check = axe.run(first_window, filename="accessibility_report")
+        assert len(axe_check["violations"]) == 0, f"{len(axe_check["violations"])} {msg}"
+
         first_window.goto(channels_live_server.http_url)
         axe_check = axe.run(first_window, filename="accessibility_report")
         assert len(axe_check["violations"]) == 0, f"{len(axe_check["violations"])} {msg}"

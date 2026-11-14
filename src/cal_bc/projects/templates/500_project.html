@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load svg %}
+{% block main %}
+
+{% include "_header_nav.html" %}
+
+<div class="pt-20 min-h-full bg-gray-100 flex flex-col">
+
+    <main class="grow">
+	    <div class="mx-auto max-w-7xl space-y-6 pt-16 px-6 lg:px-8">
+			<div class="space-y-2">
+				{% svg 'shared/server_error' alt="Server Error" class="h-37 w-auto text-dds-teal-600" %}
+	        	<h1 class="uppercase text-lg/8 text-dds-teal-900">Server Error</h1>
+	            <h2 class="text-4xl/12 font-bold text-dds-teal-950">We could not complete your request</h2>
+	            
+	            <div class="md:grid md:grid-cols-2 md:gap-6">
+		            <p class="text-gray-700 text-lg/8 text-pretty">		
+						Sorry, this is not working properly on our end. We now know about this mistake and are working to fix it.
+					</p>
+				</div>
+	        </div>
+
+
+			<div class="flex items-center gap-4">
+            	<a href="{% url 'projects' %}" class="w-58 flex justify-center items-start gap-2 rounded-md bg-white px-7 py-3 text-lg font-semibold text-dds-teal-600 border-1 border-dds-teal-600 shadow hover:shadow-(--button-hover) focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+            		{% svg 'shared/home' class="h-6 w-auto" %}<span>Back to home</span>
+            	</a>
+            	<button onclick="window.location.reload();" class="cursor-pointer w-58 flex justify-center items-center gap-2 rounded-md bg-dds-teal-600 pl-3 pr-4 py-3 text-lg font-semibold text-white shadow hover:shadow-(--button-hover) focus:outline-4 focus:outline-dds-teal-400 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+            		{% svg 'projects/refresh' class="h-5 w-auto" %}<span>Try again</span>
+            	</button>
+	        </div>
+		</div>
+    </main>
+
+    {% include "_footer.html" %}
+</div>
+{% endblock %}
