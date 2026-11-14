@@ -39,6 +39,7 @@ urlpatterns = [
 ]
 
 handler404 = 'cal_bc.views.custom_not_found_view'
+handler500 = 'cal_bc.views.custom_server_error_view'
 
 if not settings.TESTING:
     from debug_toolbar.toolbar import debug_toolbar_urls
