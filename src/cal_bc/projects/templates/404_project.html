@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load svg %}
+{% block main %}
+
+{% include "_header_nav.html" %}
+
+<div class="pt-20 min-h-full bg-gray-100 flex flex-col">
+
+    <main class="grow">
+	    <div class="mx-auto max-w-7xl space-y-6 pt-16 px-6 lg:px-8">
+			<div class="space-y-2">
+				{% svg 'shared/not_found' alt="Not Found" class="h-37 w-auto text-dds-teal-600" %}
+	        	<h1 class="uppercase text-lg/8 text-dds-teal-900">Page not found</h1>
+	            <h2 class="text-4xl/12 font-bold text-dds-teal-950">We can’t find that page</h2>
+	            
+	            <div class="md:grid md:grid-cols-2 md:gap-6">
+		            <p class="text-gray-700 text-lg/8 text-pretty">		
+						The page you're looking for may have been moved, renamed, or doesn't exist. Check the link, or head back to your projects.
+					</p>
+				</div>
+	        </div>
+
+            <a href="{% url 'landings' %}" class="w-60 flex justify-center items-center gap-1 rounded-md bg-dds-teal-600 pl-3 pr-4 py-3 text-lg font-semibold text-white shadow hover:shadow-(--button-hover) focus:outline-4 focus:outline-dds-teal-400 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+            	<span>Back to My Projects</span>{% svg 'projects/arrow_forward' class="h-6 w-auto" %}
+            </a>
+		</div>
+    </main>
+
+    {% include "_footer.html" %}
+</div>
+{% endblock %}

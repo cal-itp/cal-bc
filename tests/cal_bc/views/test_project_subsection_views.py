@@ -506,3 +506,17 @@ class TestProjectSubsectionViews:
         assert response.status_code == 200
         dom = parse_html(str(response.content))
         assert query_by_aria_label(dom, "B/C Ratio").to_have_text_content("N/A", exact=False)
+
+    def test_404_page(
+            self,
+            client: Client,
+            user: User,
+    ):
+        client.force_login(user)
+        response = client.get("/projects/0/subsections/0/")
+        assert response.status_code == 404
+        dom = parse_html(response.content)
+        assert query_by_role(dom, "heading", name="We can’t find that page")
+        assert query_by_text(dom, "The page you're looking for may have been moved, renamed, or doesn't exist. Check the link, or head back to your projects.")
+        assert query_by_role(dom, "link", name="Back to My Projects")
+

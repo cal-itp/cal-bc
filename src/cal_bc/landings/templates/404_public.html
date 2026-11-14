@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load svg %}
+{% block main %}
+
+<header class="fixed z-100 w-full h-20 bg-dds-teal-950 text-white">
+    <div class="px-6 py-5 lg:px-8 mx-auto max-w-7xl">
+        <nav aria-label="Global" class="flex items-center space-x-3">
+            <a href="{% url 'landings' %}" class="p-1 flex items-center focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+                <span class="sr-only">Cal-B/C</span>
+                {% svg 'shared/cal_bc_logo' alt="Cal-B/C" class="h-8 w-auto" %}
+            </a>
+            <span class="h-10 border-r-1 border-gray-500 border-dashed"></span>
+            <a target="_blank" rel="noopener noreferrer" href="https://ca.gov" class="p-1 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+                <span class="sr-only">State of California</span>
+                {% svg 'shared/ca_gov_logo' alt="CA" class="h-6 w-auto" %}
+            </a>
+            <a target="_blank" href="https://dot.ca.gov" class="p-1 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+                <span class="sr-only">California Department of Transportation</span>
+                {% svg 'shared/caltrans_logo' alt="Caltrans" class="h-8 w-auto" %}
+            </a>
+            <span class="p-1">
+                <span class="sr-only">Data and Digital Services</span>
+                {% svg 'shared/dds_logo' alt="DDS" class="h-8 w-auto" %}
+            </span>
+        </nav>
+    </div>
+</header>
+
+<div class="pt-20 min-h-full bg-gray-100 flex flex-col">
+    <main class="grow">
+	    <div class="mx-auto max-w-7xl space-y-6 pt-16 px-6 lg:px-8">
+			<div class="space-y-2">
+				{% svg 'shared/not_found' alt="Not Found" class="h-37 w-auto text-dds-teal-600" %}
+	        	<h1 class="uppercase text-lg/8 text-dds-teal-900">Page not found</h1>
+	            <h2 class="text-4xl/12 font-bold text-dds-teal-950">We can’t find that page</h2>
+	            
+	            <div class="md:grid md:grid-cols-2 md:gap-6">
+		            <p class="text-gray-700 text-lg/8 text-pretty">		
+						The page you're looking for may have been moved, renamed, or doesn't exist. Check the link, or head back to your projects.
+					</p>
+				</div>
+	        </div>
+
+            <a href="{% url 'landings' %}" class="w-58 flex justify-center items-start gap-2 rounded-md bg-dds-teal-600 pl-3 pr-4 py-3 text-lg font-semibold text-white shadow hover:shadow-(--button-hover) focus:outline-4 focus:outline-dds-teal-400 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+                {% svg 'shared/home' class="h-6 w-auto" %}<span>Back to home</span>
+            </a>
+		</div>
+    </main>
+
+    {% include "landings/_footer.html" %}
+</div>
+{% endblock %}
