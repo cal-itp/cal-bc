@@ -1,8 +1,9 @@
+from django.test.client import Client
 from unbrowsed import parse_html, query_by_text
 
 
 class TestLandingViews:
-    def test_with_landings_index(self, client):
+    def test_with_landings_index(self, client: Client):
         response = client.get("/")
         assert response.status_code == 200
         dom = parse_html(response.content)
