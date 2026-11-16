@@ -293,15 +293,29 @@ class Field(models.Model):
         return self.display_type == FieldDisplayType.READ_ONLY or self.row.group.is_summary == True
 
     def selected_choice(self):
-        choice = self.choice_set.selected().first()
-        return choice.value if choice else ''
+        choice = Choice.objects.selected().filter(choice_group__field=self).first()
+        return choice.value if choice else ""
+
+
+class ChoiceGroup(models.Model):
+    field = models.ForeignKey(Field, null=False, on_delete=models.CASCADE)
+    name = models.CharField(blank=True)
+    position = models.PositiveIntegerField(default=0, null=False, db_index=True)
+
+    class Meta:
+        ordering = ["position"]
+
+    def __str__(self):
+        return f"Choice Group: {self.position + 1!s} - {self.name}" if self.name else f"Choice Group {self.position + 1!s}"
+
 
 class ChoiceManager(models.Manager):
     def selected(self):
         return self.filter(is_selected=True)
 
+
 class Choice(models.Model):
-    field = models.ForeignKey(Field, null=False, on_delete=models.CASCADE)
+    choice_group = models.ForeignKey(ChoiceGroup, null=False, on_delete=models.CASCADE)
     name = models.CharField(null=False, blank=False)
     value = models.CharField(null=False, blank=False)
     position = models.PositiveIntegerField(default=0, null=False, db_index=True)

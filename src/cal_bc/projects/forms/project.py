@@ -62,11 +62,10 @@ class InputForm(ModelForm):
         self.is_percentage = self.field.unit == "%"
         field_class = CharField
         field_class_config = {"required": self.field.required, "error_messages": {'required': f'Enter {self.field.name}.'}}
-        choices = self.field.choice_set.all()
 
-        if len(choices):
+        if self.field.choicegroup_set.count() > 0:
             field_class = ChoiceField
-            field_class_config["choices"] = [(None, ""), *[(i.value, i.name) for i in choices]]
+            field_class_config["choices"] = { None: "" } | { choice_group.name: { choice.value: choice.name for choice in choice_group.choice_set.all() } for choice_group in self.field.choicegroup_set.all() }
             field_class_config["error_messages"] = {'required': f'Select {self.field.name}.'}
         elif self.is_percentage:
             field_class = PercentageField
