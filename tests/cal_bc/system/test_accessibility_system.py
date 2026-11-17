@@ -225,7 +225,12 @@ class TestAccessibilitySystem:
         axe = Axe()
         msg = "Accessibility violations found. Check the report in 'axe-reports/'."
 
-        first_window.goto(channels_live_server.http_url)
+        first_window.goto(f"{channels_live_server.http_url}/projects/0/subsections/0/")
+        first_window.get_by_role("heading", name="We can’t find that page").click()
+        axe_check = axe.run(first_window, filename="accessibility_report")
+        assert len(axe_check["violations"]) == 0, f"{len(axe_check["violations"])} {msg}"
+
+        first_window.get_by_role("link", name="Back to My Projects").click()
         axe_check = axe.run(first_window, filename="accessibility_report")
         assert len(axe_check["violations"]) == 0, f"{len(axe_check["violations"])} {msg}"
 
@@ -293,5 +298,11 @@ class TestAccessibilitySystem:
         first_window.get_by_text("Sign out").click()
         axe_check = axe.run(first_window, filename="accessibility_report")
         assert len(axe_check["violations"]) == 0, f"{len(axe_check["violations"])} {msg}"
+
+        first_window.goto(f"{channels_live_server.http_url}/something")
+        first_window.get_by_role("heading", name="We can’t find that page").click()
+        axe_check = axe.run(first_window, filename="accessibility_report")
+        assert len(axe_check["violations"]) == 0, f"{len(axe_check["violations"])} {msg}"
+        first_window.get_by_role("link", name="Back to home").click()
 
         first_window.close()
