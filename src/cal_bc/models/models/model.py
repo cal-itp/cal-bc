@@ -35,7 +35,7 @@ class Version(models.Model):
 
 
 class VersionFile(models.Model):
-    version = models.OneToOneField("Version", on_delete=models.CASCADE, unique=True)
+    version = models.OneToOneField(Version, on_delete=models.CASCADE, unique=True)
     file = models.FileField(null=False, blank=False)
 
     class Meta:
@@ -47,6 +47,51 @@ class VersionFile(models.Model):
         return f"VersionFile #{self.pk}"
 
 
+class VersionFileSheet(models.Model):
+    version_file = models.ForeignKey(VersionFile, null=False, on_delete=models.CASCADE)
+    name = models.CharField(null=False, blank=False, db_index=True)
+
+    class Meta:
+        ordering = ["name"]
+        verbose_name = "Sheet"
+        verbose_name_plural = "Sheets"
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "version_file",
+                    "name",
+                ],
+                name="unique_version_file_sheet_name",
+            ),
+        ]
+
+    def __str__(self):
+        return self.name
+
+
+class VersionFileNamedCell(models.Model):
+    version_file = models.ForeignKey(VersionFile, null=False, on_delete=models.CASCADE)
+    name = models.CharField(null=False, blank=False, db_index=True)
+    cell = models.CharField(null=False)
+
+    class Meta:
+        ordering = ["name"]
+        verbose_name = "Named Cell"
+        verbose_name_plural = "Named Cells"
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "version_file",
+                    "name",
+                ],
+                name="unique_version_file_named_cell",
+            ),
+        ]
+        
+    def __str__(self):
+        return self.name
+
+        
 class Section(models.Model):
     version = models.ForeignKey(Version, null=False, on_delete=models.CASCADE)
     name = models.CharField(null=False, blank=False, db_index=True)
