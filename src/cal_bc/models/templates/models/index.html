@@ -34,10 +34,8 @@
                         {% if version.has_form_link %}
                             <form method="post" action="{% url 'model_project_new' model.id version.id %}">
                                 {% csrf_token %}
-                                <button type="submit" class="focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
-                                    <div class="flex items-center gap-1 rounded-md bg-dds-teal-600 px-4 py-2 text-lg font-semibold text-white shadow hover:shadow-(--button-hover)">
-                                        <span>Start project</span>{% svg 'projects/arrow_forward' %}
-                                    </div>
+                                <button type="submit" class="cursor-pointer flex items-center gap-1 rounded-md bg-dds-teal-600 px-4 py-2 text-lg font-semibold text-white shadow hover:shadow-(--button-hover) focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+                                    <span>Start project</span>{% svg 'projects/arrow_forward' %}
                                 </button>
                             </form>
                         {% else %}
