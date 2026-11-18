@@ -58,7 +58,7 @@
             {% else %}
                 <div class="md:grid md:grid-cols-7 md:gap-x-4">
                     <section class="self-start sticky top-20 md:col-start-5 md:col-span-3">
-                        <aside id="guide" hx-get="{% url 'model_version_section_subsection_guide' model_pk=subsection.section.version.model.pk version_pk=subsection.section.version.pk section_pk=subsection.section.pk pk=subsection.pk %}" hx-params="none" hx-swap="innerMorph" hx-trigger="load" class="md:absolute md:top-0 md:right-4 md:w-md md:ml-8"></aside>
+                        <aside id="guide" hx-get="{% url 'model_version_section_subsection_guide' model_pk=subsection.section.version.model.pk version_pk=subsection.section.version.pk section_pk=subsection.section.pk pk=subsection.pk %}" hx-params="none" hx-swap="innerMorph" hx-trigger="load" class="md:absolute md:top-0 md:right-0 md:w-md md:ml-8"></aside>
                     </section>
                     <section class="md:col-start-1 md:col-span-4">
                         {% partial subsection-form %}
