@@ -1,7 +1,7 @@
 import pytest
 from django.contrib.auth.models import User
 from django.test import Client
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Dialog, Page, expect
 from pytest_playwright.pytest_playwright import CreateContextCallback
 
 from cal_bc.models.models.model import (
@@ -287,13 +287,18 @@ class TestProjectSystem:
         expect(first_window.get_by_text("Enter the district, EA, and PPNO if available.")).to_be_visible()
         first_window.get_by_role("button", name="close").click()
         
-        first_window.get_by_role("button", name="Save draft").click()
-
         expect(second_window.locator("body")).to_contain_text("Hypothetical Project", timeout=10_000)
         first_window.get_by_label("Project Name").fill("Third Street Light Rail")
         expect(first_window.get_by_label("District")).to_contain_text("District 4 - Bay Area / Oakland")
         first_window.get_by_label("District").select_option("")
         first_window.get_by_label("Length of Peak Period").fill("25")
+
+        def handle_dialog_dismiss(dialog: Dialog):
+            assert dialog.type == 'beforeunload'
+            dialog.dismiss()
+
+        first_window.on('dialog', handle_dialog_dismiss)
+        first_window.get_by_alt_text("Cal-B/C").click()
 
         first_window.get_by_role("button", name="Save draft").click()
         expect(first_window.locator("body")).to_contain_text("Select District.")
