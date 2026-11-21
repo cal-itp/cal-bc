@@ -5,7 +5,7 @@ import nested_admin
 from django.contrib import admin
 from django.db import transaction
 
-from cal_bc.models.forms.model import ChoiceForm
+from cal_bc.models.forms.model import ChoiceForm, FieldForm
 from cal_bc.models.models.model import (
     Choice,
     ChoiceGroup,
@@ -20,6 +20,8 @@ from cal_bc.models.models.model import (
     Subsection,
     Version,
     VersionFile,
+    VersionFileNamedCell,
+    VersionFileSheet,
 )
 from cal_bc.models.tasks import refresh_version_file
 
@@ -63,6 +65,7 @@ class FieldRangeInline(nested_admin.NestedTabularInline):
 
 class FieldInline(nested_admin.SortableHiddenMixin, nested_admin.NestedStackedInline):
     model = Field
+    form = FieldForm
     inlines = [FieldColumnInline, FieldRangeInline, ChoiceGroupInline]
 
     def get_extra(self, request, obj=None, **kwargs):
@@ -154,6 +157,7 @@ class SubsectionInline(nested_admin.NestedStackedInline):
     model = Subsection
     inlines = [GroupInline]
     fields = ["code", "name", "description", "guide"]
+    show_change_link = True
 
     def get_extra(self, request, obj=None, **kwargs):
         if obj is not None and obj.pk is not None and obj.subsection_set.count():
@@ -173,9 +177,42 @@ class SectionInline(nested_admin.NestedStackedInline):
         else:
             return 1
 
+class VersionFileSheetInline(nested_admin.NestedTabularInline):
+    model = VersionFileSheet
+    extra = 0
+    readonly_fields = ["name"]
+    classes = ['collapse']
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+class VersionFileNamedCellInline(nested_admin.NestedTabularInline):
+    model = VersionFileNamedCell
+    extra = 0
+    fields = ["cell"]
+    readonly_fields = ["cell"]
+    classes = ['collapse']
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 
 class VersionFileInline(nested_admin.NestedTabularInline):
     model = VersionFile
+    inlines = [VersionFileNamedCellInline, VersionFileSheetInline]
     extra = 0
 
 
@@ -198,6 +235,8 @@ class VersionAdmin(nested_admin.NestedModelAdmin):
 @admin.register(Subsection)
 class SubsectionAdmin(nested_admin.NestedModelAdmin):
     model = Subsection
+    inlines = [GroupInline]
+    list_display = ["__str__", "section", "version_name", "model_name"]
     list_select_related = ["section", "section__version", "section__version__model"]
     readonly_fields = ["model_name", "version_name"]
     fieldsets = (
@@ -215,11 +254,11 @@ class SubsectionAdmin(nested_admin.NestedModelAdmin):
         # Hide the module on the admin index page
         return False
 
-    @admin.display(description="Model")
+    @admin.display(description="Model", ordering="section__version__model__name")
     def model_name(self, obj):
         return obj.section.version.model.name
 
-    @admin.display(description="Version")
+    @admin.display(description="Version", ordering="section__version__model__name")
     def version_name(self, obj):
         return obj.section.version.name
 
