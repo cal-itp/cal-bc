@@ -1,5 +1,10 @@
 {% extends "base.html" %}
-{% load svg %}
+{% load svg static %}
+
+{% block head %}
+<script src="{% static 'scripts/projects/subsection_form.js' %}"></script>
+{% endblock %}
+
 {% block main %}
 
 {% partialdef subsection-name %}
@@ -48,7 +53,7 @@
             </section>
         {% endif %}
 
-        <form method="post" hx-boost="true" class="mx-auto max-w-7xl pb-20 px-6 lg:px-8">
+        <form id="subsection-form" method="post" hx-boost="true" class="mx-auto max-w-7xl pb-20 px-6 lg:px-8">
             {% csrf_token %}
 
             {% if table_page %}
@@ -97,3 +102,4 @@
     {% include "_footer.html" %}
 </div>
 {% endblock %}
+
