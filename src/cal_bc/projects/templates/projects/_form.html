@@ -43,7 +43,7 @@
                                     form=form
                                     field=field
                                     calculation=calculation
-                                    input_error_classes="{% if form.errors %} border-red-700 focus:border-red-700 focus:outline-red-400 {% endif %}"
+                                    input_error_classes="{% if form.errors %} invalid:border-red-700 invalid:focus:border-red-700 invalid:focus:outline-red-400{% endif %}"
                                 />
                             {% else %}
                                 <c-input-textbox
@@ -60,9 +60,6 @@
         {% endif %}
     {% endwith %}
 {% endpartialdef %}
-
-{{ formset.management_form }}
-{{ formset.non_form_errors }}
 
 {% for group in subsection.summary_group_set %}
     <div class="mt-12 space-y-0.5">

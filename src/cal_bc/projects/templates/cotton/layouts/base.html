@@ -8,13 +8,17 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     {% tailwind_css %}
     {% htmx_script version=4 %}
-    <script src="{% static 'scripts/htmx-ext-ws.min.js' %}" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" async type="module"></script>
     <link rel="icon" type="image/png" sizes="180x180" href="{% static 'shared/favicon.png' %}">
     <link rel="apple-touch-icon" href="{% static 'shared/favicon.png' %}">
 </head>
 
 <body class="h-full" hx-boost="true" hx-headers:inherited='{"x-csrftoken": "{{ csrf_token }}"}'>
-    {% block main %}{% endblock %}
+    {{ slot }}
+    <script defer src="{% static 'scripts/htmx-ext-ws.min.js' %}"></script>
+    <script defer src="{% static 'django_cotton_ui/cotton-ui.min.js' %}"></script>
+    <script async src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/focus@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </body>
 </html>

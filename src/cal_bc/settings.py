@@ -87,6 +87,7 @@ INSTALLED_APPS = [
     "channels_postgres",
     "taggit",
     "django_cotton",
+    "django_cotton_ui",
     "binary_database_files",
     "hijack",
     "hijack.contrib.admin",
@@ -100,7 +101,7 @@ STATICFILES_DIRS = [BASE_DIR / "assets"]
 SVG_DIRS = [BASE_DIR / "assets"]
 
 COTTON_BASE_DIR = BASE_DIR / "cal-bc"
-COTTON_DIR = "components"
+COTTON_ISOLATE_BY_DEFAULT = True
 
 TAILWIND_CLI_DIST_CSS = "css/tailwind.min.css"
 TAILWIND_CLI_SRC_CSS = BASE_DIR / "styles" / "main.css"

@@ -1,31 +1,32 @@
-{% extends "base.html" %}
-{% load static i18n svg %}
-{% block main %}
+{% load svg %}
 
-{% include "_header_nav.html" %}
+<c-layouts.list hx-ext="ws" hx-ws:connect="/ws{% url 'projects' %}?page={{ page_obj.number }}" hx-target="this" hx-swap="innerMorph">
+    <c-slot name="navbar">
+        <c-base.navbar>
+            <c-slot name="messages">
+                <c-base.messages :messages=messages/>
+            </c-slot>
+        </c-base.navbar>
+    </c-slot>
 
-<div class="pt-20 min-h-full bg-gray-100 flex flex-col">
-    <header>
-        <div class="mx-auto max-w-7xl pt-16 px-6 lg:px-8">
-            <p class="uppercase text-base font-light text-pretty text-dds-teal-700">Welcome, {% if user.get_short_name != "" %}{{ user.get_short_name }}{% endif %}</p>
-            <div class="sm:flex sm:items-center">
-                <div class="sm:flex-auto space-y-2">
-                    <h1 class="mt-4 text-4xl font-bold tracking-tight text-dds-teal-950">My Cal B/C Projects</h1>
-                    <p class="text-base font-light text-pretty text-gray-700">{{ page_obj.paginator.count }} projects</p>
-                </div>
-                <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-                    <a href="{% url 'models' %}" class="flex items-center gap-2 rounded-md bg-dds-teal-600 pl-3 pr-4 py-3 text-lg font-semibold text-white shadow hover:shadow-(--button-hover) focus:outline-4 focus:outline-dds-teal-400 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
-                        {% svg 'projects/plus' %}<span>New project</span>
-                    </a>
-                </div>
+    <c-slot name="header">
+        <p class="uppercase text-base font-light text-pretty text-dds-teal-700">Welcome, {% if user.get_short_name != "" %}{{ user.get_short_name }}{% endif %}</p>
+        <div class="sm:flex sm:items-center">
+            <div class="sm:flex-auto space-y-2">
+                <h1 class="mt-4 text-4xl font-bold tracking-tight text-dds-teal-950">My Cal B/C Projects</h1>
+                <p class="text-base font-light text-pretty text-gray-700">{{ page_obj.paginator.count }} projects</p>
+            </div>
+            <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+                <a href="{% url 'models' %}" class="flex items-center gap-2 rounded-md bg-dds-teal-600 pl-3 pr-4 py-3 text-lg font-semibold text-white shadow hover:shadow-(--button-hover) focus:outline-4 focus:outline-dds-teal-400 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
+                    {% svg 'projects/plus' %}<span>New project</span>
+                </a>
             </div>
         </div>
-    </header>
+    </c-slot>
 
-    <main class="grow" hx-ext="ws" hx-ws:connect="/ws{% url 'projects' %}?page={{ page_obj.number }}" hx-target="this" hx-swap="innerMorph">
-        {% include "projects/_list.html" %}
-    </main>
+    {% include "projects/_list.html" %}
 
-    {% include "_footer.html" %}
-</div>
-{% endblock %}
+    <c-slot name="footer">
+        <c-base.footer/>
+    </c-slot>
+</c-layouts.list>

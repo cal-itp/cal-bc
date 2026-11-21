@@ -1,5 +1,5 @@
 version = 1
-revision = 5
+revision = 3
 requires-python = ">=3.12"
 resolution-markers = [
     "python_full_version >= '3.14' and platform_python_implementation == 'PyPy' and sys_platform == 'win32'",
@@ -100,6 +100,7 @@ dependencies = [
     { name = "django-azure-auth" },
     { name = "django-binary-database-files" },
     { name = "django-cotton" },
+    { name = "django-cotton-ui" },
     { name = "django-debug-toolbar" },
     { name = "django-downloadview" },
     { name = "django-environ" },
@@ -148,6 +149,7 @@ requires-dist = [
     { name = "django-azure-auth", specifier = ">=2.4.0" },
     { name = "django-binary-database-files", git = "https://github.com/kimetrica/django-binary-database-files?branch=pyup-pin-django-6.1.2" },
     { name = "django-cotton", specifier = ">=2.7.2" },
+    { name = "django-cotton-ui", specifier = ">=0.3.4" },
     { name = "django-debug-toolbar", specifier = ">=6.3.0" },
     { name = "django-downloadview", specifier = ">=2.4.0" },
     { name = "django-environ", specifier = ">=0.12.0" },
@@ -727,6 +729,19 @@ wheels = [
 ]
 
 [[package]]
+name = "django-cotton-ui"
+version = "0.3.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+    { name = "django-cotton" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/23/a4/3d3ecb0329135f2ee0257b83e89be7850559fcac5098ec8f13fb503ed1a2/django_cotton_ui-0.3.4.tar.gz", hash = "sha256:32b76f6a95ad3f54352d06e8393f67f91287ad8ace2739e22df7342d330bdd9e", size = 173677, upload-time = "2026-09-27T12:37:04.403Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/7a/9c/78c90439489f48793e29bb4593f1a708b374a37b98d3ef47913482b795c5/django_cotton_ui-0.3.4-py3-none-any.whl", hash = "sha256:19c0c7b80907fc7a79cee961087550dd1c2b3d203a82ef6f4797db42be6ed093", size = 214900, upload-time = "2026-09-27T12:37:05.386Z" },
+]
+
+[[package]]
 name = "django-debug-toolbar"
 version = "8.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -795,7 +810,7 @@ resolution-markers = [
     "python_full_version < '3.14' and platform_python_implementation != 'PyPy'",
 ]
 dependencies = [
-    { name = "django" },
+    { name = "django", marker = "python_full_version < '3.14'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/81/8c/7093814ce82d29034d339bdf660f6bc0276ccf8c2a31be26fcb0e378caf7/django_hijack-3.7.9.tar.gz", hash = "sha256:b43fb47b2501e230a7343aaae94e1748ee628a16161916e1edc83a52b3924347", size = 14559, upload-time = "2026-10-01T22:00:39.353Z" }
 wheels = [
@@ -812,7 +827,7 @@ resolution-markers = [
     "python_full_version >= '3.14' and platform_python_implementation != 'PyPy'",
 ]
 dependencies = [
-    { name = "django" },
+    { name = "django", marker = "python_full_version >= '3.14'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/23/74/bd2ff01bbc418fc0a1db1243c3bcd89abd26e39ff78bbe72a8cce9febaa8/django_hijack-3.8.0.tar.gz", hash = "sha256:77796c89d09911c9e62e217c167ccf4a859ca1aae1055b6bc205c7380d798fff", size = 14529, upload-time = "2026-10-10T22:11:27.397Z" }
 wheels = [

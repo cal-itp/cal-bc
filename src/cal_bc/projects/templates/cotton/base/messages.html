@@ -1,0 +1,7 @@
+<c-vars messages />
+
+<aside class="absolute right-8" {{ attrs }}>
+    {% for message in messages %}
+        <c-base.message :message=message/>
+    {% endfor %}
+</aside>

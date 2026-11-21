@@ -14,6 +14,7 @@ dependencies = [
     "django-azure-auth>=2.4.0",
     "django-binary-database-files",
     "django-cotton>=2.7.2",
+    "django-cotton-ui>=0.3.4",
     "django-debug-toolbar>=6.3.0",
     "django-downloadview>=2.4.0",
     "django-environ>=0.12.0",

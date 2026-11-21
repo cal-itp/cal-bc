@@ -85,8 +85,8 @@ class ProjectSubsectionView(
                 .annotate(Count("field")),
             to_attr="table_row_set"
         )
-        
-        
+
+
         column_group_prefetch = Prefetch("columngroup_set",
             queryset=ColumnGroup.objects
                 .filter(group__subsection_id=self.kwargs['pk'])

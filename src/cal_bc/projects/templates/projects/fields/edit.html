@@ -1,11 +1,9 @@
 {% load svg %}
 
 {% if form.errors %}
-    {% with show_errors="True" %}
-        {% for field, errors in form.errors.items %}
-            <c-input-error show_errors=show_errors errors=errors/>
-        {% endfor %}
-    {% endwith %}
+    {% for field, errors in form.errors.items %}
+        <c-input-error errors=errors/>
+    {% endfor %}
 {% endif %}
 
 {% with project=object.project %}

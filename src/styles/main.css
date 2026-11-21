@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./cotton-ui.sources.css";
 @import "./font";
 @import "./tw-prose";
 

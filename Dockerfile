@@ -2,7 +2,7 @@
 FROM python:3.12-slim AS builder
 
  # Install uv
-COPY --from=ghcr.io/astral-sh/uv:0.9.3 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.13.8 /uv /uvx /bin/
 
 # Create the app directory
 RUN mkdir /app
@@ -40,7 +40,7 @@ RUN --mount=type=cache,target=/root/.cache \
 FROM python:3.12-slim
 
  # Install uv
-COPY --from=ghcr.io/astral-sh/uv:0.9.3 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.13.8 /uv /uvx /bin/
 
 # Set the working directory
 WORKDIR /app
@@ -62,6 +62,12 @@ RUN --mount=type=cache,target=/root/.cache \
     uv sync \
     --no-dev \
     --frozen
+
+# Bundle Cotton UI
+RUN --mount=type=cache,target=/root/.cache \
+    SECRET_KEY=temporary \
+    DATABASE_URL=sqlite:///src/db.sqlite3 \
+    uv run --no-sync manage.py cotton_ui_sources -o /app/src/styles/cotton-ui.sources.css
 
 # Install Tailwind CLI
 RUN --mount=type=cache,target=/root/.cache \

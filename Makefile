@@ -8,6 +8,7 @@ worker:
 	uv run manage.py db_async_worker
 
 tailwind:
+	uv run manage.py cotton_ui_sources -o src/styles/cotton-ui.sources.css
 	uv run manage.py tailwind build
 	uv run manage.py tailwind watch
 

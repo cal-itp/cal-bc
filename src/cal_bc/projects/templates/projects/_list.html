@@ -1,55 +1,32 @@
 {% load svg %}
 
-{% partialdef project-delete-confirmation %}
-    <el-dialog>
-        <dialog id="modal-dialog-delete-project-{{ project.id }}" aria-labelledby="dialog-title" class="relative fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent">
-            <el-dialog-backdrop class="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"></el-dialog-backdrop>
-            <div tabindex="0" class="flex justify-center items-center h-full text-left focus:outline-none">
-                <el-dialog-panel class="relative p-10 rounded-lg bg-white shadow-sm transform overflow-hidden rounded-lg w-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in data-closed:sm:translate-y-0 data-closed:sm:scale-95">
-                    <div class="flex justify-between">
-                        <h3 class="text-3xl font-bold">Confirm Delete</h3>
-                        <button
-                            type="button"
-                            command="close"
-                            commandfor="modal-dialog-delete-project-{{ project.id }}"
-                            class="cursor-pointer border rounded text-dds-teal-600 text-center w-9 h-9 focus:outline-1 focus:-outline-offset-4 focus:outline-dds-teal-400 focus-visible:outline-1 focus-visible:outline-dds-teal-400">
-                            <span class="sr-only">Close</span>{% svg "projects/alerts/x" alt="close" class="m-auto w-5 h-5" %}
-                        </button>
-                    </div>
-                    <aside class="pt-6">
-                        <article class="flex flex-col text-lg">
-                            <div class="mb-4 truncate">
-                                Deleting Project <span class="font-bold">{{ project.project_name_calculations|first|stringformat:"s"|default:"New Project" }}</span>
-                            </div>
-                            <div class="text-red-700 mb-10">
-                                Warning: This action cannot be undone.
-                            </div>
-                            <div>
-                                <button type="button"
-                                    command="close"
-                                    commandfor="modal-dialog-delete-project-{{ project.id }}"
-                                    class="cursor-pointer rounded-md bg-white mr-2 px-4 py-2 text-lg font-semibold text-dds-teal-600 border-1 border-dds-teal-600 shadow hover:shadow-(--button-hover) focus:outline-4 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
-                                    <span class="">Cancel</span>
-                                </button>
-                                <button
-                                    hx-post="{% url 'project_delete' project.id %}"
-                                    hx-target="body"
-                                    hx-push-url="true"
-                                    class="cursor-pointer rounded-md bg-danger-700 px-4 py-2 text-lg font-semibold text-white shadow hover:shadow-(--button-hover) focus:outline-4 focus:ring-offset-0 focus:ring-danger-400 focus-visible:outline-danger-400">
-                                    <span class="sr-only">Confirm Delete</span>
-                                    <span>Delete</span>
-                                </button>
-                            </div>
-                        </article>
-                    </aside>
-                </el-dialog-panel>
-            </div>
-        </dialog>
-    </el-dialog>
-{% endpartialdef %}
-
 <section class="mx-auto max-w-7xl pt-12 pb-20 px-6 lg:px-8 flow-root overflow-x-auto">
     {% if object_list %}
+        <c-projects.list>
+            <c-slot name="header">
+                <c-projects.list-header>
+                    <c-slot name="project-name">Project Name</c-slot>
+                    <c-slot name="model">Model</c-slot>
+                    <c-slot name="last-edited" icon="projects/arrow_down">Last Edited</c-slot>
+                    <c-slot name="actions">Actions</c-slot>
+                </c-projects.list-header>
+            </c-slot>
+
+            {% for project in object_list %}
+                <c-projects.list-item>
+                    <c-slot name="project-name">{{ project.project_name_calculations|first|stringformat:"s"|default:"New Project" }}</c-slot>
+                    <c-slot name="model">{{ project.version.model.name }} v{{ project.version.name }}</c-slot>
+                    <c-slot name="last-edited" icon="projects/arrow_down">{{ project.updated_at|date:"M j, Y" }}</c-slot>
+                    <c-slot name="actions">
+                        <c-ui.button variant="subtle" outlined command="show-modal" commandfor="modal-dialog-delete-project-{{ project.id }}">
+                            <span class="sr-only">Delete</span>
+                            {% svg 'projects/delete' alt="Delete" class="h-6 w-6" %}
+                        </c-ui.button>
+                        <c-projects.delete-confirmation :project=project/>
+                    </c-slot>
+                </c-projects.list-item>
+            {% endfor %}
+        </c.projects-list>
         <div class="grid grid-cols-[1fr_156px] gap-y-1 overflow-hidden md:grid-cols-[1fr_1fr_156px_156px] lg:grid-cols-[1fr_1fr_1fr_156px_156px]">
             <div class="col-span-1 pl-4 py-2 text-left text-sm font-semibold text-gray-800 md:col-span-1 lg:col-span-2">Project Name</div>
             <div class="hidden pl-4 py-2 text-left text-sm font-semibold text-gray-800 md:block md:col-span-1">Model</div>
@@ -81,7 +58,7 @@
                     <span class="sr-only">Download</span>
                     {% svg 'projects/download' alt="Download" class="h-6 w-6" %}
                 </a>
-                {% partial project-delete-confirmation %}
+                <c-projects.delete-confirmation :project=project/>
             </div>
             {% endfor %}
         </div>
@@ -98,69 +75,35 @@
                 </p>
             </div>
             <div>
-                <div class="flex flex-1 items-center justify-between space-x-2 md:hidden">
+                <c-ui.pagination>
                     {% if page_obj.has_previous %}
-                        <a href="?page={{ page_obj.previous_page_number }}" class="relative w-24 px-4 py-2 inline-flex items-center justify-center text-dds-teal-600 border-1 border-dds-teal-600 rounded-md shadow hover:shadow-(--button-hover) focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Previous</a>
+                        <c-ui.pagination.prev href="?page={{ page_obj.previous_page_number }}" />
                     {% else %}
-                        <span class="relative w-24 px-4 py-2 inline-flex items-center justify-center text-gray-300 border-1 border-gray-300 rounded-md cursor-not-allowed">Previous</span>
+                        <c-ui.pagination.prev disabled />
                     {% endif %}
-                    {% if page_obj.has_next %}
-                        <a href="?page={{ page_obj.next_page_number }}" class="relative w-24 px-4 py-2 inline-flex items-center justify-center text-dds-teal-600 border-1 border-dds-teal-600 rounded-md shadow hover:shadow-(--button-hover) focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">Next</a>
-                    {% else %}
-                        <span class="relative w-24 px-4 py-2 inline-flex items-center justify-center text-gray-300 border-1 border-gray-300 rounded-md cursor-not-allowed">Next</span>
-                    {% endif %}
-                </div>
-                <div class="hidden md:flex md:flex-1 md:items-center md:justify-between">
-                    <nav aria-label="Pagination" class="isolate inline-flex space-x-2">
-                        {% if page_obj.has_previous %}
-                            <a href="?page={{ page_obj.previous_page_number }}" class="relative size-7 inline-flex items-center justify-center text-dds-teal-600 border-1 border-dds-teal-600 rounded-md shadow hover:shadow-(--button-hover) focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
-                                <span class="sr-only">Previous</span>
-                                {% svg 'projects/chevron_left' %}
-                            </a>
-                        {% else %}
-                            <span class="relative size-7 inline-flex items-center justify-center text-gray-300 border-1 border-gray-300 rounded-md cursor-not-allowed">
-                                <span class="sr-only">Previous</span>
-                                {% svg 'projects/chevron_left' %}
-                            </span>
-                        {% endif %}
 
-                        {% for number in elided_page_range %}
-                            {% if number == page_obj.paginator.ELLIPSIS %}
-                                <span class="relative size-7 inline-flex items-center justify-center text-sm pt-2 text-gray-900">...</span>
+                    {% for number in elided_page_range %}
+                        {% if number == page_obj.paginator.ELLIPSIS %}
+                            <c-ui.pagination.ellipsis />
+                        {% else %}
+                            {% if page_obj.number == number %}
+                                <c-ui.pagination.item href="?page={{ number }}" :current="True">{{ number }}</c-ui.pagination.item>
                             {% else %}
-                                {% if page_obj.number == number %}
-                                    <span aria-current="page" class="relative z-10 size-7 inline-flex items-center justify-center text-sm text-white border-1 border-dds-teal-600 rounded-md shadow bg-dds-teal-600">{{ number }}</span>
-                                {% else %}
-                                    <a href="?page={{ number }}" class="relative size-7 inline-flex items-center justify-center text-sm text-dds-teal-600 border-1 border-dds-teal-600 rounded-md shadow hover:shadow-(--button-hover) focus:ring-offset-2 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">{{ number }}</a>
-                                {% endif %}
+                                <c-ui.pagination.item href="?page={{ number }}">{{ number }}</c-ui.pagination.item>
                             {% endif %}
-                        {% endfor %}
-
-                        {% if page_obj.has_next %}
-                            <a href="?page={{ page_obj.next_page_number }}" class="relative size-7 inline-flex items-center justify-center text-dds-teal-600 border-1 border-dds-teal-600 rounded-md shadow hover:shadow-(--button-hover) focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
-                                <span class="sr-only">Next</span>
-                                {% svg 'projects/chevron_right' %}
-                            </a>
-                        {% else %}
-                            <span class="relative size-7 inline-flex items-center justify-center text-gray-300 border-1 border-gray-300 rounded-md cursor-not-allowed">
-                                <span class="sr-only">Next</span>
-                                {% svg 'projects/chevron_right' %}
-                            </span>
                         {% endif %}
-                    </nav>
-                </div>
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <c-ui.pagination.next href="?page={{ page_obj.next_page_number }}" />
+                    {% else %}
+                        <c-ui.pagination.next disabled />
+                    {% endif %}
+                </c-ui.pagination>
             </div>
         </div>
     {% else %}
-        <div class="rounded-md bg-white mx-auto max-w-7xl space-y-2 py-8 px-6 lg:px-8">
-            <p class="pt-8 text-xl font-bold text-gray-900 text-center ">No projects yet</p>
-            <p class="text-sm text-gray-700 text-center">Create your first Cal B/C project by completing the 2-section data entry process.</p>
-            <p class="text-sm text-gray-700 text-center">California state averages are pre-populated where available.</p>
-            <div class="pt-4 pb-8 flex items-center justify-center">
-                <a href="{% url 'models' %}" class="flex items-center gap-2 rounded-md bg-dds-teal-600 pl-3 pr-4 py-3 text-lg font-semibold text-white shadow hover:shadow-(--button-hover) focus:outline-4 focus:outline-dds-teal-400 focus:ring-offset-0 focus:ring-dds-teal-400 focus-visible:outline-dds-teal-400">
-                    {% svg 'projects/plus' %}<span>Create project</span>
-                </a>
-            </div>
-        </div>
+        <c-projects.empty/>
     {% endif %}
 </section>
+
+
