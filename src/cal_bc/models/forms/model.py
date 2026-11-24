@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 from django.utils.translation import gettext as _
 
-from cal_bc.models.models.model import Choice, VersionFileNamedCell, VersionFileSheet
+from cal_bc.models.models.model import Choice, Subsection
 from cal_bc.projects.models.project import Project
 
 
@@ -18,6 +18,7 @@ class ProjectForm(ModelForm):
             "user": _("User"),
         }
 
+
 class ChoiceForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -27,25 +28,33 @@ class ChoiceForm(ModelForm):
         model = Choice
         fields = ["name", "value", "is_selected", "position"]
 
+
 class FieldForm(ModelForm):
     def clean_cell(self):
-        cell_address = self.cleaned_data.get("cell")
-        delimiter = cell_address.count("!")
-        
-        match delimiter:
+        subsection = Subsection.objects.get(id=self.data.get('subsection'))
+        if subsection and not hasattr(subsection.section.version, "versionfile"):
+            raise ValidationError("No Workbook found. Please go to Version page, click on Save to download the file.")
+
+        version_file = subsection.section.version.versionfile
+        cell_value = self.cleaned_data.get("cell")
+
+        match cell_value.count("!"):
             case 0:
-                named_cells = list(VersionFileNamedCell.objects.filter(version_file=self.instance.row.group.subsection.section.version.versionfile).values_list('name', flat=True))
-                if cell_address not in named_cells:
-                    raise ValidationError("Invalid named cell.")
-            case 1:
-                sheet, cell = cell_address.split("!")
-                sheet_names = list(VersionFileSheet.objects.filter(version_file=self.instance.row.group.subsection.section.version.versionfile).values_list('name', flat=True))
+                if not version_file.versionfilenamedcell_set.exists():
+                    raise ValidationError("No Named Cells found. Please go to Version page, click on Save to load the file details.")
                 
-                if sheet not in sheet_names:
-                    raise ValidationError("Invalid sheet name. Check the name you entered before the exclamation point.")
+                if cell_value not in list(version_file.versionfilenamedcell_set.all().values_list('name', flat=True)):
+                    raise ValidationError("Invalid Named Cell.")
+            case 1:
+                if not version_file.versionfilesheet_set.exists():
+                    raise ValidationError("No Sheet Names found. Please go to Version page, click on Save to load the file details.")
+                
+                sheet, cell = cell_value.split("!")
+                if sheet not in list(version_file.versionfilesheet_set.all().values_list('name', flat=True)):
+                   raise ValidationError("Invalid Sheet Name. Check the name you entered before the exclamation point.")
                 if not bool(re.match(r"^[A-Za-z]+\d+$", cell)):
-                    raise ValidationError("Invalid row and column definition. Check the value you entered after the exclamation point.")
-            case _ if delimiter > 1:
-                raise ValidationError("Only one exclamation point is allowed in a cell address.")
+                    raise ValidationError("Invalid Column and Row definition. Check the value you entered after the exclamation point.")
+            case _:
+                raise ValidationError("Only one exclamation point is allowed in the cell address.")
         
-        return cell_address
+        return cell_value

@@ -4,6 +4,8 @@ import django_admin_tables
 import nested_admin
 from django.contrib import admin
 from django.db import transaction
+from django.urls import reverse
+from django.utils.html import format_html
 
 from cal_bc.models.forms.model import ChoiceForm, FieldForm
 from cal_bc.models.models.model import (
@@ -23,7 +25,7 @@ from cal_bc.models.models.model import (
     VersionFileNamedCell,
     VersionFileSheet,
 )
-from cal_bc.models.tasks import refresh_version_file
+from cal_bc.models.tasks import refresh_version_file_details, update_version_file
 
 admin.AdminSite.site_header = "Cal-B/C Admin"
 
@@ -179,9 +181,8 @@ class SectionInline(nested_admin.NestedStackedInline):
 
 class VersionFileSheetInline(nested_admin.NestedTabularInline):
     model = VersionFileSheet
-    extra = 0
     readonly_fields = ["name"]
-    classes = ['collapse']
+    classes = ["collapse", "hide-original-rows"]
 
     def has_add_permission(self, request, obj=None):
         return False
@@ -192,12 +193,16 @@ class VersionFileSheetInline(nested_admin.NestedTabularInline):
     def has_delete_permission(self, request, obj=None):
         return False
 
+    class Media:
+        css = {
+            "all": ["admin/css/custom.css"]
+        }
+    
 
 class VersionFileNamedCellInline(nested_admin.NestedTabularInline):
     model = VersionFileNamedCell
-    extra = 0
-    fields = ["cell"]
-    readonly_fields = ["cell"]
+    fields = ["display_cell"]
+    readonly_fields = ["display_cell"]
     classes = ['collapse']
 
     def has_add_permission(self, request, obj=None):
@@ -208,12 +213,72 @@ class VersionFileNamedCellInline(nested_admin.NestedTabularInline):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+    @admin.display(description="Cells")
+    def display_cell(self, obj):
+        return "!".join([item.strip() for item in obj.cell.replace("$","").strip("[]()'").split("', '")])
+
+
+@admin.register(VersionFile)
+class VersionFileAdmin(nested_admin.NestedModelAdmin):
+    model = VersionFile
+    inlines = [VersionFileSheetInline, VersionFileNamedCellInline]
+    list_display = ["__str__", "file", "version_name", "model_name"]
+
+    def has_module_permission(self, request):
+        # Hide the module on the admin index page
+        return False
+    
+    def has_change_permission(self, request, obj=None):
+        return False
+    
+    def has_delete_permission(self, request, obj=None):
+        return False
+    
+    @admin.display(description="Model", ordering="version__model__name")
+    def model_name(self, obj):
+        return obj.version.model.name
+
+    @admin.display(description="Version", ordering="version__model__name")
+    def version_name(self, obj):
+        return obj.version.name
 
 
 class VersionFileInline(nested_admin.NestedTabularInline):
     model = VersionFile
-    inlines = [VersionFileNamedCellInline, VersionFileSheetInline]
+    readonly_fields = ["count_link"]
     extra = 0
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    @admin.display(description="Details")
+    def count_link(self, obj):
+        if obj.pk:
+            named_cells_count = obj.versionfilenamedcell_set.count()
+            sheets_count = obj.versionfilesheet_set.count()
+            url = reverse("admin:models_versionfile_change", args=[obj.pk])
+            return format_html('<a href="{}">{}</a>', url, f"{sheets_count} Sheets and {named_cells_count} Named Cells")
+        else:
+            return "-"
+
+    @admin.display(description="Named Cells Count")
+    def named_cell_count_link(self, obj):
+        if obj.pk:
+            count = obj.versionfilenamedcell_set.count()
+            url = reverse("admin:models_versionfile_change", args=[obj.pk])
+            return format_html('<a href="{}">{}</a>', url, count)
+        else:
+            return "-"
+
+    @admin.display(description="Sheets Count")
+    def sheet_count_link(self, obj):
+        if obj.pk:
+            count = obj.versionfilesheet_set.count()
+            url = reverse("admin:models_versionfile_change", args=[obj.pk])
+            return format_html('<a href="{}">{}</a>', url, count)
+        else:
+            return "-"
 
 
 @admin.register(Version)
@@ -224,12 +289,31 @@ class VersionAdmin(nested_admin.NestedModelAdmin):
     search_fields = ["name", "model__name", "url"]
     search_help_text = "Search by Name, Model, and URL"
     fields = ["name", "url", "model"]
+    
+    def save_related(self, request, form, formsets, change):
+        # Trigger refresh_version_file_details when a new file is manually uploaded
+        inline_changed = any(formset.has_changed() for formset in formsets if formset.model == VersionFile)
+        
+        with transaction.atomic():
+            super().save_related(request, form, formsets, change)
+
+            for formset in formsets:
+                if formset.model == VersionFile:
+                    if inline_changed:
+                        transaction.on_commit(partial(refresh_version_file_details.enqueue, version_file_pk=formset.new_objects[0].pk))
+                    elif len(formset.deleted_objects) == 0 and not hasattr(formset.instance, "versionfile"):
+                        transaction.on_commit(partial(update_version_file.enqueue, version_pk=formset.instance.pk))
+                    elif (len(formset.deleted_objects) == 0 and hasattr(formset.instance, "versionfile") and
+                          (not formset.instance.versionfile.versionfilesheet_set.exists() or
+                           not formset.instance.versionfile.versionfilenamedcell_set.exists())):
+                        transaction.on_commit(partial(refresh_version_file_details.enqueue, version_file_pk=formset.instance.versionfile.id))
 
     def save_model(self, request, obj, form, change):
+        # Trigger update_version_file when a new Version is created or the url is updated
         with transaction.atomic():
             super().save_model(request, obj, form, change)
-            if obj is not None and obj.url is not None:
-                transaction.on_commit(partial(refresh_version_file.enqueue, version_pk=obj.pk))
+            if obj is not None and change and 'url' in form.changed_data and form.initial.get('url') != obj.url:
+                transaction.on_commit(partial(update_version_file.enqueue, version_pk=obj.pk))
 
 
 @admin.register(Subsection)
@@ -296,6 +380,9 @@ class VersionInline(nested_admin.NestedTabularInline):
     model = Version
     show_change_link = True
 
+    def has_change_permission(self, request, obj=None):
+        return False
+
 
 @admin.register(Model)
 class ModelAdmin(admin.ModelAdmin):
@@ -308,3 +395,14 @@ class ModelAdmin(admin.ModelAdmin):
     @admin.display(description="Tags")
     def tag_list(self, obj):
         return ", ".join(o.name for o in obj.tags.all())
+
+    def save_related(self, request, form, formsets, change):
+        # Trigger update_version_file when a new version is created
+        inline_changed = any(formset.has_changed() for formset in formsets if formset.model == Version)
+        
+        with transaction.atomic():
+            super().save_related(request, form, formsets, change)
+            if inline_changed:
+                for formset in formsets:
+                    if formset.model == Version:
+                        transaction.on_commit(partial(update_version_file.enqueue, version_pk=formset.new_objects[0].pk))
