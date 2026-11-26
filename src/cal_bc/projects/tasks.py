@@ -10,7 +10,7 @@ from cal_bc.models.models.model import (
     Subsection,
     Version,
 )
-from cal_bc.models.tasks import refresh_version_file
+from cal_bc.models.tasks import update_version_file
 from cal_bc.projects.models.project import Calculation, Project
 from cal_bc.tasks import refresh_channel
 from cal_bc_calculator.calculator import BytesCalculator
@@ -25,7 +25,7 @@ class RemoteWorkbook:
     @cached_property
     def file(self) -> File:
         if not hasattr(self.version, "versionfile"):
-            refresh_version_file.func(version_pk=self.version.pk)
+            update_version_file.func(version_pk=self.version.pk)
             self.version.refresh_from_db()
         with self.version.versionfile.file.open() as f:
             return f.read()
